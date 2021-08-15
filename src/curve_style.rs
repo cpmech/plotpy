@@ -18,16 +18,6 @@ pub struct CurveStyle {
     pub marker_is_void: bool,      // void marker (draw edge only)
 }
 
-pub struct Curve<'a> {
-    pub style: CurveStyle,     // line and marker arguments
-    pub label: String,         // curve name or connection pair such as 'SF -> LA'
-    pub x: &'a [f64],          // x-coordinates
-    pub y: &'a [f64],          // y-coordinates
-    pub z: &'a [f64],          // z-coordinates [optional]
-    pub kind: String,          // e.g. connection, city, fortress, base, mine, ...
-    pub tag_first_point: bool, // tag first point with label
-}
-
 impl CurveStyle {
     pub fn new() -> Self {
         CurveStyle {

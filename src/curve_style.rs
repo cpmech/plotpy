@@ -40,6 +40,36 @@ impl CurveStyle {
             marker_is_void: false,
         }
     }
+
+    pub(crate) fn args_for_plot(&self) -> String {
+        // lines
+        let mut args = String::new();
+        let line_color = if self.marker_is_void && self.line_color == "" {
+            "red"
+        } else {
+            &self.line_color
+        };
+        if line_color != "" {
+            args.push_str(&format!(",color='{}'", line_color));
+        }
+        if self.line_alpha > 0.0 {
+            args.push_str(&format!(",alpha={}", self.line_alpha));
+        }
+        if self.line_style != "" {
+            args.push_str(&format!(",linestyle='{}'", self.line_style));
+        }
+        if self.line_width > 0.0 {
+            args.push_str(&format!(",linewidth={}", self.line_width));
+        }
+
+        // markers
+        if self.marker_type != "" {
+            args.push_str(&format!(",marker='{}'", self.marker_type));
+        }
+
+        // done
+        args
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -52,5 +82,15 @@ mod tests {
     fn new_curve_style_works() {
         let style = CurveStyle::new();
         assert_eq!(style.line_color, "#b33434");
+    }
+
+    #[test]
+    fn args_for_plot_works() {
+        let style = CurveStyle::new();
+        let args = style.args_for_plot();
+        assert_eq!(
+            args,
+            ",color='#b33434',alpha=0.7,linestyle='-',linewidth=3,marker='o'"
+        );
     }
 }

@@ -9,6 +9,6 @@ repository = "https://github.com/cpmech/plotpy"
 documentation = "https://docs.rs/plotpy"
 readme = "README.md"
 categories = ["mathematics", "science"]
-keywords = ["plot", "graph", "2D", "3D", "python", "matplotlib"]
+keywords = ["plot", "2D", "3D", "python", "matplotlib"]
 
 [dependencies]

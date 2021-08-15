@@ -2,7 +2,7 @@ use super::*;
 use std::path::Path;
 
 pub struct Plot {
-    buffer: String,
+    pub(crate) buffer: String,
 }
 
 impl Plot {

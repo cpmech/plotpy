@@ -1,6 +1,8 @@
 //! rplotpy - Rust plotting library that calls Python-MatPlotLib
 
 // modules ////////////////////////////////////////
+mod arrays;
+mod basic;
 mod constants;
 mod fileio;
 mod plot;

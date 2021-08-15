@@ -64,6 +64,35 @@ pub fn call_python3(
     Ok(results)
 }
 
+pub(crate) fn make_svg(data: &str, matplotlib_version: &str) -> String {
+    format!(
+        r#"<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Created with matplotlib (https://matplotlib.org/) -->
+<svg height="360pt" version="1.1" viewBox="0 0 475.2 360" width="475.2pt" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+ <metadata>
+  <rdf:RDF xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+   <cc:Work>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:date>2021-08-15T18:48:19.889191</dc:date>
+    <dc:format>image/svg+xml</dc:format>
+    <dc:creator>
+     <cc:Agent>
+      <dc:title>Matplotlib {}, https://matplotlib.org/</dc:title>
+     </cc:Agent>
+    </dc:creator>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <defs>
+  <style type="text/css">*{{stroke-linecap:butt;stroke-linejoin:round;}}</style>
+ </defs>{}</svg>
+"#,
+        matplotlib_version, data
+    )
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #[cfg(test)]
@@ -82,5 +111,24 @@ mod tests {
         assert_eq!(data, correct);
         assert_eq!(output, "Python says: Hello World!\n");
         Ok(())
+    }
+
+    #[test]
+    fn make_svg_works() {
+        let data = r#"
+ <g id="figure_1">
+  <g id="patch_1">
+   <path d="M 0 360 
+L 475.2 360 
+L 475.2 0 
+L 0 0 
+z
+" style="fill:#ffffff;"/>
+  </g>
+ </g>
+ "#;
+        let res = make_svg(data, "v3.3.4");
+        let lines = res.lines().collect::<Vec<_>>();
+        assert_eq!(lines.len(), 33);
     }
 }

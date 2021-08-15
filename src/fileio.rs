@@ -8,7 +8,7 @@ use std::process::Command;
 /// # Arguments
 ///
 /// * `python_commands` - Python commands to be written to file
-/// * `output_dir_created` - Output directory to be created
+/// * `output_dir` - Output directory to be created
 /// * `filename_py` - Filename with extension .py
 ///
 /// # Note

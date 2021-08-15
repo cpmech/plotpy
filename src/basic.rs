@@ -1,6 +1,19 @@
 use super::Plot;
 
 impl Plot {
+    /// Generates scatter plot given two arrays (x,y)
+    ///
+    /// # Arguments
+    /// * `x` - abscissa array
+    /// * `y` - ordinate array
+    /// ```
+    /// use rplotpy::*;
+    /// let x = &[1.0, 2.0, 3.0, 4.0, 5.0];
+    /// let y = &[1.0, 4.0, 9.0, 16.0, 25.0];
+    /// let mut plt = Plot::new();
+    /// plt.scatter(x, y);
+    /// ```
+    ///
     pub fn scatter(&mut self, x: &[f64], y: &[f64]) {
         let (sx, sy) = self.write_arrays("x", "y", x, y);
         let command = format!("plt.scatter({},{})\n", sx, sy);

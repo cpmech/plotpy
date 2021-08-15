@@ -15,8 +15,10 @@
 mod arrays;
 mod basic;
 mod constants;
+mod curves;
 mod fileio;
 mod plot;
 pub use crate::constants::*;
+pub use crate::curves::*;
 pub use crate::fileio::*;
 pub use crate::plot::*;

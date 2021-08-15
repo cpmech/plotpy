@@ -1,0 +1,7 @@
+{
+  "files.exclude": {
+    "**/rust_modules": true,
+    "target": true,
+    "**/Cargo.lock": true
+  }
+}

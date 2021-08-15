@@ -2,4 +2,6 @@
 
 // modules ////////////////////////////////////////
 mod constants;
+mod fileio;
 pub use crate::constants::*;
+pub use crate::fileio::*;

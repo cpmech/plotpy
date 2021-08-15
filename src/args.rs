@@ -1,4 +1,4 @@
-pub struct CurveStyle {
+pub struct Args {
     // lines
     pub line_color: String, // color
     pub line_alpha: f64,    // alpha (0, 1]. A<1e-14 => A=1.0
@@ -18,9 +18,9 @@ pub struct CurveStyle {
     pub marker_is_void: bool,      // void marker (draw edge only)
 }
 
-impl CurveStyle {
+impl Args {
     pub fn new() -> Self {
-        CurveStyle {
+        Args {
             // lines
             line_color: "#b33434".to_string(),
             line_alpha: 0.7,
@@ -41,7 +41,7 @@ impl CurveStyle {
         }
     }
 
-    pub(crate) fn args_for_plot(&self) -> String {
+    pub(crate) fn to_string(&self) -> String {
         // lines
         let mut args = String::new();
         let line_color = if self.marker_is_void && self.line_color == "" {
@@ -79,15 +79,15 @@ mod tests {
     use super::*;
 
     #[test]
-    fn new_curve_style_works() {
-        let style = CurveStyle::new();
+    fn new_args_works() {
+        let style = Args::new();
         assert_eq!(style.line_color, "#b33434");
     }
 
     #[test]
-    fn args_for_plot_works() {
-        let style = CurveStyle::new();
-        let args = style.args_for_plot();
+    fn to_string_works() {
+        let style = Args::new();
+        let args = style.to_string();
         assert_eq!(
             args,
             ",color='#b33434',alpha=0.7,linestyle='-',linewidth=3,marker='o'"

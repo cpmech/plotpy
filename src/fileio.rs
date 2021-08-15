@@ -20,8 +20,8 @@ use std::process::Command;
 /// # Examples
 ///
 /// ```
-/// use rplotpy::*;
-/// let res = call_python3("print(\"Hello World!\")", "/tmp/rplotpy", "commands.py").unwrap();
+/// use plotpy::*;
+/// let res = call_python3("print(\"Hello World!\")", "/tmp/plotpy", "commands.py").unwrap();
 /// assert_eq!(res, "Hello World!\n".to_string());
 /// ```
 ///
@@ -77,7 +77,7 @@ mod tests {
     #[test]
     fn call_python3_works() -> Result<(), Box<dyn std::error::Error>> {
         let commands = "print(\"Python says: Hello World!\")";
-        let out_dir = "/tmp/rplotpy";
+        let out_dir = "/tmp/plotpy";
         let filename = "call_python3_works.py";
         let output = call_python3(commands, out_dir, filename)?;
         let data = fs::read_to_string(Path::new(out_dir).join(filename))?;
@@ -90,7 +90,7 @@ mod tests {
 
     #[test]
     fn call_python3_twice_works() -> Result<(), Box<dyn std::error::Error>> {
-        let out_dir = "/tmp/rplotpy";
+        let out_dir = "/tmp/plotpy";
         let filename = "call_python3_twice_works.py";
         // first
         let commands_first = "print(\"Python says: Hello World!\")";

@@ -58,8 +58,8 @@ mod tests {
     fn new_plot_works() -> Result<(), Box<dyn std::error::Error>> {
         let plt = Plot::new();
         assert_eq!(plt.buffer.len(), 0);
-        plt.save("/tmp/rplotpy", "test", "svg")?;
-        let svg = fs::read_to_string("/tmp/rplotpy/test.svg")?;
+        plt.save("/tmp/plotpy", "test", "svg")?;
+        let svg = fs::read_to_string("/tmp/plotpy/test.svg")?;
         let lines = svg.lines().collect::<Vec<_>>();
         assert_eq!(lines.len(), 33);
         Ok(())

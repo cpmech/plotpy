@@ -1,12 +1,12 @@
 [package]
-name = "rplotpy"
+name = "plotpy"
 version = "0.1.0"
 edition = "2018"
 license = "MIT"
-description = "Rust plotting library that calls Python-MatPlotLib"
-homepage = "https://github.com/cpmech/rplotpy"
-repository = "https://github.com/cpmech/rplotpy"
-documentation = "https://docs.rs/rplotpy"
+description = "Rust plotting library using Python (Matplotlib)"
+homepage = "https://github.com/cpmech/plotpy"
+repository = "https://github.com/cpmech/plotpy"
+documentation = "https://docs.rs/plotpy"
 readme = "README.md"
 categories = ["mathematics", "science"]
 keywords = ["plot", "graph", "2D", "3D", "python", "matplotlib"]

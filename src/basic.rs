@@ -7,7 +7,7 @@ impl Plot {
     /// * `x` - abscissa array
     /// * `y` - ordinate array
     /// ```
-    /// use rplotpy::*;
+    /// use plotpy::*;
     /// let x = &[1.0, 2.0, 3.0, 4.0, 5.0];
     /// let y = &[1.0, 4.0, 9.0, 16.0, 25.0];
     /// let mut plt = Plot::new();

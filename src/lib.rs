@@ -11,6 +11,16 @@
 //! plt.scatter(x, y, &args);
 //! plt.save("/tmp/plotpy", "example", "svg");
 //! ```
+//!
+//! # Todo
+//!
+//! - [ ] Test shapes arguments
+//! - [ ] Test text arguments
+//! - [ ] Test legend arguments
+//! - [ ] Test contour arguments
+//! - [ ] Test histogram arguments
+//! - [ ] Test 3D graphs arguments
+//!
 
 // modules ////////////////////////////////////////
 mod arguments;

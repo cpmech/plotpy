@@ -51,12 +51,6 @@ pub struct Arguments {
     pub contour_selected_color: String,  // color to mark selected level
     pub contour_selected_linewidth: f64, // zero level linewidth
 
-    // 3d graphs
-    pub d3_row_stride: i32, // row stride
-    pub d3_col_stride: i32, // column stride
-    pub d3_surface: bool,   // generate surface
-    pub d3_wireframe: bool, // generate wireframe
-
     // histograms
     pub histogram_colors: Vec<String>, // colors
     pub histogram_type: String,        // type; e.g. "bar"
@@ -64,6 +58,12 @@ pub struct Arguments {
     pub histogram_no_fill: bool,       // do not fill bars
     pub histogram_number_bins: i32,    // number of bins
     pub histogram_normalized: bool,    // normed
+
+    // 3d graphs
+    pub d3_row_stride: i32, // row stride
+    pub d3_col_stride: i32, // column stride
+    pub d3_surface: bool,   // generate surface
+    pub d3_wireframe: bool, // generate wireframe
 }
 
 impl Arguments {
@@ -107,12 +107,6 @@ impl Arguments {
             legend_coordinates: vec![0.0, 1.02, 1.0, 0.102],
             legend_is_outside: false,
 
-            // 3d graphs
-            d3_row_stride: 0,
-            d3_col_stride: 0,
-            d3_surface: false,
-            d3_wireframe: false,
-
             // contour
             contour_colors: Vec::new(),
             contour_levels: Vec::new(),
@@ -134,6 +128,12 @@ impl Arguments {
             histogram_no_fill: false,
             histogram_number_bins: 0,
             histogram_normalized: false,
+
+            // 3d graphs
+            d3_row_stride: 0,
+            d3_col_stride: 0,
+            d3_surface: false,
+            d3_wireframe: false,
         }
     }
 
@@ -223,14 +223,6 @@ impl Arguments {
             args.push_str(&format!(",levels={}", array2list(&self.contour_levels)));
         }
 
-        // 3d graphs
-        if self.d3_row_stride > 0 {
-            args.push_str(&format!(",rstride={}", self.d3_row_stride));
-        }
-        if self.d3_col_stride > 0 {
-            args.push_str(&format!(",cstride={}", self.d3_col_stride));
-        }
-
         // histograms
         if self.histogram_colors.len() > 0 {
             args.push_str(&format!(",color={}", array2list(&self.histogram_colors)));
@@ -249,6 +241,14 @@ impl Arguments {
         }
         if self.histogram_normalized {
             args.push_str(",normed=True");
+        }
+
+        // 3d graphs
+        if self.d3_row_stride > 0 {
+            args.push_str(&format!(",rstride={}", self.d3_row_stride));
+        }
+        if self.d3_col_stride > 0 {
+            args.push_str(&format!(",cstride={}", self.d3_col_stride));
         }
 
         // done

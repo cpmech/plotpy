@@ -10,8 +10,8 @@ pub trait GraphMaker {
 /// ```
 /// use plotpy::*;
 /// let mut plot = Plot::new();
-/// plot.axes_equal();
-/// plot.axes_range(-1.0, 1.0, 0.0, 2.0);
+/// plot.equal();
+/// plot.range(-1.0, 1.0, 0.0, 2.0);
 /// plot.grid_and_labels("x-label", "y-label");
 /// plot.save("/tmp/plotpy", "example_plot", "svg");
 /// ```
@@ -131,23 +131,23 @@ impl Plot {
     }
 
     /// Sets same scale for both axes
-    pub fn axes_equal(&mut self) {
+    pub fn equal(&mut self) {
         self.buffer.push_str("plt.axis('equal')\n");
     }
 
     /// Hides axes
-    pub fn axes_off(&mut self) {
+    pub fn hide_axes(&mut self) {
         self.buffer.push_str("plt.axis('off')\n");
     }
 
     /// Sets axes limits
-    pub fn axes_range(&mut self, xmin: f64, xmax: f64, ymin: f64, ymax: f64) {
+    pub fn range(&mut self, xmin: f64, xmax: f64, ymin: f64, ymax: f64) {
         self.buffer
             .push_str(&format!("plt.axis([{},{},{},{}])\n", xmin, xmax, ymin, ymax));
     }
 
     /// Sets x and y limits
-    pub fn axes_range_vec(&mut self, lims: &[f64]) {
+    pub fn range_vec(&mut self, lims: &[f64]) {
         self.buffer.push_str(&format!(
             "plt.axis([{},{},{},{}])\n",
             lims[0], lims[1], lims[2], lims[3]
@@ -155,7 +155,7 @@ impl Plot {
     }
 
     /// Sets minimum x
-    pub fn axes_xmin(&mut self, xmin: f64) {
+    pub fn xmin(&mut self, xmin: f64) {
         self.buffer.push_str(&format!(
             "plt.axis([{},plt.axis()[1],plt.axis()[2],plt.axis()[3]])\n",
             xmin
@@ -163,7 +163,7 @@ impl Plot {
     }
 
     /// Sets maximum x
-    pub fn axes_xmax(&mut self, xmax: f64) {
+    pub fn xmax(&mut self, xmax: f64) {
         self.buffer.push_str(&format!(
             "plt.axis([plt.axis()[0],{},plt.axis()[2],plt.axis()[3]])\n",
             xmax
@@ -171,7 +171,7 @@ impl Plot {
     }
 
     /// Sets minimum y
-    pub fn axes_ymin(&mut self, ymin: f64) {
+    pub fn ymin(&mut self, ymin: f64) {
         self.buffer.push_str(&format!(
             "plt.axis([plt.axis()[0],plt.axis()[1],{},plt.axis()[3]])\n",
             ymin
@@ -179,7 +179,7 @@ impl Plot {
     }
 
     /// Sets maximum y
-    pub fn axes_ymax(&mut self, ymax: f64) {
+    pub fn ymax(&mut self, ymax: f64) {
         self.buffer.push_str(&format!(
             "plt.axis([plt.axis()[0],plt.axis()[1],plt.axis()[2],{}])\n",
             ymax
@@ -187,19 +187,19 @@ impl Plot {
     }
 
     /// Sets x-range (i.e. limits)
-    pub fn axes_xrange(&mut self, xmin: f64, xmax: f64) {
+    pub fn xrange(&mut self, xmin: f64, xmax: f64) {
         self.buffer
             .push_str(&format!("plt.axis([{},{},plt.axis()[2],plt.axis()[3]])\n", xmin, xmax));
     }
 
     /// Sets y-range (i.e. limits)
-    pub fn axes_yrange(&mut self, ymin: f64, ymax: f64) {
+    pub fn yrange(&mut self, ymin: f64, ymax: f64) {
         self.buffer
             .push_str(&format!("plt.axis([plt.axis()[0],plt.axis()[1],{},{}])\n", ymin, ymax));
     }
 
     // Sets number of ticks along x
-    pub fn axes_xnticks(&mut self, num: i32) {
+    pub fn xnticks(&mut self, num: i32) {
         if num == 0 {
             self.buffer.push_str("plt.gca().get_xaxis().set_ticks([])\n");
         } else {
@@ -211,7 +211,7 @@ impl Plot {
     }
 
     // Sets number of ticks along y
-    pub fn axes_ynticks(&mut self, num: i32) {
+    pub fn ynticks(&mut self, num: i32) {
         if num == 0 {
             self.buffer.push_str("plt.gca().get_yaxis().set_ticks([])\n");
         } else {
@@ -286,9 +286,9 @@ plt.subplots_adjust(wspace=0.2)
     #[test]
     fn axes_functions_work() {
         let mut plot = Plot::new();
-        plot.axes_equal();
-        plot.axes_off();
-        plot.axes_range(-1.0, 1.0, -1.0, 1.0);
+        plot.equal();
+        plot.hide_axes();
+        plot.range(-1.0, 1.0, -1.0, 1.0);
         let correct = "plt.axis('equal')
 plt.axis('off')
 plt.axis([-1,1,-1,1])

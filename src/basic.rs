@@ -17,7 +17,7 @@ impl Plot {
     ///
     pub fn scatter(&mut self, x: &[f64], y: &[f64], args: &Args) {
         let (sx, sy) = self.write_arrays("x", "y", x, y);
-        let command = format!("plt.scatter({},{}{})\n", sx, sy, args.to_string());
+        let command = format!("plt.scatter({},{}{})\n", sx, sy, args.to_string(false,));
         self.buffer.push_str(&command);
     }
 }
@@ -37,7 +37,7 @@ mod tests {
         plt.scatter(x, y, &args);
         let correct ="x_0=np.array([1.000000000000000,2.000000000000000,3.000000000000000,4.000000000000000,5.000000000000000,],dtype=float)
 y_119=np.array([1.000000000000000,4.000000000000000,9.000000000000000,16.000000000000000,25.000000000000000,],dtype=float)
-plt.scatter(x_0,y_119,color='#b33434',alpha=0.7,linestyle='-',linewidth=3,marker='o')
+plt.scatter(x_0,y_119)
 ";
         assert_eq!(plt.buffer, correct);
     }

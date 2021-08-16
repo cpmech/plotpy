@@ -2,12 +2,38 @@ use super::*;
 use std::path::Path;
 
 pub struct Plot {
+    // options
+    pub option_hide_bottom_border: bool, // hide bottom frame border
+    pub option_hide_left_border: bool,   // hide left frame border
+    pub option_hide_right_border: bool,  // hide right frame border
+    pub option_hide_top_border: bool,    // hide top frame border
+
+    // font sizes
+    pub font_size_labels: f64, // font size for labels
+    pub font_size_legend: f64, // font size for legend
+    pub font_size_x_tick: f64, // font size for x-ticks
+    pub font_size_y_tick: f64, // font size for y-ticks
+
+    // buffer
     pub(crate) buffer: String,
 }
 
 impl Plot {
     pub fn new() -> Self {
         Plot {
+            // options
+            option_hide_bottom_border: true,
+            option_hide_left_border: true,
+            option_hide_right_border: true,
+            option_hide_top_border: true,
+
+            // font sizes
+            font_size_labels: 0.0,
+            font_size_legend: 0.0,
+            font_size_x_tick: 0.0,
+            font_size_y_tick: 0.0,
+
+            // buffer
             buffer: String::new(),
         }
     }

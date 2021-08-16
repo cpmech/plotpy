@@ -7,19 +7,19 @@
 //! let x = &[1.0, 2.0, 3.0, 4.0, 5.0];
 //! let y = &[1.0, 4.0, 9.0, 16.0, 25.0];
 //! let mut plt = Plot::new();
-//! let args = Args::new();
+//! let args = Arguments::new();
 //! plt.scatter(x, y, &args);
 //! plt.save("/tmp/plotpy", "example", "svg");
 //! ```
 
 // modules ////////////////////////////////////////
-mod args;
+mod arguments;
 mod arrays;
 mod basic;
 mod constants;
 mod fileio;
 mod plot;
-pub use crate::args::*;
+pub use crate::arguments::*;
 pub use crate::constants::*;
 pub use crate::fileio::*;
 pub use crate::plot::*;

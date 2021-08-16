@@ -1,4 +1,4 @@
-pub struct Args {
+pub struct Arguments {
     // lines
     pub line_alpha: f64,    // alpha (0, 1]. A<1e-14 => A=1.0
     pub line_color: String, // color
@@ -66,9 +66,9 @@ pub struct Args {
     pub histogram_normalized: bool,    // normed
 }
 
-impl Args {
+impl Arguments {
     pub fn new() -> Self {
-        Args {
+        Arguments {
             // lines
             line_alpha: 0.0,
             line_color: String::new(),
@@ -279,13 +279,13 @@ mod tests {
 
     #[test]
     fn new_args_works() {
-        let style = Args::new();
+        let style = Arguments::new();
         assert_eq!(style.line_color, "");
     }
 
     #[test]
     fn to_string_works() {
-        let mut style = Args::new();
+        let mut style = Arguments::new();
         style.line_alpha = 0.7;
         style.line_color = "#b33434".to_string();
         style.line_style = "-".to_string();

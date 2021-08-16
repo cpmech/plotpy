@@ -107,7 +107,7 @@ impl Plot {
     ///
     pub fn subplot(&mut self, row: i32, col: i32, index: i32) {
         self.buffer
-            .push_str(&format!("plt.subplot({},{},{})\n", row, col, index));
+            .push_str(&format!("\nplt.subplot({},{},{})\n", row, col, index));
     }
 
     /// Sets the horizontal gap between subplots
@@ -276,7 +276,7 @@ mod tests {
         plot.subplot(2, 2, 0);
         plot.subplot_horizontal_gap(0.1);
         plot.subplot_vertical_gap(0.2);
-        let correct = "plt.subplot(2,2,0)
+        let correct = "\nplt.subplot(2,2,0)
 plt.subplots_adjust(hspace=0.1)
 plt.subplots_adjust(wspace=0.2)
 ";

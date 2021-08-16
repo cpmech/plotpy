@@ -13,6 +13,7 @@ def addToEA(obj):
     if obj!=None: EXTRA_ARTISTS.append(obj)
 COLORMAPS = [plt.cm.bwr, plt.cm.RdBu, plt.cm.hsv, plt.cm.jet, plt.cm.terrain, plt.cm.pink, plt.cm.Greys]
 def getCmap(idx): return COLORMAPS[idx % len(COLORMAPS)]
+
 ";
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -23,6 +24,6 @@ mod tests {
 
     #[test]
     fn constants_are_correct() {
-        assert_eq!(PYTHON_HEADER.len(), 534);
+        assert_eq!(PYTHON_HEADER.len(), 535);
     }
 }

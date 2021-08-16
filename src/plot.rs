@@ -198,6 +198,30 @@ impl Plot {
             .push_str(&format!("plt.axis([plt.axis()[0],plt.axis()[1],{},{}])\n", ymin, ymax));
     }
 
+    // Sets number of ticks along x
+    pub fn axes_xnticks(&mut self, num: i32) {
+        if num == 0 {
+            self.buffer.push_str("plt.gca().get_xaxis().set_ticks([])\n");
+        } else {
+            self.buffer.push_str(&format!(
+                "plt.gca().get_xaxis().set_major_locator(tck.MaxNLocator({}))\n",
+                num
+            ));
+        }
+    }
+
+    // Sets number of ticks along y
+    pub fn axes_ynticks(&mut self, num: i32) {
+        if num == 0 {
+            self.buffer.push_str("plt.gca().get_yaxis().set_ticks([])\n");
+        } else {
+            self.buffer.push_str(&format!(
+                "plt.gca().get_yaxis().set_major_locator(tck.MaxNLocator({}))\n",
+                num
+            ));
+        }
+    }
+
     /// Adds x-label
     pub fn xlabel(&mut self, xlabel: &str) {
         self.buffer.push_str(&format!("plt.xlabel(r'{}')\n", xlabel));

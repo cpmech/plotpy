@@ -10,7 +10,8 @@ use super::*;
 /// let y = &[1.0, 4.0, 9.0, 16.0, 25.0];
 /// let mut plot = Plot::new();
 /// let mut scatter = Scatter::new();
-/// scatter.marker_type = "*".to_string();
+/// scatter.line_style = "-".to_string();
+/// scatter.marker_style = "*".to_string();
 /// scatter.draw(x, y);
 /// plot.add(&scatter);
 /// plot.save("/tmp/plotpy", "example_scatter", "svg");
@@ -54,7 +55,7 @@ pub struct Scatter {
     pub marker_size: f64,
 
     /// type, e.g., "o", "+"
-    pub marker_type: String,
+    pub marker_style: String,
 
     // buffer
     pub(crate) buffer: String,
@@ -76,7 +77,7 @@ impl Scatter {
             marker_line_style: String::new(),
             marker_line_width: 0.0,
             marker_size: 0.0,
-            marker_type: String::new(),
+            marker_style: String::new(),
             buffer: String::new(),
         }
     }
@@ -143,8 +144,8 @@ impl Scatter {
         if self.marker_size > 0.0 {
             options.push_str(&format!(",markersize={}", self.marker_size));
         }
-        if self.marker_type != "" {
-            options.push_str(&format!(",marker='{}'", self.marker_type));
+        if self.marker_style != "" {
+            options.push_str(&format!(",marker='{}'", self.marker_style));
         }
 
         options
@@ -178,7 +179,7 @@ mod tests {
         scatter.marker_line_style = "--".to_string();
         scatter.marker_line_width = 1.5;
         scatter.marker_size = 8.0;
-        scatter.marker_type = "o".to_string();
+        scatter.marker_style = "o".to_string();
         let options = scatter.options();
         assert_eq!(
             options,

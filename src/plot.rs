@@ -198,7 +198,13 @@ impl Plot {
             .push_str(&format!("plt.axis([plt.axis()[0],plt.axis()[1],{},{}])\n", ymin, ymax));
     }
 
-    /// Adds grid, labels, and legend
+    /// Adds labels
+    pub fn labels(&mut self, xlabel: &str, ylabel: &str) {
+        self.buffer
+            .push_str(&format!("plt.xlabel(r'{}')\nplt.ylabel(r'{}')\n", xlabel, ylabel,));
+    }
+
+    /// Adds grid and labels
     pub fn grid_and_labels(&mut self, xlabel: &str, ylabel: &str) {
         self.buffer.push_str(&format!(
             "plt.grid(linestyle='--',color='grey',zorder=-1000)\nplt.xlabel(r'{}')\nplt.ylabel(r'{}')\n",

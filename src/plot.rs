@@ -68,12 +68,7 @@ impl Plot {
     /// * `output_dir` - Creates a directory to save the figure, and temporary files
     /// * `filename_key` - The filename without extension
     /// * `filename_ext` - The extension of the filename; e.g., "png" or "svg"
-    pub fn save(
-        &self,
-        output_dir: &str,
-        filename_key: &str,
-        filename_ext: &str,
-    ) -> std::io::Result<String> {
+    pub fn save(&self, output_dir: &str, filename_key: &str, filename_ext: &str) -> std::io::Result<String> {
         // filename
         let ext = filename_ext.replace(".", "");
         let filename_py = format!("{}.py", filename_key);
@@ -94,6 +89,92 @@ impl Plot {
         // done
         Ok("".to_string())
     }
+
+    /// Configures subplots
+    pub fn subplot(&mut self, row: i32, col: i32, index: i32) {
+        self.buffer
+            .push_str(&format!("plt.subplot({},{},{})\n", row, col, index));
+    }
+
+    /// Sets the horizontal gap between subplots
+    pub fn subplot_horizontal_gap(&mut self, value: f64) {
+        self.buffer
+            .push_str(&format!("plt.subplots_adjust(hspace={})\n", value));
+    }
+
+    /// Sets the vertical gap between subplots
+    pub fn subplot_vertical_gap(&mut self, value: f64) {
+        self.buffer
+            .push_str(&format!("plt.subplots_adjust(vspace={})\n", value));
+    }
+
+    // Sets same scale for both axes
+    pub fn axes_equal(&mut self) {
+        self.buffer.push_str("plt.axis('equal')\n");
+    }
+
+    // Hides axes
+    pub fn axes_off(&mut self) {
+        self.buffer.push_str("plt.axis('off')\n");
+    }
+
+    // Sets axes limits
+    pub fn axes_limits(&mut self, xmin: f64, xmax: f64, ymin: f64, ymax: f64) {
+        self.buffer
+            .push_str(&format!("plt.axis([{},{},{},{}])\n", xmin, xmax, ymin, ymax));
+    }
+
+    // Sets x and y limits
+    pub fn axes_limits_vec(&mut self, lims: &[f64]) {
+        self.buffer.push_str(&format!(
+            "plt.axis([{},{},{},{}])\n",
+            lims[0], lims[1], lims[2], lims[3]
+        ));
+    }
+
+    // Sets minimum x
+    pub fn axes_xmin(&mut self, xmin: f64) {
+        self.buffer.push_str(&format!(
+            "plt.axis([{},plt.axis()[1],plt.axis()[2],plt.axis()[3]])\n",
+            xmin
+        ));
+    }
+
+    // Sets maximum x
+    pub fn axes_xmax(&mut self, xmax: f64) {
+        self.buffer.push_str(&format!(
+            "plt.axis([plt.axis()[0],{},plt.axis()[2],plt.axis()[3]])\n",
+            xmax
+        ));
+    }
+
+    // Sets minimum y
+    pub fn axes_ymin(&mut self, ymin: f64) {
+        self.buffer.push_str(&format!(
+            "plt.axis([plt.axis()[0],plt.axis()[1],{},plt.axis()[3]])\n",
+            ymin
+        ));
+    }
+
+    // Sets maximum y
+    pub fn axes_ymax(&mut self, ymax: f64) {
+        self.buffer.push_str(&format!(
+            "plt.axis([plt.axis()[0],plt.axis()[1],plt.axis()[2],{}])\n",
+            ymax
+        ));
+    }
+
+    // Sets x-range (i.e. limits)
+    pub fn axes_xrange(&mut self, xmin: f64, xmax: f64) {
+        self.buffer
+            .push_str(&format!("plt.axis([{},{},plt.axis()[2],plt.axis()[3]])\n", xmin, xmax));
+    }
+
+    // Sets y-range (i.e. limits)
+    pub fn axes_yrange(&mut self, ymin: f64, ymax: f64) {
+        self.buffer
+            .push_str(&format!("plt.axis([plt.axis()[0],plt.axis()[1],{},{}])\n", ymin, ymax));
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -105,12 +186,38 @@ mod tests {
 
     #[test]
     fn new_plot_works() -> Result<(), Box<dyn std::error::Error>> {
-        let plt = Plot::new();
-        assert_eq!(plt.buffer.len(), 0);
-        plt.save("/tmp/plotpy", "test", "svg")?;
+        let plot = Plot::new();
+        assert_eq!(plot.buffer.len(), 0);
+        plot.save("/tmp/plotpy", "test", "svg")?;
         let svg = fs::read_to_string("/tmp/plotpy/test.svg")?;
         let lines = svg.lines().collect::<Vec<_>>();
         assert_eq!(lines.len(), 33);
         Ok(())
+    }
+
+    #[test]
+    fn subplot_functions_work() {
+        let mut plot = Plot::new();
+        plot.subplot(2, 2, 0);
+        plot.subplot_horizontal_gap(0.1);
+        plot.subplot_vertical_gap(0.2);
+        let correct = "plt.subplot(2,2,0)
+plt.subplots_adjust(hspace=0.1)
+plt.subplots_adjust(vspace=0.2)
+";
+        assert_eq!(plot.buffer, correct);
+    }
+
+    #[test]
+    fn axes_functions_work() {
+        let mut plot = Plot::new();
+        plot.axes_equal();
+        plot.axes_off();
+        plot.axes_limits(-1.0, 1.0, -1.0, 1.0);
+        let correct = "plt.axis('equal')
+plt.axis('off')
+plt.axis([-1,1,-1,1])
+";
+        assert_eq!(plot.buffer, correct);
     }
 }

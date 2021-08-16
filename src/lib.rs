@@ -7,9 +7,13 @@
 //! let x = &[1.0, 2.0, 3.0, 4.0, 5.0];
 //! let y = &[1.0, 4.0, 9.0, 16.0, 25.0];
 //! let mut plot = Plot::new();
+//! let mut curve = Curve::new();
 //! let mut scatter = Scatter::new();
-//! scatter.marker_type = "*".to_string();
-//! scatter.draw(x, y);
+//! curve.line_style = "--".to_string();
+//! scatter.marker_style = "*".to_string();
+//! curve.draw(x, y);
+//! scatter.draw(y, x);
+//! plot.add(&curve);
 //! plot.add(&scatter);
 //! plot.save("/tmp/plotpy", "example", "svg");
 //! ```
@@ -27,6 +31,7 @@
 // modules ////////////////////////////////////////
 mod constants;
 mod contour;
+mod curve;
 mod fileio;
 mod graph3d;
 mod histogram;
@@ -38,6 +43,7 @@ mod text;
 mod util;
 pub use crate::constants::*;
 pub use crate::contour::*;
+pub use crate::curve::*;
 use crate::fileio::*;
 pub use crate::graph3d::*;
 pub use crate::histogram::*;

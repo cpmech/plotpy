@@ -15,6 +15,7 @@
 //! scatter.draw(y, x);
 //! plot.add(&curve);
 //! plot.add(&scatter);
+//! plot.add_grid_and_labels("x-label", "y-label");
 //! plot.save("/tmp/plotpy", "example", "svg");
 //! ```
 //!

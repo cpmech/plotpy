@@ -6,6 +6,18 @@ pub trait GraphMaker {
 }
 
 /// Driver structure that calls Python
+///
+/// ```
+/// use plotpy::*;
+/// let x = &[1.0, 2.0, 3.0, 4.0, 5.0];
+/// let y = &[1.0, 4.0, 9.0, 16.0, 25.0];
+/// let mut plot = Plot::new();
+/// plot.axes_equal();
+/// plot.axes_range(-1.0, 1.0, 0.0, 2.0);
+/// plot.add_grid_and_labels("x-label", "y-label");
+/// plot.save("/tmp/plotpy", "example_plot", "svg");
+/// ```
+///
 pub struct Plot {
     /// hide bottom frame border
     pub option_hide_bottom_border: bool,
@@ -108,31 +120,31 @@ impl Plot {
             .push_str(&format!("plt.subplots_adjust(vspace={})\n", value));
     }
 
-    // Sets same scale for both axes
+    /// Sets same scale for both axes
     pub fn axes_equal(&mut self) {
         self.buffer.push_str("plt.axis('equal')\n");
     }
 
-    // Hides axes
+    /// Hides axes
     pub fn axes_off(&mut self) {
         self.buffer.push_str("plt.axis('off')\n");
     }
 
-    // Sets axes limits
-    pub fn axes_limits(&mut self, xmin: f64, xmax: f64, ymin: f64, ymax: f64) {
+    /// Sets axes limits
+    pub fn axes_range(&mut self, xmin: f64, xmax: f64, ymin: f64, ymax: f64) {
         self.buffer
             .push_str(&format!("plt.axis([{},{},{},{}])\n", xmin, xmax, ymin, ymax));
     }
 
-    // Sets x and y limits
-    pub fn axes_limits_vec(&mut self, lims: &[f64]) {
+    /// Sets x and y limits
+    pub fn axes_range_vec(&mut self, lims: &[f64]) {
         self.buffer.push_str(&format!(
             "plt.axis([{},{},{},{}])\n",
             lims[0], lims[1], lims[2], lims[3]
         ));
     }
 
-    // Sets minimum x
+    /// Sets minimum x
     pub fn axes_xmin(&mut self, xmin: f64) {
         self.buffer.push_str(&format!(
             "plt.axis([{},plt.axis()[1],plt.axis()[2],plt.axis()[3]])\n",
@@ -140,7 +152,7 @@ impl Plot {
         ));
     }
 
-    // Sets maximum x
+    /// Sets maximum x
     pub fn axes_xmax(&mut self, xmax: f64) {
         self.buffer.push_str(&format!(
             "plt.axis([plt.axis()[0],{},plt.axis()[2],plt.axis()[3]])\n",
@@ -148,7 +160,7 @@ impl Plot {
         ));
     }
 
-    // Sets minimum y
+    /// Sets minimum y
     pub fn axes_ymin(&mut self, ymin: f64) {
         self.buffer.push_str(&format!(
             "plt.axis([plt.axis()[0],plt.axis()[1],{},plt.axis()[3]])\n",
@@ -156,7 +168,7 @@ impl Plot {
         ));
     }
 
-    // Sets maximum y
+    /// Sets maximum y
     pub fn axes_ymax(&mut self, ymax: f64) {
         self.buffer.push_str(&format!(
             "plt.axis([plt.axis()[0],plt.axis()[1],plt.axis()[2],{}])\n",
@@ -164,16 +176,29 @@ impl Plot {
         ));
     }
 
-    // Sets x-range (i.e. limits)
+    /// Sets x-range (i.e. limits)
     pub fn axes_xrange(&mut self, xmin: f64, xmax: f64) {
         self.buffer
             .push_str(&format!("plt.axis([{},{},plt.axis()[2],plt.axis()[3]])\n", xmin, xmax));
     }
 
-    // Sets y-range (i.e. limits)
+    /// Sets y-range (i.e. limits)
     pub fn axes_yrange(&mut self, ymin: f64, ymax: f64) {
         self.buffer
             .push_str(&format!("plt.axis([plt.axis()[0],plt.axis()[1],{},{}])\n", ymin, ymax));
+    }
+
+    /// Adds grid, labels, and legend
+    pub fn add_grid_and_labels(&mut self, xlabel: &str, ylabel: &str) {
+        self.buffer.push_str(&format!(
+            "plt.grid(linestyle='--',color='grey',zorder=-1000)\nplt.xlabel(r'{}')\nplt.ylabel(r'{}')\n",
+            xlabel, ylabel,
+        ));
+    }
+
+    /// Clears current figure
+    pub fn clear_current_figure(&mut self) {
+        self.buffer.push_str("plt.clf()\n");
     }
 }
 

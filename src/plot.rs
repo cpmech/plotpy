@@ -12,7 +12,7 @@ pub trait GraphMaker {
 /// let mut plot = Plot::new();
 /// plot.axes_equal();
 /// plot.axes_range(-1.0, 1.0, 0.0, 2.0);
-/// plot.add_grid_and_labels("x-label", "y-label");
+/// plot.grid_and_labels("x-label", "y-label");
 /// plot.save("/tmp/plotpy", "example_plot", "svg");
 /// ```
 ///
@@ -191,7 +191,7 @@ impl Plot {
     }
 
     /// Adds grid, labels, and legend
-    pub fn add_grid_and_labels(&mut self, xlabel: &str, ylabel: &str) {
+    pub fn grid_and_labels(&mut self, xlabel: &str, ylabel: &str) {
         self.buffer.push_str(&format!(
             "plt.grid(linestyle='--',color='grey',zorder=-1000)\nplt.xlabel(r'{}')\nplt.ylabel(r'{}')\n",
             xlabel, ylabel,

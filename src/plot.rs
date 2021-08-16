@@ -9,8 +9,6 @@ pub trait GraphMaker {
 ///
 /// ```
 /// use plotpy::*;
-/// let x = &[1.0, 2.0, 3.0, 4.0, 5.0];
-/// let y = &[1.0, 4.0, 9.0, 16.0, 25.0];
 /// let mut plot = Plot::new();
 /// plot.axes_equal();
 /// plot.axes_range(-1.0, 1.0, 0.0, 2.0);

@@ -10,6 +10,14 @@ Documentation:
 
 ## Installation
 
+### 1 Install Matplotlib
+
+```bash
+sudo apt-get install python3-matplotlib
+```
+
+### 2 Configure Cargo.toml
+
 Add the following lines to Cargo.toml:
 
 ```toml

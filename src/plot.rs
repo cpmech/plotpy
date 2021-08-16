@@ -1,9 +1,12 @@
 use super::*;
 use std::path::Path;
 
+pub trait GraphMaker {
+    fn get_buffer<'a>(&'a self) -> &'a String;
+}
+
 /// Driver structure that calls Python
 pub struct Plot {
-    // options ///////////////////////////////
     /// hide bottom frame border
     pub option_hide_bottom_border: bool,
 
@@ -16,7 +19,6 @@ pub struct Plot {
     /// hide top frame border
     pub option_hide_top_border: bool,
 
-    // font sizes ///////////////////////////
     /// font size for labels
     pub font_size_labels: f64,
 
@@ -34,6 +36,7 @@ pub struct Plot {
 }
 
 impl Plot {
+    /// Creates new Plot object
     pub fn new() -> Self {
         Plot {
             // options
@@ -51,6 +54,11 @@ impl Plot {
             // buffer
             buffer: String::new(),
         }
+    }
+
+    /// Adds new graph entity
+    pub fn add(&mut self, graph: &dyn GraphMaker) {
+        self.buffer.push_str(graph.get_buffer());
     }
 
     /// Saves figure to disk

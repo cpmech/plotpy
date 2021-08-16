@@ -6,30 +6,44 @@
 //! use plotpy::*;
 //! let x = &[1.0, 2.0, 3.0, 4.0, 5.0];
 //! let y = &[1.0, 4.0, 9.0, 16.0, 25.0];
-//! let mut plt = Plot::new();
-//! let options = Options::new();
-//! plt.scatter(x, y, &options);
-//! plt.save("/tmp/plotpy", "example", "svg");
+//! let mut plot = Plot::new();
+//! let mut scatter = Scatter::new();
+//! scatter.marker_type = "*".to_string();
+//! scatter.draw(x, y);
+//! plot.add(&scatter);
+//! plot.save("/tmp/plotpy", "example", "svg");
 //! ```
 //!
 //! # Todo
 //!
-//! - [ ] Test shapes options
-//! - [ ] Test text options
-//! - [ ] Test legend options
-//! - [ ] Test contour options
-//! - [ ] Test histogram options
-//! - [ ] Test 3D graphs options
+//! - [ ] Test Contour
+//! - [ ] Test Graphs3d
+//! - [ ] Test Histogram
+//! - [ ] Test Legend
+//! - [ ] Test Shapes
+//! - [ ] Test Text
 //!
 
 // modules ////////////////////////////////////////
-mod arrays;
-mod basic;
 mod constants;
+mod contour;
 mod fileio;
-mod options;
+mod graph3d;
+mod histogram;
+mod legend;
 mod plot;
+mod scatter;
+mod shapes;
+mod text;
+mod util;
 pub use crate::constants::*;
-pub use crate::fileio::*;
-pub use crate::options::*;
+pub use crate::contour::*;
+use crate::fileio::*;
+pub use crate::graph3d::*;
+pub use crate::histogram::*;
+pub use crate::legend::*;
 pub use crate::plot::*;
+pub use crate::scatter::*;
+pub use crate::shapes::*;
+pub use crate::text::*;
+use crate::util::*;

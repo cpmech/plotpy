@@ -122,6 +122,12 @@ impl Plot {
             .push_str(&format!("plt.subplots_adjust(wspace={})\n", value));
     }
 
+    /// Sets the horizontal and vertical gap between subplots
+    pub fn subplot_gap(&mut self, value: f64) {
+        self.buffer
+            .push_str(&format!("plt.subplots_adjust(hspace={},wspace={})\n", value, value));
+    }
+
     /// Sets same scale for both axes
     pub fn axes_equal(&mut self) {
         self.buffer.push_str("plt.axis('equal')\n");

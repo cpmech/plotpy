@@ -1,5 +1,5 @@
 /// Many options that can be passed to Matplotlib
-pub struct Arguments {
+pub struct Options {
     // lines
     pub line_alpha: f64,    // alpha (0, 1]. A<1e-14 => A=1.0
     pub line_color: String, // color
@@ -67,9 +67,9 @@ pub struct Arguments {
     pub d3_wireframe: bool, // generate wireframe
 }
 
-impl Arguments {
+impl Options {
     pub fn new() -> Self {
-        Arguments {
+        Options {
             // lines
             line_alpha: 0.0,
             line_color: String::new(),
@@ -149,111 +149,111 @@ impl Arguments {
         };
 
         // output
-        let mut args = String::new();
+        let mut options = String::new();
 
         // lines
         if self.line_alpha > 0.0 {
-            args.push_str(&format!(",alpha={}", self.line_alpha));
+            options.push_str(&format!(",alpha={}", self.line_alpha));
         }
         if line_color != "" {
-            args.push_str(&format!(",color='{}'", line_color));
+            options.push_str(&format!(",color='{}'", line_color));
         }
         if self.line_style != "" {
-            args.push_str(&format!(",linestyle='{}'", self.line_style));
+            options.push_str(&format!(",linestyle='{}'", self.line_style));
         }
         if self.line_width > 0.0 {
-            args.push_str(&format!(",linewidth={}", self.line_width));
+            options.push_str(&format!(",linewidth={}", self.line_width));
         }
 
         // markers
         if self.marker_alpha > 0.0 {
-            args.push_str(&format!(",markeralpha={}", self.marker_alpha));
+            options.push_str(&format!(",markeralpha={}", self.marker_alpha));
         }
         if self.marker_color != "" {
-            args.push_str(&format!(",markerfacecolor='{}'", self.marker_color));
+            options.push_str(&format!(",markerfacecolor='{}'", self.marker_color));
         }
         if self.marker_every > 0 {
-            args.push_str(&format!(",markevery={}", self.marker_every));
+            options.push_str(&format!(",markevery={}", self.marker_every));
         }
         if self.marker_is_void {
-            args.push_str(",markerfacecolor='none'");
+            options.push_str(",markerfacecolor='none'");
         }
         if self.marker_line_color != "" {
-            args.push_str(&format!(",markeredgecolor='{}'", self.marker_line_color));
+            options.push_str(&format!(",markeredgecolor='{}'", self.marker_line_color));
         }
         if self.marker_line_style != "" {
-            args.push_str(&format!(",markerlinestyle='{}'", self.marker_line_style));
+            options.push_str(&format!(",markerlinestyle='{}'", self.marker_line_style));
         }
         if self.marker_line_width > 0.0 {
-            args.push_str(&format!(",markeredgewidth={}", self.marker_line_width));
+            options.push_str(&format!(",markeredgewidth={}", self.marker_line_width));
         }
         if self.marker_size > 0.0 {
-            args.push_str(&format!(",markersize={}", self.marker_size));
+            options.push_str(&format!(",markersize={}", self.marker_size));
         }
         if self.marker_type != "" {
-            args.push_str(&format!(",marker='{}'", self.marker_type));
+            options.push_str(&format!(",marker='{}'", self.marker_type));
         }
 
         // shapes
         if self.shape_edge_color != "" {
-            args.push_str(&format!(",edgecolor='{}'", self.shape_edge_color));
+            options.push_str(&format!(",edgecolor='{}'", self.shape_edge_color));
         }
         if self.shape_face_color != "" {
-            args.push_str(&format!(",facecolor='{}'", self.shape_face_color));
+            options.push_str(&format!(",facecolor='{}'", self.shape_face_color));
         }
 
         // text
         if self.text_alignment_horizontal != "" {
-            args.push_str(&format!(",ha='{}'", self.text_alignment_horizontal));
+            options.push_str(&format!(",ha='{}'", self.text_alignment_horizontal));
         }
         if self.text_alignment_vertical != "" {
-            args.push_str(&format!(",va='{}'", self.text_alignment_vertical));
+            options.push_str(&format!(",va='{}'", self.text_alignment_vertical));
         }
         if self.text_rotation > 0.0 {
-            args.push_str(&format!(",rotation={}", self.text_rotation));
+            options.push_str(&format!(",rotation={}", self.text_rotation));
         }
         if self.text_font_size > 0.0 {
-            args.push_str(&format!(",fontsize={}", self.text_font_size));
+            options.push_str(&format!(",fontsize={}", self.text_font_size));
         }
 
         // contour
         if self.contour_colors.len() > 0 {
-            args.push_str(&format!(",colors={}", array2list(&self.contour_colors)));
+            options.push_str(&format!(",colors={}", array2list(&self.contour_colors)));
         }
         if self.contour_levels.len() > 0 {
-            args.push_str(&format!(",levels={}", array2list(&self.contour_levels)));
+            options.push_str(&format!(",levels={}", array2list(&self.contour_levels)));
         }
 
         // histograms
         if self.histogram_colors.len() > 0 {
-            args.push_str(&format!(",color={}", array2list(&self.histogram_colors)));
+            options.push_str(&format!(",color={}", array2list(&self.histogram_colors)));
         }
         if self.histogram_type != "" {
-            args.push_str(&format!(",histtype='{}'", self.histogram_type));
+            options.push_str(&format!(",histtype='{}'", self.histogram_type));
         }
         if self.histogram_stacked {
-            args.push_str(",stacked=True");
+            options.push_str(",stacked=True");
         }
         if self.histogram_no_fill {
-            args.push_str(",fill=False");
+            options.push_str(",fill=False");
         }
         if self.histogram_number_bins > 0 {
-            args.push_str(&format!(",bins={}", self.histogram_number_bins));
+            options.push_str(&format!(",bins={}", self.histogram_number_bins));
         }
         if self.histogram_normalized {
-            args.push_str(",normed=True");
+            options.push_str(",normed=True");
         }
 
         // 3d graphs
         if self.d3_row_stride > 0 {
-            args.push_str(&format!(",rstride={}", self.d3_row_stride));
+            options.push_str(&format!(",rstride={}", self.d3_row_stride));
         }
         if self.d3_col_stride > 0 {
-            args.push_str(&format!(",cstride={}", self.d3_col_stride));
+            options.push_str(&format!(",cstride={}", self.d3_col_stride));
         }
 
         // done
-        args
+        options
     }
 }
 
@@ -279,30 +279,30 @@ mod tests {
     use super::*;
 
     #[test]
-    fn new_args_works() {
-        let style = Arguments::new();
-        assert_eq!(style.line_color, "");
+    fn new_options_works() {
+        let options = Options::new();
+        assert_eq!(options.line_color, "");
     }
 
     #[test]
     fn to_string_works() {
-        let mut style = Arguments::new();
-        style.line_alpha = 0.7;
-        style.line_color = "#b33434".to_string();
-        style.line_style = "-".to_string();
-        style.line_width = 3.0;
-        style.marker_alpha = 0.5;
-        style.marker_color = "#4c4deb".to_string();
-        style.marker_every = 2;
-        style.marker_is_void = false;
-        style.marker_line_color = "blue".to_string();
-        style.marker_line_style = "--".to_string();
-        style.marker_line_width = 1.5;
-        style.marker_size = 8.0;
-        style.marker_type = "o".to_string();
-        let args = style.to_string(false);
+        let mut options = Options::new();
+        options.line_alpha = 0.7;
+        options.line_color = "#b33434".to_string();
+        options.line_style = "-".to_string();
+        options.line_width = 3.0;
+        options.marker_alpha = 0.5;
+        options.marker_color = "#4c4deb".to_string();
+        options.marker_every = 2;
+        options.marker_is_void = false;
+        options.marker_line_color = "blue".to_string();
+        options.marker_line_style = "--".to_string();
+        options.marker_line_width = 1.5;
+        options.marker_size = 8.0;
+        options.marker_type = "o".to_string();
+        let options_string = options.to_string(false);
         assert_eq!(
-            args,
+            options_string,
             "\
             ,alpha=0.7\
             ,color='#b33434'\

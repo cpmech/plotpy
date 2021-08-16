@@ -230,7 +230,7 @@ mod tests {
         plot.subplot_vertical_gap(0.2);
         let correct = "plt.subplot(2,2,0)
 plt.subplots_adjust(hspace=0.1)
-plt.subplots_adjust(vspace=0.2)
+plt.subplots_adjust(wspace=0.2)
 ";
         assert_eq!(plot.buffer, correct);
     }

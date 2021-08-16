@@ -119,7 +119,7 @@ impl Plot {
     /// Sets the vertical gap between subplots
     pub fn subplot_vertical_gap(&mut self, value: f64) {
         self.buffer
-            .push_str(&format!("plt.subplots_adjust(vspace={})\n", value));
+            .push_str(&format!("plt.subplots_adjust(wspace={})\n", value));
     }
 
     /// Sets same scale for both axes

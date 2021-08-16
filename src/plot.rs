@@ -98,6 +98,13 @@ impl Plot {
     }
 
     /// Configures subplots
+    ///
+    /// # Arguments
+    ///
+    /// * `row` - number of rows in the subplot grid
+    /// * `col` - number of columns in the subplot grid
+    /// * `index` - activate current subplot; indices start at one [1-based]
+    ///
     pub fn subplot(&mut self, row: i32, col: i32, index: i32) {
         self.buffer
             .push_str(&format!("plt.subplot({},{},{})\n", row, col, index));

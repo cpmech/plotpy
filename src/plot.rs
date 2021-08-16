@@ -86,18 +86,15 @@ impl Plot {
         let filepath_fig = Path::new(output_dir).join(filename_fig);
 
         // update commands
+        let path = filepath_fig.to_string_lossy();
         let commands = format!(
-            "{}\nfn='{}'\nplt.savefig(fn, bbox_inches='tight', bbox_extra_artists=EXTRA_ARTISTS)\nprint(f'figure {{fn}} created',fn)\n",
+            "{}\nfn='{}'\nplt.savefig(fn, bbox_inches='tight', bbox_extra_artists=EXTRA_ARTISTS)\nprint('figure {} created')\n",
             self.buffer,
-            filepath_fig.to_string_lossy(),
+            path, path,
         );
 
         // call python
-        let output = call_python3(&commands, output_dir, &filename_py)?;
-        println!("{}", output);
-
-        // done
-        Ok("".to_string())
+        call_python3(&commands, output_dir, &filename_py)
     }
 
     /// Configures subplots
@@ -236,7 +233,7 @@ plt.subplots_adjust(vspace=0.2)
         let mut plot = Plot::new();
         plot.axes_equal();
         plot.axes_off();
-        plot.axes_limits(-1.0, 1.0, -1.0, 1.0);
+        plot.axes_range(-1.0, 1.0, -1.0, 1.0);
         let correct = "plt.axis('equal')
 plt.axis('off')
 plt.axis([-1,1,-1,1])

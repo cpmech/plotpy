@@ -17,15 +17,7 @@ use std::process::Command;
 ///
 /// The contents of PYTHON_HEADER are added at the beginning of the file.
 ///
-/// # Examples
-///
-/// ```
-/// use plotpy::*;
-/// let res = call_python3("print(\"Hello World!\")", "/tmp/plotpy", "commands.py").unwrap();
-/// assert_eq!(res, "Hello World!\n".to_string());
-/// ```
-///
-pub fn call_python3(
+pub(crate) fn call_python3(
     python_commands: &str,
     output_dir: &str,
     filename_py: &str,

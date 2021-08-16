@@ -1,15 +1,64 @@
 use super::*;
 use std::path::Path;
 
+pub trait GraphMaker {
+    fn get_buffer<'a>(&'a self) -> &'a String;
+}
+
+/// Driver structure that calls Python
 pub struct Plot {
+    /// hide bottom frame border
+    pub option_hide_bottom_border: bool,
+
+    /// hide left frame border
+    pub option_hide_left_border: bool,
+
+    /// hide right frame border
+    pub option_hide_right_border: bool,
+
+    /// hide top frame border
+    pub option_hide_top_border: bool,
+
+    /// font size for labels
+    pub font_size_labels: f64,
+
+    /// font size for legend
+    pub font_size_legend: f64,
+
+    /// font size for x-ticks
+    pub font_size_x_tick: f64,
+
+    /// font size for y-ticks
+    pub font_size_y_tick: f64,
+
+    // buffer
     pub(crate) buffer: String,
 }
 
 impl Plot {
+    /// Creates new Plot object
     pub fn new() -> Self {
         Plot {
+            // options
+            option_hide_bottom_border: true,
+            option_hide_left_border: true,
+            option_hide_right_border: true,
+            option_hide_top_border: true,
+
+            // font sizes
+            font_size_labels: 0.0,
+            font_size_legend: 0.0,
+            font_size_x_tick: 0.0,
+            font_size_y_tick: 0.0,
+
+            // buffer
             buffer: String::new(),
         }
+    }
+
+    /// Adds new graph entity
+    pub fn add(&mut self, graph: &dyn GraphMaker) {
+        self.buffer.push_str(graph.get_buffer());
     }
 
     /// Saves figure to disk

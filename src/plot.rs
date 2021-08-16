@@ -1,18 +1,33 @@
 use super::*;
 use std::path::Path;
 
+/// Driver structure that calls Python
 pub struct Plot {
-    // options
-    pub option_hide_bottom_border: bool, // hide bottom frame border
-    pub option_hide_left_border: bool,   // hide left frame border
-    pub option_hide_right_border: bool,  // hide right frame border
-    pub option_hide_top_border: bool,    // hide top frame border
+    // options ///////////////////////////////
+    /// hide bottom frame border
+    pub option_hide_bottom_border: bool,
 
-    // font sizes
-    pub font_size_labels: f64, // font size for labels
-    pub font_size_legend: f64, // font size for legend
-    pub font_size_x_tick: f64, // font size for x-ticks
-    pub font_size_y_tick: f64, // font size for y-ticks
+    /// hide left frame border
+    pub option_hide_left_border: bool,
+
+    /// hide right frame border
+    pub option_hide_right_border: bool,
+
+    /// hide top frame border
+    pub option_hide_top_border: bool,
+
+    // font sizes ///////////////////////////
+    /// font size for labels
+    pub font_size_labels: f64,
+
+    /// font size for legend
+    pub font_size_legend: f64,
+
+    /// font size for x-ticks
+    pub font_size_x_tick: f64,
+
+    /// font size for y-ticks
+    pub font_size_y_tick: f64,
 
     // buffer
     pub(crate) buffer: String,

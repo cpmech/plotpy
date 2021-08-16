@@ -1,3 +1,4 @@
+/// Many options that can be passed to Matplotlib
 pub struct Arguments {
     // lines
     pub line_alpha: f64,    // alpha (0, 1]. A<1e-14 => A=1.0

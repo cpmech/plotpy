@@ -1,5 +1,6 @@
 use super::*;
 
+/// Generates a contour plot
 pub struct Contour {
     pub colors: Vec<String>,     // colors
     pub levels: Vec<f64>,        // levels (may be nil)

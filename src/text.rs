@@ -1,5 +1,6 @@
 use super::*;
 
+/// Creates text to be added to a plot
 pub struct Text {
     pub alignment_horizontal: String, // e.g., 'center'
     pub alignment_vertical: String,   // e.g., 'center'

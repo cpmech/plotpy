@@ -1,5 +1,6 @@
 use super::*;
 
+/// Creates a legend to be added to the plot
 pub struct Legend {
     pub show_frame: bool,      // show frame around legend
     pub length_indicator: f64, // length of legend's indicator line

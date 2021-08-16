@@ -1,5 +1,6 @@
 use super::*;
 
+/// Generates a 3D graph: surface or wireframe, or both
 pub struct Graph3d {
     pub row_stride: i32, // row stride
     pub col_stride: i32, // column stride

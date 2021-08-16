@@ -1,5 +1,6 @@
 use super::*;
 
+/// Generates a Histogram plot
 pub struct Histogram {
     pub colors: Vec<String>, // colors
     pub style: String,       // type; e.g. "bar"

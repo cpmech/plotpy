@@ -1,5 +1,6 @@
 use super::*;
 
+/// Draw polygonal shapes
 pub struct Shapes {
     pub edge_color: String, // edge color
     pub face_color: String, // face color

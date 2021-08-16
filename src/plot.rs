@@ -123,9 +123,11 @@ impl Plot {
     }
 
     /// Sets the horizontal and vertical gap between subplots
-    pub fn subplot_gap(&mut self, value: f64) {
-        self.buffer
-            .push_str(&format!("plt.subplots_adjust(hspace={},wspace={})\n", value, value));
+    pub fn subplot_gap(&mut self, horizontal: f64, vertical: f64) {
+        self.buffer.push_str(&format!(
+            "plt.subplots_adjust(hspace={},wspace={})\n",
+            horizontal, vertical
+        ));
     }
 
     /// Sets same scale for both axes

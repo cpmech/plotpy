@@ -198,10 +198,20 @@ impl Plot {
             .push_str(&format!("plt.axis([plt.axis()[0],plt.axis()[1],{},{}])\n", ymin, ymax));
     }
 
+    /// Adds x-label
+    pub fn xlabel(&mut self, xlabel: &str) {
+        self.buffer.push_str(&format!("plt.xlabel(r'{}')\n", xlabel));
+    }
+
+    /// Adds y-label
+    pub fn ylabel(&mut self, ylabel: &str) {
+        self.buffer.push_str(&format!("plt.ylabel(r'{}')\n", ylabel));
+    }
+
     /// Adds labels
     pub fn labels(&mut self, xlabel: &str, ylabel: &str) {
         self.buffer
-            .push_str(&format!("plt.xlabel(r'{}')\nplt.ylabel(r'{}')\n", xlabel, ylabel,));
+            .push_str(&format!("plt.xlabel(r'{}')\nplt.ylabel(r'{}')\n", xlabel, ylabel));
     }
 
     /// Adds grid and labels

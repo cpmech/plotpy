@@ -93,8 +93,8 @@ impl Curve {
     /// * `y` - ordinate array
     ///
     pub fn draw(&mut self, x: &[f64], y: &[f64]) {
-        let (sx, sy) = write_arrays(&mut self.buffer, "x", "y", x, y);
-        let command = format!("plt.plot({},{}{})\n", sx, sy, self.options());
+        write_arrays(&mut self.buffer, "x", "y", x, y);
+        let command = format!("plt.plot(x,y{})\n", self.options());
         self.buffer.push_str(&command);
     }
 
@@ -210,9 +210,9 @@ mod tests {
         let y = &[1.0, 4.0, 9.0, 16.0, 25.0];
         let mut curve = Curve::new();
         curve.draw(x, y);
-        let correct ="x_0=np.array([1.000000000000000,2.000000000000000,3.000000000000000,4.000000000000000,5.000000000000000,],dtype=float)
-y_119=np.array([1.000000000000000,4.000000000000000,9.000000000000000,16.000000000000000,25.000000000000000,],dtype=float)
-plt.plot(x_0,y_119)
+        let correct ="x=np.array([1.000000000000000,2.000000000000000,3.000000000000000,4.000000000000000,5.000000000000000,],dtype=float)
+y=np.array([1.000000000000000,4.000000000000000,9.000000000000000,16.000000000000000,25.000000000000000,],dtype=float)
+plt.plot(x,y)
 ";
         assert_eq!(curve.buffer, correct);
     }

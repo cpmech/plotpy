@@ -31,6 +31,8 @@
 //! }
 //! ```
 //!
+//! ![example_main.svg](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/example_main.svg)
+//!
 //! # Todo
 //!
 //! - [ ] Test Contour

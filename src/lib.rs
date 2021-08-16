@@ -4,18 +4,31 @@
 //!
 //! ```
 //! use plotpy::*;
-//! let x = &[1.0, 2.0, 3.0, 4.0, 5.0];
-//! let y = &[1.0, 4.0, 9.0, 16.0, 25.0];
-//! let mut plot = Plot::new();
-//! let mut curve = Curve::new();
-//! let mut scatter = Scatter::new();
-//! curve.line_style = "--".to_string();
-//! scatter.marker_style = "*".to_string();
-//! curve.draw(x, y);
-//! scatter.draw(y, x);
-//! plot.add(&curve);
-//! plot.add(&scatter);
-//! plot.save("/tmp/plotpy", "example", "svg");
+//!
+//! fn main() -> Result<(), Box<dyn std::error::Error>> {
+//!     let x = &[1.0, 2.0, 3.0, 4.0, 5.0];
+//!     let y = &[1.0, 4.0, 9.0, 16.0, 25.0];
+//!     let mut curve = Curve::new();
+//!     curve.draw(x, y);
+//!
+//!     let mut plot = Plot::new();
+//!     plot.subplot(2, 2, 1);
+//!     plot.add(&curve);
+//!
+//!     plot.subplot(2, 2, 2);
+//!     plot.add(&curve);
+//!
+//!     plot.subplot(2, 2, 3);
+//!     plot.add(&curve);
+//!
+//!     plot.subplot(2, 2, 4);
+//!     plot.add(&curve);
+//!     plot.grid_and_labels("x", "y");
+//!
+//!     let message = plot.save("/tmp/plotpy", "example_main", "svg")?;
+//!     println!("{}", message);
+//!     Ok(())
+//! }
 //! ```
 //!
 //! # Todo

@@ -17,11 +17,7 @@ use std::process::Command;
 ///
 /// The contents of PYTHON_HEADER are added at the beginning of the file.
 ///
-pub(crate) fn call_python3(
-    python_commands: &str,
-    output_dir: &str,
-    filename_py: &str,
-) -> std::io::Result<String> {
+pub(crate) fn call_python3(python_commands: &str, output_dir: &str, filename_py: &str) -> std::io::Result<String> {
     // create directory
     fs::create_dir_all(output_dir)?;
 

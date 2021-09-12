@@ -5,6 +5,7 @@
     "**/Cargo.lock": true
   },
   "cSpell.words": [
+    "bbox",
     "COLORMAPS",
     "contourf",
     "dtype",
@@ -22,6 +23,7 @@
     "numpy",
     "patheffects",
     "pyplot",
+    "savefig",
     "toolkits",
     "wspace"
   ]

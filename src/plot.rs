@@ -8,14 +8,14 @@ pub trait GraphMaker {
 /// Driver structure that calls Python
 ///
 /// ```
+/// use std::path::Path;
 /// use plotpy::*;
 /// let mut plot = Plot::new();
 /// plot.equal();
 /// plot.range(-1.0, 1.0, 0.0, 2.0);
 /// plot.grid_and_labels("x-label", "y-label");
-/// plot.save("/tmp/plotpy", "example_plot", "svg");
+/// plot.save(&Path::new("/tmp/plotpy/doc_tests").join("example.svg"));
 /// ```
-///
 pub struct Plot {
     /// hide bottom frame border
     pub option_hide_bottom_border: bool,
@@ -71,30 +71,19 @@ impl Plot {
         self.buffer.push_str(graph.get_buffer());
     }
 
-    /// Saves figure to disk
-    ///
-    /// # Arguments
-    ///
-    /// * `output_dir` - Creates a directory to save the figure, and temporary files
-    /// * `filename_key` - The filename without extension
-    /// * `filename_ext` - The extension of the filename; e.g., "png" or "svg"
-    pub fn save(&self, output_dir: &str, filename_key: &str, filename_ext: &str) -> Result<String, &'static str> {
-        // filename
-        let ext = filename_ext.replace(".", "");
-        let filename_py = format!("{}.py", filename_key);
-        let filename_fig = format!("{}.{}", filename_key, ext);
-        let filepath_fig = Path::new(output_dir).join(filename_fig);
-
+    /// Calls python3 and saves the python script and figure
+    pub fn save(&self, figure_path: &Path) -> Result<String, &'static str> {
         // update commands
-        let path = filepath_fig.to_string_lossy();
         let commands = format!(
-            "{}\nfn='{}'\nplt.savefig(fn, bbox_inches='tight', bbox_extra_artists=EXTRA_ARTISTS)\nprint('figure {} created')\n",
+            "{}\nfn='{}'\nplt.savefig(fn, bbox_inches='tight', bbox_extra_artists=EXTRA_ARTISTS)\n",
             self.buffer,
-            path, path,
+            figure_path.to_string_lossy(),
         );
 
         // call python
-        call_python3(&commands, output_dir, &filename_py)
+        let mut path = Path::new(figure_path).to_path_buf();
+        path.set_extension("py");
+        call_python3(&commands, &path)
     }
 
     /// Configures subplots
@@ -259,12 +248,29 @@ mod tests {
     use super::*;
     use std::fs;
 
+    const OUT_DIR: &str = "/tmp/plotpy/unit_tests";
+
     #[test]
-    fn new_plot_works() -> Result<(), Box<dyn std::error::Error>> {
+    fn new_plot_works() {
+        let plot = Plot::new();
+        assert_eq!(plot.option_hide_bottom_border, true);
+        assert_eq!(plot.option_hide_left_border, true);
+        assert_eq!(plot.option_hide_right_border, true);
+        assert_eq!(plot.option_hide_top_border, true);
+        assert_eq!(plot.font_size_labels, 0.0);
+        assert_eq!(plot.font_size_legend, 0.0);
+        assert_eq!(plot.font_size_x_tick, 0.0);
+        assert_eq!(plot.font_size_y_tick, 0.0);
+        assert_eq!(plot.buffer.len(), 0);
+    }
+
+    #[test]
+    fn save_works() -> Result<(), &'static str> {
         let plot = Plot::new();
         assert_eq!(plot.buffer.len(), 0);
-        plot.save("/tmp/plotpy", "test", "svg")?;
-        let svg = fs::read_to_string("/tmp/plotpy/test.svg")?;
+        let path = Path::new(OUT_DIR).join("test.svg");
+        plot.save(&path)?;
+        let svg = fs::read_to_string(&path).map_err(|_| "cannot read file")?;
         let lines = svg.lines().collect::<Vec<_>>();
         assert_eq!(lines.len(), 33);
         Ok(())

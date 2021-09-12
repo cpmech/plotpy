@@ -9,6 +9,7 @@
     "contourf",
     "dtype",
     "fileio",
+    "hspace",
     "linestyle",
     "markeralpha",
     "markeredgecolor",
@@ -21,6 +22,7 @@
     "numpy",
     "patheffects",
     "pyplot",
-    "toolkits"
+    "toolkits",
+    "wspace"
   ]
 }

@@ -78,7 +78,7 @@ impl Plot {
     /// * `output_dir` - Creates a directory to save the figure, and temporary files
     /// * `filename_key` - The filename without extension
     /// * `filename_ext` - The extension of the filename; e.g., "png" or "svg"
-    pub fn save(&self, output_dir: &str, filename_key: &str, filename_ext: &str) -> std::io::Result<String> {
+    pub fn save(&self, output_dir: &str, filename_key: &str, filename_ext: &str) -> Result<String, &'static str> {
         // filename
         let ext = filename_ext.replace(".", "");
         let filename_py = format!("{}.py", filename_key);
@@ -276,10 +276,9 @@ mod tests {
         plot.subplot(2, 2, 0);
         plot.subplot_horizontal_gap(0.1);
         plot.subplot_vertical_gap(0.2);
-        let correct = "\nplt.subplot(2,2,0)
-plt.subplots_adjust(hspace=0.1)
-plt.subplots_adjust(wspace=0.2)
-";
+        let correct: &str = "\nplt.subplot(2,2,0)\n\
+                               plt.subplots_adjust(hspace=0.1)\n\
+                               plt.subplots_adjust(wspace=0.2)\n";
         assert_eq!(plot.buffer, correct);
     }
 
@@ -289,10 +288,9 @@ plt.subplots_adjust(wspace=0.2)
         plot.equal();
         plot.hide_axes();
         plot.range(-1.0, 1.0, -1.0, 1.0);
-        let correct = "plt.axis('equal')
-plt.axis('off')
-plt.axis([-1,1,-1,1])
-";
+        let correct: &str = "plt.axis('equal')\n\
+                             plt.axis('off')\n\
+                             plt.axis([-1,1,-1,1])\n";
         assert_eq!(plot.buffer, correct);
     }
 }

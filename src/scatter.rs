@@ -140,16 +140,14 @@ mod tests {
         let opt = scatter.options();
         assert_eq!(
             opt,
-            "\
-            ,markeralpha=0.5\
-            ,markerfacecolor='#4c4deb'\
-            ,markevery=2\
-            ,markeredgecolor='blue'\
-            ,markerlinestyle='--'\
-            ,markeredgewidth=1.5\
-            ,markersize=8\
-            ,marker='o'\
-            "
+            ",markeralpha=0.5\
+             ,markerfacecolor='#4c4deb'\
+             ,markevery=2\
+             ,markeredgecolor='blue'\
+             ,markerlinestyle='--'\
+             ,markeredgewidth=1.5\
+             ,markersize=8\
+             ,marker='o'"
         );
     }
 

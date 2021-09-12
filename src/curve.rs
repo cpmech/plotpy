@@ -190,20 +190,18 @@ mod tests {
         let options = curve.options();
         assert_eq!(
             options,
-            "\
-            ,alpha=0.7\
-            ,color='#b33434'\
-            ,linestyle='-'\
-            ,linewidth=3\
-            ,markeralpha=0.5\
-            ,markerfacecolor='#4c4deb'\
-            ,markevery=2\
-            ,markeredgecolor='blue'\
-            ,markerlinestyle='--'\
-            ,markeredgewidth=1.5\
-            ,markersize=8\
-            ,marker='o'\
-            "
+            ",alpha=0.7\
+             ,color='#b33434'\
+             ,linestyle='-'\
+             ,linewidth=3\
+             ,markeralpha=0.5\
+             ,markerfacecolor='#4c4deb'\
+             ,markevery=2\
+             ,markeredgecolor='blue'\
+             ,markerlinestyle='--'\
+             ,markeredgewidth=1.5\
+             ,markersize=8\
+             ,marker='o'"
         );
     }
 

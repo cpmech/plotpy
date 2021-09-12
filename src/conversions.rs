@@ -1,5 +1,20 @@
 use std::fmt::Write;
 
+// Converts a vector to a Python list of numbers
+pub(crate) fn vec_to_py_list_num<T: std::fmt::Display>(values: &[T]) -> String {
+    let mut buf = "[".to_string();
+    let mut first = true;
+    for val in values.iter() {
+        if !first {
+            write!(buf, ",").unwrap();
+        }
+        write!(&mut buf, "{}", val).unwrap();
+        first = false;
+    }
+    write!(&mut buf, "]").unwrap();
+    buf
+}
+
 // Converts a vector to a Python list of strings
 pub(crate) fn vec_to_py_list_str<T: std::fmt::Display>(values: &[T]) -> String {
     let mut buf = "[".to_string();
@@ -57,6 +72,12 @@ pub(crate) fn vec_vec_to_numpy_array_2d(buf: &mut String, name: &str, vec_vec: &
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn vec_to_py_list_num_works() {
+        let res = vec_to_py_list_num(&[1.0, 2.0, 3.0]);
+        assert_eq!(res, "[1,2,3]");
+    }
 
     #[test]
     fn vec_to_py_list_str_works() {

@@ -1,4 +1,5 @@
 use super::*;
+use std::fmt::Write;
 
 /// Generates a curve (aka line-plot) given two arrays (x,y)
 ///
@@ -92,11 +93,12 @@ impl Curve {
     /// * `x` - abscissa array
     /// * `y` - ordinate array
     ///
-    pub fn draw(&mut self, x: &[f64], y: &[f64]) {
+    pub fn draw(&mut self, x: &[f64], y: &[f64]) -> Result<(), &'static str> {
         vec_to_numpy_array(&mut self.buffer, "x", x);
         vec_to_numpy_array(&mut self.buffer, "y", y);
-        let command = format!("plt.plot(x,y{})\n", self.options());
-        self.buffer.push_str(&command);
+        let opt = self.options();
+        write!(&mut self.buffer, "plt.plot(x,y{})\n", &opt).unwrap();
+        Ok(())
     }
 
     pub(crate) fn options(&self) -> String {
@@ -108,52 +110,52 @@ impl Curve {
         };
 
         // output
-        let mut options = String::new();
+        let mut opt = String::new();
 
         // lines
         if self.line_alpha > 0.0 {
-            options.push_str(&format!(",alpha={}", self.line_alpha));
+            write!(&mut opt, ",alpha={}", self.line_alpha).unwrap();
         }
         if line_color != "" {
-            options.push_str(&format!(",color='{}'", line_color));
+            write!(&mut opt, ",color='{}'", line_color).unwrap();
         }
         if self.line_style != "" {
-            options.push_str(&format!(",linestyle='{}'", self.line_style));
+            write!(&mut opt, ",linestyle='{}'", self.line_style).unwrap();
         }
         if self.line_width > 0.0 {
-            options.push_str(&format!(",linewidth={}", self.line_width));
+            write!(&mut opt, ",linewidth={}", self.line_width).unwrap();
         }
 
         // markers
         if self.marker_alpha > 0.0 {
-            options.push_str(&format!(",markeralpha={}", self.marker_alpha));
+            write!(&mut opt, ",markeralpha={}", self.marker_alpha).unwrap();
         }
         if self.marker_color != "" {
-            options.push_str(&format!(",markerfacecolor='{}'", self.marker_color));
+            write!(&mut opt, ",markerfacecolor='{}'", self.marker_color).unwrap();
         }
         if self.marker_every > 0 {
-            options.push_str(&format!(",markevery={}", self.marker_every));
+            write!(&mut opt, ",markevery={}", self.marker_every).unwrap();
         }
         if self.marker_is_void {
-            options.push_str(",markerfacecolor='none'");
+            write!(&mut opt, ",markerfacecolor='none'").unwrap();
         }
         if self.marker_line_color != "" {
-            options.push_str(&format!(",markeredgecolor='{}'", self.marker_line_color));
+            write!(&mut opt, ",markeredgecolor='{}'", self.marker_line_color).unwrap();
         }
         if self.marker_line_style != "" {
-            options.push_str(&format!(",markerlinestyle='{}'", self.marker_line_style));
+            write!(&mut opt, ",markerlinestyle='{}'", self.marker_line_style).unwrap();
         }
         if self.marker_line_width > 0.0 {
-            options.push_str(&format!(",markeredgewidth={}", self.marker_line_width));
+            write!(&mut opt, ",markeredgewidth={}", self.marker_line_width).unwrap();
         }
         if self.marker_size > 0.0 {
-            options.push_str(&format!(",markersize={}", self.marker_size));
+            write!(&mut opt, ",markersize={}", self.marker_size).unwrap();
         }
         if self.marker_style != "" {
-            options.push_str(&format!(",marker='{}'", self.marker_style));
+            write!(&mut opt, ",marker='{}'", self.marker_style).unwrap();
         }
 
-        options
+        opt
     }
 }
 
@@ -206,14 +208,15 @@ mod tests {
     }
 
     #[test]
-    fn draw_works() {
+    fn draw_works() -> Result<(), &'static str> {
         let x = &[1.0, 2.0, 3.0, 4.0, 5.0];
         let y = &[1.0, 4.0, 9.0, 16.0, 25.0];
         let mut curve = Curve::new();
-        curve.draw(x, y);
+        curve.draw(x, y)?;
         let correct: &str = "x=np.array([1,2,3,4,5,],dtype=float)\n\
                              y=np.array([1,4,9,16,25,],dtype=float)\n\
                              plt.plot(x,y)\n";
         assert_eq!(curve.buffer, correct);
+        Ok(())
     }
 }

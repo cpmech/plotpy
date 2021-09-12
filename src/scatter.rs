@@ -1,4 +1,5 @@
 use super::*;
+use std::fmt::Write;
 
 /// Generates scatter plot given two arrays (x,y)
 ///
@@ -71,43 +72,44 @@ impl Scatter {
     /// * `x` - abscissa array
     /// * `y` - ordinate array
     ///
-    pub fn draw(&mut self, x: &[f64], y: &[f64]) {
+    pub fn draw(&mut self, x: &[f64], y: &[f64]) -> Result<(), &'static str> {
         vec_to_numpy_array(&mut self.buffer, "x", x);
         vec_to_numpy_array(&mut self.buffer, "y", y);
-        let command = format!("plt.scatter(x,y{})\n", self.options());
-        self.buffer.push_str(&command);
+        let opt = self.options();
+        write!(&mut self.buffer, "plt.scatter(x,y{})\n", &opt).unwrap();
+        Ok(())
     }
 
     pub(crate) fn options(&self) -> String {
-        let mut options = String::new();
+        let mut opt = String::new();
         if self.marker_alpha > 0.0 {
-            options.push_str(&format!(",markeralpha={}", self.marker_alpha));
+            write!(&mut opt, ",markeralpha={}", self.marker_alpha).unwrap();
         }
         if self.marker_color != "" {
-            options.push_str(&format!(",markerfacecolor='{}'", self.marker_color));
+            write!(&mut opt, ",markerfacecolor='{}'", self.marker_color).unwrap();
         }
         if self.marker_every > 0 {
-            options.push_str(&format!(",markevery={}", self.marker_every));
+            write!(&mut opt, ",markevery={}", self.marker_every).unwrap();
         }
         if self.marker_is_void {
-            options.push_str(",markerfacecolor='none'");
+            write!(&mut opt, ",markerfacecolor='none'").unwrap();
         }
         if self.marker_line_color != "" {
-            options.push_str(&format!(",markeredgecolor='{}'", self.marker_line_color));
+            write!(&mut opt, ",markeredgecolor='{}'", self.marker_line_color).unwrap();
         }
         if self.marker_line_style != "" {
-            options.push_str(&format!(",markerlinestyle='{}'", self.marker_line_style));
+            write!(&mut opt, ",markerlinestyle='{}'", self.marker_line_style).unwrap();
         }
         if self.marker_line_width > 0.0 {
-            options.push_str(&format!(",markeredgewidth={}", self.marker_line_width));
+            write!(&mut opt, ",markeredgewidth={}", self.marker_line_width).unwrap();
         }
         if self.marker_size > 0.0 {
-            options.push_str(&format!(",markersize={}", self.marker_size));
+            write!(&mut opt, ",markersize={}", self.marker_size).unwrap();
         }
         if self.marker_style != "" {
-            options.push_str(&format!(",marker='{}'", self.marker_style));
+            write!(&mut opt, ",marker='{}'", self.marker_style).unwrap();
         }
-        options
+        opt
     }
 }
 
@@ -124,7 +126,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn to_string_works() {
+    fn options_works() {
         let mut scatter = Scatter::new();
         scatter.marker_alpha = 0.5;
         scatter.marker_color = "#4c4deb".to_string();
@@ -135,9 +137,9 @@ mod tests {
         scatter.marker_line_width = 1.5;
         scatter.marker_size = 8.0;
         scatter.marker_style = "o".to_string();
-        let options = scatter.options();
+        let opt = scatter.options();
         assert_eq!(
-            options,
+            opt,
             "\
             ,markeralpha=0.5\
             ,markerfacecolor='#4c4deb'\
@@ -152,14 +154,15 @@ mod tests {
     }
 
     #[test]
-    fn draw_works() {
+    fn draw_works() -> Result<(), &'static str> {
         let x = &[1.0, 2.0, 3.0, 4.0, 5.0];
         let y = &[1.0, 4.0, 9.0, 16.0, 25.0];
         let mut scatter = Scatter::new();
-        scatter.draw(x, y);
+        scatter.draw(x, y)?;
         let correct: &str = "x=np.array([1,2,3,4,5,],dtype=float)\n\
                              y=np.array([1,4,9,16,25,],dtype=float)\n\
                              plt.scatter(x,y)\n";
         assert_eq!(scatter.buffer, correct);
+        Ok(())
     }
 }

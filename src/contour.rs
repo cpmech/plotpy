@@ -124,6 +124,29 @@ mod tests {
     #[test]
     fn options_works() -> Result<(), &'static str> {
         let mut contour = Contour::new();
+        contour.colors = vec!["#f00".to_string(), "#0f0".to_string(), "#00f".to_string()];
+        contour.levels = vec![0.25, 0.5, 1.0];
+        contour.colormap_index = 4;
+        contour.number_format = "%.4f".to_string();
+        contour.no_lines = true;
+        contour.no_labels = true;
+        contour.no_inline = true;
+        contour.no_colorbar = true;
+        contour.colorbar_label = "temperature".to_string();
+        contour.selected_value = 0.75;
+        contour.selected_linewidth = 2.0;
+        let opt = contour.options();
+        assert_eq!(
+            opt,
+            ",colors=['#f00','#0f0','#00f']\
+             ,levels=[0.25,0.5,1]"
+        );
+        Ok(())
+    }
+
+    #[test]
+    fn draw_filled_works() -> Result<(), &'static str> {
+        let mut contour = Contour::new();
         let (x, y, z) = gen_xyz();
         contour.draw_filled(x, y, z)?;
         Ok(())

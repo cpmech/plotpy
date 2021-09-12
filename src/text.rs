@@ -1,4 +1,5 @@
 use super::*;
+use std::fmt::Write;
 
 /// Creates text to be added to a plot
 pub struct Text {
@@ -23,25 +24,46 @@ impl Text {
     }
 
     pub(crate) fn options(&self) -> String {
-        let mut options = String::new();
+        let mut opt = String::new();
         if self.alignment_horizontal != "" {
-            options.push_str(&format!(",ha='{}'", self.alignment_horizontal));
+            write!(&mut opt, ",ha='{}'", self.alignment_horizontal).unwrap();
         }
         if self.alignment_vertical != "" {
-            options.push_str(&format!(",va='{}'", self.alignment_vertical));
+            write!(&mut opt, ",va='{}'", self.alignment_vertical).unwrap();
         }
         if self.rotation > 0.0 {
-            options.push_str(&format!(",rotation={}", self.rotation));
+            write!(&mut opt, ",rotation={}", self.rotation).unwrap();
         }
         if self.font_size > 0.0 {
-            options.push_str(&format!(",fontsize={}", self.font_size));
+            write!(&mut opt, ",fontsize={}", self.font_size).unwrap();
         }
-        options
+        opt
     }
 }
 
 impl GraphMaker for Text {
     fn get_buffer<'a>(&'a self) -> &'a String {
         &self.buffer
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn new_works() {
+        let text = Text::new();
+        assert_eq!(text.alignment_horizontal, "");
+    }
+
+    #[test]
+    fn options_works() {
+        let mut text = Text::new();
+        text.alignment_horizontal = "center".to_string();
+        let opt = text.options();
+        assert_eq!(opt, ",ha='center'");
     }
 }

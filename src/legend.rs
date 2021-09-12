@@ -1,4 +1,5 @@
 use super::*;
+use std::fmt::Write;
 
 /// Creates a legend to be added to the plot
 pub struct Legend {
@@ -26,14 +27,35 @@ impl Legend {
         }
     }
 
-    pub(crate) fn options() -> String {
-        let options = String::new();
-        options
+    pub(crate) fn options(&self) -> String {
+        let opt = String::new();
+        opt
     }
 }
 
 impl GraphMaker for Legend {
     fn get_buffer<'a>(&'a self) -> &'a String {
         &self.buffer
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn new_works() {
+        let legend = Legend::new();
+        assert_eq!(legend.show_frame, true);
+    }
+
+    #[test]
+    fn options_works() {
+        let mut legend = Legend::new();
+        legend.length_indicator = 6.0;
+        let opt = legend.options();
+        assert_eq!(opt, "");
     }
 }

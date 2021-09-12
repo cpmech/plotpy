@@ -1,4 +1,5 @@
 use super::*;
+use std::fmt::Write;
 
 /// Generates a Histogram plot
 pub struct Histogram {
@@ -27,31 +28,52 @@ impl Histogram {
     }
 
     pub(crate) fn options(&self) -> String {
-        let mut options = String::new();
+        let mut opt = String::new();
         if self.colors.len() > 0 {
-            options.push_str(&format!(",color={}", array2list(&self.colors)));
+            write!(&mut opt, ",color={}", vec_to_py_list_str(&self.colors)).unwrap();
         }
         if self.style != "" {
-            options.push_str(&format!(",histtype='{}'", self.style));
+            write!(&mut opt, ",histtype='{}'", self.style).unwrap();
         }
         if self.stacked {
-            options.push_str(",stacked=True");
+            write!(&mut opt, ",stacked=True").unwrap();
         }
         if self.no_fill {
-            options.push_str(",fill=False");
+            write!(&mut opt, ",fill=False").unwrap();
         }
         if self.number_bins > 0 {
-            options.push_str(&format!(",bins={}", self.number_bins));
+            write!(&mut opt, ",bins={}", self.number_bins).unwrap();
         }
         if self.normalized {
-            options.push_str(",normed=True");
+            write!(&mut opt, ",normed=True").unwrap();
         }
-        options
+        opt
     }
 }
 
 impl GraphMaker for Histogram {
     fn get_buffer<'a>(&'a self) -> &'a String {
         &self.buffer
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn new_works() {
+        let histogram = Histogram::new();
+        assert_eq!(histogram.colors.len(), 0);
+    }
+
+    #[test]
+    fn options_works() {
+        let mut histogram = Histogram::new();
+        histogram.stacked = true;
+        let opt = histogram.options();
+        assert_eq!(opt, ",stacked=True");
     }
 }

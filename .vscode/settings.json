@@ -9,6 +9,7 @@
     "cmap",
     "COLORMAPS",
     "contourf",
+    "cstride",
     "dtype",
     "fileio",
     "hspace",
@@ -24,6 +25,7 @@
     "numpy",
     "patheffects",
     "pyplot",
+    "rstride",
     "savefig",
     "toolkits",
     "wspace"

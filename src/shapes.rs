@@ -1,4 +1,5 @@
 use super::*;
+use std::fmt::Write;
 
 /// Draw polygonal shapes
 pub struct Shapes {
@@ -25,19 +26,40 @@ impl Shapes {
     }
 
     pub(crate) fn options(&self) -> String {
-        let mut options = String::new();
+        let mut opt = String::new();
         if self.edge_color != "" {
-            options.push_str(&format!(",edgecolor='{}'", self.edge_color));
+            write!(&mut opt, ",edgecolor='{}'", self.edge_color).unwrap();
         }
         if self.face_color != "" {
-            options.push_str(&format!(",facecolor='{}'", self.face_color));
+            write!(&mut opt, ",facecolor='{}'", self.face_color).unwrap();
         }
-        options
+        opt
     }
 }
 
 impl GraphMaker for Shapes {
     fn get_buffer<'a>(&'a self) -> &'a String {
         &self.buffer
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn new_works() {
+        let shapes = Shapes::new();
+        assert_eq!(shapes.edge_color, "");
+    }
+
+    #[test]
+    fn options_works() {
+        let mut shapes = Shapes::new();
+        shapes.edge_color = "red".to_string();
+        let opt = shapes.options();
+        assert_eq!(opt, ",edgecolor='red'");
     }
 }

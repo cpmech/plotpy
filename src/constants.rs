@@ -12,7 +12,7 @@ EXTRA_ARTISTS = []
 def addToEA(obj):
     if obj!=None: EXTRA_ARTISTS.append(obj)
 COLORMAPS = [plt.cm.bwr, plt.cm.RdBu, plt.cm.hsv, plt.cm.jet, plt.cm.terrain, plt.cm.pink, plt.cm.Greys]
-def getCmap(idx): return COLORMAPS[idx % len(COLORMAPS)]
+def getColormap(idx): return COLORMAPS[idx % len(COLORMAPS)]
 
 ";
 

@@ -4,6 +4,7 @@
 //!
 //! ```
 //! use plotpy::*;
+//! use std::path::Path;
 //!
 //! fn main() -> Result<(), Box<dyn std::error::Error>> {
 //!     let x = &[1.0, 2.0, 3.0, 4.0, 5.0];
@@ -25,7 +26,7 @@
 //!     plot.add(&curve);
 //!     plot.grid_and_labels("x", "y");
 //!
-//!     let message = plot.save("/tmp/plotpy", "example_main", "svg")?;
+//!     let message = plot.save(Path::new("/tmp/plotpy/example_main.svg"))?;
 //!     println!("{}", message);
 //!     Ok(())
 //! }

@@ -19,9 +19,7 @@ use std::fmt::Write;
 /// curve.marker_style = "*".to_string();
 /// curve.draw(x, y);
 /// plot.add(&curve);
-/// plot.save("/tmp/plotpy", "example_curve", "svg");
 /// ```
-///
 pub struct Curve {
     /// alpha (0, 1]. A<1e-14 => A=1.0
     pub line_alpha: f64,

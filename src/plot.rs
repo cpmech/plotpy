@@ -8,13 +8,11 @@ pub trait GraphMaker {
 /// Driver structure that calls Python
 ///
 /// ```
-/// use std::path::Path;
 /// use plotpy::*;
 /// let mut plot = Plot::new();
 /// plot.equal();
 /// plot.range(-1.0, 1.0, 0.0, 2.0);
 /// plot.grid_and_labels("x-label", "y-label");
-/// plot.save(&Path::new("/tmp/plotpy/doc_tests").join("example.svg"));
 /// ```
 pub struct Plot {
     /// hide bottom frame border

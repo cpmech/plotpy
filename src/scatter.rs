@@ -14,9 +14,7 @@ use std::fmt::Write;
 /// scatter.marker_style = "*".to_string();
 /// scatter.draw(x, y);
 /// plot.add(&scatter);
-/// plot.save("/tmp/plotpy", "example_scatter", "svg");
 /// ```
-///
 pub struct Scatter {
     /// alpha (0, 1]
     pub marker_alpha: f64,

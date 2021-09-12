@@ -46,6 +46,7 @@
 // modules ////////////////////////////////////////
 mod constants;
 mod contour;
+mod conversions;
 mod curve;
 mod fileio;
 mod graph3d;
@@ -55,9 +56,9 @@ mod plot;
 mod scatter;
 mod shapes;
 mod text;
-mod util;
 pub use crate::constants::*;
 pub use crate::contour::*;
+use crate::conversions::*;
 pub use crate::curve::*;
 use crate::fileio::*;
 pub use crate::graph3d::*;
@@ -67,4 +68,3 @@ pub use crate::plot::*;
 pub use crate::scatter::*;
 pub use crate::shapes::*;
 pub use crate::text::*;
-use crate::util::*;

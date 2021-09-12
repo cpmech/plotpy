@@ -3,5 +3,13 @@
     "**/rust_modules": true,
     "target": true,
     "**/Cargo.lock": true
-  }
+  },
+  "cSpell.words": [
+    "COLORMAPS",
+    "mplot",
+    "numpy",
+    "patheffects",
+    "pyplot",
+    "toolkits"
+  ]
 }

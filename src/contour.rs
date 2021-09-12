@@ -75,6 +75,8 @@ impl Contour {
         let mut opt = String::new();
         if self.colors.len() > 0 {
             write!(&mut opt, ",colors={}", vec_to_py_list_str(&self.colors)).unwrap();
+        } else {
+            write!(&mut opt, ",cmap=getColormap({})", self.colormap_index).unwrap();
         }
         if self.levels.len() > 0 {
             write!(&mut opt, ",levels={}", vec_to_py_list_num(&self.levels)).unwrap();
@@ -149,6 +151,11 @@ mod tests {
         let mut contour = Contour::new();
         let (x, y, z) = gen_xyz();
         contour.draw_filled(x, y, z)?;
+        let correct: &str = "x=np.array([[-1,-0.5,0,0.5,],[-1,-0.5,0,0.5,],[-1,-0.5,0,0.5,],[-1,-0.5,0,0.5,],],dtype=float)\n\
+                             y=np.array([[-1,-1,-1,-1,],[-0.5,-0.5,-0.5,-0.5,],[0,0,0,0,],[0.5,0.5,0.5,0.5,],],dtype=float)\n\
+                             z=np.array([[2,1.25,1,1.25,],[1.25,0.5,0.25,0.5,],[1,0.25,0,0.25,],[1.25,0.5,0.25,0.5,],],dtype=float)\n\
+                             plt.contourf(x,y,z,cmap=getColormap(0))\n";
+        assert_eq!(contour.buffer, correct);
         Ok(())
     }
 }

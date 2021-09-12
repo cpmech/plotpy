@@ -72,7 +72,8 @@ impl Scatter {
     /// * `y` - ordinate array
     ///
     pub fn draw(&mut self, x: &[f64], y: &[f64]) {
-        write_arrays(&mut self.buffer, "x", "y", x, y);
+        vec_to_numpy_array(&mut self.buffer, "x", x);
+        vec_to_numpy_array(&mut self.buffer, "y", y);
         let command = format!("plt.scatter(x,y{})\n", self.options());
         self.buffer.push_str(&command);
     }
@@ -156,10 +157,9 @@ mod tests {
         let y = &[1.0, 4.0, 9.0, 16.0, 25.0];
         let mut scatter = Scatter::new();
         scatter.draw(x, y);
-        let correct ="x=np.array([1.000000000000000,2.000000000000000,3.000000000000000,4.000000000000000,5.000000000000000,],dtype=float)
-y=np.array([1.000000000000000,4.000000000000000,9.000000000000000,16.000000000000000,25.000000000000000,],dtype=float)
-plt.scatter(x,y)
-";
+        let correct: &str = "x=np.array([1,2,3,4,5,],dtype=float)\n\
+                             y=np.array([1,4,9,16,25,],dtype=float)\n\
+                             plt.scatter(x,y)\n";
         assert_eq!(scatter.buffer, correct);
     }
 }

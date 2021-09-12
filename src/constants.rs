@@ -24,6 +24,6 @@ mod tests {
 
     #[test]
     fn constants_are_correct() {
-        assert_eq!(PYTHON_HEADER.len(), 535);
+        assert_eq!(PYTHON_HEADER.len(), 539);
     }
 }

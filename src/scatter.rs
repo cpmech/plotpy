@@ -31,9 +31,6 @@ pub struct Scatter {
     /// edge color
     pub marker_line_color: String,
 
-    /// edge style
-    pub marker_line_style: String,
-
     /// edge width
     pub marker_line_width: f64,
 
@@ -56,7 +53,6 @@ impl Scatter {
             marker_every: 0,
             marker_is_void: false,
             marker_line_color: String::new(),
-            marker_line_style: String::new(),
             marker_line_width: 0.0,
             marker_size: 0.0,
             marker_style: String::new(),
@@ -81,7 +77,7 @@ impl Scatter {
     pub(crate) fn options(&self) -> String {
         let mut opt = String::new();
         if self.marker_alpha > 0.0 {
-            write!(&mut opt, ",markeralpha={}", self.marker_alpha).unwrap();
+            write!(&mut opt, ",alpha={}", self.marker_alpha).unwrap();
         }
         if self.marker_color != "" {
             write!(&mut opt, ",markerfacecolor='{}'", self.marker_color).unwrap();
@@ -94,9 +90,6 @@ impl Scatter {
         }
         if self.marker_line_color != "" {
             write!(&mut opt, ",markeredgecolor='{}'", self.marker_line_color).unwrap();
-        }
-        if self.marker_line_style != "" {
-            write!(&mut opt, ",markerlinestyle='{}'", self.marker_line_style).unwrap();
         }
         if self.marker_line_width > 0.0 {
             write!(&mut opt, ",markeredgewidth={}", self.marker_line_width).unwrap();
@@ -131,7 +124,6 @@ mod tests {
         assert_eq!(scatter.marker_every, 0);
         assert_eq!(scatter.marker_is_void, false);
         assert_eq!(scatter.marker_line_color, String::new());
-        assert_eq!(scatter.marker_line_style, String::new());
         assert_eq!(scatter.marker_line_width, 0.0);
         assert_eq!(scatter.marker_size, 0.0);
         assert_eq!(scatter.marker_style, String::new());
@@ -146,18 +138,16 @@ mod tests {
         scatter.marker_every = 2;
         scatter.marker_is_void = false;
         scatter.marker_line_color = "blue".to_string();
-        scatter.marker_line_style = "--".to_string();
         scatter.marker_line_width = 1.5;
         scatter.marker_size = 8.0;
         scatter.marker_style = "o".to_string();
         let opt = scatter.options();
         assert_eq!(
             opt,
-            ",markeralpha=0.5\
+            ",alpha=0.5\
              ,markerfacecolor='#4c4deb'\
              ,markevery=2\
              ,markeredgecolor='blue'\
-             ,markerlinestyle='--'\
              ,markeredgewidth=1.5\
              ,markersize=8\
              ,marker='o'"

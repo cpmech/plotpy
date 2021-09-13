@@ -33,9 +33,6 @@ pub struct Curve {
     /// width of lines
     pub line_width: f64,
 
-    /// alpha opacity of markers (0, 1]
-    pub marker_alpha: f64,
-
     /// color of markers
     pub marker_color: String,
 
@@ -47,9 +44,6 @@ pub struct Curve {
 
     /// edge color of markers
     pub marker_line_color: String,
-
-    /// edge style of markers
-    pub marker_line_style: String,
 
     /// edge width of markers
     pub marker_line_width: f64,
@@ -72,12 +66,10 @@ impl Curve {
             line_color: String::new(),
             line_style: String::new(),
             line_width: 0.0,
-            marker_alpha: 0.0,
             marker_color: String::new(),
             marker_every: 0,
             marker_void: false,
             marker_line_color: String::new(),
-            marker_line_style: String::new(),
             marker_line_width: 0.0,
             marker_size: 0.0,
             marker_style: String::new(),
@@ -128,9 +120,6 @@ impl Curve {
         }
 
         // markers
-        if self.marker_alpha > 0.0 {
-            write!(&mut opt, ",markeralpha={}", self.marker_alpha).unwrap();
-        }
         if self.marker_color != "" {
             write!(&mut opt, ",markerfacecolor='{}'", self.marker_color).unwrap();
         }
@@ -142,9 +131,6 @@ impl Curve {
         }
         if self.marker_line_color != "" {
             write!(&mut opt, ",markeredgecolor='{}'", self.marker_line_color).unwrap();
-        }
-        if self.marker_line_style != "" {
-            write!(&mut opt, ",markerlinestyle='{}'", self.marker_line_style).unwrap();
         }
         if self.marker_line_width > 0.0 {
             write!(&mut opt, ",markeredgewidth={}", self.marker_line_width).unwrap();
@@ -179,12 +165,10 @@ mod tests {
         assert_eq!(curve.line_color, String::new());
         assert_eq!(curve.line_style, String::new());
         assert_eq!(curve.line_width, 0.0);
-        assert_eq!(curve.marker_alpha, 0.0);
         assert_eq!(curve.marker_color, String::new());
         assert_eq!(curve.marker_every, 0);
         assert_eq!(curve.marker_void, false);
         assert_eq!(curve.marker_line_color, String::new());
-        assert_eq!(curve.marker_line_style, String::new());
         assert_eq!(curve.marker_line_width, 0.0);
         assert_eq!(curve.marker_size, 0.0);
         assert_eq!(curve.marker_style, String::new());
@@ -198,12 +182,10 @@ mod tests {
         curve.line_color = "#b33434".to_string();
         curve.line_style = "-".to_string();
         curve.line_width = 3.0;
-        curve.marker_alpha = 0.5;
         curve.marker_color = "#4c4deb".to_string();
         curve.marker_every = 2;
         curve.marker_void = false;
         curve.marker_line_color = "blue".to_string();
-        curve.marker_line_style = "--".to_string();
         curve.marker_line_width = 1.5;
         curve.marker_size = 8.0;
         curve.marker_style = "o".to_string();
@@ -214,11 +196,9 @@ mod tests {
              ,color='#b33434'\
              ,linestyle='-'\
              ,linewidth=3\
-             ,markeralpha=0.5\
              ,markerfacecolor='#4c4deb'\
              ,markevery=2\
              ,markeredgecolor='blue'\
-             ,markerlinestyle='--'\
              ,markeredgewidth=1.5\
              ,markersize=8\
              ,marker='o'"

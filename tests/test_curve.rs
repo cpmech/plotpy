@@ -13,12 +13,10 @@ fn test_curve() -> Result<(), &'static str> {
     curve.line_color = "#cd0000".to_string();
     curve.line_style = "--".to_string();
     curve.line_width = 2.0;
-    curve.marker_alpha = 0.5;
     curve.marker_color = "#1862ab".to_string();
     curve.marker_every = 2;
     curve.marker_void = false;
     curve.marker_line_color = "#cda500".to_string();
-    curve.marker_line_style = ":".to_string();
     curve.marker_line_width = 3.0;
     curve.marker_size = 8.0;
     curve.marker_style = "p".to_string();
@@ -42,6 +40,6 @@ fn test_curve() -> Result<(), &'static str> {
     let file = File::open(path).map_err(|_| "cannot open file")?;
     let buffered = BufReader::new(file);
     let lines_iter = buffered.lines();
-    assert_eq!(lines_iter.count(), 1359);
+    assert_eq!(lines_iter.count(), 474);
     Ok(())
 }

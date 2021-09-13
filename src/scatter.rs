@@ -155,10 +155,10 @@ mod tests {
         let y = &[1.0, 4.0, 9.0, 16.0, 25.0];
         let mut scatter = Scatter::new();
         scatter.draw(x, y)?;
-        let correct: &str = "x=np.array([1,2,3,4,5,],dtype=float)\n\
-                             y=np.array([1,4,9,16,25,],dtype=float)\n\
-                             plt.scatter(x,y)\n";
-        assert_eq!(scatter.buffer, correct);
+        let b: &str = "x=np.array([1,2,3,4,5,],dtype=float)\n\
+                       y=np.array([1,4,9,16,25,],dtype=float)\n\
+                       plt.scatter(x,y)\n";
+        assert_eq!(scatter.buffer, b);
         Ok(())
     }
 }

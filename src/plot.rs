@@ -1,6 +1,7 @@
 use super::*;
+use std::fmt::Write;
 use std::fs::File;
-use std::io::Write;
+use std::io::Write as IoWrite;
 use std::path::Path;
 
 pub trait GraphMaker {
@@ -108,28 +109,27 @@ impl Plot {
     /// * `index` - activate current subplot; indices start at one [1-based]
     ///
     pub fn subplot(&mut self, row: i32, col: i32, index: i32) {
-        self.buffer
-            .push_str(&format!("\nplt.subplot({},{},{})\n", row, col, index));
+        write!(&mut self.buffer, "\nplt.subplot({},{},{})\n", row, col, index).unwrap();
     }
 
     /// Sets the horizontal gap between subplots
     pub fn subplot_horizontal_gap(&mut self, value: f64) {
-        self.buffer
-            .push_str(&format!("plt.subplots_adjust(hspace={})\n", value));
+        write!(&mut self.buffer, "plt.subplots_adjust(hspace={})\n", value).unwrap();
     }
 
     /// Sets the vertical gap between subplots
     pub fn subplot_vertical_gap(&mut self, value: f64) {
-        self.buffer
-            .push_str(&format!("plt.subplots_adjust(wspace={})\n", value));
+        write!(&mut self.buffer, "plt.subplots_adjust(wspace={})\n", value).unwrap();
     }
 
     /// Sets the horizontal and vertical gap between subplots
     pub fn subplot_gap(&mut self, horizontal: f64, vertical: f64) {
-        self.buffer.push_str(&format!(
+        write!(
+            &mut self.buffer,
             "plt.subplots_adjust(hspace={},wspace={})\n",
             horizontal, vertical
-        ));
+        )
+        .unwrap();
     }
 
     /// Sets same scale for both axes
@@ -144,60 +144,77 @@ impl Plot {
 
     /// Sets axes limits
     pub fn range(&mut self, xmin: f64, xmax: f64, ymin: f64, ymax: f64) {
-        self.buffer
-            .push_str(&format!("plt.axis([{},{},{},{}])\n", xmin, xmax, ymin, ymax));
+        write!(&mut self.buffer, "plt.axis([{},{},{},{}])\n", xmin, xmax, ymin, ymax).unwrap();
     }
 
     /// Sets x and y limits
     pub fn range_vec(&mut self, lims: &[f64]) {
-        self.buffer.push_str(&format!(
+        write!(
+            &mut self.buffer,
             "plt.axis([{},{},{},{}])\n",
             lims[0], lims[1], lims[2], lims[3]
-        ));
+        )
+        .unwrap();
     }
 
     /// Sets minimum x
     pub fn xmin(&mut self, xmin: f64) {
-        self.buffer.push_str(&format!(
+        write!(
+            &mut self.buffer,
             "plt.axis([{},plt.axis()[1],plt.axis()[2],plt.axis()[3]])\n",
             xmin
-        ));
+        )
+        .unwrap();
     }
 
     /// Sets maximum x
     pub fn xmax(&mut self, xmax: f64) {
-        self.buffer.push_str(&format!(
+        write!(
+            &mut self.buffer,
             "plt.axis([plt.axis()[0],{},plt.axis()[2],plt.axis()[3]])\n",
             xmax
-        ));
+        )
+        .unwrap();
     }
 
     /// Sets minimum y
     pub fn ymin(&mut self, ymin: f64) {
-        self.buffer.push_str(&format!(
+        write!(
+            &mut self.buffer,
             "plt.axis([plt.axis()[0],plt.axis()[1],{},plt.axis()[3]])\n",
             ymin
-        ));
+        )
+        .unwrap();
     }
 
     /// Sets maximum y
     pub fn ymax(&mut self, ymax: f64) {
-        self.buffer.push_str(&format!(
+        write!(
+            &mut self.buffer,
             "plt.axis([plt.axis()[0],plt.axis()[1],plt.axis()[2],{}])\n",
             ymax
-        ));
+        )
+        .unwrap();
     }
 
     /// Sets x-range (i.e. limits)
     pub fn xrange(&mut self, xmin: f64, xmax: f64) {
-        self.buffer
-            .push_str(&format!("plt.axis([{},{},plt.axis()[2],plt.axis()[3]])\n", xmin, xmax));
+        write!(
+            &mut self.buffer,
+            "plt.axis([{},{},plt.axis()[2],plt.axis()[3]])\n",
+            xmin, xmax
+        )
+        .unwrap();
     }
 
     /// Sets y-range (i.e. limits)
     pub fn yrange(&mut self, ymin: f64, ymax: f64) {
-        self.buffer
-            .push_str(&format!("plt.axis([plt.axis()[0],plt.axis()[1],{},{}])\n", ymin, ymax));
+        write!(
+            &mut self.buffer,
+            "plt.axis([plt.axis()[0],plt.axis()[1],{},{}])\n",
+            ymin, ymax
+        )
+        .unwrap();
     }
 
     // Sets number of ticks along x
@@ -205,10 +222,12 @@ impl Plot {
         if num == 0 {
             self.buffer.push_str("plt.gca().get_xaxis().set_ticks([])\n");
         } else {
-            self.buffer.push_str(&format!(
+            write!(
+                &mut self.buffer,
                 "plt.gca().get_xaxis().set_major_locator(tck.MaxNLocator({}))\n",
                 num
-            ));
+            )
+            .unwrap();
         }
     }
 
@@ -217,35 +236,43 @@ impl Plot {
         if num == 0 {
             self.buffer.push_str("plt.gca().get_yaxis().set_ticks([])\n");
         } else {
-            self.buffer.push_str(&format!(
+            write!(
+                &mut self.buffer,
                 "plt.gca().get_yaxis().set_major_locator(tck.MaxNLocator({}))\n",
                 num
-            ));
+            )
+            .unwrap();
         }
     }
 
     /// Adds x-label
-    pub fn xlabel(&mut self, xlabel: &str) {
-        self.buffer.push_str(&format!("plt.xlabel(r'{}')\n", xlabel));
+    pub fn xlabel(&mut self, label: &str) {
+        write!(&mut self.buffer, "plt.xlabel(r'{}')\n", label).unwrap();
     }
 
     /// Adds y-label
-    pub fn ylabel(&mut self, ylabel: &str) {
-        self.buffer.push_str(&format!("plt.ylabel(r'{}')\n", ylabel));
+    pub fn ylabel(&mut self, label: &str) {
+        write!(&mut self.buffer, "plt.ylabel(r'{}')\n", label).unwrap();
     }
 
     /// Adds labels
     pub fn labels(&mut self, xlabel: &str, ylabel: &str) {
-        self.buffer
-            .push_str(&format!("plt.xlabel(r'{}')\nplt.ylabel(r'{}')\n", xlabel, ylabel));
+        write!(
+            &mut self.buffer,
+            "plt.xlabel(r'{}')\nplt.ylabel(r'{}')\n",
+            xlabel, ylabel
+        )
+        .unwrap();
     }
 
     /// Adds grid and labels
     pub fn grid_and_labels(&mut self, xlabel: &str, ylabel: &str) {
-        self.buffer.push_str(&format!(
+        write!(
+            &mut self.buffer,
             "plt.grid(linestyle='--',color='grey',zorder=-1000)\nplt.xlabel(r'{}')\nplt.ylabel(r'{}')\n",
-            xlabel, ylabel,
-        ));
+            xlabel, ylabel
+        )
+        .unwrap();
     }
 
     /// Clears current figure

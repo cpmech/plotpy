@@ -25,6 +25,21 @@ impl Shapes {
         }
     }
 
+    pub fn arrow(&mut self, xi: f64, yi: f64, xf: f64, yf: f64, style: &str, scale: f64) -> Result<(), &'static str> {
+        let opt = self.options();
+        write!(
+            &mut self.buffer,
+            "p=pat.FancyArrowPatch(({},{}),({},{})\
+                    ,shrinkA=0,shrinkB=0\
+                    ,path_effects=[pff.Stroke(joinstyle='miter')]\
+                    ,arrowstyle='{}',mutation_scale={}{})\n\
+             plt.gca().add_patch(p)\n",
+            xi, yi, xf, yf, style, scale, &opt
+        )
+        .unwrap();
+        Ok(())
+    }
+
     pub(crate) fn options(&self) -> String {
         let mut opt = String::new();
         if self.edge_color != "" {

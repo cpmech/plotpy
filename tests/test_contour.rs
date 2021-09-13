@@ -47,8 +47,19 @@ fn gen_xyz() -> (
 fn test_contour() -> Result<(), &'static str> {
     // contour object and options
     let mut contour = Contour::new();
+    contour.colors = vec![
+        "#fcaeae".to_string(),
+        "#da98d1".to_string(),
+        "#c45178".to_string(),
+        "#5594d2".to_string(),
+        "#e6af69".to_string(),
+        "#e6d969".to_string(),
+    ];
+    contour.levels = vec![0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0];
     contour.colorbar_label = "temperature".to_string();
     contour.with_selected = true;
+    contour.selected_line_color = "#69e699".to_string();
+    contour.selected_line_width = 5.0;
     contour.selected_level = 1.0;
 
     // draw contour
@@ -67,7 +78,7 @@ fn test_contour() -> Result<(), &'static str> {
     let file = File::open(path).map_err(|_| "cannot open file")?;
     let buffered = BufReader::new(file);
     let lines_iter = buffered.lines();
-    assert_eq!(lines_iter.count(), 1484);
+    assert_eq!(lines_iter.count(), 1359);
     Ok(())
 }
 

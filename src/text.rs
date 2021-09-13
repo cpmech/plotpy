@@ -23,6 +23,12 @@ impl Text {
         }
     }
 
+    pub fn draw(&mut self, x: f64, y: f64, message: &String) -> Result<(), &'static str> {
+        let opt = self.options();
+        write!(&mut self.buffer, "plt.text({},{},{}{})", x, y, message, &opt).unwrap();
+        Ok(())
+    }
+
     pub(crate) fn options(&self) -> String {
         let mut opt = String::new();
         if self.alignment_horizontal != "" {

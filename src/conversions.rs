@@ -1,33 +1,34 @@
 use std::fmt::Write;
 
 // Converts a vector to a Python list of numbers
-pub(crate) fn vec_to_py_list_num<T: std::fmt::Display>(values: &[T]) -> String {
-    let mut buf = "[".to_string();
-    let mut first = true;
+pub(crate) fn vec_to_py_list_num<T: std::fmt::Display>(buf: &mut String, name: &str, values: &[T]) {
+    write!(buf, "{}=[", name).unwrap();
     for val in values.iter() {
-        if !first {
-            write!(buf, ",").unwrap();
-        }
-        write!(&mut buf, "{}", val).unwrap();
-        first = false;
+        write!(buf, "{},", val).unwrap();
     }
-    write!(&mut buf, "]").unwrap();
-    buf
+    write!(buf, "]\n").unwrap();
 }
 
 // Converts a vector to a Python list of strings
-pub(crate) fn vec_to_py_list_str<T: std::fmt::Display>(values: &[T]) -> String {
-    let mut buf = "[".to_string();
-    let mut first = true;
+pub(crate) fn vec_to_py_list_str<T: std::fmt::Display>(buf: &mut String, name: &str, values: &[T]) {
+    write!(buf, "{}=[", name).unwrap();
     for val in values.iter() {
-        if !first {
-            write!(buf, ",").unwrap();
-        }
-        write!(&mut buf, "'{}'", val).unwrap();
-        first = false;
+        write!(buf, "'{}',", val).unwrap();
     }
-    write!(&mut buf, "]").unwrap();
-    buf
+    write!(buf, "]\n").unwrap();
+}
+
+// Writes a vector of vector as Python nested list
+pub(crate) fn vec_vec_to_py_list_num<T: std::fmt::Display>(buf: &mut String, name: &str, data: &[&[T]]) {
+    write!(buf, "{}=[", name).unwrap();
+    for row in data.iter() {
+        write!(buf, "[").unwrap();
+        for val in row.iter() {
+            write!(buf, "{},", val).unwrap();
+        }
+        write!(buf, "],").unwrap();
+    }
+    write!(buf, "]\n").unwrap();
 }
 
 // Writes a vector as Numpy array to buffer
@@ -75,14 +76,23 @@ mod tests {
 
     #[test]
     fn vec_to_py_list_num_works() {
-        let res = vec_to_py_list_num(&[1.0, 2.0, 3.0]);
-        assert_eq!(res, "[1,2,3]");
+        let mut buf = String::new();
+        vec_to_py_list_num(&mut buf, "x", &[1.0, 2.0, 3.0]);
+        assert_eq!(buf, "x=[1,2,3,]\n");
     }
 
     #[test]
     fn vec_to_py_list_str_works() {
-        let res = vec_to_py_list_str(&[1.0, 2.0, 3.0]);
-        assert_eq!(res, "['1','2','3']");
+        let mut buf = String::new();
+        vec_to_py_list_str(&mut buf, "x", &[1.0, 2.0, 3.0]);
+        assert_eq!(buf, "x=['1','2','3',]\n");
+    }
+
+    #[test]
+    fn vec_vec_to_py_list_works() {
+        let mut buf = String::new();
+        vec_vec_to_py_list_num(&mut buf, "x", &[&[1.0, 2.0, 3.0], &[4.0], &[5.0, 6.0]]);
+        assert_eq!(buf, "x=[[1,2,3,],[4,],[5,6,],]\n");
     }
 
     #[test]

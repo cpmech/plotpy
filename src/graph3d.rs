@@ -23,6 +23,15 @@ impl Graph3d {
         }
     }
 
+    pub fn draw(&mut self, x: &[&[f64]], y: &[&[f64]], z: &[&[f64]]) -> Result<(), &'static str> {
+        vec_vec_to_numpy_array_2d(&mut self.buffer, "x", x)?;
+        vec_vec_to_numpy_array_2d(&mut self.buffer, "y", y)?;
+        vec_vec_to_numpy_array_2d(&mut self.buffer, "z", z)?;
+        let opt = self.options();
+        write!(&mut self.buffer, "AX3D.plot_surface(x,y,z{})\n", &opt).unwrap();
+        Ok(())
+    }
+
     pub(crate) fn options(&self) -> String {
         let mut opt = String::new();
         if self.row_stride > 0 {

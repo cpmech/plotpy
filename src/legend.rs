@@ -27,6 +27,12 @@ impl Legend {
         }
     }
 
+    pub fn draw(&mut self) -> Result<(), &'static str> {
+        let opt = self.options();
+        write!(&mut self.buffer, "leg=plt.legend({})\naddToEA(leg)\n", &opt).unwrap();
+        Ok(())
+    }
+
     pub(crate) fn options(&self) -> String {
         let opt = String::new();
         opt

@@ -44,29 +44,54 @@ fn gen_xyz() -> (
 }
 
 #[test]
-fn test_contour_colors() -> Result<(), &'static str> {
-    // contour options
+fn test_contour() -> Result<(), &'static str> {
+    // contour object and options
     let mut contour = Contour::new();
-    contour.colors = vec!["#f00".to_string(), "#0f0".to_string(), "#00f".to_string()];
-    contour.levels = vec![0.25, 0.5, 1.0];
-    contour.colormap_index = 4;
-    contour.number_format = "%.4f".to_string();
-    contour.no_lines = true;
-    contour.no_labels = true;
-    contour.no_inline = true;
-    contour.no_colorbar = true;
     contour.colorbar_label = "temperature".to_string();
-    contour.selected_value = 0.75;
-    contour.selected_linewidth = 2.0;
+    contour.with_selected = true;
+    contour.selected_level = 1.0;
 
     // draw contour
     let (x, y, z) = gen_xyz();
-    contour.draw_filled(x, y, z)?;
+    contour.draw(x, y, z)?;
+
+    // add contour to plot
     let mut plot = Plot::new();
+    plot.add(&contour);
+
+    // save figure
+    let path = Path::new(OUT_DIR).join("contour.svg");
+    plot.save(&path)?;
+
+    // check number of lines
+    let file = File::open(path).map_err(|_| "cannot open file")?;
+    let buffered = BufReader::new(file);
+    let lines_iter = buffered.lines();
+    assert_eq!(lines_iter.count(), 1484);
+    Ok(())
+}
+
+#[test]
+fn test_contour_colors() -> Result<(), &'static str> {
+    // contour object and options
+    let mut contour = Contour::new();
+    contour.colors = vec!["#f00".to_string(), "#0f0".to_string(), "#00f".to_string()];
+    contour.levels = vec![0.25, 0.5, 1.0];
+    contour.no_lines = true;
+    contour.no_labels = true;
+    contour.no_inline_labels = true;
+    contour.no_colorbar = true;
+
+    // draw contour
+    let (x, y, z) = gen_xyz();
+    contour.draw(x, y, z)?;
+
+    // add contour to plot
+    let mut plot = Plot::new();
+    plot.add(&contour);
 
     // save figure
     let path = Path::new(OUT_DIR).join("contour_with_options.svg");
-    plot.add(&contour);
     plot.save(&path)?;
 
     // check number of lines
@@ -74,35 +99,32 @@ fn test_contour_colors() -> Result<(), &'static str> {
     let buffered = BufReader::new(file);
     let lines_iter = buffered.lines();
     assert_eq!(lines_iter.count(), 474);
-
     Ok(())
 }
 
 #[test]
 fn test_contour_colormap() -> Result<(), &'static str> {
     for index in 0..10 {
-        // contour options
+        // contour object and options
         let mut contour = Contour::new();
         contour.levels = vec![0.25, 0.5, 1.0];
         contour.colormap_index = index;
-        contour.number_format = "%.4f".to_string();
         contour.no_lines = true;
         contour.no_labels = true;
-        contour.no_inline = true;
+        contour.no_inline_labels = true;
         contour.no_colorbar = true;
-        contour.colorbar_label = "temperature".to_string();
-        contour.selected_value = 0.75;
-        contour.selected_linewidth = 2.0;
 
         // draw contour
         let (x, y, z) = gen_xyz();
-        contour.draw_filled(x, y, z)?;
+        contour.draw(x, y, z)?;
+
+        // add contour to plot
         let mut plot = Plot::new();
+        plot.add(&contour);
 
         // save figure
         let filename = format!("contour_colormap_{}.svg", index);
         let path = Path::new(OUT_DIR).join(&filename);
-        plot.add(&contour);
         plot.save(&path)?;
 
         // check number of lines
@@ -111,6 +133,5 @@ fn test_contour_colormap() -> Result<(), &'static str> {
         let lines_iter = buffered.lines();
         assert_eq!(lines_iter.count(), 474);
     }
-
     Ok(())
 }

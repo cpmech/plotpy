@@ -6,14 +6,18 @@
   },
   "cSpell.words": [
     "bbox",
+    "clabel",
     "cmap",
     "COLORMAPS",
     "contourf",
     "cstride",
     "dtype",
     "fileio",
+    "fontsize",
     "hspace",
     "linestyle",
+    "linestyles",
+    "linewidths",
     "markeralpha",
     "markeredgecolor",
     "markeredgewidth",
@@ -28,6 +32,7 @@
     "rstride",
     "savefig",
     "toolkits",
-    "wspace"
+    "wspace",
+    "ylabel"
   ]
 }

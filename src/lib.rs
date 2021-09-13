@@ -26,8 +26,7 @@
 //!     plot.add(&curve);
 //!     plot.grid_and_labels("x", "y");
 //!
-//!     let message = plot.save(Path::new("/tmp/plotpy/example_main.svg"))?;
-//!     println!("{}", message);
+//!     plot.save(Path::new("/tmp/plotpy/example_main.svg"))?;
 //!     Ok(())
 //! }
 //! ```

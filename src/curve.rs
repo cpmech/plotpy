@@ -170,6 +170,25 @@ mod tests {
     use super::*;
 
     #[test]
+    fn new_works() {
+        let curve = Curve::new();
+        assert_eq!(curve.line_alpha, 0.0);
+        assert_eq!(curve.line_color, String::new());
+        assert_eq!(curve.line_style, String::new());
+        assert_eq!(curve.line_width, 0.0);
+        assert_eq!(curve.marker_alpha, 0.0);
+        assert_eq!(curve.marker_color, String::new());
+        assert_eq!(curve.marker_every, 0);
+        assert_eq!(curve.marker_is_void, false);
+        assert_eq!(curve.marker_line_color, String::new());
+        assert_eq!(curve.marker_line_style, String::new());
+        assert_eq!(curve.marker_line_width, 0.0);
+        assert_eq!(curve.marker_size, 0.0);
+        assert_eq!(curve.marker_style, String::new());
+        assert_eq!(curve.buffer.len(), 0);
+    }
+
+    #[test]
     fn options_works() {
         let mut curve = Curve::new();
         curve.line_alpha = 0.7;

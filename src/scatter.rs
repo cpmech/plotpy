@@ -124,6 +124,21 @@ mod tests {
     use super::*;
 
     #[test]
+    fn new_works() {
+        let scatter = Scatter::new();
+        assert_eq!(scatter.marker_alpha, 0.0);
+        assert_eq!(scatter.marker_color, String::new());
+        assert_eq!(scatter.marker_every, 0);
+        assert_eq!(scatter.marker_is_void, false);
+        assert_eq!(scatter.marker_line_color, String::new());
+        assert_eq!(scatter.marker_line_style, String::new());
+        assert_eq!(scatter.marker_line_width, 0.0);
+        assert_eq!(scatter.marker_size, 0.0);
+        assert_eq!(scatter.marker_style, String::new());
+        assert_eq!(scatter.buffer.len(), 0);
+    }
+
+    #[test]
     fn options_works() {
         let mut scatter = Scatter::new();
         scatter.marker_alpha = 0.5;

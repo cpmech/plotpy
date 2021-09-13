@@ -1,7 +1,10 @@
 use std::fmt::Write;
 
 // Converts a vector to a Python list of numbers
-pub(crate) fn vec_to_py_list_num<T: std::fmt::Display>(buf: &mut String, name: &str, values: &[T]) {
+pub(crate) fn vec_to_py_list_num<T>(buf: &mut String, name: &str, values: &[T])
+where
+    T: std::fmt::Display,
+{
     write!(buf, "{}=[", name).unwrap();
     for val in values.iter() {
         write!(buf, "{},", val).unwrap();
@@ -10,7 +13,10 @@ pub(crate) fn vec_to_py_list_num<T: std::fmt::Display>(buf: &mut String, name: &
 }
 
 // Converts a vector to a Python list of strings
-pub(crate) fn vec_to_py_list_str<T: std::fmt::Display>(buf: &mut String, name: &str, values: &[T]) {
+pub(crate) fn vec_to_py_list_str<T>(buf: &mut String, name: &str, values: &[T])
+where
+    T: std::fmt::Display,
+{
     write!(buf, "{}=[", name).unwrap();
     for val in values.iter() {
         write!(buf, "'{}',", val).unwrap();
@@ -19,7 +25,10 @@ pub(crate) fn vec_to_py_list_str<T: std::fmt::Display>(buf: &mut String, name: &
 }
 
 // Writes a vector of vector as Python nested list
-pub(crate) fn vec_vec_to_py_list_num<T: std::fmt::Display>(buf: &mut String, name: &str, data: &[&[T]]) {
+pub(crate) fn vec_vec_to_py_list_num<T>(buf: &mut String, name: &str, data: &[&[T]])
+where
+    T: std::fmt::Display,
+{
     write!(buf, "{}=[", name).unwrap();
     for row in data.iter() {
         write!(buf, "[").unwrap();

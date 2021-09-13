@@ -21,43 +21,43 @@ use std::fmt::Write;
 /// plot.add(&curve);
 /// ```
 pub struct Curve {
-    /// alpha (0, 1]. A<1e-14 => A=1.0
+    /// alpha opacity of lines (0, 1]. A<1e-14 => A=1.0
     pub line_alpha: f64,
 
-    /// color
+    /// color of lines
     pub line_color: String,
 
-    /// style
+    /// style of lines
     pub line_style: String,
 
-    /// width
+    /// width of lines
     pub line_width: f64,
 
-    /// alpha (0, 1]
+    /// alpha opacity of markers (0, 1]
     pub marker_alpha: f64,
 
-    /// color
+    /// color of markers
     pub marker_color: String,
 
-    /// mark-every
+    /// increment of data points to use when drawing markers
     pub marker_every: i32,
 
-    /// void marker (draw edge only)
-    pub marker_is_void: bool,
+    /// draw a void marker (draw edge only)
+    pub marker_void: bool,
 
-    /// edge color
+    /// edge color of markers
     pub marker_line_color: String,
 
-    /// edge style
+    /// edge style of markers
     pub marker_line_style: String,
 
-    /// edge width
+    /// edge width of markers
     pub marker_line_width: f64,
 
-    /// size
+    /// size of markers
     pub marker_size: f64,
 
-    /// type, e.g., "o", "+"
+    /// style of markers, e.g., "o", "+"
     pub marker_style: String,
 
     // buffer
@@ -75,7 +75,7 @@ impl Curve {
             marker_alpha: 0.0,
             marker_color: String::new(),
             marker_every: 0,
-            marker_is_void: false,
+            marker_void: false,
             marker_line_color: String::new(),
             marker_line_style: String::new(),
             marker_line_width: 0.0,
@@ -91,7 +91,10 @@ impl Curve {
     /// * `x` - abscissa array
     /// * `y` - ordinate array
     ///
-    pub fn draw(&mut self, x: &[f64], y: &[f64]) -> Result<(), &'static str> {
+    pub fn draw<T>(&mut self, x: &[T], y: &[T]) -> Result<(), &'static str>
+    where
+        T: std::fmt::Display + Into<f64> + Copy,
+    {
         vec_to_numpy_array(&mut self.buffer, "x", x);
         vec_to_numpy_array(&mut self.buffer, "y", y);
         let opt = self.options();
@@ -101,7 +104,7 @@ impl Curve {
 
     pub(crate) fn options(&self) -> String {
         // fix color if marker is void
-        let line_color = if self.marker_is_void && self.line_color == "" {
+        let line_color = if self.marker_void && self.line_color == "" {
             "red"
         } else {
             &self.line_color
@@ -134,7 +137,7 @@ impl Curve {
         if self.marker_every > 0 {
             write!(&mut opt, ",markevery={}", self.marker_every).unwrap();
         }
-        if self.marker_is_void {
+        if self.marker_void {
             write!(&mut opt, ",markerfacecolor='none'").unwrap();
         }
         if self.marker_line_color != "" {
@@ -179,7 +182,7 @@ mod tests {
         assert_eq!(curve.marker_alpha, 0.0);
         assert_eq!(curve.marker_color, String::new());
         assert_eq!(curve.marker_every, 0);
-        assert_eq!(curve.marker_is_void, false);
+        assert_eq!(curve.marker_void, false);
         assert_eq!(curve.marker_line_color, String::new());
         assert_eq!(curve.marker_line_style, String::new());
         assert_eq!(curve.marker_line_width, 0.0);
@@ -198,7 +201,7 @@ mod tests {
         curve.marker_alpha = 0.5;
         curve.marker_color = "#4c4deb".to_string();
         curve.marker_every = 2;
-        curve.marker_is_void = false;
+        curve.marker_void = false;
         curve.marker_line_color = "blue".to_string();
         curve.marker_line_style = "--".to_string();
         curve.marker_line_width = 1.5;

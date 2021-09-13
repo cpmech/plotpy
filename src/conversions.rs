@@ -41,7 +41,10 @@ where
 }
 
 // Writes a vector as Numpy array to buffer
-pub(crate) fn vec_to_numpy_array(buf: &mut String, name: &str, vec: &[f64]) {
+pub(crate) fn vec_to_numpy_array<T>(buf: &mut String, name: &str, vec: &[T])
+where
+    T: std::fmt::Display,
+{
     write!(buf, "{}=np.array([", name).unwrap();
     for val in vec.iter() {
         write!(buf, "{},", val).unwrap();
@@ -50,7 +53,10 @@ pub(crate) fn vec_to_numpy_array(buf: &mut String, name: &str, vec: &[f64]) {
 }
 
 // Writes a vector of vector as Numpy 2D array to buffer
-pub(crate) fn vec_vec_to_numpy_array_2d(buf: &mut String, name: &str, vec_vec: &[&[f64]]) -> Result<(), &'static str> {
+pub(crate) fn vec_vec_to_numpy_array_2d<T>(buf: &mut String, name: &str, vec_vec: &[&[T]]) -> Result<(), &'static str>
+where
+    T: std::fmt::Display,
+{
     let mut ncol = 0_usize;
     let mut first = true;
     write!(buf, "{}=np.array([", name).unwrap();

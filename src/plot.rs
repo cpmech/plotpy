@@ -1,4 +1,6 @@
 use super::*;
+use std::fs::File;
+use std::io::Write;
 use std::path::Path;
 
 pub trait GraphMaker {
@@ -70,7 +72,7 @@ impl Plot {
     }
 
     /// Calls python3 and saves the python script and figure
-    pub fn save(&self, figure_path: &Path) -> Result<String, &'static str> {
+    pub fn save(&self, figure_path: &Path) -> Result<(), &'static str> {
         // update commands
         let commands = format!(
             "{}\nfn='{}'\nplt.savefig(fn, bbox_inches='tight', bbox_extra_artists=EXTRA_ARTISTS)\n",
@@ -81,7 +83,20 @@ impl Plot {
         // call python
         let mut path = Path::new(figure_path).to_path_buf();
         path.set_extension("py");
-        call_python3(&commands, &path)
+        let output = call_python3(&commands, &path)?;
+
+        // handle error => write log file
+        if output != "" {
+            let mut log_path = Path::new(figure_path).to_path_buf();
+            log_path.set_extension("log");
+            let mut log_file = File::create(log_path).map_err(|_| "cannot create log file")?;
+            log_file
+                .write_all(output.as_bytes())
+                .map_err(|_| "cannot write to log file")?;
+            return Err("python3 failed; please see the log file");
+        }
+
+        Ok(())
     }
 
     /// Configures subplots

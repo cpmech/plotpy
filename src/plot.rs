@@ -69,6 +69,7 @@ impl Plot {
     /// * `index` - activate current subplot; indices start at one [1-based]
     ///
     pub fn subplot(&mut self, row: i32, col: i32, index: i32) {
+        assert!(index > 0);
         write!(&mut self.buffer, "\nplt.subplot({},{},{})\n", row, col, index).unwrap();
     }
 
@@ -271,11 +272,11 @@ mod tests {
     #[test]
     fn subplot_functions_work() {
         let mut plot = Plot::new();
-        plot.subplot(2, 2, 0);
+        plot.subplot(2, 2, 1);
         plot.subplot_horizontal_gap(0.1);
         plot.subplot_vertical_gap(0.2);
         plot.subplot_gap(0.3, 0.4);
-        let correct: &str = "\nplt.subplot(2,2,0)\n\
+        let correct: &str = "\nplt.subplot(2,2,1)\n\
                                plt.subplots_adjust(hspace=0.1)\n\
                                plt.subplots_adjust(wspace=0.2)\n\
                                plt.subplots_adjust(hspace=0.3,wspace=0.4)\n";

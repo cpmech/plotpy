@@ -6,7 +6,7 @@ use std::path::Path;
 const OUT_DIR: &str = "/tmp/plotpy/integration_tests";
 
 #[test]
-fn test_curve() -> Result<(), &'static str> {
+fn test_plot() -> Result<(), &'static str> {
     // curve object and options
     let mut curve = Curve::new();
 
@@ -17,6 +17,10 @@ fn test_curve() -> Result<(), &'static str> {
 
     // configure plot
     let mut plot = Plot::new();
+    plot.subplot(2, 2, 1);
+    plot.subplot_horizontal_gap(0.1);
+    plot.subplot_vertical_gap(0.2);
+    plot.subplot_gap(0.3, 0.4);
     plot.equal();
     plot.hide_axes();
     plot.range(-1.0, 1.0, -1.0, 1.0);
@@ -50,4 +54,11 @@ fn test_curve() -> Result<(), &'static str> {
     let lines_iter = buffered.lines();
     assert_eq!(lines_iter.count(), 574);
     Ok(())
+}
+
+#[test]
+fn test_plot_error() {
+    let plot = Plot::new();
+    let path = Path::new(OUT_DIR).join("plot_error.xyz");
+    assert_eq!(plot.save(&path).err(), Some("python3 failed; please see the log file"));
 }

@@ -5,6 +5,7 @@
     "**/Cargo.lock": true
   },
   "cSpell.words": [
+    "arrowstyle",
     "barstacked",
     "bbox",
     "borderaxespad",
@@ -15,12 +16,15 @@
     "contourf",
     "cstride",
     "dtype",
+    "edgecolor",
+    "facecolor",
     "fileio",
     "fontsize",
     "handlelength",
     "handletextpad",
     "histtype",
     "hspace",
+    "joinstyle",
     "lineplot",
     "linestyle",
     "linestyles",

@@ -122,7 +122,7 @@ mod tests {
         let mut legend = Legend::new();
         legend.handle_len = 6.0;
         let opt = legend.options();
-        assert_eq!(opt, "");
+        assert_eq!(opt, "handlelength=6,ncol=1,loc='best'");
     }
 
     #[test]

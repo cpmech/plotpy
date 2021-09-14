@@ -1,5 +1,17 @@
 use std::fmt::Write;
 
+/// Converts vector to a Python list of numbers
+pub(crate) fn vector_to_numbers<T>(buf: &mut String, name: &str, vector: &[T])
+where
+    T: std::fmt::Display,
+{
+    write!(buf, "{}=[", name).unwrap();
+    for val in vector.into_iter() {
+        write!(buf, "{},", val).unwrap();
+    }
+    write!(buf, "]\n").unwrap();
+}
+
 /// Converts vector to a Python list of strings
 pub(crate) fn vector_to_strings<T>(buf: &mut String, name: &str, vector: &[T])
 where
@@ -61,6 +73,23 @@ where
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn vector_to_numbers_works() {
+        let mut buf = String::new();
+        let x: Vec<f64> = vec![0.1, 0.2, 0.3];
+        let y: [f64; 3] = [1.0, 2.0, 3.0];
+        let z: &[f64] = &[10.0, 20.0, 30.0];
+        vector_to_numbers(&mut buf, "x", &x);
+        vector_to_numbers(&mut buf, "y", &y);
+        vector_to_numbers(&mut buf, "z", z);
+        assert_eq!(
+            buf,
+            "x=[0.1,0.2,0.3,]\n\
+             y=[1,2,3,]\n\
+             z=[10,20,30,]\n"
+        );
+    }
 
     #[test]
     fn vector_to_strings_works() {

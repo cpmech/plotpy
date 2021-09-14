@@ -22,6 +22,9 @@ use std::fmt::Write;
 /// plot.add(&curve);
 /// ```
 pub struct Curve {
+    /// Label; name of this curve in the legend
+    pub label: String,
+
     /// Opacity of lines (0, 1]. A<1e-14 => A=1.0
     pub line_alpha: f64,
 
@@ -69,6 +72,7 @@ impl Curve {
     /// Creates new Curve object
     pub fn new() -> Self {
         Curve {
+            label: String::new(),
             line_alpha: 0.0,
             line_color: String::new(),
             line_style: String::new(),
@@ -116,6 +120,11 @@ impl Curve {
 
         // output
         let mut opt = String::new();
+
+        // label
+        if self.label != "" {
+            write!(&mut opt, ",label='{}'", self.label).unwrap();
+        }
 
         // lines
         if self.line_alpha > 0.0 {
@@ -173,23 +182,25 @@ mod tests {
     #[test]
     fn new_works() {
         let curve = Curve::new();
+        assert_eq!(curve.label.len(), 0);
         assert_eq!(curve.line_alpha, 0.0);
-        assert_eq!(curve.line_color, String::new());
-        assert_eq!(curve.line_style, String::new());
+        assert_eq!(curve.line_color.len(), 0);
+        assert_eq!(curve.line_style.len(), 0);
         assert_eq!(curve.line_width, 0.0);
-        assert_eq!(curve.marker_color, String::new());
+        assert_eq!(curve.marker_color.len(), 0);
         assert_eq!(curve.marker_every, 0);
         assert_eq!(curve.marker_void, false);
-        assert_eq!(curve.marker_line_color, String::new());
+        assert_eq!(curve.marker_line_color.len(), 0);
         assert_eq!(curve.marker_line_width, 0.0);
         assert_eq!(curve.marker_size, 0.0);
-        assert_eq!(curve.marker_style, String::new());
+        assert_eq!(curve.marker_style.len(), 0);
         assert_eq!(curve.buffer.len(), 0);
     }
 
     #[test]
     fn options_works() {
         let mut curve = Curve::new();
+        curve.label = "my-curve".to_string();
         curve.line_alpha = 0.7;
         curve.line_color = "#b33434".to_string();
         curve.line_style = "-".to_string();
@@ -204,7 +215,8 @@ mod tests {
         let options = curve.options();
         assert_eq!(
             options,
-            ",alpha=0.7\
+            ",label='my-curve'\
+             ,alpha=0.7\
              ,color='#b33434'\
              ,linestyle='-'\
              ,linewidth=3\
@@ -222,10 +234,11 @@ mod tests {
         let x = &[1.0, 2.0, 3.0, 4.0, 5.0];
         let y = &[1.0, 4.0, 9.0, 16.0, 25.0];
         let mut curve = Curve::new();
+        curve.label = "the-curve".to_string();
         curve.draw(x, y);
         let b: &str = "x=np.array([1,2,3,4,5,],dtype=float)\n\
                        y=np.array([1,4,9,16,25,],dtype=float)\n\
-                       plt.plot(x,y)\n";
+                       plt.plot(x,y,label='the-curve')\n";
         assert_eq!(curve.buffer, b);
     }
 }

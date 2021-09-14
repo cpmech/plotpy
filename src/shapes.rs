@@ -56,7 +56,10 @@ impl Shapes {
     }
 
     /// Draws arrow
-    pub fn arrow(&mut self, xi: f64, yi: f64, xf: f64, yf: f64) {
+    pub fn arrow<T>(&mut self, xi: T, yi: T, xf: T, yf: T)
+    where
+        T: std::fmt::Display,
+    {
         let opt_shared = self.options_shared();
         let opt_arrow = self.options_arrow();
         write!(
@@ -67,6 +70,21 @@ impl Shapes {
                     {}{})\n\
              plt.gca().add_patch(p)\n",
             xi, yi, xf, yf, &opt_shared, &&opt_arrow,
+        )
+        .unwrap();
+    }
+
+    /// Draws circle
+    pub fn circle<T>(&mut self, xc: T, yc: T, r: T)
+    where
+        T: std::fmt::Display,
+    {
+        let opt = self.options_shared();
+        write!(
+            &mut self.buffer,
+            "p=pat.Circle(({},{}),{}{})\n\
+             plt.gca().add_patch(p)\n",
+            xc, yc, r, &opt
         )
         .unwrap();
     }
@@ -152,6 +170,15 @@ mod tests {
         let b: &str =
             "p=pat.FancyArrowPatch((0,0),(1,1),shrinkA=0,shrinkB=0,path_effects=[pff.Stroke(joinstyle='miter')])\n\
              plt.gca().add_patch(p)\n";
+        assert_eq!(shapes.buffer, b);
+    }
+
+    #[test]
+    fn circle_works() {
+        let mut shapes = Shapes::new();
+        shapes.circle(0.0, 0.0, 1.0);
+        let b: &str = "p=pat.Circle((0,0),1)\n\
+                       plt.gca().add_patch(p)\n";
         assert_eq!(shapes.buffer, b);
     }
 }

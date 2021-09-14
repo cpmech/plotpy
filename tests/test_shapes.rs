@@ -12,10 +12,15 @@ fn test_shapes() -> Result<(), &'static str> {
     shapes.edge_color = "#cd0000".to_string();
     shapes.face_color = "#1862ab".to_string();
 
-    // draw shapes
+    // draw arrow
     shapes.arrow_scale = 50.0;
     shapes.arrow_style = "fancy".to_string();
     shapes.arrow(0.0, 0.0, 1.0, 1.0);
+
+    // draw circle
+    shapes.face_color = "None".to_string();
+    shapes.edge_color = "grey".to_string();
+    shapes.circle(0.5, 0.5, 0.5);
 
     // add shapes to plot
     let mut plot = Plot::new();
@@ -23,6 +28,7 @@ fn test_shapes() -> Result<(), &'static str> {
 
     // save figure
     let path = Path::new(OUT_DIR).join("shapes.svg");
+    plot.equal();
     plot.save(&path)?;
 
     // check number of lines

@@ -21,37 +21,37 @@ use std::fmt::Write;
 /// plot.add(&curve);
 /// ```
 pub struct Curve {
-    /// alpha opacity of lines (0, 1]. A<1e-14 => A=1.0
+    /// Opacity of lines (0, 1]. A<1e-14 => A=1.0
     pub line_alpha: f64,
 
-    /// color of lines
+    /// Color of lines
     pub line_color: String,
 
-    /// style of lines
+    /// Style of lines
     pub line_style: String,
 
-    /// width of lines
+    /// Width of lines
     pub line_width: f64,
 
-    /// color of markers
+    /// Color of markers
     pub marker_color: String,
 
-    /// increment of data points to use when drawing markers
+    /// Increment of data points to use when drawing markers
     pub marker_every: i32,
 
-    /// draw a void marker (draw edge only)
+    /// Draw a void marker (draw edge only)
     pub marker_void: bool,
 
-    /// edge color of markers
+    /// Edge color of markers
     pub marker_line_color: String,
 
-    /// edge width of markers
+    /// Edge width of markers
     pub marker_line_width: f64,
 
-    /// size of markers
+    /// Size of markers
     pub marker_size: f64,
 
-    /// style of markers, e.g., "o", "+"
+    /// Style of markers, e.g., "o", "+"
     pub marker_style: String,
 
     // buffer

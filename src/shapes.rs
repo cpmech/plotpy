@@ -55,6 +55,21 @@ impl Shapes {
         }
     }
 
+    /// Draws arc
+    pub fn arc<T>(&mut self, xc: T, yc: T, r: T, ini_angle: T, fin_angle: T)
+    where
+        T: std::fmt::Display,
+    {
+        let opt = self.options_shared();
+        write!(
+            &mut self.buffer,
+            "p=pat.Arc(({},{}),2*{},2*{},theta1={},theta2={},angle=0{})\n\
+             plt.gca().add_patch(p)\n",
+            xc, yc, r, r, ini_angle, fin_angle, &opt
+        )
+        .unwrap();
+    }
+
     /// Draws arrow
     pub fn arrow<T>(&mut self, xi: T, yi: T, xf: T, yf: T)
     where
@@ -161,6 +176,15 @@ mod tests {
             ",mutation_scale=25\
              ,arrowstyle='fancy'"
         );
+    }
+
+    #[test]
+    fn arc_works() {
+        let mut shapes = Shapes::new();
+        shapes.arc(0.0, 0.0, 1.0, 30.0, 60.0);
+        let b: &str = "p=pat.Arc((0,0),2*1,2*1,theta1=30,theta2=60,angle=0)\n\
+                       plt.gca().add_patch(p)\n";
+        assert_eq!(shapes.buffer, b);
     }
 
     #[test]

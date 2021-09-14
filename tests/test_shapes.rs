@@ -12,6 +12,9 @@ fn test_shapes() -> Result<(), &'static str> {
     shapes.edge_color = "#cd0000".to_string();
     shapes.face_color = "#1862ab".to_string();
 
+    // draw arc
+    shapes.arc(0.5, 0.5, 0.4, 195.0, -15.0);
+
     // draw arrow
     shapes.arrow_scale = 50.0;
     shapes.arrow_style = "fancy".to_string();

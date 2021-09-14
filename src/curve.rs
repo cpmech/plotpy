@@ -28,6 +28,10 @@ pub struct Curve {
     pub line_color: String,
 
     /// Style of lines
+    ///
+    /// Options: "`-`", "`.`", "`--`", "`-.`"
+    ///
+    /// As defined in <https://matplotlib.org/stable/gallery/lines_bars_and_markers/linestyles.html>
     pub line_style: String,
 
     /// Width of lines
@@ -51,7 +55,9 @@ pub struct Curve {
     /// Size of markers
     pub marker_size: f64,
 
-    /// Style of markers, e.g., "o", "+"
+    /// Style of markers, e.g., "`o`", "`+`"
+    ///
+    /// As defined in <https://matplotlib.org/stable/api/markers_api.html>
     pub marker_style: String,
 
     // buffer

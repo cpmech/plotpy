@@ -12,9 +12,6 @@ pub struct Shapes {
     /// Line width of edge (shared)
     pub line_width: f64,
 
-    /// Closed polygonal (shared)
-    pub closed: bool,
-
     /// Arrow scale
     pub arrow_scale: f64,
 
@@ -48,7 +45,6 @@ impl Shapes {
             edge_color: String::new(),
             face_color: String::new(),
             line_width: 0.0,
-            closed: false,
             arrow_scale: 0.0,
             arrow_style: String::new(),
             buffer: String::new(),
@@ -104,6 +100,34 @@ impl Shapes {
         .unwrap();
     }
 
+    /// Draws polyline
+    pub fn polyline<T>(&mut self, points: &Vec<Vec<T>>, closed: bool)
+    where
+        T: std::fmt::Display,
+    {
+        if points.len() < 1 {
+            return;
+        }
+        let mut first = true;
+        for p in points {
+            if first {
+                write!(&mut self.buffer, "dat=[[pth.Path.MOVETO,({},{})]", p[0], p[1]).unwrap();
+            } else {
+                write!(&mut self.buffer, ",[pth.Path.LINETO,({},{})]", p[0], p[1]).unwrap();
+            }
+            first = false;
+        }
+        if closed {
+            write!(&mut self.buffer, ",[pth.Path.CLOSEPOLY,(None,None)]").unwrap();
+        }
+        let opt = self.options_shared();
+        write!(&mut self.buffer, "]\n").unwrap();
+        write!(&mut self.buffer, "cmd,pts=zip(*dat)\n").unwrap();
+        write!(&mut self.buffer, "h=pth.Path(pts,cmd)\n").unwrap();
+        write!(&mut self.buffer, "p=pat.PathPatch(h{})\n", &opt).unwrap();
+        write!(&mut self.buffer, "plt.gca().add_patch(p)\n").unwrap();
+    }
+
     /// Returns shared options
     pub(crate) fn options_shared(&self) -> String {
         let mut opt = String::new();
@@ -147,7 +171,12 @@ mod tests {
     #[test]
     fn new_works() {
         let shapes = Shapes::new();
-        assert_eq!(shapes.edge_color, "");
+        assert_eq!(shapes.edge_color.len(), 0);
+        assert_eq!(shapes.face_color.len(), 0);
+        assert_eq!(shapes.line_width, 0.0);
+        assert_eq!(shapes.arrow_scale, 0.0);
+        assert_eq!(shapes.arrow_style.len(), 0);
+        assert_eq!(shapes.buffer.len(), 0);
     }
 
     #[test]
@@ -203,6 +232,20 @@ mod tests {
         shapes.circle(0.0, 0.0, 1.0);
         let b: &str = "p=pat.Circle((0,0),1)\n\
                        plt.gca().add_patch(p)\n";
+        assert_eq!(shapes.buffer, b);
+    }
+
+    #[test]
+    fn polyline_works() {
+        let mut shapes = Shapes::new();
+        let points = vec![vec![1.0, 1.0], vec![2.0, 1.0], vec![1.5, 1.866]];
+        shapes.polyline(&points, true);
+        let b: &str = 
+            "dat=[[pth.Path.MOVETO,(1,1)],[pth.Path.LINETO,(2,1)],[pth.Path.LINETO,(1.5,1.866)],[pth.Path.CLOSEPOLY,(None,None)]]\n\
+             cmd,pts=zip(*dat)\n\
+             h=pth.Path(pts,cmd)\n\
+             p=pat.PathPatch(h)\n\
+             plt.gca().add_patch(p)\n";
         assert_eq!(shapes.buffer, b);
     }
 }

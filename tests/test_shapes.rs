@@ -25,6 +25,15 @@ fn test_shapes() -> Result<(), &'static str> {
     shapes.edge_color = "grey".to_string();
     shapes.circle(0.5, 0.5, 0.5);
 
+    // draw polyline
+    shapes.edge_color = "blue".to_string();
+    let a = 0.2;
+    let c = f64::sqrt(3.0) / 2.0;
+    let p = vec![vec![0.1, 0.5], vec![0.1 + a, 0.5], vec![0.1 + a / 2.0, 0.5 + a * c]];
+    let q = vec![vec![0.9, 0.5], vec![0.9 - a, 0.5], vec![0.9 - a / 2.0, 0.5 + a * c]];
+    shapes.polyline(&p, true);
+    shapes.polyline(&q, false);
+
     // add shapes to plot
     let mut plot = Plot::new();
     plot.add(&shapes);
@@ -38,6 +47,6 @@ fn test_shapes() -> Result<(), &'static str> {
     let file = File::open(path).map_err(|_| "cannot open file")?;
     let buffered = BufReader::new(file);
     let lines_iter = buffered.lines();
-    assert_eq!(lines_iter.count(), 437);
+    assert_eq!(lines_iter.count(), 506);
     Ok(())
 }

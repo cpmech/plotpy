@@ -3,55 +3,70 @@ use std::fmt::Write;
 
 /// Generates a contour plot
 pub struct Contour {
-    /// colors
+    /// Colors to be used instead of a pre-defined colormap
+    ///
+    /// Will use `colormap_index` instead if it empty.
     pub colors: Vec<String>,
 
-    /// levels (may be nil)
+    /// Pre-defined levels, otherwise automatically calculate levels
     pub levels: Vec<f64>,
 
-    /// colormap index
+    /// Colormap index
+    /// * 0 -- bwr
+    /// * 1 -- RdBu
+    /// * 2 -- hsv
+    /// * 3 -- jet
+    /// * 4 -- terrain
+    /// * 5 -- pink
+    /// * 6 -- Greys
+    /// * `>`6 -- starts over from 0
     pub colormap_index: i32,
 
-    /// skip drawing a lines contour on top of the filled contour
+    /// Colormap name as defined in <https://matplotlib.org/stable/tutorials/colors/colormaps.html>
+    ///
+    /// Will use `colormap_index` instead if `colormap_name` is empty.
+    pub colormap_name: String,
+
+    /// Skip drawing a lines contour on top of the filled contour
     pub no_lines: bool,
 
-    /// skip adding labels to the lines contour (if enabled)
+    /// Skip adding labels to the lines contour (if enabled)
     pub no_labels: bool,
 
-    /// do not draw labels inline with the contour lines (if enabled)
+    /// Do not draw labels inline with the contour lines (if enabled)
     pub no_inline_labels: bool,
 
-    /// skip drawing a colorbar
+    /// Skip drawing a colorbar
     pub no_colorbar: bool,
 
-    /// colorbar label
+    /// Colorbar label
     pub colorbar_label: String,
 
-    /// number format for the labels in lines contour (e.g. "%.2f")
+    /// Number format for the labels in lines contour (e.g. "%.2f")
     pub colorbar_number_format: String,
 
-    /// line color for the lines contour (default is black)
+    /// Line color for the lines contour (default is black)
     pub line_color: String,
 
-    /// line width for the lines contour
+    /// Line width for the lines contour
     pub line_width: f64,
 
-    /// font size for labels
+    /// Font size for labels
     pub font_size_labels: f64,
 
-    /// draw a line contour with a selected level (e.g., 0.0) on top of everything
+    /// Draw a line contour with a selected level (e.g., 0.0) on top of everything
     pub with_selected: bool,
 
-    /// selected level (e.g., 0.0)
+    /// Selected level (e.g., 0.0)
     pub selected_level: f64,
 
-    /// color to mark the selected level
+    /// Color to mark the selected level
     pub selected_line_color: String,
 
-    /// line style for the selected level
+    /// Line style for the selected level
     pub selected_line_style: String,
 
-    /// line width for the selected level
+    /// Line width for the selected level
     pub selected_line_width: f64,
 
     // buffer
@@ -65,6 +80,7 @@ impl Contour {
             colors: Vec::new(),
             levels: Vec::new(),
             colormap_index: 0,
+            colormap_name: String::new(),
             no_lines: false,
             no_labels: false,
             no_inline_labels: false,
@@ -240,6 +256,7 @@ mod tests {
         assert_eq!(contour.colors.len(), 0);
         assert_eq!(contour.levels.len(), 0);
         assert_eq!(contour.colormap_index, 0);
+        assert_eq!(contour.colormap_name, "".to_string());
         assert_eq!(contour.no_lines, false);
         assert_eq!(contour.no_labels, false);
         assert_eq!(contour.no_inline_labels, false);

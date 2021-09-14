@@ -8,6 +8,7 @@ const OUT_DIR: &str = "/tmp/plotpy/integration_tests";
 #[test]
 fn test_histogram() -> Result<(), &'static str> {
     let mut histogram = Histogram::new();
+    histogram.colors = vec!["#cd0000".to_string(), "#1862ab".to_string(), "#cd8c00".to_string()];
     histogram.style = "barstacked".to_string();
 
     // draw histogram

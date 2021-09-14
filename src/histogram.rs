@@ -60,6 +60,9 @@ impl Histogram {
         let opt = self.options();
         matrix_to_list(&mut self.buffer, "values", values);
         vector_to_strings(&mut self.buffer, "labels", labels);
+        if self.colors.len() > 0 {
+            vector_to_strings(&mut self.buffer, "colors", self.colors.as_slice());
+        }
         write!(&mut self.buffer, "plt.hist(values,label=labels{})\n", &opt).unwrap();
     }
 
@@ -67,7 +70,6 @@ impl Histogram {
     pub(crate) fn options(&self) -> String {
         let mut opt = String::new();
         if self.colors.len() > 0 {
-            // vec_to_list_str(&mut opt, "colors", &self.colors);
             write!(&mut opt, ",color=colors").unwrap();
         }
         if self.style != "" {
@@ -122,10 +124,12 @@ mod tests {
         let values = vec![vec![1, 1, 1, 2, 2, 2, 2, 2, 3, 3], vec![5, 6, 7, 8]];
         let labels = ["first".to_string(), "second".to_string()];
         let mut histogram = Histogram::new();
+        histogram.colors = vec!["red".to_string(), "green".to_string()];
         histogram.draw(&values, &labels);
         let b: &str = "values=[[1,1,1,2,2,2,2,2,3,3,],[5,6,7,8,],]\n\
                        labels=['first','second',]\n\
-                       plt.hist(values,label=labels)\n";
+                       colors=['red','green',]\n\
+                       plt.hist(values,label=labels,color=colors)\n";
         assert_eq!(histogram.buffer, b);
     }
 }

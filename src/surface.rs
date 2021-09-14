@@ -203,7 +203,7 @@ mod tests {
         graph3d.row_stride = 3;
         graph3d.col_stride = 4;
         let opt = graph3d.options_surface();
-        assert_eq!(opt, ",rstride=3,cstride=4");
+        assert_eq!(opt, ",rstride=3,cstride=4,cmap=getColormap(0)");
     }
 
     #[test]
@@ -219,8 +219,8 @@ mod tests {
                        y=np.array([[-0.5,-0.5,-0.5,],[0,0,0,],[0.5,0.5,0.5,],],dtype=float)\n\
                        z=np.array([[0.5,0.25,0.5,],[0.25,0,0.25,],[0.5,0.25,0.5,],],dtype=float)\n\
                        maybeCreateAX3D()\n\
-                       sf=AX3D.plot_surface(x,y,z)\n\
-                       AX3D.plot_wireframe(x,y,z)\n\
+                       sf=AX3D.plot_surface(x,y,z,cmap=getColormap(0))\n\
+                       AX3D.plot_wireframe(x,y,z,color='black')\n\
                        cb=plt.colorbar(sf)\n";
         assert_eq!(surface.buffer, b);
     }

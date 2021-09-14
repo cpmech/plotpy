@@ -27,15 +27,16 @@ fn gen_xyz(n: usize) -> (Vec<Vec<f64>>, Vec<Vec<f64>>, Vec<Vec<f64>>) {
 #[test]
 fn test_surface() -> Result<(), &'static str> {
     let mut surface = Surface::new();
+    surface.row_stride = 1;
+    surface.col_stride = 1;
     surface.wireframe = true;
     surface.colormap_name = "Pastel1".to_string();
     surface.colorbar = true;
     surface.colorbar_label = "temperature".to_string();
+    surface.colorbar_number_format = "%.1f".to_string();
     surface.line_color = "#1862ab".to_string();
     surface.line_style = ":".to_string();
     surface.line_width = 0.75;
-    surface.row_stride = 1;
-    surface.col_stride = 1;
 
     // draw surface
     let n = 9;
@@ -54,6 +55,33 @@ fn test_surface() -> Result<(), &'static str> {
     let file = File::open(path).map_err(|_| "cannot open file")?;
     let buffered = BufReader::new(file);
     let lines_iter = buffered.lines();
-    assert_eq!(lines_iter.count(), 1654);
+    assert_eq!(lines_iter.count(), 1674);
+    Ok(())
+}
+
+#[test]
+fn test_wireframe() -> Result<(), &'static str> {
+    let mut surface = Surface::new();
+    surface.surface = false;
+    surface.wireframe = true;
+
+    // draw wireframe
+    let n = 9;
+    let (x, y, z) = gen_xyz(n);
+    surface.draw(&x, &y, &z);
+
+    // add surface to plot
+    let mut plot = Plot::new();
+    plot.add(&surface);
+
+    // save figure
+    let path = Path::new(OUT_DIR).join("wireframe.svg");
+    plot.save(&path)?;
+
+    // check number of lines
+    let file = File::open(path).map_err(|_| "cannot open file")?;
+    let buffered = BufReader::new(file);
+    let lines_iter = buffered.lines();
+    assert_eq!(lines_iter.count(), 910);
     Ok(())
 }

@@ -187,12 +187,12 @@ mod tests {
         assert_eq!(graph3d.surface, true);
         assert_eq!(graph3d.wireframe, false);
         assert_eq!(graph3d.colormap_index, 0);
-        assert_eq!(graph3d.colormap_name, "".to_string());
+        assert_eq!(graph3d.colormap_name.len(), 0);
         assert_eq!(graph3d.colorbar, false);
-        assert_eq!(graph3d.colorbar_label, "".to_string());
-        assert_eq!(graph3d.colorbar_number_format, "".to_string());
+        assert_eq!(graph3d.colorbar_label.len(), 0);
+        assert_eq!(graph3d.colorbar_number_format.len(), 0);
         assert_eq!(graph3d.line_color, "black".to_string());
-        assert_eq!(graph3d.line_style, "".to_string());
+        assert_eq!(graph3d.line_style.len(), 0);
         assert_eq!(graph3d.line_width, 0.0);
         assert_eq!(graph3d.buffer.len(), 0);
     }

@@ -30,6 +30,7 @@ pub struct Histogram {
 }
 
 impl Histogram {
+    /// Creates a new Histogram object
     pub fn new() -> Self {
         Histogram {
             colors: Vec::new(),

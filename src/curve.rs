@@ -105,6 +105,7 @@ impl Curve {
         write!(&mut self.buffer, "plt.plot(x,y{})\n", &opt).unwrap();
     }
 
+    /// Returns options for curve
     pub(crate) fn options(&self) -> String {
         // fix color if marker is void
         let line_color = if self.marker_void && self.line_color == "" {

@@ -24,6 +24,22 @@ where
     write!(buf, "],dtype=float)\n").unwrap();
 }
 
+/// Converts a matrix to a nested Python list
+pub(crate) fn matrix_to_list<T>(buf: &mut String, name: &str, matrix: &Vec<Vec<T>>)
+where
+    T: std::fmt::Display,
+{
+    write!(buf, "{}=[", name).unwrap();
+    for row in matrix.into_iter() {
+        write!(buf, "[").unwrap();
+        for val in row.into_iter() {
+            write!(buf, "{},", val).unwrap();
+        }
+        write!(buf, "],").unwrap();
+    }
+    write!(buf, "]\n").unwrap();
+}
+
 /// Converts a matrix to a 2D NumPy array
 pub(crate) fn matrix_to_array<T>(buf: &mut String, name: &str, matrix: &Vec<Vec<T>>)
 where
@@ -82,6 +98,14 @@ mod tests {
 
     #[test]
     fn matrix_to_list_works() {
+        let mut buf = String::new();
+        let a = vec![vec![1.0, 2.0, 3.0], vec![4.0, 5.0], vec![6.0, 7.0, 8.0, 9.0]];
+        matrix_to_list(&mut buf, "a", &a);
+        assert_eq!(buf, "a=[[1,2,3,],[4,5,],[6,7,8,9,],]\n");
+    }
+
+    #[test]
+    fn matrix_to_array_works() {
         let mut buf = String::new();
         let a = vec![vec![1.0, 2.0, 3.0], vec![4.0, 5.0, 6.0], vec![7.0, 8.0, 9.0]];
         matrix_to_array(&mut buf, "a", &a);

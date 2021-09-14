@@ -4,6 +4,7 @@
 //!
 //! ```
 //! use plotpy::*;
+//! use std::path::Path;
 //!
 //! fn main() -> Result<(), Box<dyn std::error::Error>> {
 //!     let x = &[1.0, 2.0, 3.0, 4.0, 5.0];
@@ -25,46 +26,34 @@
 //!     plot.add(&curve);
 //!     plot.grid_and_labels("x", "y");
 //!
-//!     let message = plot.save("/tmp/plotpy", "example_main", "svg")?;
-//!     println!("{}", message);
+//!     plot.save(Path::new("/tmp/plotpy/example_main.svg"))?;
 //!     Ok(())
 //! }
 //! ```
 //!
 //! ![example_main.svg](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/example_main.svg)
 //!
-//! # Todo
-//!
-//! - [ ] Test Contour
-//! - [ ] Test Graphs3d
-//! - [ ] Test Histogram
-//! - [ ] Test Legend
-//! - [ ] Test Shapes
-//! - [ ] Test Text
-//!
 
 // modules ////////////////////////////////////////
 mod constants;
 mod contour;
+mod conversions;
 mod curve;
 mod fileio;
-mod graph3d;
 mod histogram;
 mod legend;
 mod plot;
-mod scatter;
 mod shapes;
+mod surface;
 mod text;
-mod util;
 pub use crate::constants::*;
 pub use crate::contour::*;
+use crate::conversions::*;
 pub use crate::curve::*;
 use crate::fileio::*;
-pub use crate::graph3d::*;
 pub use crate::histogram::*;
 pub use crate::legend::*;
 pub use crate::plot::*;
-pub use crate::scatter::*;
 pub use crate::shapes::*;
+pub use crate::surface::*;
 pub use crate::text::*;
-use crate::util::*;

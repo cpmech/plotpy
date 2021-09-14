@@ -12,7 +12,16 @@ EXTRA_ARTISTS = []
 def addToEA(obj):
     if obj!=None: EXTRA_ARTISTS.append(obj)
 COLORMAPS = [plt.cm.bwr, plt.cm.RdBu, plt.cm.hsv, plt.cm.jet, plt.cm.terrain, plt.cm.pink, plt.cm.Greys]
-def getCmap(idx): return COLORMAPS[idx % len(COLORMAPS)]
+def getColormap(idx): return COLORMAPS[idx % len(COLORMAPS)]
+AX3D = None
+def maybeCreateAX3D():
+    global AX3D
+    if AX3D == None:
+        AX3D = plt.gcf().add_subplot(111, projection='3d')
+        AX3D.set_xlabel('x')
+        AX3D.set_ylabel('y')
+        AX3D.set_zlabel('z')
+        addToEA(AX3D)
 
 ";
 
@@ -24,6 +33,6 @@ mod tests {
 
     #[test]
     fn constants_are_correct() {
-        assert_eq!(PYTHON_HEADER.len(), 535);
+        assert_eq!(PYTHON_HEADER.len(), 779);
     }
 }

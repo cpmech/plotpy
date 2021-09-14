@@ -27,18 +27,18 @@ impl Histogram {
         }
     }
 
-    pub fn draw(&mut self, x: &[&[f64]], labels: &[String]) -> Result<(), &'static str> {
+    #[allow(unused_variables)]
+    pub fn draw(&mut self, x: &[&[f64]], labels: &[String]) {
         let opt = self.options();
-        vec_vec_to_py_list_num(&mut self.buffer, "x", x);
-        vec_to_py_list_str(&mut self.buffer, "labels", &labels);
+        matrix_to_array(&mut self.buffer, "x", x);
+        // vec_to_list_str(&mut self.buffer, "labels", &labels);
         write!(&mut self.buffer, "plot.hist(x,label=labels{})", &opt).unwrap();
-        Ok(())
     }
 
     pub(crate) fn options(&self) -> String {
         let mut opt = String::new();
         if self.colors.len() > 0 {
-            vec_to_py_list_str(&mut opt, "colors", &self.colors);
+            // vec_to_list_str(&mut opt, "colors", &self.colors);
             write!(&mut opt, ",color=colors").unwrap();
         }
         if self.style != "" {

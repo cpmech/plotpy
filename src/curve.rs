@@ -83,15 +83,14 @@ impl Curve {
     /// * `x` - abscissa array
     /// * `y` - ordinate array
     ///
-    pub fn draw<T>(&mut self, x: &[T], y: &[T]) -> Result<(), &'static str>
+    pub fn draw<T>(&mut self, x: &[T], y: &[T])
     where
         T: std::fmt::Display + Into<f64> + Copy,
     {
-        vec_to_numpy_array(&mut self.buffer, "x", x);
-        vec_to_numpy_array(&mut self.buffer, "y", y);
+        vector_to_array(&mut self.buffer, "x", x);
+        vector_to_array(&mut self.buffer, "y", y);
         let opt = self.options();
         write!(&mut self.buffer, "plt.plot(x,y{})\n", &opt).unwrap();
-        Ok(())
     }
 
     pub(crate) fn options(&self) -> String {
@@ -206,15 +205,14 @@ mod tests {
     }
 
     #[test]
-    fn draw_works() -> Result<(), &'static str> {
+    fn draw_works() {
         let x = &[1.0, 2.0, 3.0, 4.0, 5.0];
         let y = &[1.0, 4.0, 9.0, 16.0, 25.0];
         let mut curve = Curve::new();
-        curve.draw(x, y)?;
+        curve.draw(x, y);
         let b: &str = "x=np.array([1,2,3,4,5,],dtype=float)\n\
                        y=np.array([1,4,9,16,25,],dtype=float)\n\
                        plt.plot(x,y)\n";
         assert_eq!(curve.buffer, b);
-        Ok(())
     }
 }

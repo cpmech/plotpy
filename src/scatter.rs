@@ -66,12 +66,11 @@ impl Scatter {
     /// * `x` - abscissa array
     /// * `y` - ordinate array
     ///
-    pub fn draw(&mut self, x: &[f64], y: &[f64]) -> Result<(), &'static str> {
-        vec_to_numpy_array(&mut self.buffer, "x", x);
-        vec_to_numpy_array(&mut self.buffer, "y", y);
+    pub fn draw(&mut self, x: &[f64], y: &[f64]) {
+        vector_to_array(&mut self.buffer, "x", x);
+        vector_to_array(&mut self.buffer, "y", y);
         let opt = self.options();
         write!(&mut self.buffer, "plt.scatter(x,y{})\n", &opt).unwrap();
-        Ok(())
     }
 
     pub(crate) fn options(&self) -> String {
@@ -155,15 +154,14 @@ mod tests {
     }
 
     #[test]
-    fn draw_works() -> Result<(), &'static str> {
+    fn draw_works() {
         let x = &[1.0, 2.0, 3.0, 4.0, 5.0];
         let y = &[1.0, 4.0, 9.0, 16.0, 25.0];
         let mut scatter = Scatter::new();
-        scatter.draw(x, y)?;
+        scatter.draw(x, y);
         let b: &str = "x=np.array([1,2,3,4,5,],dtype=float)\n\
                        y=np.array([1,4,9,16,25,],dtype=float)\n\
                        plt.scatter(x,y)\n";
         assert_eq!(scatter.buffer, b);
-        Ok(())
     }
 }

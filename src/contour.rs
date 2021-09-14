@@ -94,15 +94,15 @@ impl Contour {
     /// * `no_colorbar` -- skip drawing a colorbar
     /// * `with_selected` -- draw a line contour with a selected level (e.g., 0.0) on top of everything
     ///
-    pub fn draw(&mut self, x: &[&[f64]], y: &[&[f64]], z: &[&[f64]]) -> Result<(), &'static str> {
-        vec_vec_to_numpy_array_2d(&mut self.buffer, "x", x)?;
-        vec_vec_to_numpy_array_2d(&mut self.buffer, "y", y)?;
-        vec_vec_to_numpy_array_2d(&mut self.buffer, "z", z)?;
+    pub fn draw(&mut self, x: &[&[f64]], y: &[&[f64]], z: &[&[f64]]) {
+        matrix_to_array(&mut self.buffer, "x", x);
+        matrix_to_array(&mut self.buffer, "y", y);
+        matrix_to_array(&mut self.buffer, "z", z);
         if self.colors.len() > 0 {
-            vec_to_py_list_str(&mut self.buffer, "colors", &self.colors);
+            vector_to_strings(&mut self.buffer, "colors", &self.colors);
         }
         if self.levels.len() > 0 {
-            vec_to_py_list_num(&mut self.buffer, "levels", &self.levels);
+            vector_to_array(&mut self.buffer, "levels", &self.levels);
         }
         let opt = self.options_filled();
         write!(&mut self.buffer, "cf=plt.contourf(x,y,z{})\n", &opt).unwrap();
@@ -125,7 +125,6 @@ impl Contour {
             let opt_selected = self.options_selected();
             write!(&mut self.buffer, "plt.contour(x,y,z{})\n", &opt_selected).unwrap();
         }
-        Ok(())
     }
 
     /// Returns options for filled contour
@@ -259,7 +258,7 @@ mod tests {
     }
 
     #[test]
-    fn options_filled_works() -> Result<(), &'static str> {
+    fn options_filled_works() {
         let mut contour = Contour::new();
         contour.colors = vec!["#f00".to_string(), "#0f0".to_string(), "#00f".to_string()];
         contour.levels = vec![0.25, 0.5, 1.0];
@@ -277,11 +276,10 @@ mod tests {
             ",cmap=getColormap(4)\
              ,levels=levels"
         );
-        Ok(())
     }
 
     #[test]
-    fn options_line_works() -> Result<(), &'static str> {
+    fn options_line_works() {
         let mut contour = Contour::new();
         contour.levels = vec![0.25, 0.5, 1.0];
         contour.line_color = "red".to_string();
@@ -293,11 +291,10 @@ mod tests {
              ,levels=levels\
              ,linewidths[3]"
         );
-        Ok(())
     }
 
     #[test]
-    fn options_label_works() -> Result<(), &'static str> {
+    fn options_label_works() {
         let mut contour = Contour::new();
         contour.no_inline_labels = false;
         contour.font_size_labels = 5.0;
@@ -314,20 +311,18 @@ mod tests {
             ",inline=False\
              ,fontsize=5"
         );
-        Ok(())
     }
 
     #[test]
-    fn options_colorbar_works() -> Result<(), &'static str> {
+    fn options_colorbar_works() {
         let mut contour = Contour::new();
         contour.colorbar_number_format = "%.4f".to_string();
         let opt = contour.options_colorbar();
         assert_eq!(opt, ",format='%.4f'");
-        Ok(())
     }
 
     #[test]
-    fn options_selected_works() -> Result<(), &'static str> {
+    fn options_selected_works() {
         let mut contour = Contour::new();
         contour.with_selected = true;
         contour.selected_level = 0.75;
@@ -342,23 +337,22 @@ mod tests {
              ,linestyles=['--']\
              ,linewidths=[2.5]"
         );
-        Ok(())
     }
 
     #[test]
-    fn draw_works() -> Result<(), &'static str> {
+    fn draw_works() {
         let mut contour = Contour::new();
         contour.colors = vec!["#f00".to_string(), "#0f0".to_string(), "#00f".to_string()];
         contour.levels = vec![0.25, 0.5, 1.0];
         contour.colorbar_label = "temperature".to_string();
         contour.with_selected = true;
         let (x, y, z) = gen_xyz();
-        contour.draw(x, y, z)?;
+        contour.draw(x, y, z);
         let b: &str = "x=np.array([[-1,-0.5,0,0.5,],[-1,-0.5,0,0.5,],[-1,-0.5,0,0.5,],[-1,-0.5,0,0.5,],],dtype=float)\n\
                        y=np.array([[-1,-1,-1,-1,],[-0.5,-0.5,-0.5,-0.5,],[0,0,0,0,],[0.5,0.5,0.5,0.5,],],dtype=float)\n\
                        z=np.array([[2,1.25,1,1.25,],[1.25,0.5,0.25,0.5,],[1,0.25,0,0.25,],[1.25,0.5,0.25,0.5,],],dtype=float)\n\
                        colors=['#f00','#0f0','#00f',]\n\
-                       levels=[0.25,0.5,1,]\n\
+                       levels=np.array([0.25,0.5,1,],dtype=float)\n\
                        cf=plt.contourf(x,y,z,colors=colors,levels=levels)\n\
                        cl=plt.contour(x,y,z,colors=['black'],levels=levels)\n\
                        plt.clabel(cl,inline=True)\n\
@@ -366,6 +360,5 @@ mod tests {
                        cb.ax.set_ylabel(r'temperature')\n\
                        plt.contour(x,y,z,colors=['yellow'],levels=[0],linestyles=['-'],linewidths=[2])\n";
         assert_eq!(contour.buffer, b);
-        Ok(())
     }
 }

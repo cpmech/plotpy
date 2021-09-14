@@ -1,86 +1,72 @@
+use core::borrow::Borrow;
 use std::fmt::Write;
 
-// Converts a vector to a Python list of numbers
-pub(crate) fn vec_to_py_list_num<T>(buf: &mut String, name: &str, values: &[T])
+/// Converts vector to a Python list of strings
+///
+/// The vector may be one of the following
+///
+/// * `Vec<U>` -- a contiguous growable array type
+/// * `[U; n]` -- a fixed-size array
+/// * `&[U]` -- a slice with size only known at runtime
+///
+pub(crate) fn vector_to_strings<'a, T, U>(buf: &mut String, name: &str, vector: &'a T)
 where
-    T: std::fmt::Display,
+    T: ?Sized,
+    &'a T: IntoIterator<Item = U>,
+    U: std::fmt::Display,
 {
     write!(buf, "{}=[", name).unwrap();
-    for val in values.iter() {
-        write!(buf, "{},", val).unwrap();
-    }
-    write!(buf, "]\n").unwrap();
-}
-
-// Converts a vector to a Python list of strings
-pub(crate) fn vec_to_py_list_str<T>(buf: &mut String, name: &str, values: &[T])
-where
-    T: std::fmt::Display,
-{
-    write!(buf, "{}=[", name).unwrap();
-    for val in values.iter() {
+    for val in vector.into_iter() {
         write!(buf, "'{}',", val).unwrap();
     }
     write!(buf, "]\n").unwrap();
 }
 
-// Writes a vector of vector as Python nested list
-pub(crate) fn vec_vec_to_py_list_num<T>(buf: &mut String, name: &str, data: &[&[T]])
+/// Converts vector to a 1D NumPy array
+///
+/// The vector may be one of the following
+///
+/// * `Vec<U>` -- a contiguous growable array type
+/// * `[U; n]` -- a fixed-size array
+/// * `&[U]` -- a slice with size only known at runtime
+///
+pub(crate) fn vector_to_array<'a, T, U>(buf: &mut String, name: &str, vector: &'a T)
 where
-    T: std::fmt::Display,
-{
-    write!(buf, "{}=[", name).unwrap();
-    for row in data.iter() {
-        write!(buf, "[").unwrap();
-        for val in row.iter() {
-            write!(buf, "{},", val).unwrap();
-        }
-        write!(buf, "],").unwrap();
-    }
-    write!(buf, "]\n").unwrap();
-}
-
-// Writes a vector as Numpy array to buffer
-pub(crate) fn vec_to_numpy_array<T>(buf: &mut String, name: &str, vec: &[T])
-where
-    T: std::fmt::Display,
+    T: ?Sized,
+    &'a T: IntoIterator<Item = U>,
+    U: std::fmt::Display,
 {
     write!(buf, "{}=np.array([", name).unwrap();
-    for val in vec.iter() {
+    for val in vector.into_iter() {
         write!(buf, "{},", val).unwrap();
     }
     write!(buf, "],dtype=float)\n").unwrap();
 }
 
-// Writes a vector of vector as Numpy 2D array to buffer
-pub(crate) fn vec_vec_to_numpy_array_2d<T>(buf: &mut String, name: &str, vec_vec: &[&[T]]) -> Result<(), &'static str>
+/// Converts a matrix to a 2D NumPy array
+///
+/// The matrix may be one of the following
+///
+/// * `Vec<Vec<U>>` -- a contiguous growable array of array
+/// * `[[U; m]; n]` -- a nested fixed-size array of array
+/// * `&[&[U]]` -- a nested slice of references with size only known at runtime
+///
+pub(crate) fn matrix_to_array<'a, T, U, V>(buf: &mut String, name: &str, matrix: &'a T)
 where
-    T: std::fmt::Display,
+    T: ?Sized,
+    &'a T: std::iter::IntoIterator<Item = &'a U>,
+    U: 'a + Borrow<[V]>,
+    V: std::fmt::Display,
 {
-    let mut ncol = 0_usize;
-    let mut first = true;
     write!(buf, "{}=np.array([", name).unwrap();
-    for row in vec_vec.iter() {
-        if !first && row.len() != ncol {
-            write!(buf, "],dtype=float)\n").unwrap();
-            return Err("all rows must have the same number of columns");
-        }
-        if first {
-            ncol = row.len();
-            first = false;
-            if ncol == 0 {
-                write!(buf, "],dtype=float)\n").unwrap();
-                return Err("the matrix must have one column at least");
-            }
-        }
+    for row in matrix.into_iter() {
         write!(buf, "[").unwrap();
-        for val in row.iter() {
+        for val in row.borrow().into_iter() {
             write!(buf, "{},", val).unwrap();
         }
         write!(buf, "],").unwrap();
     }
     write!(buf, "],dtype=float)\n").unwrap();
-    Ok(())
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -90,64 +76,53 @@ mod tests {
     use super::*;
 
     #[test]
-    fn vec_to_py_list_num_works() {
+    fn vector_to_strings_works() {
         let mut buf = String::new();
-        vec_to_py_list_num(&mut buf, "x", &[1.0, 2.0, 3.0]);
-        assert_eq!(buf, "x=[1,2,3,]\n");
-    }
-
-    #[test]
-    fn vec_to_py_list_str_works() {
-        let mut buf = String::new();
-        vec_to_py_list_str(&mut buf, "x", &[1.0, 2.0, 3.0]);
-        assert_eq!(buf, "x=['1','2','3',]\n");
-    }
-
-    #[test]
-    fn vec_vec_to_py_list_works() {
-        let mut buf = String::new();
-        vec_vec_to_py_list_num(&mut buf, "x", &[&[1.0, 2.0, 3.0], &[4.0], &[5.0, 6.0]]);
-        assert_eq!(buf, "x=[[1,2,3,],[4,],[5,6,],]\n");
-    }
-
-    #[test]
-    fn vec_to_numpy_array_works() {
-        let x = &[1.0, 2.0, 3.0, 4.0, 5.0];
-        let mut buf = String::new();
-        vec_to_numpy_array(&mut buf, "x", x);
-        assert_eq!(buf, "x=np.array([1,2,3,4,5,],dtype=float)\n");
-    }
-
-    #[test]
-    fn vec_vec_to_numpy_array_2d_fails_on_wrong_ncol() -> Result<(), &'static str> {
-        let a: &[&[f64]] = &[&[], &[2.0], &[3.0]];
-        let mut buf = String::new();
+        let x: Vec<&str> = vec!["red", "green", "blue"];
+        let y: [String; 3] = ["cyan".to_string(), "magenta".to_string(), "white".to_string()];
+        let z: &[&str] = &["#f00", "#0f0", "#00f"];
+        vector_to_strings(&mut buf, "x", &x);
+        vector_to_strings(&mut buf, "y", &y);
+        vector_to_strings(&mut buf, "z", z);
         assert_eq!(
-            vec_vec_to_numpy_array_2d(&mut buf, "a", a).err(),
-            Some("the matrix must have one column at least")
+            buf,
+            "x=['red','green','blue',]\n\
+             y=['cyan','magenta','white',]\n\
+             z=['#f00','#0f0','#00f',]\n"
         );
-        assert_eq!(buf, "a=np.array([],dtype=float)\n");
-        Ok(())
     }
 
     #[test]
-    fn vec_vec_to_numpy_array_2d_fails_on_wrong_mat() -> Result<(), &'static str> {
-        let a: &[&[f64]] = &[&[1.0, 2.0, 3.0], &[4.0, 6.0], &[7.0, 8.0, 9.0]];
+    fn vector_to_array_works() {
         let mut buf = String::new();
+        let x: Vec<f64> = vec![0.1, 0.2, 0.3];
+        let y: [f64; 3] = [1.0, 2.0, 3.0];
+        let z: &[f64] = &[10.0, 20.0, 30.0];
+        vector_to_array(&mut buf, "x", &x);
+        vector_to_array(&mut buf, "y", &y);
+        vector_to_array(&mut buf, "z", z);
         assert_eq!(
-            vec_vec_to_numpy_array_2d(&mut buf, "a", a).err(),
-            Some("all rows must have the same number of columns")
+            buf,
+            "x=np.array([0.1,0.2,0.3,],dtype=float)\n\
+             y=np.array([1,2,3,],dtype=float)\n\
+             z=np.array([10,20,30,],dtype=float)\n"
         );
-        assert_eq!(buf, "a=np.array([[1,2,3,],],dtype=float)\n");
-        Ok(())
     }
 
     #[test]
-    fn vec_vec_to_numpy_array_2d_works() -> Result<(), &'static str> {
-        let a: &[&[f64]] = &[&[1.0, 2.0, 3.0], &[4.0, 5.0, 6.0], &[7.0, 8.0, 9.0]];
+    fn matrix_to_list_works() {
         let mut buf = String::new();
-        vec_vec_to_numpy_array_2d(&mut buf, "a", a)?;
-        assert_eq!(buf, "a=np.array([[1,2,3,],[4,5,6,],[7,8,9,],],dtype=float)\n");
-        Ok(())
+        let a: Vec<Vec<f64>> = vec![vec![0.1, 0.2, 0.3], vec![0.4, 0.5, 0.6], vec![0.7, 0.8, 0.9]];
+        let b: [[f64; 3]; 3] = [[1.0, 2.0, 3.0], [4.0, 5.0, 6.0], [7.0, 8.0, 9.0]];
+        let c: &[&[f64]] = &[&[10.0, 20.0, 30.0], &[40.0, 50.0, 60.0], &[70.0, 80.0, 90.0]];
+        matrix_to_array(&mut buf, "a", &a);
+        matrix_to_array(&mut buf, "b", &b);
+        matrix_to_array(&mut buf, "c", c);
+        assert_eq!(
+            buf,
+            "a=np.array([[0.1,0.2,0.3,],[0.4,0.5,0.6,],[0.7,0.8,0.9,],],dtype=float)\n\
+             b=np.array([[1,2,3,],[4,5,6,],[7,8,9,],],dtype=float)\n\
+             c=np.array([[10,20,30,],[40,50,60,],[70,80,90,],],dtype=float)\n"
+        );
     }
 }

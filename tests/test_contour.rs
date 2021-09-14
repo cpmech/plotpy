@@ -64,7 +64,7 @@ fn test_contour() -> Result<(), &'static str> {
 
     // draw contour
     let (x, y, z) = gen_xyz();
-    contour.draw(x, y, z)?;
+    contour.draw(x, y, z);
 
     // add contour to plot
     let mut plot = Plot::new();
@@ -95,7 +95,7 @@ fn test_contour_colors() -> Result<(), &'static str> {
 
     // draw contour
     let (x, y, z) = gen_xyz();
-    contour.draw(x, y, z)?;
+    contour.draw(x, y, z);
 
     // add contour to plot
     let mut plot = Plot::new();
@@ -127,7 +127,7 @@ fn test_contour_colormap() -> Result<(), &'static str> {
 
         // draw contour
         let (x, y, z) = gen_xyz();
-        contour.draw(x, y, z)?;
+        contour.draw(x, y, z);
 
         // add contour to plot
         let mut plot = Plot::new();

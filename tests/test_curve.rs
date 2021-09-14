@@ -26,7 +26,7 @@ fn test_curve() -> Result<(), &'static str> {
     let y = &[
         1.0, 1.41421356, 1.73205081, 2.0, 2.23606798, 2.44948974, 2.64575131, 2.82842712, 3.0, 3.16227766,
     ];
-    curve.draw(x, y)?;
+    curve.draw(x, y);
 
     // add contour to plot
     let mut plot = Plot::new();

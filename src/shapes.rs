@@ -25,7 +25,7 @@ impl Shapes {
         }
     }
 
-    pub fn arrow(&mut self, xi: f64, yi: f64, xf: f64, yf: f64, style: &str, scale: f64) -> Result<(), &'static str> {
+    pub fn arrow(&mut self, xi: f64, yi: f64, xf: f64, yf: f64, style: &str, scale: f64) {
         let opt = self.options();
         write!(
             &mut self.buffer,
@@ -37,7 +37,6 @@ impl Shapes {
             xi, yi, xf, yf, style, scale, &opt
         )
         .unwrap();
-        Ok(())
     }
 
     pub(crate) fn options(&self) -> String {

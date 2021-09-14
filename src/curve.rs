@@ -3,9 +3,10 @@ use std::fmt::Write;
 
 /// Generates a curve (aka line-plot) given two arrays (x,y)
 ///
-/// # Note
+/// # Notes
 ///
-/// This struct corresponds to the **plot** function of Matplotlib.
+/// * This struct corresponds to the **plot** function of Matplotlib.
+/// * You may plot a Scatter plot by setting line_style = "None"
 ///
 /// # Example
 ///
@@ -29,7 +30,7 @@ pub struct Curve {
 
     /// Style of lines
     ///
-    /// Options: "`-`", "`.`", "`--`", "`-.`"
+    /// Options: "`-`", "`.`", "`--`", "`-.`", or "`None`"
     ///
     /// As defined in <https://matplotlib.org/stable/gallery/lines_bars_and_markers/linestyles.html>
     pub line_style: String,

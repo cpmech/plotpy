@@ -1,7 +1,7 @@
 use super::*;
 use std::fmt::Write;
 
-/// Generates a 3D graph: surface or wireframe, or both
+/// Generates a 3D graph such as a surface, wireframe, or a 3D curve
 pub struct Graph3d {
     pub row_stride: i32, // row stride
     pub col_stride: i32, // column stride
@@ -23,7 +23,7 @@ impl Graph3d {
         }
     }
 
-    pub fn draw(&mut self, x: &[&[f64]], y: &[&[f64]], z: &[&[f64]]) -> Result<(), &'static str> {
+    pub fn draw_surface(&mut self, x: &[&[f64]], y: &[&[f64]], z: &[&[f64]]) -> Result<(), &'static str> {
         vec_vec_to_numpy_array_2d(&mut self.buffer, "x", x)?;
         vec_vec_to_numpy_array_2d(&mut self.buffer, "y", y)?;
         vec_vec_to_numpy_array_2d(&mut self.buffer, "z", z)?;

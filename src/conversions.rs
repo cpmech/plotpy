@@ -25,7 +25,7 @@ where
 }
 
 /// Converts a matrix to a 2D NumPy array
-pub(crate) fn matrix_to_array<T>(buf: &mut String, name: &str, matrix: &[&[T]])
+pub(crate) fn matrix_to_array<T>(buf: &mut String, name: &str, matrix: &Vec<Vec<T>>)
 where
     T: std::fmt::Display,
 {
@@ -83,8 +83,8 @@ mod tests {
     #[test]
     fn matrix_to_list_works() {
         let mut buf = String::new();
-        let a: &[&[f64]] = &[&[1.0, 2.0, 3.0], &[4.0, 5.0, 6.0], &[7.0, 8.0, 9.0]];
-        matrix_to_array(&mut buf, "a", a);
+        let a = vec![vec![1.0, 2.0, 3.0], vec![4.0, 5.0, 6.0], vec![7.0, 8.0, 9.0]];
+        matrix_to_array(&mut buf, "a", &a);
         assert_eq!(buf, "a=np.array([[1,2,3,],[4,5,6,],[7,8,9,],],dtype=float)\n");
     }
 }

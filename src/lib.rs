@@ -33,15 +33,6 @@
 //!
 //! ![example_main.svg](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/example_main.svg)
 //!
-//! # Todo
-//!
-//! - [ ] Test Contour
-//! - [ ] Test Graphs3d
-//! - [ ] Test Histogram
-//! - [ ] Test Legend
-//! - [ ] Test Shapes
-//! - [ ] Test Text
-//!
 
 // modules ////////////////////////////////////////
 mod constants;

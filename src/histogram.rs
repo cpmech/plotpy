@@ -28,7 +28,7 @@ impl Histogram {
     }
 
     #[allow(unused_variables)]
-    pub fn draw(&mut self, x: &[&[f64]], labels: &[String]) {
+    pub fn draw(&mut self, x: &Vec<Vec<f64>>, labels: &[String]) {
         let opt = self.options();
         matrix_to_array(&mut self.buffer, "x", x);
         // vec_to_list_str(&mut self.buffer, "labels", &labels);

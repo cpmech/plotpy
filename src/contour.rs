@@ -110,7 +110,14 @@ impl Contour {
     /// * `no_colorbar` -- skip drawing a colorbar
     /// * `with_selected` -- draw a line contour with a selected level (e.g., 0.0) on top of everything
     ///
-    pub fn draw(&mut self, x: &[&[f64]], y: &[&[f64]], z: &[&[f64]]) {
+    /// # Notes
+    ///
+    /// * The type `T` of the input matrices must be a number.
+    ///
+    pub fn draw<T>(&mut self, x: &Vec<Vec<T>>, y: &Vec<Vec<T>>, z: &Vec<Vec<T>>)
+    where
+        T: std::fmt::Display,
+    {
         matrix_to_array(&mut self.buffer, "x", x);
         matrix_to_array(&mut self.buffer, "y", y);
         matrix_to_array(&mut self.buffer, "z", z);
@@ -149,7 +156,11 @@ impl Contour {
         if self.colors.len() > 0 {
             write!(&mut opt, ",colors=colors",).unwrap();
         } else {
-            write!(&mut opt, ",cmap=getColormap({})", self.colormap_index).unwrap();
+            if self.colormap_name != "" {
+                write!(&mut opt, ",cmap=plt.get_cmap('{}')", self.colormap_name).unwrap();
+            } else {
+                write!(&mut opt, ",cmap=getColormap({})", self.colormap_index).unwrap();
+            }
         }
         if self.levels.len() > 0 {
             write!(&mut opt, ",levels=levels").unwrap();
@@ -224,28 +235,24 @@ impl GraphMaker for Contour {
 mod tests {
     use super::*;
 
-    fn gen_xyz() -> (
-        &'static [&'static [f64]],
-        &'static [&'static [f64]],
-        &'static [&'static [f64]],
-    ) {
-        let x: &[&[f64]] = &[
-            &[-1.0, -0.5, 0.0, 0.5],
-            &[-1.0, -0.5, 0.0, 0.5],
-            &[-1.0, -0.5, 0.0, 0.5],
-            &[-1.0, -0.5, 0.0, 0.5],
+    fn gen_xyz() -> (Vec<Vec<f64>>, Vec<Vec<f64>>, Vec<Vec<f64>>) {
+        let x = vec![
+            vec![-1.0, -0.5, 0.0, 0.5],
+            vec![-1.0, -0.5, 0.0, 0.5],
+            vec![-1.0, -0.5, 0.0, 0.5],
+            vec![-1.0, -0.5, 0.0, 0.5],
         ];
-        let y: &[&[f64]] = &[
-            &[-1.0, -1.0, -1.0, -1.0],
-            &[-0.5, -0.5, -0.5, -0.5],
-            &[0.0, 0.0, 0.0, 0.0],
-            &[0.5, 0.5, 0.5, 0.5],
+        let y = vec![
+            vec![-1.0, -1.0, -1.0, -1.0],
+            vec![-0.5, -0.5, -0.5, -0.5],
+            vec![0.0, 0.0, 0.0, 0.0],
+            vec![0.5, 0.5, 0.5, 0.5],
         ];
-        let z: &[&[f64]] = &[
-            &[2.00, 1.25, 1.00, 1.25],
-            &[1.25, 0.50, 0.25, 0.50],
-            &[1.00, 0.25, 0.00, 0.25],
-            &[1.25, 0.50, 0.25, 0.50],
+        let z = vec![
+            vec![2.00, 1.25, 1.00, 1.25],
+            vec![1.25, 0.50, 0.25, 0.50],
+            vec![1.00, 0.25, 0.00, 0.25],
+            vec![1.25, 0.50, 0.25, 0.50],
         ];
         (x, y, z)
     }
@@ -364,7 +371,7 @@ mod tests {
         contour.colorbar_label = "temperature".to_string();
         contour.with_selected = true;
         let (x, y, z) = gen_xyz();
-        contour.draw(x, y, z);
+        contour.draw(&x, &y, &z);
         let b: &str = "x=np.array([[-1,-0.5,0,0.5,],[-1,-0.5,0,0.5,],[-1,-0.5,0,0.5,],[-1,-0.5,0,0.5,],],dtype=float)\n\
                        y=np.array([[-1,-1,-1,-1,],[-0.5,-0.5,-0.5,-0.5,],[0,0,0,0,],[0.5,0.5,0.5,0.5,],],dtype=float)\n\
                        z=np.array([[2,1.25,1,1.25,],[1.25,0.5,0.25,0.5,],[1,0.25,0,0.25,],[1.25,0.5,0.25,0.5,],],dtype=float)\n\

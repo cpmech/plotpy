@@ -23,7 +23,7 @@ impl Graph3d {
         }
     }
 
-    pub fn draw_surface(&mut self, x: &[&[f64]], y: &[&[f64]], z: &[&[f64]]) {
+    pub fn draw_surface(&mut self, x: &Vec<Vec<f64>>, y: &Vec<Vec<f64>>, z: &Vec<Vec<f64>>) {
         matrix_to_array(&mut self.buffer, "x", x);
         matrix_to_array(&mut self.buffer, "y", y);
         matrix_to_array(&mut self.buffer, "z", z);

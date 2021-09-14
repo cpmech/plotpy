@@ -5,41 +5,22 @@ use std::path::Path;
 
 const OUT_DIR: &str = "/tmp/plotpy/integration_tests";
 
-fn gen_xyz() -> (
-    &'static [&'static [f64]],
-    &'static [&'static [f64]],
-    &'static [&'static [f64]],
-) {
-    let x: &[&[f64]] = &[
-        &[-2.0, -1.5, -1.0, -0.5, 0.0, 0.5, 1.0, 1.5],
-        &[-2.0, -1.5, -1.0, -0.5, 0.0, 0.5, 1.0, 1.5],
-        &[-2.0, -1.5, -1.0, -0.5, 0.0, 0.5, 1.0, 1.5],
-        &[-2.0, -1.5, -1.0, -0.5, 0.0, 0.5, 1.0, 1.5],
-        &[-2.0, -1.5, -1.0, -0.5, 0.0, 0.5, 1.0, 1.5],
-        &[-2.0, -1.5, -1.0, -0.5, 0.0, 0.5, 1.0, 1.5],
-        &[-2.0, -1.5, -1.0, -0.5, 0.0, 0.5, 1.0, 1.5],
-        &[-2.0, -1.5, -1.0, -0.5, 0.0, 0.5, 1.0, 1.5],
-    ];
-    let y: &[&[f64]] = &[
-        &[-2.0, -2.0, -2.0, -2.0, -2.0, -2.0, -2.0, -2.0],
-        &[-1.5, -1.5, -1.5, -1.5, -1.5, -1.5, -1.5, -1.5],
-        &[-1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0],
-        &[-0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5],
-        &[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-        &[0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5],
-        &[1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
-        &[1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5],
-    ];
-    let z: &[&[f64]] = &[
-        &[8.00, 6.25, 5.00, 4.25, 4.00, 4.25, 5.00, 6.25],
-        &[6.25, 4.50, 3.25, 2.50, 2.25, 2.50, 3.25, 4.50],
-        &[5.00, 3.25, 2.00, 1.25, 1.00, 1.25, 2.00, 3.25],
-        &[4.25, 2.50, 1.25, 0.50, 0.25, 0.50, 1.25, 2.50],
-        &[4.00, 2.25, 1.00, 0.25, 0.00, 0.25, 1.00, 2.25],
-        &[4.25, 2.50, 1.25, 0.50, 0.25, 0.50, 1.25, 2.50],
-        &[5.00, 3.25, 2.00, 1.25, 1.00, 1.25, 2.00, 3.25],
-        &[6.25, 4.50, 3.25, 2.50, 2.25, 2.50, 3.25, 4.50],
-    ];
+fn gen_xyz(n: usize) -> (Vec<Vec<f64>>, Vec<Vec<f64>>, Vec<Vec<f64>>) {
+    assert!(n > 1);
+    let mut x = vec![vec![0.0; n]; n];
+    let mut y = vec![vec![0.0; n]; n];
+    let mut z = vec![vec![0.0; n]; n];
+    let (min, max) = (-2.0, 2.0);
+    let d = (max - min) / ((n - 1) as f64);
+    for i in 0..n {
+        let v = min + (i as f64) * d;
+        for j in 0..n {
+            let u = min + (j as f64) * d;
+            x[i][j] = u;
+            y[i][j] = v;
+            z[i][j] = u * u + v * v;
+        }
+    }
     (x, y, z)
 }
 
@@ -63,8 +44,9 @@ fn test_contour() -> Result<(), &'static str> {
     contour.selected_level = 1.0;
 
     // draw contour
-    let (x, y, z) = gen_xyz();
-    contour.draw(x, y, z);
+    let n = 9;
+    let (x, y, z) = gen_xyz(n);
+    contour.draw(&x, &y, &z);
 
     // add contour to plot
     let mut plot = Plot::new();
@@ -78,7 +60,7 @@ fn test_contour() -> Result<(), &'static str> {
     let file = File::open(path).map_err(|_| "cannot open file")?;
     let buffered = BufReader::new(file);
     let lines_iter = buffered.lines();
-    assert_eq!(lines_iter.count(), 1359);
+    assert_eq!(lines_iter.count(), 1524);
     Ok(())
 }
 
@@ -87,15 +69,16 @@ fn test_contour_colors() -> Result<(), &'static str> {
     // contour object and options
     let mut contour = Contour::new();
     contour.colors = vec!["#f00".to_string(), "#0f0".to_string(), "#00f".to_string()];
-    contour.levels = vec![0.25, 0.5, 1.0];
+    contour.levels = vec![1.0, 3.0, 5.0, 7.0];
     contour.no_lines = true;
     contour.no_labels = true;
     contour.no_inline_labels = true;
     contour.no_colorbar = true;
 
     // draw contour
-    let (x, y, z) = gen_xyz();
-    contour.draw(x, y, z);
+    let n = 9;
+    let (x, y, z) = gen_xyz(n);
+    contour.draw(&x, &y, &z);
 
     // add contour to plot
     let mut plot = Plot::new();
@@ -109,16 +92,15 @@ fn test_contour_colors() -> Result<(), &'static str> {
     let file = File::open(path).map_err(|_| "cannot open file")?;
     let buffered = BufReader::new(file);
     let lines_iter = buffered.lines();
-    assert_eq!(lines_iter.count(), 474);
+    assert_eq!(lines_iter.count(), 607);
     Ok(())
 }
 
 #[test]
-fn test_contour_colormap() -> Result<(), &'static str> {
+fn test_contour_colormap_index() -> Result<(), &'static str> {
     for index in 0..10 {
         // contour object and options
         let mut contour = Contour::new();
-        contour.levels = vec![0.25, 0.5, 1.0];
         contour.colormap_index = index;
         contour.no_lines = true;
         contour.no_labels = true;
@@ -126,8 +108,9 @@ fn test_contour_colormap() -> Result<(), &'static str> {
         contour.no_colorbar = true;
 
         // draw contour
-        let (x, y, z) = gen_xyz();
-        contour.draw(x, y, z);
+        let n = 9;
+        let (x, y, z) = gen_xyz(n);
+        contour.draw(&x, &y, &z);
 
         // add contour to plot
         let mut plot = Plot::new();
@@ -142,7 +125,41 @@ fn test_contour_colormap() -> Result<(), &'static str> {
         let file = File::open(path).map_err(|_| "cannot open file")?;
         let buffered = BufReader::new(file);
         let lines_iter = buffered.lines();
-        assert_eq!(lines_iter.count(), 474);
+        assert_eq!(lines_iter.count(), 793);
+    }
+    Ok(())
+}
+
+#[test]
+fn test_contour_colormap_name() -> Result<(), &'static str> {
+    for name in ["Pastel1", "tab20c", "gnuplot2"] {
+        // contour object and options
+        let mut contour = Contour::new();
+        contour.colormap_name = name.to_string();
+        contour.no_lines = true;
+        contour.no_labels = true;
+        contour.no_inline_labels = true;
+        contour.no_colorbar = true;
+
+        // draw contour
+        let n = 9;
+        let (x, y, z) = gen_xyz(n);
+        contour.draw(&x, &y, &z);
+
+        // add contour to plot
+        let mut plot = Plot::new();
+        plot.add(&contour);
+
+        // save figure
+        let filename = format!("contour_colormap_{}.svg", name);
+        let path = Path::new(OUT_DIR).join(&filename);
+        plot.save(&path)?;
+
+        // check number of lines
+        let file = File::open(path).map_err(|_| "cannot open file")?;
+        let buffered = BufReader::new(file);
+        let lines_iter = buffered.lines();
+        assert_eq!(lines_iter.count(), 793);
     }
     Ok(())
 }

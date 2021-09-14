@@ -86,12 +86,16 @@ impl Curve {
     /// Draws curve
     ///
     /// # Arguments
-    /// * `x` - abscissa array
-    /// * `y` - ordinate array
+    /// * `x` - abscissa values
+    /// * `y` - ordinate values
+    ///
+    /// # Notes
+    ///
+    /// * The type `T` of the input array must be a number.
     ///
     pub fn draw<T>(&mut self, x: &[T], y: &[T])
     where
-        T: std::fmt::Display + Into<f64> + Copy,
+        T: std::fmt::Display,
     {
         vector_to_array(&mut self.buffer, "x", x);
         vector_to_array(&mut self.buffer, "y", y);

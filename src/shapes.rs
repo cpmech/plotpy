@@ -105,9 +105,6 @@ impl Shapes {
     where
         T: std::fmt::Display,
     {
-        if points.len() < 1 {
-            return;
-        }
         let mut first = true;
         for p in points {
             if first {

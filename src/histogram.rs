@@ -7,6 +7,13 @@ pub struct Histogram {
     pub colors: Vec<String>,
 
     /// Type of histogram; e.g. "bar"
+    ///
+    /// * `bar` is a traditional bar-type histogram. If multiple data are given the bars are arranged side by side.
+    /// * `barstacked` is a bar-type histogram where multiple data are stacked on top of each other.
+    /// * `step` generates a lineplot that is by default unfilled.
+    /// * `stepfilled` generates a lineplot that is by default filled.
+    ///
+    /// As defined in <https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.hist.html>
     pub style: String,
 
     /// Draws stacked histogram
@@ -17,9 +24,6 @@ pub struct Histogram {
 
     /// Number of bins
     pub number_bins: i32,
-
-    /// Normalize the bars
-    pub normalized: bool,
 
     // buffer
     pub(crate) buffer: String,
@@ -33,7 +37,6 @@ impl Histogram {
             stacked: false,
             no_fill: false,
             number_bins: 0,
-            normalized: false,
             buffer: String::new(),
         }
     }
@@ -78,9 +81,6 @@ impl Histogram {
         if self.number_bins > 0 {
             write!(&mut opt, ",bins={}", self.number_bins).unwrap();
         }
-        if self.normalized {
-            write!(&mut opt, ",normed=True").unwrap();
-        }
         opt
     }
 }
@@ -105,7 +105,6 @@ mod tests {
         assert_eq!(histogram.stacked, false);
         assert_eq!(histogram.no_fill, false);
         assert_eq!(histogram.number_bins, 0);
-        assert_eq!(histogram.normalized, false);
         assert_eq!(histogram.buffer.len(), 0);
     }
 

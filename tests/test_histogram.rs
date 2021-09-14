@@ -8,6 +8,7 @@ const OUT_DIR: &str = "/tmp/plotpy/integration_tests";
 #[test]
 fn test_histogram() -> Result<(), &'static str> {
     let mut histogram = Histogram::new();
+    histogram.style = "barstacked".to_string();
 
     // draw histogram
     let values = vec![
@@ -30,6 +31,6 @@ fn test_histogram() -> Result<(), &'static str> {
     let file = File::open(path).map_err(|_| "cannot open file")?;
     let buffered = BufReader::new(file);
     let lines_iter = buffered.lines();
-    assert_eq!(lines_iter.count(), 681);
+    assert_eq!(lines_iter.count(), 694);
     Ok(())
 }

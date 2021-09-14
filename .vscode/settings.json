@@ -5,6 +5,7 @@
     "**/Cargo.lock": true
   },
   "cSpell.words": [
+    "barstacked",
     "bbox",
     "clabel",
     "cmap",
@@ -14,7 +15,9 @@
     "dtype",
     "fileio",
     "fontsize",
+    "histtype",
     "hspace",
+    "lineplot",
     "linestyle",
     "linestyles",
     "linewidths",
@@ -29,6 +32,7 @@
     "pyplot",
     "rstride",
     "savefig",
+    "stepfilled",
     "toolkits",
     "wspace",
     "xaxis",

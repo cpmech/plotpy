@@ -2,6 +2,32 @@ use super::*;
 use std::fmt::Write;
 
 /// Generates a contour plot
+///
+/// # Example
+///
+/// ```
+/// use plotpy::*;
+/// let x = vec![
+///     vec![-0.5, 0.0, 0.5],
+///     vec![-0.5, 0.0, 0.5],
+///     vec![-0.5, 0.0, 0.5],
+/// ];
+/// let y = vec![
+///     vec![-0.5, -0.5, -0.5],
+///     vec![ 0.0,  0.0,  0.0],
+///     vec![ 0.5,  0.5,  0.5],
+/// ];
+/// let z = vec![
+///     vec![0.50, 0.25, 0.50],
+///     vec![0.25, 0.00, 0.25],
+///     vec![0.50, 0.25, 0.50],
+/// ];
+/// let mut contour = Contour::new();
+/// contour.levels = vec![0.25, 0.5, 1.0];
+/// contour.colorbar_label = "temperature".to_string();
+/// contour.with_selected = true;
+/// contour.draw(&x, &y, &z);
+/// ```
 pub struct Contour {
     /// Colors to be used instead of a pre-defined colormap
     ///
@@ -100,6 +126,12 @@ impl Contour {
     }
 
     /// Draws a fancy contour: filled contour with a line contour and a colorbar
+    ///
+    /// # Input
+    ///
+    /// * `x` -- matrix with x values
+    /// * `y` -- matrix with y values
+    /// * `z` -- matrix with z values
     ///
     /// # Flags
     ///

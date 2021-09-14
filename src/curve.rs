@@ -7,7 +7,7 @@ use std::fmt::Write;
 ///
 /// This struct corresponds to the **plot** function of Matplotlib.
 ///
-/// # Examples
+/// # Example
 ///
 /// ```
 /// use plotpy::*;
@@ -85,7 +85,8 @@ impl Curve {
 
     /// Draws curve
     ///
-    /// # Arguments
+    /// # Input
+    ///
     /// * `x` - abscissa values
     /// * `y` - ordinate values
     ///

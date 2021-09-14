@@ -3,7 +3,7 @@ use std::fmt::Write;
 
 /// Generates scatter plot given two arrays (x,y)
 ///
-/// # Examples
+/// # Example
 ///
 /// ```
 /// use plotpy::*;
@@ -64,7 +64,8 @@ impl Scatter {
 
     /// Draw scatter graph
     ///
-    /// # Arguments
+    /// # Input
+    ///
     /// * `x` - abscissa values
     /// * `y` - ordinate values
     ///

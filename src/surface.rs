@@ -198,12 +198,27 @@ mod tests {
     }
 
     #[test]
-    fn options_works() {
+    fn options_surface_works() {
         let mut graph3d = Surface::new();
         graph3d.row_stride = 3;
         graph3d.col_stride = 4;
         let opt = graph3d.options_surface();
         assert_eq!(opt, ",rstride=3,cstride=4,cmap=getColormap(0)");
+        graph3d.colormap_name = "Pastel1".to_string();
+        let opt = graph3d.options_surface();
+        assert_eq!(opt, ",rstride=3,cstride=4,cmap=plt.get_cmap('Pastel1')");
+    }
+
+    #[test]
+    fn options_wireframe_works() {
+        let mut graph3d = Surface::new();
+        graph3d.row_stride = 3;
+        graph3d.col_stride = 4;
+        graph3d.line_color = "red".to_string();
+        graph3d.line_style = "--".to_string();
+        graph3d.line_width = 2.5;
+        let opt = graph3d.options_wireframe();
+        assert_eq!(opt, ",rstride=3,cstride=4,color='red',linestyle='--',linewidth=2.5");
     }
 
     #[test]
@@ -211,6 +226,7 @@ mod tests {
         let mut surface = Surface::new();
         surface.wireframe = true;
         surface.colorbar = true;
+        surface.colorbar_label = "temperature".to_string();
         let x = vec![vec![-0.5, 0.0, 0.5], vec![-0.5, 0.0, 0.5], vec![-0.5, 0.0, 0.5]];
         let y = vec![vec![-0.5, -0.5, -0.5], vec![0.0, 0.0, 0.0], vec![0.5, 0.5, 0.5]];
         let z = vec![vec![0.50, 0.25, 0.50], vec![0.25, 0.00, 0.25], vec![0.50, 0.25, 0.50]];
@@ -221,7 +237,8 @@ mod tests {
                        maybeCreateAX3D()\n\
                        sf=AX3D.plot_surface(x,y,z,cmap=getColormap(0))\n\
                        AX3D.plot_wireframe(x,y,z,color='black')\n\
-                       cb=plt.colorbar(sf)\n";
+                       cb=plt.colorbar(sf)\n\
+                       cb.ax.set_ylabel(r'temperature')\n";
         assert_eq!(surface.buffer, b);
     }
 }

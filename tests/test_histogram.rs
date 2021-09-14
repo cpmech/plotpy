@@ -52,7 +52,7 @@ fn test_histogram_2() -> Result<(), &'static str> {
     let labels = ["first".to_string(), "second".to_string(), "third".to_string()];
     histogram.draw(&values, &labels);
 
-    // add surface to plot
+    // add histogram to plot
     let mut plot = Plot::new();
     plot.add(&histogram);
 

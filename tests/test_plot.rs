@@ -1,0 +1,53 @@
+use plotpy::*;
+use std::fs::File;
+use std::io::{BufRead, BufReader};
+use std::path::Path;
+
+const OUT_DIR: &str = "/tmp/plotpy/integration_tests";
+
+#[test]
+fn test_curve() -> Result<(), &'static str> {
+    // curve object and options
+    let mut curve = Curve::new();
+
+    // draw curve
+    let x = &[1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0];
+    let y = &[1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 3.5, 3.5, 3.5, 3.5];
+    curve.draw(x, y);
+
+    // configure plot
+    let mut plot = Plot::new();
+    plot.equal();
+    plot.hide_axes();
+    plot.range(-1.0, 1.0, -1.0, 1.0);
+    plot.range_vec(&[0.0, 1.0, 0.0, 1.0]);
+    plot.xmin(0.0);
+    plot.xmax(1.0);
+    plot.ymin(0.0);
+    plot.ymax(1.0);
+    plot.xrange(0.0, 1.0);
+    plot.yrange(0.0, 1.0);
+    plot.xnticks(0);
+    plot.xnticks(8);
+    plot.ynticks(0);
+    plot.ynticks(5);
+    plot.xlabel("x-label");
+    plot.ylabel("y-label");
+    plot.labels("x", "y");
+    plot.clear_current_figure();
+    plot.grid_and_labels("x", "y");
+
+    // add curve to plot
+    plot.add(&curve);
+
+    // save figure
+    let path = Path::new(OUT_DIR).join("plot.svg");
+    plot.save(&path)?;
+
+    // check number of lines
+    let file = File::open(path).map_err(|_| "cannot open file")?;
+    let buffered = BufReader::new(file);
+    let lines_iter = buffered.lines();
+    assert_eq!(lines_iter.count(), 574);
+    Ok(())
+}

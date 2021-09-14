@@ -37,7 +37,7 @@ fn test_curve() -> Result<(), &'static str> {
     curve1.draw(x, y);
     curve2.draw(x, y2);
 
-    // add contour to plot
+    // add curves to plot
     let mut plot = Plot::new();
     plot.add(&curve1);
     plot.add(&curve2);

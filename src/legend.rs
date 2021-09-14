@@ -20,11 +20,11 @@ pub struct Legend {
     /// Put legend outside plot area
     pub outside: bool,
 
-    /// Normalized coordinates to put legend outsize
-    pub out_coords: Vec<f64>,
-
     /// Show frame around legend
     pub show_frame: bool,
+
+    /// Normalized coordinates to put legend outsize
+    pub x_coords_outside: Vec<f64>,
 
     // buffer
     pub(crate) buffer: String,
@@ -39,8 +39,8 @@ impl Legend {
             num_col: 1,
             location: "best".to_string(),
             outside: false,
-            out_coords: vec![0.0, 1.02, 1.0, 0.102],
             show_frame: true,
+            x_coords_outside: vec![0.0, 1.02, 1.0, 0.102],
             buffer: String::new(),
         }
     }
@@ -49,7 +49,7 @@ impl Legend {
     pub fn draw(&mut self) {
         let opt = self.options();
         if self.outside {
-            vector_to_numbers(&mut self.buffer, "coo", self.out_coords.as_slice());
+            vector_to_numbers(&mut self.buffer, "coo", self.x_coords_outside.as_slice());
         }
         write!(&mut self.buffer, "h,l=plt.gca().get_legend_handles_labels()\n").unwrap();
         write!(&mut self.buffer, "if len(h)>0 and len(l)>0:\n").unwrap();
@@ -112,8 +112,8 @@ mod tests {
         assert_eq!(legend.num_col, 1);
         assert_eq!(legend.location, "best".to_string());
         assert_eq!(legend.outside, false);
-        assert_eq!(legend.out_coords, vec![0.0, 1.02, 1.0, 0.102]);
         assert_eq!(legend.show_frame, true);
+        assert_eq!(legend.x_coords_outside, vec![0.0, 1.02, 1.0, 0.102]);
         assert_eq!(legend.buffer.len(), 0);
     }
 

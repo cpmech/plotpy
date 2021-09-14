@@ -267,28 +267,6 @@ impl GraphMaker for Contour {
 mod tests {
     use super::*;
 
-    fn gen_xyz() -> (Vec<Vec<f64>>, Vec<Vec<f64>>, Vec<Vec<f64>>) {
-        let x = vec![
-            vec![-1.0, -0.5, 0.0, 0.5],
-            vec![-1.0, -0.5, 0.0, 0.5],
-            vec![-1.0, -0.5, 0.0, 0.5],
-            vec![-1.0, -0.5, 0.0, 0.5],
-        ];
-        let y = vec![
-            vec![-1.0, -1.0, -1.0, -1.0],
-            vec![-0.5, -0.5, -0.5, -0.5],
-            vec![0.0, 0.0, 0.0, 0.0],
-            vec![0.5, 0.5, 0.5, 0.5],
-        ];
-        let z = vec![
-            vec![2.00, 1.25, 1.00, 1.25],
-            vec![1.25, 0.50, 0.25, 0.50],
-            vec![1.00, 0.25, 0.00, 0.25],
-            vec![1.25, 0.50, 0.25, 0.50],
-        ];
-        (x, y, z)
-    }
-
     #[test]
     fn new_works() {
         let contour = Contour::new();
@@ -402,11 +380,13 @@ mod tests {
         contour.levels = vec![0.25, 0.5, 1.0];
         contour.colorbar_label = "temperature".to_string();
         contour.with_selected = true;
-        let (x, y, z) = gen_xyz();
+        let x = vec![vec![-0.5, 0.0, 0.5], vec![-0.5, 0.0, 0.5], vec![-0.5, 0.0, 0.5]];
+        let y = vec![vec![-0.5, -0.5, -0.5], vec![0.0, 0.0, 0.0], vec![0.5, 0.5, 0.5]];
+        let z = vec![vec![0.50, 0.25, 0.50], vec![0.25, 0.00, 0.25], vec![0.50, 0.25, 0.50]];
         contour.draw(&x, &y, &z);
-        let b: &str = "x=np.array([[-1,-0.5,0,0.5,],[-1,-0.5,0,0.5,],[-1,-0.5,0,0.5,],[-1,-0.5,0,0.5,],],dtype=float)\n\
-                       y=np.array([[-1,-1,-1,-1,],[-0.5,-0.5,-0.5,-0.5,],[0,0,0,0,],[0.5,0.5,0.5,0.5,],],dtype=float)\n\
-                       z=np.array([[2,1.25,1,1.25,],[1.25,0.5,0.25,0.5,],[1,0.25,0,0.25,],[1.25,0.5,0.25,0.5,],],dtype=float)\n\
+        let b: &str = "x=np.array([[-0.5,0,0.5,],[-0.5,0,0.5,],[-0.5,0,0.5,],],dtype=float)\n\
+                       y=np.array([[-0.5,-0.5,-0.5,],[0,0,0,],[0.5,0.5,0.5,],],dtype=float)\n\
+                       z=np.array([[0.5,0.25,0.5,],[0.25,0,0.25,],[0.5,0.25,0.5,],],dtype=float)\n\
                        colors=['#f00','#0f0','#00f',]\n\
                        levels=np.array([0.25,0.5,1,],dtype=float)\n\
                        cf=plt.contourf(x,y,z,colors=colors,levels=levels)\n\

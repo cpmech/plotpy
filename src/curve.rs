@@ -30,7 +30,7 @@ pub struct Curve {
 
     /// Style of lines
     ///
-    /// Options: "`-`", "`.`", "`--`", "`-.`", or "`None`"
+    /// Options: "`-`", `:`", "`--`", "`-.`", or "`None`"
     ///
     /// As defined in <https://matplotlib.org/stable/gallery/lines_bars_and_markers/linestyles.html>
     pub line_style: String,

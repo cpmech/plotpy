@@ -38,6 +38,9 @@ fn test_contour() -> Result<(), &'static str> {
     ];
     contour.levels = vec![0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0];
     contour.colorbar_label = "temperature".to_string();
+    contour.line_color = "yellow".to_string();
+    contour.line_style = ":".to_string();
+    contour.line_width = 2.5;
     contour.with_selected = true;
     contour.selected_line_color = "#69e699".to_string();
     contour.selected_line_width = 5.0;
@@ -85,7 +88,7 @@ fn test_contour_colors() -> Result<(), &'static str> {
     plot.add(&contour);
 
     // save figure
-    let path = Path::new(OUT_DIR).join("contour_with_options.svg");
+    let path = Path::new(OUT_DIR).join("contour_colors.svg");
     plot.save(&path)?;
 
     // check number of lines

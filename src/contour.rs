@@ -74,6 +74,11 @@ pub struct Contour {
     /// Line color for the lines contour (default is black)
     pub line_color: String,
 
+    /// Line style for the lines contour
+    ///
+    /// Options: "`-`", "`:`", "`--`", "`-.`"
+    pub line_style: String,
+
     /// Line width for the lines contour
     pub line_width: f64,
 
@@ -90,6 +95,8 @@ pub struct Contour {
     pub selected_line_color: String,
 
     /// Line style for the selected level
+    ///
+    /// Options: "`-`", "`:`", "`--`", "`-.`"
     pub selected_line_style: String,
 
     /// Line width for the selected level
@@ -114,6 +121,7 @@ impl Contour {
             colorbar_label: String::new(),
             colorbar_number_format: String::new(),
             line_color: "black".to_string(),
+            line_style: String::new(),
             line_width: 0.0,
             font_size_labels: 0.0,
             with_selected: false,
@@ -209,8 +217,11 @@ impl Contour {
         if self.levels.len() > 0 {
             write!(&mut opt, ",levels=levels").unwrap();
         }
+        if self.line_style != "" {
+            write!(&mut opt, ",linestyles=['{}']", self.line_style).unwrap();
+        }
         if self.line_width > 0.0 {
-            write!(&mut opt, ",linewidths[{}]", self.line_width).unwrap();
+            write!(&mut opt, ",linewidths=[{}]", self.line_width).unwrap();
         }
         opt
     }
@@ -281,6 +292,7 @@ mod tests {
         assert_eq!(contour.colorbar_label, "".to_string());
         assert_eq!(contour.colorbar_number_format, "".to_string());
         assert_eq!(contour.line_color, "black".to_string());
+        assert_eq!(contour.line_style, "".to_string());
         assert_eq!(contour.line_width, 0.0);
         assert_eq!(contour.font_size_labels, 0.0);
         assert_eq!(contour.with_selected, false);
@@ -317,13 +329,15 @@ mod tests {
         let mut contour = Contour::new();
         contour.levels = vec![0.25, 0.5, 1.0];
         contour.line_color = "red".to_string();
+        contour.line_style = ":".to_string();
         contour.line_width = 3.0;
         let opt = contour.options_line();
         assert_eq!(
             opt,
             ",colors=['red']\
              ,levels=levels\
-             ,linewidths[3]"
+             ,linestyles=[':']\
+             ,linewidths=[3]"
         );
     }
 

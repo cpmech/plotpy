@@ -11,15 +11,43 @@ use std::fmt::Write;
 /// # Example
 ///
 /// ```
+/// # fn main() -> Result<(), &'static str> {
+/// // import
 /// use plotpy::*;
-/// let x = &[1.0, 2.0, 3.0, 4.0, 5.0];
-/// let y = &[1.0, 4.0, 9.0, 16.0, 25.0];
-/// let mut plot = Plot::new();
+/// use std::path::Path;
+///
+/// // directory to save figures
+/// const OUT_DIR: &str = "/tmp/plotpy/doc_tests";
+///
+/// // generate (x,y) points
+/// let x = &[1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0];
+/// let y = &[1.0, 4.0, 9.0, 16.0, 25.0, 36.0, 49.0, 64.0];
+///
+/// // configure and draw curve
 /// let mut curve = Curve::new();
+/// curve.label = "parabolic".to_string();
+/// curve.line_alpha = 0.95;
+/// curve.line_color = "#5f9cd8".to_string();
 /// curve.line_style = "-".to_string();
+/// curve.line_width = 5.0;
+/// curve.marker_color = "#eeea83".to_string();
+/// curve.marker_every = 1;
+/// curve.marker_line_color = "#da98d1".to_string();
+/// curve.marker_line_width = 2.5;
+/// curve.marker_size = 20.0;
 /// curve.marker_style = "*".to_string();
 /// curve.draw(x, y);
+///
+/// // add curve to plot
+/// let mut plot = Plot::new();
 /// plot.add(&curve);
+/// plot.grid_and_labels("x", "y");
+///
+/// // save figure
+/// let path = Path::new(OUT_DIR).join("doc_curve.svg");
+/// plot.save(&path)?;
+/// # Ok(())
+/// # }
 /// ```
 pub struct Curve {
     /// Label; name of this curve in the legend

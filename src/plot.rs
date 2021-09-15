@@ -240,6 +240,13 @@ impl Plot {
     pub fn clear_current_figure(&mut self) {
         self.buffer.push_str("plt.clf()\n");
     }
+
+    /// Adds legend to plot (see Legend for further options)
+    pub fn legend(&mut self) {
+        let mut legend = Legend::new();
+        legend.draw();
+        self.add(&legend);
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -306,6 +313,7 @@ mod tests {
         plot.labels("x", "y");
         plot.grid_and_labels("xx", "yy");
         plot.clear_current_figure();
+        plot.legend();
         let correct: &str = "plt.axis('equal')\n\
                              plt.axis('off')\n\
                              plt.axis([-1,1,-1,1])\n\
@@ -327,7 +335,11 @@ mod tests {
                              plt.grid(linestyle='--',color='grey',zorder=-1000)\n\
                              plt.xlabel(r'xx')\n\
                              plt.ylabel(r'yy')\n\
-                             plt.clf()\n";
+                             plt.clf()\n\
+                             h,l=plt.gca().get_legend_handles_labels()\n\
+                             if len(h)>0 and len(l)>0:\n\
+                             \x20\x20\x20\x20leg=plt.legend(handlelength=3,ncol=1,loc='best')\n\
+                             \x20\x20\x20\x20addToEA(leg)\n";
         assert_eq!(plot.buffer, correct);
     }
 }

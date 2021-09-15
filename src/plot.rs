@@ -75,14 +75,6 @@ pub trait GraphMaker {
 ///
 /// ![doc_plot.svg](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/doc_plot.svg)
 ///
-///
-/// ```
-/// use plotpy::*;
-/// let mut plot = Plot::new();
-/// plot.equal();
-/// plot.range(-1.0, 1.0, 0.0, 2.0);
-/// plot.grid_and_labels("x-label", "y-label");
-/// ```
 pub struct Plot {
     pub(crate) buffer: String,
 }

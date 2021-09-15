@@ -2,6 +2,68 @@ use super::*;
 use std::fmt::Write;
 
 /// Generates a Legend
+///
+/// # Example
+///
+/// ```
+/// # fn main() -> Result<(), &'static str> {
+/// // import
+/// use plotpy::*;
+/// use std::path::Path;
+///
+/// // directory to save figures
+/// const OUT_DIR: &str = "/tmp/plotpy/doc_tests";
+///
+/// // generate (x,y) points
+/// let x = &[1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0];
+/// let y1 = &[1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5];
+/// let y2 = &[1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0];
+/// let y3 = &[1.0, 4.0, 6.0, 8.0, 10.0, 12.0, 14.0, 16.0];
+/// let y4 = &[1.0, 4.0, 9.0, 16.0, 25.0, 36.0, 49.0, 64.0];
+///
+/// // configure and draw curves
+/// let mut curve1 = Curve::new();
+/// let mut curve2 = Curve::new();
+/// let mut curve3 = Curve::new();
+/// let mut curve4 = Curve::new();
+/// curve1.label = "first".to_string();
+/// curve2.label = "second".to_string();
+/// curve3.label = "third".to_string();
+/// curve4.label = "fourth".to_string();
+/// curve1.draw(x, y1);
+/// curve2.draw(x, y2);
+/// curve3.draw(x, y3);
+/// curve4.draw(x, y4);
+///
+/// // add curves to plot
+/// let mut plot = Plot::new();
+/// plot.add(&curve1);
+/// plot.add(&curve2);
+/// plot.add(&curve3);
+/// plot.add(&curve4);
+///
+/// // configure and draw legend
+/// let mut legend = Legend::new();
+/// legend.fontsize = 18.0;
+/// legend.handle_len = 5.5;
+/// legend.num_col = 2;
+/// legend.outside = true;
+/// legend.show_frame = false;
+/// legend.draw();
+///
+/// // add legend to plot
+/// plot.add(&legend);
+/// plot.grid_and_labels("x", "y");
+///
+/// // save figure
+/// let path = Path::new(OUT_DIR).join("doc_legend.svg");
+/// plot.save(&path)?;
+/// # Ok(())
+/// # }
+/// ```
+///
+/// ![doc_legend.svg](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/doc_legend.svg)
+///
 pub struct Legend {
     /// Fontsize
     pub fontsize: f64,

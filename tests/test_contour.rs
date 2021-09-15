@@ -5,6 +5,20 @@ use std::path::Path;
 
 const OUT_DIR: &str = "/tmp/plotpy/integration_tests";
 
+fn print_log_file(log_filename: &str) -> Result<(), &'static str> {
+    let log_path = Path::new(OUT_DIR).join(log_filename);
+    let log_file = File::open(log_path).map_err(|_| "cannot open file")?;
+    let log_buffered = BufReader::new(log_file);
+    let log_lines_iter = log_buffered.lines();
+    for lines in log_lines_iter {
+        match lines {
+            Ok(l) => println!("{}", l),
+            Err(_) => (),
+        }
+    }
+    Ok(())
+}
+
 fn gen_xyz(n: usize) -> (Vec<Vec<f64>>, Vec<Vec<f64>>, Vec<Vec<f64>>) {
     assert!(n > 1);
     let mut x = vec![vec![0.0; n]; n];
@@ -63,7 +77,7 @@ fn test_contour() -> Result<(), &'static str> {
     let file = File::open(path).map_err(|_| "cannot open file")?;
     let buffered = BufReader::new(file);
     let lines_iter = buffered.lines();
-    assert_eq!(lines_iter.count(), 1524);
+    assert!(lines_iter.count() > 1500);
     Ok(())
 }
 
@@ -71,7 +85,7 @@ fn test_contour() -> Result<(), &'static str> {
 fn test_contour_colors() -> Result<(), &'static str> {
     // contour object and options
     let mut contour = Contour::new();
-    contour.colors = vec!["#f00".to_string(), "#0f0".to_string(), "#00f".to_string()];
+    contour.colors = vec!["red".to_string(), "green".to_string(), "blue".to_string()];
     contour.levels = vec![1.0, 3.0, 5.0, 7.0];
     contour.no_lines = true;
     contour.no_labels = true;
@@ -89,13 +103,16 @@ fn test_contour_colors() -> Result<(), &'static str> {
 
     // save figure
     let path = Path::new(OUT_DIR).join("contour_colors.svg");
-    plot.save(&path)?;
+    match plot.save(&path) {
+        Err(_) => print_log_file("contour_colors.log")?,
+        Ok(_) => (),
+    }
 
     // check number of lines
     let file = File::open(path).map_err(|_| "cannot open file")?;
     let buffered = BufReader::new(file);
     let lines_iter = buffered.lines();
-    assert_eq!(lines_iter.count(), 607);
+    assert!(lines_iter.count() > 580);
     Ok(())
 }
 
@@ -128,7 +145,7 @@ fn test_contour_colormap_index() -> Result<(), &'static str> {
         let file = File::open(path).map_err(|_| "cannot open file")?;
         let buffered = BufReader::new(file);
         let lines_iter = buffered.lines();
-        assert_eq!(lines_iter.count(), 793);
+        assert!(lines_iter.count() > 770);
     }
     Ok(())
 }
@@ -162,7 +179,7 @@ fn test_contour_colormap_name() -> Result<(), &'static str> {
         let file = File::open(path).map_err(|_| "cannot open file")?;
         let buffered = BufReader::new(file);
         let lines_iter = buffered.lines();
-        assert_eq!(lines_iter.count(), 793);
+        assert!(lines_iter.count() > 770);
     }
     Ok(())
 }

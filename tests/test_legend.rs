@@ -49,7 +49,7 @@ fn test_legend_1() -> Result<(), &'static str> {
     let file = File::open(path).map_err(|_| "cannot open file")?;
     let buffered = BufReader::new(file);
     let lines_iter = buffered.lines();
-    assert_eq!(lines_iter.count(), 802);
+    assert!(lines_iter.count() > 780);
     Ok(())
 }
 
@@ -92,6 +92,6 @@ fn test_legend_2() -> Result<(), &'static str> {
     let file = File::open(path).map_err(|_| "cannot open file")?;
     let buffered = BufReader::new(file);
     let lines_iter = buffered.lines();
-    assert_eq!(lines_iter.count(), 802);
+    assert!(lines_iter.count() > 780);
     Ok(())
 }

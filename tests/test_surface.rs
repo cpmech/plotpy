@@ -55,7 +55,7 @@ fn test_surface() -> Result<(), &'static str> {
     let file = File::open(path).map_err(|_| "cannot open file")?;
     let buffered = BufReader::new(file);
     let lines_iter = buffered.lines();
-    assert_eq!(lines_iter.count(), 1674);
+    assert!(lines_iter.count() > 1650);
     Ok(())
 }
 
@@ -82,6 +82,6 @@ fn test_wireframe() -> Result<(), &'static str> {
     let file = File::open(path).map_err(|_| "cannot open file")?;
     let buffered = BufReader::new(file);
     let lines_iter = buffered.lines();
-    assert_eq!(lines_iter.count(), 910);
+    assert!(lines_iter.count() > 890);
     Ok(())
 }

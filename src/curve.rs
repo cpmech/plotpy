@@ -49,6 +49,9 @@ use std::fmt::Write;
 /// # Ok(())
 /// # }
 /// ```
+///
+/// ![doc_curve.svg](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/doc_curve.svg)
+///
 pub struct Curve {
     /// Label; name of this curve in the legend
     pub label: String,

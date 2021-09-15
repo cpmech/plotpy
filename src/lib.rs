@@ -1,6 +1,18 @@
 //! Rust plotting library using Python (Matplotlib)
 //!
-//! # Examples
+//! This library generates plots by calling **python3** after generating a python script.
+//! The name of the python script is based on the name of the figure (png, svg, ...).
+//! If an error occurs, a log file is created (also named as the figure).
+//!
+//! The main idea here is to create objects such as `Curve`, `Contour`, `Histogram`,
+//! or `Surface` and add it to a plot using the `add` command. The plot may
+//! also configured using the methods of `Plot`.
+//!
+//! Each object (e.g. `Curve`, `Legend`, `Text`) defines a number of configuration options
+//! that can be directly set on the object. Then, the `draw` method of each object must
+//! be called before adding to `Plot`.
+//!
+//! # Example
 //!
 //! ```
 //! # use plotpy::*;

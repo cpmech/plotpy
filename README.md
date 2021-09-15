@@ -28,14 +28,13 @@ plotpy = "*"
 ### Contour
 
 ```rust
-// import
+use plotpy::*;
+use std::path::Path;
+
+// directory to save figures
+const OUT_DIR: &str = "/tmp/plotpy/doc_tests";
+
 fn main() -> Result<(), &'static str> {
-    use plotpy::*;
-    use std::path::Path;
-
-    // directory to save figures
-    const OUT_DIR: &str = "/tmp/plotpy/doc_tests";
-
     // generate (x,y,z) matrices
     let n = 21;
     let mut x = vec![vec![0.0; n]; n];

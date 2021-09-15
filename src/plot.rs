@@ -247,7 +247,7 @@ impl Plot {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use std::fs;
+    use std::io::{BufRead, BufReader};
 
     const OUT_DIR: &str = "/tmp/plotpy/unit_tests";
 
@@ -261,11 +261,12 @@ mod tests {
     fn save_works() -> Result<(), &'static str> {
         let plot = Plot::new();
         assert_eq!(plot.buffer.len(), 0);
-        let path = Path::new(OUT_DIR).join("test.svg");
+        let path = Path::new(OUT_DIR).join("save_works.svg");
         plot.save(&path)?;
-        let svg = fs::read_to_string(&path).map_err(|_| "cannot read file")?;
-        let lines = svg.lines().collect::<Vec<_>>();
-        assert_eq!(lines.len(), 33);
+        let file = File::open(path).map_err(|_| "cannot open file")?;
+        let buffered = BufReader::new(file);
+        let lines_iter = buffered.lines();
+        assert_eq!(lines_iter.count(), 33);
         Ok(())
     }
 

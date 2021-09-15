@@ -6,8 +6,8 @@ use std::fmt::Write;
 /// # Example
 ///
 /// ```
-/// // import
 /// # fn main() -> Result<(), &'static str> {
+/// // import
 /// use plotpy::*;
 /// use std::path::Path;
 ///

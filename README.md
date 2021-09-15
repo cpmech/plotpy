@@ -22,3 +22,55 @@ Add the following lines to Cargo.toml:
 [dependencies]
 plotpy = "*"
 ```
+
+## Examples
+
+### Contour
+
+```rust
+// import
+fn main() -> Result<(), &'static str> {
+    use plotpy::*;
+    use std::path::Path;
+
+    // directory to save figures
+    const OUT_DIR: &str = "/tmp/plotpy/doc_tests";
+
+    // generate (x,y,z) matrices
+    let n = 21;
+    let mut x = vec![vec![0.0; n]; n];
+    let mut y = vec![vec![0.0; n]; n];
+    let mut z = vec![vec![0.0; n]; n];
+    let (min, max) = (-2.0, 2.0);
+    let d = (max - min) / ((n - 1) as f64);
+    for i in 0..n {
+        let v = min + (i as f64) * d;
+        for j in 0..n {
+            let u = min + (j as f64) * d;
+            x[i][j] = u;
+            y[i][j] = v;
+            z[i][j] = u * u - v * v;
+        }
+    }
+
+    // configure and draw contour
+    let mut contour = Contour::new();
+    contour.colorbar_label = "temperature".to_string();
+    contour.colormap_name = "terrain".to_string();
+    contour.with_selected = true;
+    contour.selected_level = 0.0;
+    contour.draw(&x, &y, &z);
+
+    // add contour to plot
+    let mut plot = Plot::new();
+    plot.add(&contour);
+    plot.labels("x", "y");
+
+    // save figure
+    let path = Path::new(OUT_DIR).join("doc_contour.svg");
+    plot.save(&path)?;
+    Ok(())
+}
+```
+
+![doc_contour.svg](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/doc_contour.svg)

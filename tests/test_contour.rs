@@ -72,6 +72,7 @@ fn test_contour_colors() -> Result<(), &'static str> {
     // contour object and options
     let mut contour = Contour::new();
     contour.colors = vec!["#f00".to_string(), "#0f0".to_string(), "#00f".to_string()];
+    contour.levels = vec![1.0, 3.0, 5.0, 7.0];
     contour.no_lines = true;
     contour.no_labels = true;
     contour.no_inline_labels = true;
@@ -88,7 +89,21 @@ fn test_contour_colors() -> Result<(), &'static str> {
 
     // save figure
     let path = Path::new(OUT_DIR).join("contour_colors.svg");
-    plot.save(&path)?;
+    match plot.save(&path) {
+        Err(_) => {
+            let log_path = Path::new(OUT_DIR).join("contour_colors.log");
+            let log_file = File::open(log_path).map_err(|_| "cannot open file")?;
+            let log_buffered = BufReader::new(log_file);
+            let log_lines_iter = log_buffered.lines();
+            for lines in log_lines_iter {
+                match lines {
+                    Ok(l) => println!("{}", l),
+                    Err(_) => (),
+                }
+            }
+        }
+        Ok(_) => (),
+    }
 
     // check number of lines
     let file = File::open(path).map_err(|_| "cannot open file")?;

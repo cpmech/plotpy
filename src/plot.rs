@@ -10,6 +10,72 @@ pub trait GraphMaker {
 
 /// Driver structure that calls Python
 ///
+/// # Example
+///
+/// ```
+/// # fn main() -> Result<(), &'static str> {
+/// // import
+/// use plotpy::*;
+/// use std::path::Path;
+///
+/// // directory to save figures
+/// const OUT_DIR: &str = "/tmp/plotpy/doc_tests";
+///
+/// // generate (x,y) points
+/// let x = &[1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0];
+/// let y = &[1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0];
+///
+/// // configure and draw curve
+/// let mut curve = Curve::new();
+/// curve.label = "line".to_string();
+/// curve.draw(x, y);
+///
+/// // configure plot
+/// let mut plot = Plot::new();
+/// plot.title_all_subplots("four views of the same curve");
+/// plot.subplot_vertical_gap(0.50);
+///
+/// // add curve to subplot
+/// plot.subplot(2, 2, 1);
+/// plot.title("first");
+/// plot.add(&curve);
+/// plot.legend();
+/// plot.grid_and_labels("x", "y");
+///
+/// // add curve to subplot
+/// plot.subplot(2, 2, 2);
+/// plot.title("second");
+/// plot.add(&curve);
+/// plot.legend();
+/// plot.grid_and_labels("x", "y");
+///
+/// // add curve to subplot
+/// plot.subplot(2, 2, 3);
+/// plot.title("third");
+/// plot.add(&curve);
+/// plot.legend();
+/// plot.grid_and_labels("x", "y");
+///
+/// // add curve to subplot
+/// plot.subplot(2, 2, 4);
+/// plot.title("fourth");
+/// plot.add(&curve);
+/// plot.grid_and_labels("x", "y");
+/// plot.equal();
+/// plot.legend();
+/// plot.xrange(2.0, 8.0);
+/// plot.yrange(2.0, 8.0);
+///
+/// // save figure
+/// let path = Path::new(OUT_DIR).join("doc_plot.svg");
+/// plot.save(&path)?;
+/// # Ok(())
+/// # }
+/// ```
+///
+/// ![doc_plot.svg](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/doc_plot.svg)
+///
+///
 /// ```
 /// use plotpy::*;
 /// let mut plot = Plot::new();
@@ -60,6 +126,16 @@ impl Plot {
         Ok(())
     }
 
+    /// Adds a title to the plot or sub-plot
+    pub fn title(&mut self, title: &str) {
+        write!(&mut self.buffer, "plt.title(r'{}')\n", title).unwrap();
+    }
+
+    /// Adds a title to all sub-plots
+    pub fn title_all_subplots(&mut self, title: &str) {
+        write!(&mut self.buffer, "st=plt.suptitle(r'{}')\naddToEA(st)\n", title).unwrap();
+    }
+
     /// Configures subplots
     ///
     /// # Arguments
@@ -75,19 +151,19 @@ impl Plot {
 
     /// Sets the horizontal gap between subplots
     pub fn subplot_horizontal_gap(&mut self, value: f64) {
-        write!(&mut self.buffer, "plt.subplots_adjust(hspace={})\n", value).unwrap();
+        write!(&mut self.buffer, "plt.subplots_adjust(wspace={})\n", value).unwrap();
     }
 
     /// Sets the vertical gap between subplots
     pub fn subplot_vertical_gap(&mut self, value: f64) {
-        write!(&mut self.buffer, "plt.subplots_adjust(wspace={})\n", value).unwrap();
+        write!(&mut self.buffer, "plt.subplots_adjust(hspace={})\n", value).unwrap();
     }
 
     /// Sets the horizontal and vertical gap between subplots
     pub fn subplot_gap(&mut self, horizontal: f64, vertical: f64) {
         write!(
             &mut self.buffer,
-            "plt.subplots_adjust(hspace={},wspace={})\n",
+            "plt.subplots_adjust(wspace={},hspace={})\n",
             horizontal, vertical
         )
         .unwrap();
@@ -280,20 +356,24 @@ mod tests {
     #[test]
     fn subplot_functions_work() {
         let mut plot = Plot::new();
+        plot.title_all_subplots("all subplots");
         plot.subplot(2, 2, 1);
         plot.subplot_horizontal_gap(0.1);
         plot.subplot_vertical_gap(0.2);
         plot.subplot_gap(0.3, 0.4);
-        let correct: &str = "\nplt.subplot(2,2,1)\n\
-                               plt.subplots_adjust(hspace=0.1)\n\
-                               plt.subplots_adjust(wspace=0.2)\n\
-                               plt.subplots_adjust(hspace=0.3,wspace=0.4)\n";
+        let correct: &str = "st=plt.suptitle(r'all subplots')\n\
+                             addToEA(st)\n\
+                             \nplt.subplot(2,2,1)\n\
+                               plt.subplots_adjust(wspace=0.1)\n\
+                               plt.subplots_adjust(hspace=0.2)\n\
+                               plt.subplots_adjust(wspace=0.3,hspace=0.4)\n";
         assert_eq!(plot.buffer, correct);
     }
 
     #[test]
     fn axes_functions_work() {
         let mut plot = Plot::new();
+        plot.title(&"my plot".to_string());
         plot.equal();
         plot.hide_axes();
         plot.range(-1.0, 1.0, -1.0, 1.0);
@@ -314,7 +394,8 @@ mod tests {
         plot.grid_and_labels("xx", "yy");
         plot.clear_current_figure();
         plot.legend();
-        let correct: &str = "plt.axis('equal')\n\
+        let correct: &str = "plt.title(r'my plot')\n\
+                             plt.axis('equal')\n\
                              plt.axis('off')\n\
                              plt.axis([-1,1,-1,1])\n\
                              plt.axis([0,1,0,1])\n\

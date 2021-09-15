@@ -45,6 +45,7 @@
     "rstride",
     "savefig",
     "stepfilled",
+    "suptitle",
     "toolkits",
     "wspace",
     "xaxis",

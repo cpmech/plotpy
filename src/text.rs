@@ -2,7 +2,46 @@ use super::*;
 use std::fmt::Write;
 
 /// Creates text to be added to a plot
+///
+/// # Example
+///
+/// ```
+/// # fn main() -> Result<(), &'static str> {
+/// // import
+/// use plotpy::*;
+/// use std::path::Path;
+///
+/// // directory to save figures
+/// const OUT_DIR: &str = "/tmp/plotpy/doc_tests";
+///
+/// // configure and draw text
+/// let mut text = Text::new();
+/// text.color = "#cd0000".to_string();
+/// text.align_horizontal = "center".to_string();
+/// text.align_vertical = "center".to_string();
+/// text.font_size = 30.0;
+/// text.rotation = 45.0;
+/// text.draw(0.0, 0.0, "Hello World!");
+///
+/// // add text to plot
+/// let mut plot = Plot::new();
+/// plot.add(&text);
+/// plot.range(-1.0, 1.0, -1.0, 1.0);
+/// plot.hide_axes();
+///
+/// // save figure
+/// let path = Path::new(OUT_DIR).join("doc_text.svg");
+/// plot.save(&path)?;
+/// # Ok(())
+/// # }
+/// ```
+///
+/// ![doc_text.svg](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/doc_text.svg)
+///
 pub struct Text {
+    /// Color
+    pub color: String,
+
     /// Horizontal alignment: "center", "left", "right"
     pub align_horizontal: String,
 
@@ -23,6 +62,7 @@ impl Text {
     /// Creates a new Text object
     pub fn new() -> Self {
         Text {
+            color: String::new(),
             align_horizontal: String::new(),
             align_vertical: String::new(),
             font_size: 0.0,
@@ -32,7 +72,7 @@ impl Text {
     }
 
     /// Draws text
-    pub fn draw(&mut self, x: f64, y: f64, message: &String) {
+    pub fn draw(&mut self, x: f64, y: f64, message: &str) {
         let opt = self.options();
         write!(&mut self.buffer, "plt.text({},{},'{}'{})\n", x, y, message, &opt).unwrap();
     }
@@ -40,6 +80,9 @@ impl Text {
     /// Returns options for text
     pub(crate) fn options(&self) -> String {
         let mut opt = String::new();
+        if self.color != "" {
+            write!(&mut opt, ",color='{}'", self.color).unwrap();
+        }
         if self.align_horizontal != "" {
             write!(&mut opt, ",ha='{}'", self.align_horizontal).unwrap();
         }
@@ -71,6 +114,7 @@ mod tests {
     #[test]
     fn new_works() {
         let text = Text::new();
+        assert_eq!(text.color.len(), 0);
         assert_eq!(text.align_horizontal.len(), 0);
         assert_eq!(text.align_vertical.len(), 0);
         assert_eq!(text.font_size, 0.0);
@@ -81,6 +125,7 @@ mod tests {
     #[test]
     fn options_works() {
         let mut text = Text::new();
+        text.color = "red".to_string();
         text.align_horizontal = "center".to_string();
         text.align_vertical = "center".to_string();
         text.font_size = 8.0;
@@ -88,7 +133,8 @@ mod tests {
         let opt = text.options();
         assert_eq!(
             opt,
-            ",ha='center'\
+            ",color='red'\
+             ,ha='center'\
              ,va='center'\
              ,fontsize=8\
              ,rotation=45"

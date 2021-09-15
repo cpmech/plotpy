@@ -41,6 +41,7 @@ use std::fmt::Write;
 /// // add curve to plot
 /// let mut plot = Plot::new();
 /// plot.add(&curve);
+/// plot.legend();
 /// plot.grid_and_labels("x", "y");
 ///
 /// // save figure

@@ -2,6 +2,47 @@ use super::*;
 use std::fmt::Write;
 
 /// Generates a Histogram plot
+///
+/// # Example
+///
+/// ```
+/// # fn main() -> Result<(), &'static str> {
+/// // import
+/// use plotpy::*;
+/// use std::path::Path;
+///
+/// // directory to save figures
+/// const OUT_DIR: &str = "/tmp/plotpy/doc_tests";
+///
+/// // set values
+/// let values = vec![
+///     vec![1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 4, 5, 6], // first series
+///     vec![-1, -1, 0, 1, 2, 3],                    // second series
+///     vec![5, 6, 7, 8],                            // third series
+/// ];
+///
+/// // set labels
+/// let labels = ["first".to_string(), "second".to_string(), "third".to_string()];
+///
+/// // configure and draw histogram
+/// let mut histogram = Histogram::new();
+/// histogram.draw(&values, &labels);
+///
+/// // add histogram to plot
+/// let mut plot = Plot::new();
+/// plot.add(&histogram);
+/// plot.legend();
+/// plot.grid_and_labels("values", "count");
+///
+/// // save figure
+/// let path = Path::new(OUT_DIR).join("doc_histogram.svg");
+/// plot.save(&path)?;
+/// # Ok(())
+/// # }
+/// ```
+///
+/// ![doc_histogram.svg](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/doc_histogram.svg)
+///
 pub struct Histogram {
     /// Colors for each bar
     pub colors: Vec<String>,

@@ -39,6 +39,7 @@ fn test_plot() -> Result<(), &'static str> {
     plot.ylabel("y-label");
     plot.labels("x", "y");
     plot.clear_current_figure();
+    plot.title("my plot");
     plot.grid_and_labels("x", "y");
 
     // add curve to plot
@@ -52,7 +53,7 @@ fn test_plot() -> Result<(), &'static str> {
     let file = File::open(path).map_err(|_| "cannot open file")?;
     let buffered = BufReader::new(file);
     let lines_iter = buffered.lines();
-    assert_eq!(lines_iter.count(), 574);
+    assert_eq!(lines_iter.count(), 692);
     Ok(())
 }
 
@@ -61,4 +62,43 @@ fn test_plot_error() {
     let plot = Plot::new();
     let path = Path::new(OUT_DIR).join("plot_error.xyz");
     assert_eq!(plot.save(&path).err(), Some("python3 failed; please see the log file"));
+}
+
+#[test]
+fn test_plot_subplots() -> Result<(), &'static str> {
+    // curve object and options
+    let mut curve = Curve::new();
+
+    // draw curve
+    let x = &[1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0];
+    let y = &[1.0, 4.0, 9.0, 16.0, 25.0, 36.0, 49.0, 64.0];
+    curve.draw(x, y);
+
+    // configure plot
+    let mut plot = Plot::new();
+    plot.title_all_subplots("all subplots");
+    plot.subplot_horizontal_gap(0.5);
+    plot.subplot_vertical_gap(0.5);
+    plot.subplot_gap(0.3, 0.2);
+
+    // add curve to subplots
+    plot.subplot(2, 2, 1);
+    plot.add(&curve);
+    plot.subplot(2, 2, 2);
+    plot.add(&curve);
+    plot.subplot(2, 2, 3);
+    plot.add(&curve);
+    plot.subplot(2, 2, 4);
+    plot.add(&curve);
+
+    // save figure
+    let path = Path::new(OUT_DIR).join("plot_subplots.svg");
+    plot.save(&path)?;
+
+    // check number of lines
+    let file = File::open(path).map_err(|_| "cannot open file")?;
+    let buffered = BufReader::new(file);
+    let lines_iter = buffered.lines();
+    assert_eq!(lines_iter.count(), 1008);
+    Ok(())
 }

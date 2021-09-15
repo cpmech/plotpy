@@ -2,6 +2,58 @@ use super::*;
 use std::fmt::Write;
 
 /// Generates a 3D a surface (or wireframe, or both)
+///
+/// # Example
+///
+/// ```
+/// # fn main() -> Result<(), &'static str> {
+/// // import
+/// use plotpy::*;
+/// use std::path::Path;
+///
+/// // directory to save figures
+/// const OUT_DIR: &str = "/tmp/plotpy/doc_tests";
+///
+/// // generate (x,y,z) matrices
+/// let n = 21;
+/// let mut x = vec![vec![0.0; n]; n];
+/// let mut y = vec![vec![0.0; n]; n];
+/// let mut z = vec![vec![0.0; n]; n];
+/// let (min, max) = (-2.0, 2.0);
+/// let d = (max - min) / ((n - 1) as f64);
+/// for i in 0..n {
+///     let v = min + (i as f64) * d;
+///     for j in 0..n {
+///         let u = min + (j as f64) * d;
+///         x[i][j] = u;
+///         y[i][j] = v;
+///         z[i][j] = u * u - v * v;
+///     }
+/// }
+///
+/// // configure and draw surface + wireframe
+/// let mut surface = Surface::new();
+/// surface.colormap_name = "seismic".to_string();
+/// surface.colorbar = true;
+/// surface.wireframe = true;
+/// surface.line_width = 0.3;
+/// surface.draw(&x, &y, &z);
+///
+/// // add curve to plot
+/// let mut plot = Plot::new();
+/// plot.add(&surface);
+/// plot.camera(20.0, 35.0); // must be after add surface
+///
+/// // save figure
+/// let path = Path::new(OUT_DIR).join("doc_surface.svg");
+/// plot.title("horse saddle equation");
+/// plot.save(&path)?;
+/// # Ok(())
+/// # }
+/// ```
+///
+/// ![doc_surface.svg](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/doc_surface.svg)
+///
 pub struct Surface {
     /// Row stride
     pub row_stride: i32,

@@ -315,6 +315,21 @@ impl Plot {
         legend.draw();
         self.add(&legend);
     }
+
+    /// Sets camera in 3d graph. Sets the elevation and azimuth of the axes.
+    ///
+    /// # Input
+    ///
+    /// * `elev` -- is the elevation angle in the z plane
+    /// * `azimuth` -- is the azimuth angle in the x,y plane
+    pub fn camera(&mut self, elev: f64, azimuth: f64) {
+        write!(
+            &mut self.buffer,
+            "plt.gca().view_init(elev={},azim={})\n",
+            elev, azimuth
+        )
+        .unwrap();
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -386,6 +401,7 @@ mod tests {
         plot.grid_and_labels("xx", "yy");
         plot.clear_current_figure();
         plot.legend();
+        plot.camera(1.0, 10.0);
         let correct: &str = "plt.title(r'my plot')\n\
                              plt.axis('equal')\n\
                              plt.axis('off')\n\
@@ -412,7 +428,8 @@ mod tests {
                              h,l=plt.gca().get_legend_handles_labels()\n\
                              if len(h)>0 and len(l)>0:\n\
                              \x20\x20\x20\x20leg=plt.legend(handlelength=3,ncol=1,loc='best')\n\
-                             \x20\x20\x20\x20addToEA(leg)\n";
+                             \x20\x20\x20\x20addToEA(leg)\n\
+                             plt.gca().view_init(elev=1,azim=10)\n";
         assert_eq!(plot.buffer, correct);
     }
 }

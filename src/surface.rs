@@ -39,7 +39,7 @@ use std::fmt::Write;
 /// surface.line_width = 0.3;
 /// surface.draw(&x, &y, &z);
 ///
-/// // add curve to plot
+/// // add surface to plot
 /// let mut plot = Plot::new();
 /// plot.add(&surface);
 /// plot.camera(20.0, 35.0); // must be after add surface

@@ -72,7 +72,6 @@ fn test_contour_colors() -> Result<(), &'static str> {
     // contour object and options
     let mut contour = Contour::new();
     contour.colors = vec!["#f00".to_string(), "#0f0".to_string(), "#00f".to_string()];
-    contour.levels = vec![1.0, 3.0, 5.0, 7.0];
     contour.no_lines = true;
     contour.no_labels = true;
     contour.no_inline_labels = true;

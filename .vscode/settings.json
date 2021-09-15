@@ -49,8 +49,16 @@
     "wspace",
     "xaxis",
     "xlabel",
+    "xmax",
+    "xmin",
+    "xnticks",
+    "xrange",
     "yaxis",
     "ylabel",
+    "ymax",
+    "ymin",
+    "ynticks",
+    "yrange",
     "zlabel",
     "zorder"
   ]

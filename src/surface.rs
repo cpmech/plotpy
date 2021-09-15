@@ -181,44 +181,52 @@ mod tests {
 
     #[test]
     fn new_works() {
-        let graph3d = Surface::new();
-        assert_eq!(graph3d.row_stride, 0);
-        assert_eq!(graph3d.col_stride, 0);
-        assert_eq!(graph3d.surface, true);
-        assert_eq!(graph3d.wireframe, false);
-        assert_eq!(graph3d.colormap_index, 0);
-        assert_eq!(graph3d.colormap_name.len(), 0);
-        assert_eq!(graph3d.colorbar, false);
-        assert_eq!(graph3d.colorbar_label.len(), 0);
-        assert_eq!(graph3d.colorbar_number_format.len(), 0);
-        assert_eq!(graph3d.line_color, "black".to_string());
-        assert_eq!(graph3d.line_style.len(), 0);
-        assert_eq!(graph3d.line_width, 0.0);
-        assert_eq!(graph3d.buffer.len(), 0);
+        let surface = Surface::new();
+        assert_eq!(surface.row_stride, 0);
+        assert_eq!(surface.col_stride, 0);
+        assert_eq!(surface.surface, true);
+        assert_eq!(surface.wireframe, false);
+        assert_eq!(surface.colormap_index, 0);
+        assert_eq!(surface.colormap_name.len(), 0);
+        assert_eq!(surface.colorbar, false);
+        assert_eq!(surface.colorbar_label.len(), 0);
+        assert_eq!(surface.colorbar_number_format.len(), 0);
+        assert_eq!(surface.line_color, "black".to_string());
+        assert_eq!(surface.line_style.len(), 0);
+        assert_eq!(surface.line_width, 0.0);
+        assert_eq!(surface.buffer.len(), 0);
     }
 
     #[test]
     fn options_surface_works() {
-        let mut graph3d = Surface::new();
-        graph3d.row_stride = 3;
-        graph3d.col_stride = 4;
-        let opt = graph3d.options_surface();
+        let mut surface = Surface::new();
+        surface.row_stride = 3;
+        surface.col_stride = 4;
+        let opt = surface.options_surface();
         assert_eq!(opt, ",rstride=3,cstride=4,cmap=getColormap(0)");
-        graph3d.colormap_name = "Pastel1".to_string();
-        let opt = graph3d.options_surface();
+        surface.colormap_name = "Pastel1".to_string();
+        let opt = surface.options_surface();
         assert_eq!(opt, ",rstride=3,cstride=4,cmap=plt.get_cmap('Pastel1')");
     }
 
     #[test]
     fn options_wireframe_works() {
-        let mut graph3d = Surface::new();
-        graph3d.row_stride = 3;
-        graph3d.col_stride = 4;
-        graph3d.line_color = "red".to_string();
-        graph3d.line_style = "--".to_string();
-        graph3d.line_width = 2.5;
-        let opt = graph3d.options_wireframe();
+        let mut surface = Surface::new();
+        surface.row_stride = 3;
+        surface.col_stride = 4;
+        surface.line_color = "red".to_string();
+        surface.line_style = "--".to_string();
+        surface.line_width = 2.5;
+        let opt = surface.options_wireframe();
         assert_eq!(opt, ",rstride=3,cstride=4,color='red',linestyle='--',linewidth=2.5");
+    }
+
+    #[test]
+    fn options_colorbar_works() {
+        let mut surface = Surface::new();
+        surface.colorbar_number_format = "%.3f".to_string();
+        let opt = surface.options_colorbar();
+        assert_eq!(opt, ",format='%.3f'");
     }
 
     #[test]

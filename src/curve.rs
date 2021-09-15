@@ -141,7 +141,7 @@ impl Curve {
         }
 
         // markers
-        if self.marker_color != "" {
+        if !self.marker_void && self.marker_color != "" {
             write!(&mut opt, ",markerfacecolor='{}'", self.marker_color).unwrap();
         }
         if self.marker_every > 0 {

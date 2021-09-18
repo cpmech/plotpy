@@ -231,6 +231,7 @@ impl GraphMaker for Surface {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use russell_lab::Matrix;
 
     #[test]
     fn new_works() {
@@ -300,6 +301,21 @@ mod tests {
                        AX3D.plot_wireframe(x,y,z,color='black')\n\
                        cb=plt.colorbar(sf)\n\
                        cb.ax.set_ylabel(r'temperature')\n";
+        assert_eq!(surface.buffer, b);
+    }
+
+    #[test]
+    fn draw_with_matrix_works() {
+        let mut surface = Surface::new();
+        let x = Matrix::from(&[[-0.5, 0.0, 0.5], [-0.5, 0.0, 0.5], [-0.5, 0.0, 0.5]]);
+        let y = Matrix::from(&[[-0.5, -0.5, -0.5], [0.0, 0.0, 0.0], [0.5, 0.5, 0.5]]);
+        let z = Matrix::from(&[[0.50, 0.25, 0.50], [0.25, 0.00, 0.25], [0.50, 0.25, 0.50]]);
+        surface.draw(&x, &y, &z);
+        let b: &str = "x=np.array([[-0.5,0,0.5,],[-0.5,0,0.5,],[-0.5,0,0.5,],],dtype=float)\n\
+                       y=np.array([[-0.5,-0.5,-0.5,],[0,0,0,],[0.5,0.5,0.5,],],dtype=float)\n\
+                       z=np.array([[0.5,0.25,0.5,],[0.25,0,0.25,],[0.5,0.25,0.5,],],dtype=float)\n\
+                       maybeCreateAX3D()\n\
+                       sf=AX3D.plot_surface(x,y,z,cmap=getColormap(0))\n";
         assert_eq!(surface.buffer, b);
     }
 }

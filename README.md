@@ -32,6 +32,7 @@ plotpy = "*"
 
 ```rust
 use plotpy::*;
+use russell_lab::Matrix;
 use std::path::Path;
 
 // directory to save figures

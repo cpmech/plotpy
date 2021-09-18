@@ -27,7 +27,7 @@ pub trait GraphMaker {
 ///
 /// // configure and draw curve
 /// let mut curve = Curve::new();
-/// curve.label = "line".to_string();
+/// curve.set_label("line");
 /// curve.draw(x, y);
 ///
 /// // configure plot

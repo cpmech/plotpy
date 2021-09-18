@@ -21,15 +21,17 @@ use std::fmt::Write;
 /// let y3 = &[1.0, 4.0, 6.0, 8.0, 10.0, 12.0, 14.0, 16.0];
 /// let y4 = &[1.0, 4.0, 9.0, 16.0, 25.0, 36.0, 49.0, 64.0];
 ///
-/// // configure and draw curves
+/// // configure curves
 /// let mut curve1 = Curve::new();
 /// let mut curve2 = Curve::new();
 /// let mut curve3 = Curve::new();
 /// let mut curve4 = Curve::new();
-/// curve1.label = "first".to_string();
-/// curve2.label = "second".to_string();
-/// curve3.label = "third".to_string();
-/// curve4.label = "fourth".to_string();
+/// curve1.set_label("first");
+/// curve2.set_label("second");
+/// curve3.set_label("third");
+/// curve4.set_label("fourth");
+///
+/// // draw curves
 /// curve1.draw(x, y1);
 /// curve2.draw(x, y2);
 /// curve3.draw(x, y3);

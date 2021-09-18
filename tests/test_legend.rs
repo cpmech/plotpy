@@ -6,15 +6,14 @@ use std::path::Path;
 const OUT_DIR: &str = "/tmp/plotpy/integration_tests";
 
 #[test]
-#[test]
 fn test_legend_1() -> Result<(), &'static str> {
     // curve and options
     let mut curve1 = Curve::new();
-    curve1.label = "my-curve".to_string();
+    curve1.set_label("my-curve");
 
     // another curve
     let mut curve2 = Curve::new();
-    curve2.label = "another-curve".to_string();
+    curve2.set_label("another-curve");
 
     // draw curve
     let x = &[1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0];
@@ -57,11 +56,11 @@ fn test_legend_1() -> Result<(), &'static str> {
 fn test_legend_2() -> Result<(), &'static str> {
     // curve and options
     let mut curve1 = Curve::new();
-    curve1.label = "my-curve".to_string();
+    curve1.set_label("my-curve");
 
     // another curve
     let mut curve2 = Curve::new();
-    curve2.label = "another-curve".to_string();
+    curve2.set_label("another-curve");
 
     // draw curve
     let x = &[1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0];

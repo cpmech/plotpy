@@ -62,3 +62,15 @@ pub use crate::plot::*;
 pub use crate::shapes::*;
 pub use crate::surface::*;
 pub use crate::text::*;
+
+// run code from README file
+#[cfg(doctest)]
+mod test_readme {
+    macro_rules! external_doc_test {
+        ($x:expr) => {
+            #[doc = $x]
+            extern "C" {}
+        };
+    }
+    external_doc_test!(include_str!("../README.md"));
+}

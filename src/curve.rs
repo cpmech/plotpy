@@ -211,6 +211,7 @@ impl GraphMaker for Curve {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use russell_lab::Vector;
 
     #[test]
     fn new_works() {
@@ -269,6 +270,19 @@ mod tests {
         let mut curve = Curve::new();
         curve.label = "the-curve".to_string();
         curve.draw(x, y);
+        let b: &str = "x=np.array([1,2,3,4,5,],dtype=float)\n\
+                       y=np.array([1,4,9,16,25,],dtype=float)\n\
+                       plt.plot(x,y,label='the-curve')\n";
+        assert_eq!(curve.buffer, b);
+    }
+
+    #[test]
+    fn draw_with_vector_works() {
+        let x = Vector::from(&[1.0, 2.0, 3.0, 4.0, 5.0]);
+        let y = Vector::from(&[1.0, 4.0, 9.0, 16.0, 25.0]);
+        let mut curve = Curve::new();
+        curve.label = "the-curve".to_string();
+        curve.draw(&x, &y);
         let b: &str = "x=np.array([1,2,3,4,5,],dtype=float)\n\
                        y=np.array([1,4,9,16,25,],dtype=float)\n\
                        plt.plot(x,y,label='the-curve')\n";

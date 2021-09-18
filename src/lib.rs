@@ -36,6 +36,8 @@
 //!
 
 // modules ////////////////////////////////////////
+mod as_matrix;
+mod as_vector;
 mod constants;
 mod contour;
 mod conversions;
@@ -47,6 +49,8 @@ mod plot;
 mod shapes;
 mod surface;
 mod text;
+pub use crate::as_matrix::*;
+pub use crate::as_vector::*;
 pub use crate::constants::*;
 pub use crate::contour::*;
 use crate::conversions::*;

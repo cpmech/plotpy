@@ -129,11 +129,12 @@ impl Curve {
     ///
     /// # Notes
     ///
-    /// * The type `T` of the input array must be a number.
+    /// * The type `U` of the input array must be a number.
     ///
-    pub fn draw<T>(&mut self, x: &[T], y: &[T])
+    pub fn draw<'a, T, U>(&mut self, x: &'a T, y: &'a T)
     where
-        T: std::fmt::Display,
+        T: AsVector<'a, U>,
+        U: 'a + std::fmt::Display,
     {
         vector_to_array(&mut self.buffer, "x", x);
         vector_to_array(&mut self.buffer, "y", y);
@@ -210,6 +211,7 @@ impl GraphMaker for Curve {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use russell_lab::Vector;
 
     #[test]
     fn new_works() {
@@ -268,6 +270,19 @@ mod tests {
         let mut curve = Curve::new();
         curve.label = "the-curve".to_string();
         curve.draw(x, y);
+        let b: &str = "x=np.array([1,2,3,4,5,],dtype=float)\n\
+                       y=np.array([1,4,9,16,25,],dtype=float)\n\
+                       plt.plot(x,y,label='the-curve')\n";
+        assert_eq!(curve.buffer, b);
+    }
+
+    #[test]
+    fn draw_with_vector_works() {
+        let x = Vector::from(&[1.0, 2.0, 3.0, 4.0, 5.0]);
+        let y = Vector::from(&[1.0, 4.0, 9.0, 16.0, 25.0]);
+        let mut curve = Curve::new();
+        curve.label = "the-curve".to_string();
+        curve.draw(&x, &y);
         let b: &str = "x=np.array([1,2,3,4,5,],dtype=float)\n\
                        y=np.array([1,4,9,16,25,],dtype=float)\n\
                        plt.plot(x,y,label='the-curve')\n";

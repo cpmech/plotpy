@@ -10,15 +10,16 @@ Documentation:
 
 ## Installation
 
-### 1 Install Matplotlib
+Install some libraries:
 
 ```bash
-sudo apt-get install python3-matplotlib
+sudo apt-get install \
+    liblapacke-dev \
+    libopenblas-dev \
+    python3-matplotlib
 ```
 
-### 2 Configure Cargo.toml
-
-Add the following lines to Cargo.toml:
+Add this to your Cargo.toml (choose the right version):
 
 ```toml
 [dependencies]

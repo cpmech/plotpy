@@ -144,11 +144,12 @@ impl Surface {
     ///
     /// # Notes
     ///
-    /// * The type `T` of the input matrices must be a number.
+    /// * The type `U` of the input matrices must be a number.
     ///
-    pub fn draw<T>(&mut self, x: &Vec<Vec<T>>, y: &Vec<Vec<T>>, z: &Vec<Vec<T>>)
+    pub fn draw<'a, T, U>(&mut self, x: &'a T, y: &'a T, z: &'a T)
     where
-        T: std::fmt::Display,
+        T: AsMatrix<'a, U>,
+        U: 'a + std::fmt::Display,
     {
         matrix_to_array(&mut self.buffer, "x", x);
         matrix_to_array(&mut self.buffer, "y", y);

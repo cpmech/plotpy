@@ -129,11 +129,12 @@ impl Curve {
     ///
     /// # Notes
     ///
-    /// * The type `T` of the input array must be a number.
+    /// * The type `U` of the input array must be a number.
     ///
-    pub fn draw<T>(&mut self, x: &[T], y: &[T])
+    pub fn draw<'a, T, U>(&mut self, x: &'a T, y: &'a T)
     where
-        T: std::fmt::Display,
+        T: AsVector<'a, U>,
+        U: 'a + std::fmt::Display,
     {
         vector_to_array(&mut self.buffer, "x", x);
         vector_to_array(&mut self.buffer, "y", y);

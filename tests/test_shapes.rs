@@ -3,7 +3,7 @@ use std::fs::File;
 use std::io::{BufRead, BufReader};
 use std::path::Path;
 
-const OUT_DIR: &str = "/tmp/plotpy/integration_tests";
+const OUT_DIR: &str = "/tmp/plotpy/integ_tests";
 
 #[test]
 fn test_shapes() -> Result<(), &'static str> {
@@ -36,7 +36,7 @@ fn test_shapes() -> Result<(), &'static str> {
     plot.add(&shapes);
 
     // save figure
-    let path = Path::new(OUT_DIR).join("shapes.svg");
+    let path = Path::new(OUT_DIR).join("integ_shapes.svg");
     plot.set_equal_axes();
     plot.save(&path)?;
 

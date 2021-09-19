@@ -4,7 +4,7 @@ use std::fs::File;
 use std::io::{BufRead, BufReader};
 use std::path::Path;
 
-const OUT_DIR: &str = "/tmp/plotpy/integration_tests";
+const OUT_DIR: &str = "/tmp/plotpy/integ_tests";
 
 fn gen_xyz(n: usize) -> (Matrix, Matrix, Matrix) {
     assert!(n > 1);
@@ -50,7 +50,7 @@ fn test_contour() -> Result<(), &'static str> {
     plot.add(&contour);
 
     // save figure
-    let path = Path::new(OUT_DIR).join("contour.svg");
+    let path = Path::new(OUT_DIR).join("integ_contour.svg");
     plot.save(&path)?;
 
     // check number of lines
@@ -83,7 +83,7 @@ fn test_contour_colors() -> Result<(), &'static str> {
     plot.add(&contour);
 
     // save figure
-    let path = Path::new(OUT_DIR).join("contour_colors.svg");
+    let path = Path::new(OUT_DIR).join("integ_contour_colors.svg");
     match plot.save(&path) {
         Err(_) => plot.print_log_file(&path)?,
         Ok(_) => (),
@@ -119,7 +119,7 @@ fn test_contour_colormap_index() -> Result<(), &'static str> {
         plot.add(&contour);
 
         // save figure
-        let filename = format!("contour_colormap_{}.svg", index);
+        let filename = format!("integ_contour_colormap_{}.svg", index);
         let path = Path::new(OUT_DIR).join(&filename);
         plot.save(&path)?;
 
@@ -154,7 +154,7 @@ fn test_contour_colormap_name() -> Result<(), &'static str> {
         plot.add(&contour);
 
         // save figure
-        let filename = format!("contour_colormap_{}.svg", name);
+        let filename = format!("integ_contour_colormap_{}.svg", name);
         let path = Path::new(OUT_DIR).join(&filename);
         plot.save(&path)?;
 

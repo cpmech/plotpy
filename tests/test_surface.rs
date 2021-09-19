@@ -4,7 +4,7 @@ use std::fs::File;
 use std::io::{BufRead, BufReader};
 use std::path::Path;
 
-const OUT_DIR: &str = "/tmp/plotpy/integration_tests";
+const OUT_DIR: &str = "/tmp/plotpy/integ_tests";
 
 fn gen_xyz(n: usize) -> (Matrix, Matrix, Matrix) {
     assert!(n > 1);
@@ -50,7 +50,7 @@ fn test_surface() -> Result<(), &'static str> {
     plot.add(&surface);
 
     // save figure
-    let path = Path::new(OUT_DIR).join("surface.svg");
+    let path = Path::new(OUT_DIR).join("integ_surface.svg");
     plot.save(&path)?;
 
     // check number of lines
@@ -76,7 +76,7 @@ fn test_wireframe() -> Result<(), &'static str> {
     plot.add(&surface);
 
     // save figure
-    let path = Path::new(OUT_DIR).join("wireframe.svg");
+    let path = Path::new(OUT_DIR).join("integ_wireframe.svg");
     plot.save(&path)?;
 
     // check number of lines

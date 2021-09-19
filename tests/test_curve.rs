@@ -3,7 +3,7 @@ use std::fs::File;
 use std::io::{BufRead, BufReader};
 use std::path::Path;
 
-const OUT_DIR: &str = "/tmp/plotpy/integration_tests";
+const OUT_DIR: &str = "/tmp/plotpy/integ_tests";
 
 #[test]
 fn test_curve() -> Result<(), &'static str> {
@@ -45,7 +45,7 @@ fn test_curve() -> Result<(), &'static str> {
     plot.add(&curve2);
 
     // save figure
-    let path = Path::new(OUT_DIR).join("curve.svg");
+    let path = Path::new(OUT_DIR).join("integ_curve.svg");
     plot.save(&path)?;
 
     // check number of lines

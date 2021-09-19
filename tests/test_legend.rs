@@ -3,7 +3,7 @@ use std::fs::File;
 use std::io::{BufRead, BufReader};
 use std::path::Path;
 
-const OUT_DIR: &str = "/tmp/plotpy/integration_tests";
+const OUT_DIR: &str = "/tmp/plotpy/integ_tests";
 
 #[test]
 fn test_legend_1() -> Result<(), &'static str> {
@@ -42,7 +42,7 @@ fn test_legend_1() -> Result<(), &'static str> {
     plot.add(&legend); // must be after a (labelled) curve
 
     // save figure
-    let path = Path::new(OUT_DIR).join("legend_1.svg");
+    let path = Path::new(OUT_DIR).join("integ_legend_1.svg");
     plot.save(&path)?;
 
     // check number of lines
@@ -84,7 +84,7 @@ fn test_legend_2() -> Result<(), &'static str> {
     plot.add(&legend); // must be after a (labelled) curve
 
     // save figure
-    let path = Path::new(OUT_DIR).join("legend_2.svg");
+    let path = Path::new(OUT_DIR).join("integ_legend_2.svg");
     plot.save(&path)?;
 
     // check number of lines

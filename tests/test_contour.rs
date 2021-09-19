@@ -6,20 +6,6 @@ use std::path::Path;
 
 const OUT_DIR: &str = "/tmp/plotpy/integration_tests";
 
-fn print_log_file(log_filename: &str) -> Result<(), &'static str> {
-    let log_path = Path::new(OUT_DIR).join(log_filename);
-    let log_file = File::open(log_path).map_err(|_| "cannot open file")?;
-    let log_buffered = BufReader::new(log_file);
-    let log_lines_iter = log_buffered.lines();
-    for lines in log_lines_iter {
-        match lines {
-            Ok(l) => println!("{}", l),
-            Err(_) => (),
-        }
-    }
-    Ok(())
-}
-
 fn gen_xyz(n: usize) -> (Matrix, Matrix, Matrix) {
     assert!(n > 1);
     let mut x = Matrix::new(n, n);
@@ -99,7 +85,7 @@ fn test_contour_colors() -> Result<(), &'static str> {
     // save figure
     let path = Path::new(OUT_DIR).join("contour_colors.svg");
     match plot.save(&path) {
-        Err(_) => print_log_file("contour_colors.log")?,
+        Err(_) => plot.print_log_file(&path)?,
         Ok(_) => (),
     }
 

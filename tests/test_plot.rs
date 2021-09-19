@@ -18,28 +18,28 @@ fn test_plot() -> Result<(), &'static str> {
     // configure plot
     let mut plot = Plot::new();
     plot.subplot(2, 2, 1);
-    plot.subplot_horizontal_gap(0.1);
-    plot.subplot_vertical_gap(0.2);
-    plot.subplot_gap(0.3, 0.4);
-    plot.equal();
+    plot.set_horizontal_gap(0.1);
+    plot.set_vertical_gap(0.2);
+    plot.set_gaps(0.3, 0.4);
+    plot.set_equal_axes();
     plot.hide_axes();
-    plot.range(-1.0, 1.0, -1.0, 1.0);
-    plot.range_vec(&[0.0, 1.0, 0.0, 1.0]);
-    plot.xmin(0.0);
-    plot.xmax(1.0);
-    plot.ymin(0.0);
-    plot.ymax(1.0);
-    plot.xrange(0.0, 1.0);
-    plot.yrange(0.0, 1.0);
-    plot.xnticks(0);
-    plot.xnticks(8);
-    plot.ynticks(0);
-    plot.ynticks(5);
-    plot.xlabel("x-label");
-    plot.ylabel("y-label");
-    plot.labels("x", "y");
+    plot.set_range(-1.0, 1.0, -1.0, 1.0);
+    plot.set_range_from_vec(&[0.0, 1.0, 0.0, 1.0]);
+    plot.set_xmin(0.0);
+    plot.set_xmax(1.0);
+    plot.set_ymin(0.0);
+    plot.set_ymax(1.0);
+    plot.set_xrange(0.0, 1.0);
+    plot.set_yrange(0.0, 1.0);
+    plot.set_num_ticks_x(0);
+    plot.set_num_ticks_x(8);
+    plot.set_num_ticks_y(0);
+    plot.set_num_ticks_y(5);
+    plot.set_label_x("x-label");
+    plot.set_label_y("y-label");
+    plot.set_labels("x", "y");
     plot.clear_current_figure();
-    plot.title("my plot");
+    plot.set_title("my plot");
     plot.grid_and_labels("x", "y");
 
     // add curve to plot
@@ -76,10 +76,10 @@ fn test_plot_subplots() -> Result<(), &'static str> {
 
     // configure plot
     let mut plot = Plot::new();
-    plot.title_all_subplots("all subplots");
-    plot.subplot_horizontal_gap(0.5);
-    plot.subplot_vertical_gap(0.5);
-    plot.subplot_gap(0.3, 0.2);
+    plot.set_super_title("all subplots");
+    plot.set_horizontal_gap(0.5);
+    plot.set_vertical_gap(0.5);
+    plot.set_gaps(0.3, 0.2);
 
     // add curve to subplots
     plot.subplot(2, 2, 1);

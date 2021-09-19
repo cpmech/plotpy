@@ -69,7 +69,7 @@ fn main() -> Result<(), &'static str> {
     // add contour to plot
     let mut plot = Plot::new();
     plot.add(&contour);
-    plot.labels("x", "y");
+    plot.set_labels("x", "y");
 
     // save figure
     let path = Path::new(OUT_DIR).join("doc_contour.svg");

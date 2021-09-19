@@ -37,7 +37,7 @@ fn test_shapes() -> Result<(), &'static str> {
 
     // save figure
     let path = Path::new(OUT_DIR).join("shapes.svg");
-    plot.equal();
+    plot.set_equal_axes();
     plot.save(&path)?;
 
     // check number of lines

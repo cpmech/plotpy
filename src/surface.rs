@@ -45,11 +45,11 @@ use std::fmt::Write;
 /// // add surface to plot
 /// let mut plot = Plot::new();
 /// plot.add(&surface);
-/// plot.camera(20.0, 35.0); // must be after add surface
+/// plot.set_camera(20.0, 35.0); // must be after add surface
 ///
 /// // save figure
 /// let path = Path::new(OUT_DIR).join("doc_surface.svg");
-/// plot.title("horse saddle equation");
+/// plot.set_title("horse saddle equation");
 /// plot.save(&path)?;
 /// # Ok(())
 /// # }
@@ -58,11 +58,11 @@ use std::fmt::Write;
 /// ![doc_surface.svg](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/doc_surface.svg)
 ///
 pub struct Surface {
-    row_stride: i32,          // Row stride
-    col_stride: i32,          // Column stride
+    row_stride: usize,        // Row stride
+    col_stride: usize,        // Column stride
     with_surface: bool,       // Generates a surface
     with_wireframe: bool,     // Generates a wireframe
-    colormap_index: i32,      // Colormap index
+    colormap_index: usize,    // Colormap index
     colormap_name: String,    // Colormap name
     with_colorbar: bool,      // Draw a colorbar
     colorbar_label: String,   // Colorbar label
@@ -139,13 +139,13 @@ impl Surface {
     }
 
     /// Sets the row stride
-    pub fn set_row_stride(&mut self, value: i32) -> &mut Self {
+    pub fn set_row_stride(&mut self, value: usize) -> &mut Self {
         self.row_stride = value;
         self
     }
 
     /// Sets the column stride
-    pub fn set_col_stride(&mut self, value: i32) -> &mut Self {
+    pub fn set_col_stride(&mut self, value: usize) -> &mut Self {
         self.col_stride = value;
         self
     }
@@ -174,7 +174,7 @@ impl Surface {
     /// * 5 -- pink
     /// * 6 -- Greys
     /// * `>`6 -- starts over from 0
-    pub fn set_colormap_index(&mut self, index: i32) -> &mut Self {
+    pub fn set_colormap_index(&mut self, index: usize) -> &mut Self {
         self.colormap_index = index;
         self.colormap_name = String::new();
         self

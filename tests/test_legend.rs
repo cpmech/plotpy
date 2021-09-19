@@ -26,10 +26,11 @@ fn test_legend_1() -> Result<(), &'static str> {
 
     // legend and options
     let mut legend = Legend::new();
-    legend.show_frame = false;
-    legend.outside = true;
-    legend.fontsize = 18.0;
-    legend.num_col = 2;
+    legend
+        .set_show_frame(false)
+        .set_outside(true)
+        .set_fontsize(18.0)
+        .set_num_col(2);
 
     // draw legend
     legend.draw();

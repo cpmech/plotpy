@@ -364,6 +364,36 @@ impl Plot {
         )
         .unwrap();
     }
+
+    // Sets option to hide (or show) frame borders
+    pub fn set_frame_border(&mut self, left: bool, right: bool, bottom: bool, top: bool) -> &mut Self {
+        if left {
+            self.buffer.push_str("plt.gca().spines['left'].set_visible(True)\n");
+        } else {
+            self.buffer.push_str("plt.gca().spines['left'].set_visible(False)\n");
+        }
+        if right {
+            self.buffer.push_str("plt.gca().spines['right'].set_visible(True)\n");
+        } else {
+            self.buffer.push_str("plt.gca().spines['right'].set_visible(False)\n");
+        }
+        if bottom {
+            self.buffer.push_str("plt.gca().spines['bottom'].set_visible(True)\n");
+        } else {
+            self.buffer.push_str("plt.gca().spines['bottom'].set_visible(False)\n");
+        }
+        if top {
+            self.buffer.push_str("plt.gca().spines['top'].set_visible(True)\n");
+        } else {
+            self.buffer.push_str("plt.gca().spines['top'].set_visible(False)\n");
+        }
+        self
+    }
+
+    // HideAllBorders hides all frame borders
+    pub fn set_frame_borders(&mut self, show_all: bool) -> &mut Self {
+        self.set_frame_border(show_all, show_all, show_all, show_all)
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -423,9 +453,9 @@ mod tests {
     }
 
     #[test]
-    fn axes_functions_work() {
+    fn set_functions_work() {
         let mut plot = Plot::new();
-        plot.set_title(&"my plot".to_string());
+        plot.set_title("my plot");
         plot.set_equal_axes();
         plot.set_hide_axes(true);
         plot.set_range(-1.0, 1.0, -1.0, 1.0);
@@ -475,6 +505,27 @@ mod tests {
                              \x20\x20\x20\x20leg=plt.legend(handlelength=3,ncol=1,loc='best')\n\
                              \x20\x20\x20\x20addToEA(leg)\n\
                              plt.gca().view_init(elev=1,azim=10)\n";
+        assert_eq!(plot.buffer, correct);
+    }
+
+    #[test]
+    fn set_frame_functions_work() {
+        let mut plot = Plot::new();
+        plot.set_frame_border(false, false, false, false);
+        plot.set_frame_border(true, true, true, true);
+        plot.set_frame_borders(false);
+        let correct: &str = "plt.gca().spines['left'].set_visible(False)\n\
+                             plt.gca().spines['right'].set_visible(False)\n\
+                             plt.gca().spines['bottom'].set_visible(False)\n\
+                             plt.gca().spines['top'].set_visible(False)\n\
+                             plt.gca().spines['left'].set_visible(True)\n\
+                             plt.gca().spines['right'].set_visible(True)\n\
+                             plt.gca().spines['bottom'].set_visible(True)\n\
+                             plt.gca().spines['top'].set_visible(True)\n\
+                             plt.gca().spines['left'].set_visible(False)\n\
+                             plt.gca().spines['right'].set_visible(False)\n\
+                             plt.gca().spines['bottom'].set_visible(False)\n\
+                             plt.gca().spines['top'].set_visible(False)\n";
         assert_eq!(plot.buffer, correct);
     }
 }

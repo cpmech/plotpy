@@ -41,6 +41,9 @@ fn test_plot() -> Result<(), &'static str> {
     plot.clear_current_figure();
     plot.set_title("my plot");
     plot.grid_and_labels("x", "y");
+    plot.set_frame_borders(false);
+    plot.set_frame_borders(true);
+    plot.set_frame_borders(false);
 
     // add curve to plot
     plot.add(&curve);

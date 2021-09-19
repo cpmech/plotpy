@@ -1,4 +1,4 @@
-use super::*;
+use super::PYTHON_HEADER;
 use std::fs;
 use std::fs::File;
 use std::io::Write;
@@ -42,14 +42,8 @@ pub(crate) fn call_python3(python_commands: &String, path: &Path) -> Result<Stri
         .map_err(|_| "cannot run python3")?;
 
     // results
-    let out = match String::from_utf8(output.stdout) {
-        Ok(v) => v,
-        Err(e) => format!("ERROR: cannot convert command line stdout\n{}", e),
-    };
-    let err = match String::from_utf8(output.stderr) {
-        Ok(v) => v,
-        Err(e) => format!("ERROR: cannot convert command line stderr\n{}", e),
-    };
+    let out = String::from_utf8(output.stdout).unwrap();
+    let err = String::from_utf8(output.stderr).unwrap();
     let mut results = String::new();
     if out.len() > 0 {
         results.push_str(&out);
@@ -66,7 +60,9 @@ pub(crate) fn call_python3(python_commands: &String, path: &Path) -> Result<Stri
 
 #[cfg(test)]
 mod tests {
-    use super::*;
+    use super::{call_python3, PYTHON_HEADER};
+    use std::fs;
+    use std::path::Path;
 
     const OUT_DIR: &str = "/tmp/plotpy/unit_tests";
 

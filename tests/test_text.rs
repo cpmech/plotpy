@@ -1,9 +1,9 @@
-use plotpy::*;
+use plotpy::{Plot, Text};
 use std::fs::File;
 use std::io::{BufRead, BufReader};
 use std::path::Path;
 
-const OUT_DIR: &str = "/tmp/plotpy/integration_tests";
+const OUT_DIR: &str = "/tmp/plotpy/integ_tests";
 
 #[test]
 fn test_text() -> Result<(), &'static str> {
@@ -23,7 +23,7 @@ fn test_text() -> Result<(), &'static str> {
     plot.add(&text);
 
     // save figure
-    let path = Path::new(OUT_DIR).join("text.svg");
+    let path = Path::new(OUT_DIR).join("integ_text.svg");
     plot.save(&path)?;
 
     // check number of lines

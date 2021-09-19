@@ -1,4 +1,4 @@
-use super::*;
+use super::{matrix_to_array, AsMatrix, GraphMaker};
 use std::fmt::Write;
 
 /// Generates a 3D a surface (or wireframe, or both)
@@ -9,7 +9,7 @@ use std::fmt::Write;
 /// # fn main() -> Result<(), &'static str> {
 /// // import
 /// use plotpy::{Surface, Plot};
-/// use russell_lab::Matrix;
+/// use russell_lab::generate3d;
 /// use std::path::Path;
 ///
 /// // directory to save figures
@@ -17,20 +17,7 @@ use std::fmt::Write;
 ///
 /// // generate (x,y,z) matrices
 /// let n = 21;
-/// let mut x = Matrix::new(n, n);
-/// let mut y = Matrix::new(n, n);
-/// let mut z = Matrix::new(n, n);
-/// let (min, max) = (-2.0, 2.0);
-/// let d = (max - min) / ((n - 1) as f64);
-/// for i in 0..n {
-///     let v = min + (i as f64) * d;
-///     for j in 0..n {
-///         let u = min + (j as f64) * d;
-///         x[i][j] = u;
-///         y[i][j] = v;
-///         z[i][j] = u * u - v * v;
-///     }
-/// }
+/// let (x, y, z) = generate3d(-2.0, 2.0, -2.0, 2.0, n, n, |x, y| x * x - y * y);
 ///
 /// // configure and draw surface + wireframe
 /// let mut surface = Surface::new();
@@ -44,12 +31,12 @@ use std::fmt::Write;
 ///
 /// // add surface to plot
 /// let mut plot = Plot::new();
-/// plot.add(&surface);
-/// plot.camera(20.0, 35.0); // must be after add surface
+/// plot.add(&surface)
+///     .set_title("horse saddle equation") // must be after add surface
+///     .set_camera(20.0, 35.0); // must be after add surface
 ///
 /// // save figure
 /// let path = Path::new(OUT_DIR).join("doc_surface.svg");
-/// plot.title("horse saddle equation");
 /// plot.save(&path)?;
 /// # Ok(())
 /// # }
@@ -58,11 +45,11 @@ use std::fmt::Write;
 /// ![doc_surface.svg](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/doc_surface.svg)
 ///
 pub struct Surface {
-    row_stride: i32,          // Row stride
-    col_stride: i32,          // Column stride
+    row_stride: usize,        // Row stride
+    col_stride: usize,        // Column stride
     with_surface: bool,       // Generates a surface
     with_wireframe: bool,     // Generates a wireframe
-    colormap_index: i32,      // Colormap index
+    colormap_index: usize,    // Colormap index
     colormap_name: String,    // Colormap name
     with_colorbar: bool,      // Draw a colorbar
     colorbar_label: String,   // Colorbar label
@@ -139,13 +126,13 @@ impl Surface {
     }
 
     /// Sets the row stride
-    pub fn set_row_stride(&mut self, value: i32) -> &mut Self {
+    pub fn set_row_stride(&mut self, value: usize) -> &mut Self {
         self.row_stride = value;
         self
     }
 
     /// Sets the column stride
-    pub fn set_col_stride(&mut self, value: i32) -> &mut Self {
+    pub fn set_col_stride(&mut self, value: usize) -> &mut Self {
         self.col_stride = value;
         self
     }
@@ -174,7 +161,7 @@ impl Surface {
     /// * 5 -- pink
     /// * 6 -- Greys
     /// * `>`6 -- starts over from 0
-    pub fn set_colormap_index(&mut self, index: i32) -> &mut Self {
+    pub fn set_colormap_index(&mut self, index: usize) -> &mut Self {
         self.colormap_index = index;
         self.colormap_name = String::new();
         self
@@ -295,7 +282,7 @@ impl GraphMaker for Surface {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
+    use super::Surface;
     use russell_lab::Matrix;
 
     #[test]
@@ -322,9 +309,18 @@ mod tests {
         surface.set_row_stride(3).set_col_stride(4);
         let opt = surface.options_surface();
         assert_eq!(opt, ",rstride=3,cstride=4,cmap=getColormap(0)");
-        surface.colormap_name = "Pastel1".to_string();
+
+        surface.set_colormap_name("Pastel1");
         let opt = surface.options_surface();
         assert_eq!(opt, ",rstride=3,cstride=4,cmap=plt.get_cmap('Pastel1')");
+
+        surface.set_colormap_index(3);
+        let opt = surface.options_surface();
+        assert_eq!(opt, ",rstride=3,cstride=4,cmap=getColormap(3)");
+
+        surface.set_colormap_name("turbo");
+        let opt = surface.options_surface();
+        assert_eq!(opt, ",rstride=3,cstride=4,cmap=plt.get_cmap('turbo')");
     }
 
     #[test]

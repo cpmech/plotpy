@@ -1,4 +1,4 @@
-use super::*;
+use super::GraphMaker;
 use std::fmt::Write;
 
 /// Creates text to be added to a plot
@@ -8,7 +8,7 @@ use std::fmt::Write;
 /// ```
 /// # fn main() -> Result<(), &'static str> {
 /// // import
-/// use plotpy::*;
+/// use plotpy::{Plot, Text};
 /// use std::path::Path;
 ///
 /// // directory to save figures
@@ -25,9 +25,9 @@ use std::fmt::Write;
 ///
 /// // add text to plot
 /// let mut plot = Plot::new();
-/// plot.add(&text);
-/// plot.range(-1.0, 1.0, -1.0, 1.0);
-/// plot.hide_axes();
+/// plot.add(&text)
+///     .set_range(-1.0, 1.0, -1.0, 1.0)
+///     .set_hide_axes(true);
 ///
 /// // save figure
 /// let path = Path::new(OUT_DIR).join("doc_text.svg");
@@ -128,7 +128,7 @@ impl GraphMaker for Text {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
+    use super::Text;
 
     #[test]
     fn new_works() {

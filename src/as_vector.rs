@@ -98,7 +98,8 @@ impl<'a> AsVector<'a, f64> for Vector {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
+    use super::AsVector;
+    use russell_lab::Vector;
     use std::fmt::Write;
 
     fn vector_str<'a, T, U>(array: &'a T) -> String

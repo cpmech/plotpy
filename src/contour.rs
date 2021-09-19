@@ -1,4 +1,4 @@
-use super::*;
+use super::{matrix_to_array, vector_to_array, vector_to_strings, AsMatrix, GraphMaker};
 use std::fmt::Write;
 
 /// Generates a contour plot
@@ -9,7 +9,7 @@ use std::fmt::Write;
 /// # fn main() -> Result<(), &'static str> {
 /// // import
 /// use plotpy::{Contour, Plot};
-/// use russell_lab::Matrix;
+/// use russell_lab::generate3d;
 /// use std::path::Path;
 ///
 /// // directory to save figures
@@ -17,26 +17,15 @@ use std::fmt::Write;
 ///
 /// // generate (x,y,z) matrices
 /// let n = 21;
-/// let mut x = Matrix::new(n, n);
-/// let mut y = Matrix::new(n, n);
-/// let mut z = Matrix::new(n, n);
-/// let (min, max) = (-2.0, 2.0);
-/// let d = (max - min) / ((n - 1) as f64);
-/// for i in 0..n {
-///     let v = min + (i as f64) * d;
-///     for j in 0..n {
-///         let u = min + (j as f64) * d;
-///         x[i][j] = u;
-///         y[i][j] = v;
-///         z[i][j] = u * u - v * v;
-///     }
-/// }
+/// let (x, y, z) = generate3d(-2.0, 2.0, -2.0, 2.0, n, n, |x, y| x * x - y * y);
 ///
 /// // configure contour
 /// let mut contour = Contour::new();
 /// contour
 ///     .set_colorbar_label("temperature")
 ///     .set_colormap_name("terrain")
+///     .set_selected_line_color("#f1eb67")
+///     .set_selected_line_width(12.0)
 ///     .set_selected_level(0.0, true);
 ///
 /// // draw contour
@@ -44,8 +33,8 @@ use std::fmt::Write;
 ///
 /// // add contour to plot
 /// let mut plot = Plot::new();
-/// plot.add(&contour);
-/// plot.labels("x", "y");
+/// plot.add(&contour)
+///     .set_labels("x", "y");
 ///
 /// // save figure
 /// let path = Path::new(OUT_DIR).join("doc_contour.svg");
@@ -57,26 +46,26 @@ use std::fmt::Write;
 /// ![doc_contour.svg](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/doc_contour.svg)
 ///
 pub struct Contour {
-    colors: Vec<String>,            // Colors to be used instead of colormap
-    levels: Vec<f64>,               // Pre-defined levels
-    colormap_index: i32,            // Colormap index
-    colormap_name: String,          // Colormap name
-    no_lines: bool,                 // Skip drawing a lines contour
-    no_labels: bool,                // Skip adding labels to the lines contour
-    no_inline_labels: bool,         // Do not draw labels inline
-    no_colorbar: bool,              // Skip drawing a colorbar
-    colorbar_label: String,         // Colorbar label
-    colorbar_number_format: String, // Number format for the labels in lines contour
-    line_color: String,             // Line color for the lines contour
-    line_style: String,             // Line style for the lines contour
-    line_width: f64,                // Line width for the lines contour
-    font_size_labels: f64,          // Font size for labels
-    with_selected: bool,            // Draw a line contour with a selected level
-    selected_level: f64,            // Selected level (e.g., 0.0)
-    selected_line_color: String,    // Color to mark the selected level
-    selected_line_style: String,    // Line style for the selected level
-    selected_line_width: f64,       // Line width for the selected level
-    buffer: String,                 // buffer
+    colors: Vec<String>,         // Colors to be used instead of colormap
+    levels: Vec<f64>,            // Pre-defined levels
+    colormap_index: usize,       // Colormap index
+    colormap_name: String,       // Colormap name
+    no_lines: bool,              // Skip drawing a lines contour
+    no_labels: bool,             // Skip adding labels to the lines contour
+    no_inline_labels: bool,      // Do not draw labels inline
+    no_colorbar: bool,           // Skip drawing a colorbar
+    colorbar_label: String,      // Colorbar label
+    number_format_cb: String,    // Number format for the labels in lines contour
+    line_color: String,          // Line color for the lines contour
+    line_style: String,          // Line style for the lines contour
+    line_width: f64,             // Line width for the lines contour
+    fontsize_labels: f64,        // Font size for labels
+    with_selected: bool,         // Draw a line contour with a selected level
+    selected_level: f64,         // Selected level (e.g., 0.0)
+    selected_line_color: String, // Color to mark the selected level
+    selected_line_style: String, // Line style for the selected level
+    selected_line_width: f64,    // Line width for the selected level
+    buffer: String,              // buffer
 }
 
 impl Contour {
@@ -92,11 +81,11 @@ impl Contour {
             no_inline_labels: false,
             no_colorbar: false,
             colorbar_label: String::new(),
-            colorbar_number_format: String::new(),
+            number_format_cb: String::new(),
             line_color: "black".to_string(),
             line_style: String::new(),
             line_width: 0.0,
-            font_size_labels: 0.0,
+            fontsize_labels: 0.0,
             with_selected: false,
             selected_level: 0.0,
             selected_line_color: "yellow".to_string(),
@@ -180,7 +169,7 @@ impl Contour {
 
     /// Sets the colormap index
     ///
-    /// Colormap indices:
+    /// Options:
     ///
     /// * 0 -- bwr
     /// * 1 -- RdBu
@@ -190,9 +179,10 @@ impl Contour {
     /// * 5 -- pink
     /// * 6 -- Greys
     /// * `>`6 -- starts over from 0
-    pub fn set_colormap_index(&mut self, index: i32) -> &mut Self {
+    pub fn set_colormap_index(&mut self, index: usize) -> &mut Self {
         self.colors = Vec::new();
         self.colormap_index = index;
+        self.colormap_name = String::new();
         self
     }
 
@@ -238,9 +228,9 @@ impl Contour {
         self
     }
 
-    /// Sets the number format for the labels in lines contour (e.g. "%.2f")
-    pub fn set_colorbar_number_format(&mut self, format: &str) -> &mut Self {
-        self.colorbar_number_format = String::from(format);
+    /// Sets the number format for the labels in the colorbar (cb)
+    pub fn set_number_format_cb(&mut self, format: &str) -> &mut Self {
+        self.number_format_cb = String::from(format);
         self
     }
 
@@ -267,8 +257,8 @@ impl Contour {
     }
 
     /// Sets the font size for labels
-    pub fn set_font_size_labels(&mut self, font_size: f64) -> &mut Self {
-        self.font_size_labels = font_size;
+    pub fn set_fontsize_labels(&mut self, fontsize: f64) -> &mut Self {
+        self.fontsize_labels = fontsize;
         self
     }
 
@@ -347,8 +337,8 @@ impl Contour {
         } else {
             write!(&mut opt, ",inline=True").unwrap();
         }
-        if self.font_size_labels > 0.0 {
-            write!(&mut opt, ",fontsize={}", self.font_size_labels).unwrap();
+        if self.fontsize_labels > 0.0 {
+            write!(&mut opt, ",fontsize={}", self.fontsize_labels).unwrap();
         }
         opt
     }
@@ -356,8 +346,8 @@ impl Contour {
     /// Returns options for colorbar
     fn options_colorbar(&self) -> String {
         let mut opt = String::new();
-        if self.colorbar_number_format != "" {
-            write!(&mut opt, ",format='{}'", self.colorbar_number_format).unwrap();
+        if self.number_format_cb != "" {
+            write!(&mut opt, ",format='{}'", self.number_format_cb).unwrap();
         }
         opt
     }
@@ -389,7 +379,7 @@ impl GraphMaker for Contour {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
+    use super::Contour;
     use russell_lab::Matrix;
 
     #[test]
@@ -404,11 +394,11 @@ mod tests {
         assert_eq!(contour.no_inline_labels, false);
         assert_eq!(contour.no_colorbar, false);
         assert_eq!(contour.colorbar_label.len(), 0);
-        assert_eq!(contour.colorbar_number_format.len(), 0);
+        assert_eq!(contour.number_format_cb.len(), 0);
         assert_eq!(contour.line_color, "black".to_string());
         assert_eq!(contour.line_style.len(), 0);
         assert_eq!(contour.line_width, 0.0);
-        assert_eq!(contour.font_size_labels, 0.0);
+        assert_eq!(contour.fontsize_labels, 0.0);
         assert_eq!(contour.with_selected, false);
         assert_eq!(contour.selected_level, 0.0);
         assert_eq!(contour.selected_line_color, "yellow".to_string());
@@ -459,7 +449,7 @@ mod tests {
     #[test]
     fn options_label_works() {
         let mut contour = Contour::new();
-        contour.set_no_inline_labels(false).set_font_size_labels(5.0);
+        contour.set_no_inline_labels(false).set_fontsize_labels(5.0);
         let opt = contour.options_label();
         assert_eq!(
             opt,
@@ -478,7 +468,7 @@ mod tests {
     #[test]
     fn options_colorbar_works() {
         let mut contour = Contour::new();
-        contour.set_colorbar_number_format("%.4f");
+        contour.set_number_format_cb("%.4f");
         let opt = contour.options_colorbar();
         assert_eq!(opt, ",format='%.4f'");
     }

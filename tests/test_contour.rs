@@ -1,43 +1,10 @@
-use plotpy::*;
-use russell_lab::Matrix;
+use plotpy::{Contour, Plot};
+use russell_lab::generate3d;
 use std::fs::File;
 use std::io::{BufRead, BufReader};
 use std::path::Path;
 
-const OUT_DIR: &str = "/tmp/plotpy/integration_tests";
-
-fn print_log_file(log_filename: &str) -> Result<(), &'static str> {
-    let log_path = Path::new(OUT_DIR).join(log_filename);
-    let log_file = File::open(log_path).map_err(|_| "cannot open file")?;
-    let log_buffered = BufReader::new(log_file);
-    let log_lines_iter = log_buffered.lines();
-    for lines in log_lines_iter {
-        match lines {
-            Ok(l) => println!("{}", l),
-            Err(_) => (),
-        }
-    }
-    Ok(())
-}
-
-fn gen_xyz(n: usize) -> (Matrix, Matrix, Matrix) {
-    assert!(n > 1);
-    let mut x = Matrix::new(n, n);
-    let mut y = Matrix::new(n, n);
-    let mut z = Matrix::new(n, n);
-    let (min, max) = (-2.0, 2.0);
-    let d = (max - min) / ((n - 1) as f64);
-    for i in 0..n {
-        let v = min + (i as f64) * d;
-        for j in 0..n {
-            let u = min + (j as f64) * d;
-            x[i][j] = u;
-            y[i][j] = v;
-            z[i][j] = u * u + v * v;
-        }
-    }
-    (x, y, z)
-}
+const OUT_DIR: &str = "/tmp/plotpy/integ_tests";
 
 #[test]
 fn test_contour() -> Result<(), &'static str> {
@@ -56,7 +23,7 @@ fn test_contour() -> Result<(), &'static str> {
 
     // draw contour
     let n = 9;
-    let (x, y, z) = gen_xyz(n);
+    let (x, y, z) = generate3d(-2.0, 2.0, -2.0, 2.0, n, n, |x, y| x * x + y * y);
     contour.draw(&x, &y, &z);
 
     // add contour to plot
@@ -64,7 +31,7 @@ fn test_contour() -> Result<(), &'static str> {
     plot.add(&contour);
 
     // save figure
-    let path = Path::new(OUT_DIR).join("contour.svg");
+    let path = Path::new(OUT_DIR).join("integ_contour.svg");
     plot.save(&path)?;
 
     // check number of lines
@@ -89,7 +56,7 @@ fn test_contour_colors() -> Result<(), &'static str> {
 
     // draw contour
     let n = 9;
-    let (x, y, z) = gen_xyz(n);
+    let (x, y, z) = generate3d(-2.0, 2.0, -2.0, 2.0, n, n, |x, y| x * x + y * y);
     contour.draw(&x, &y, &z);
 
     // add contour to plot
@@ -97,9 +64,9 @@ fn test_contour_colors() -> Result<(), &'static str> {
     plot.add(&contour);
 
     // save figure
-    let path = Path::new(OUT_DIR).join("contour_colors.svg");
+    let path = Path::new(OUT_DIR).join("integ_contour_colors.svg");
     match plot.save(&path) {
-        Err(_) => print_log_file("contour_colors.log")?,
+        Err(_) => plot.print_log_file(&path)?,
         Ok(_) => (),
     }
 
@@ -125,7 +92,7 @@ fn test_contour_colormap_index() -> Result<(), &'static str> {
 
         // draw contour
         let n = 9;
-        let (x, y, z) = gen_xyz(n);
+        let (x, y, z) = generate3d(-2.0, 2.0, -2.0, 2.0, n, n, |x, y| x * x + y * y);
         contour.draw(&x, &y, &z);
 
         // add contour to plot
@@ -133,7 +100,7 @@ fn test_contour_colormap_index() -> Result<(), &'static str> {
         plot.add(&contour);
 
         // save figure
-        let filename = format!("contour_colormap_{}.svg", index);
+        let filename = format!("integ_contour_colormap_{}.svg", index);
         let path = Path::new(OUT_DIR).join(&filename);
         plot.save(&path)?;
 
@@ -160,7 +127,7 @@ fn test_contour_colormap_name() -> Result<(), &'static str> {
 
         // draw contour
         let n = 9;
-        let (x, y, z) = gen_xyz(n);
+        let (x, y, z) = generate3d(-2.0, 2.0, -2.0, 2.0, n, n, |x, y| x * x + y * y);
         contour.draw(&x, &y, &z);
 
         // add contour to plot
@@ -168,7 +135,7 @@ fn test_contour_colormap_name() -> Result<(), &'static str> {
         plot.add(&contour);
 
         // save figure
-        let filename = format!("contour_colormap_{}.svg", name);
+        let filename = format!("integ_contour_colormap_{}.svg", name);
         let path = Path::new(OUT_DIR).join(&filename);
         plot.save(&path)?;
 

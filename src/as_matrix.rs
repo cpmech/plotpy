@@ -127,7 +127,8 @@ impl<'a> AsMatrix<'a, f64> for Matrix {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
+    use super::AsMatrix;
+    use russell_lab::Matrix;
     use std::fmt::Write;
 
     fn matrix_str<'a, T, U>(array: &'a T) -> String

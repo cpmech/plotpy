@@ -1,29 +1,10 @@
-use plotpy::*;
-use russell_lab::Matrix;
+use plotpy::{Plot, Surface};
+use russell_lab::generate3d;
 use std::fs::File;
 use std::io::{BufRead, BufReader};
 use std::path::Path;
 
-const OUT_DIR: &str = "/tmp/plotpy/integration_tests";
-
-fn gen_xyz(n: usize) -> (Matrix, Matrix, Matrix) {
-    assert!(n > 1);
-    let mut x = Matrix::new(n, n);
-    let mut y = Matrix::new(n, n);
-    let mut z = Matrix::new(n, n);
-    let (min, max) = (-2.0, 2.0);
-    let d = (max - min) / ((n - 1) as f64);
-    for i in 0..n {
-        let v = min + (i as f64) * d;
-        for j in 0..n {
-            let u = min + (j as f64) * d;
-            x[i][j] = u;
-            y[i][j] = v;
-            z[i][j] = u * u + v * v;
-        }
-    }
-    (x, y, z)
-}
+const OUT_DIR: &str = "/tmp/plotpy/integ_tests";
 
 #[test]
 fn test_surface() -> Result<(), &'static str> {
@@ -42,7 +23,7 @@ fn test_surface() -> Result<(), &'static str> {
 
     // draw surface
     let n = 9;
-    let (x, y, z) = gen_xyz(n);
+    let (x, y, z) = generate3d(-2.0, 2.0, -2.0, 2.0, n, n, |x, y| x * x + y * y);
     surface.draw(&x, &y, &z);
 
     // add surface to plot
@@ -50,7 +31,7 @@ fn test_surface() -> Result<(), &'static str> {
     plot.add(&surface);
 
     // save figure
-    let path = Path::new(OUT_DIR).join("surface.svg");
+    let path = Path::new(OUT_DIR).join("integ_surface.svg");
     plot.save(&path)?;
 
     // check number of lines
@@ -68,7 +49,7 @@ fn test_wireframe() -> Result<(), &'static str> {
 
     // draw wireframe
     let n = 9;
-    let (x, y, z) = gen_xyz(n);
+    let (x, y, z) = generate3d(-2.0, 2.0, -2.0, 2.0, n, n, |x, y| x * x + y * y);
     surface.draw(&x, &y, &z);
 
     // add surface to plot
@@ -76,7 +57,7 @@ fn test_wireframe() -> Result<(), &'static str> {
     plot.add(&surface);
 
     // save figure
-    let path = Path::new(OUT_DIR).join("wireframe.svg");
+    let path = Path::new(OUT_DIR).join("integ_wireframe.svg");
     plot.save(&path)?;
 
     // check number of lines

@@ -1,4 +1,4 @@
-use super::*;
+use super::{vector_to_array, AsVector, GraphMaker};
 use std::fmt::Write;
 
 /// Generates a curve (aka line-plot) given two arrays (x,y)
@@ -13,38 +13,39 @@ use std::fmt::Write;
 /// ```
 /// # fn main() -> Result<(), &'static str> {
 /// // import
-/// use plotpy::*;
+/// use plotpy::{Curve, Plot};
+/// use russell_lab::Vector;
 /// use std::path::Path;
 ///
 /// // directory to save figures
 /// const OUT_DIR: &str = "/tmp/plotpy/doc_tests";
 ///
 /// // generate (x,y) points
-/// let x = &[1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0];
-/// let y = &[1.0, 4.0, 9.0, 16.0, 25.0, 36.0, 49.0, 64.0];
+/// let x = Vector::linspace(-1.0, 1.0, 21);
+/// let y = x.get_mapped(|v| 1.0 / (1.0 + f64::exp(-5.0 * v)));
 ///
 /// // configure curve
 /// let mut curve = Curve::new();
-/// curve.set_label("parabolic")
-///     .set_line_alpha(0.95)
+/// curve.set_label("logistic function")
+///     .set_line_alpha(0.8)
 ///     .set_line_color("#5f9cd8")
 ///     .set_line_style("-")
 ///     .set_line_width(5.0)
 ///     .set_marker_color("#eeea83")
-///     .set_marker_every(1)
+///     .set_marker_every(5)
 ///     .set_marker_line_color("#da98d1")
 ///     .set_marker_line_width(2.5)
 ///     .set_marker_size(20.0)
 ///     .set_marker_style("*");
 ///
 /// // draw curve
-/// curve.draw(x, y);
+/// curve.draw(&x, &y);
 ///
 /// // add curve to plot
 /// let mut plot = Plot::new();
-/// plot.add(&curve);
-/// plot.legend();
-/// plot.grid_and_labels("x", "y");
+/// plot.add(&curve)
+///     .set_num_ticks_y(11)
+///     .grid_labels_legend("x", "y");
 ///
 /// // save figure
 /// let path = Path::new(OUT_DIR).join("doc_curve.svg");
@@ -62,7 +63,7 @@ pub struct Curve {
     line_style: String,        // Style of lines
     line_width: f64,           // Width of lines
     marker_color: String,      // Color of markers
-    marker_every: i32,         // Increment of data points to use when drawing markers
+    marker_every: usize,       // Increment of data points to use when drawing markers
     marker_void: bool,         // Draw a void marker (draw edge only)
     marker_line_color: String, // Edge color of markers
     marker_line_width: f64,    // Edge width of markers
@@ -155,7 +156,7 @@ impl Curve {
     }
 
     /// Sets the increment of data points to use when drawing markers
-    pub fn set_marker_every(&mut self, every: i32) -> &mut Self {
+    pub fn set_marker_every(&mut self, every: usize) -> &mut Self {
         self.marker_every = every;
         self
     }
@@ -263,7 +264,7 @@ impl GraphMaker for Curve {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
+    use super::Curve;
     use russell_lab::Vector;
 
     #[test]

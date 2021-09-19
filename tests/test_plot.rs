@@ -1,9 +1,9 @@
-use plotpy::*;
+use plotpy::{Curve, Plot};
 use std::fs::File;
 use std::io::{BufRead, BufReader};
 use std::path::Path;
 
-const OUT_DIR: &str = "/tmp/plotpy/integration_tests";
+const OUT_DIR: &str = "/tmp/plotpy/integ_tests";
 
 #[test]
 fn test_plot() -> Result<(), &'static str> {
@@ -17,36 +17,39 @@ fn test_plot() -> Result<(), &'static str> {
 
     // configure plot
     let mut plot = Plot::new();
-    plot.subplot(2, 2, 1);
-    plot.subplot_horizontal_gap(0.1);
-    plot.subplot_vertical_gap(0.2);
-    plot.subplot_gap(0.3, 0.4);
-    plot.equal();
-    plot.hide_axes();
-    plot.range(-1.0, 1.0, -1.0, 1.0);
-    plot.range_vec(&[0.0, 1.0, 0.0, 1.0]);
-    plot.xmin(0.0);
-    plot.xmax(1.0);
-    plot.ymin(0.0);
-    plot.ymax(1.0);
-    plot.xrange(0.0, 1.0);
-    plot.yrange(0.0, 1.0);
-    plot.xnticks(0);
-    plot.xnticks(8);
-    plot.ynticks(0);
-    plot.ynticks(5);
-    plot.xlabel("x-label");
-    plot.ylabel("y-label");
-    plot.labels("x", "y");
+    plot.set_subplot(2, 2, 1)
+        .set_horizontal_gap(0.1)
+        .set_vertical_gap(0.2)
+        .set_gaps(0.3, 0.4)
+        .set_equal_axes()
+        .set_hide_axes(false)
+        .set_range(-1.0, 1.0, -1.0, 1.0)
+        .set_range_from_vec(&[0.0, 1.0, 0.0, 1.0])
+        .set_xmin(0.0)
+        .set_xmax(1.0)
+        .set_ymin(0.0)
+        .set_ymax(1.0)
+        .set_xrange(0.0, 1.0)
+        .set_yrange(0.0, 1.0)
+        .set_num_ticks_x(0)
+        .set_num_ticks_x(8)
+        .set_num_ticks_y(0)
+        .set_num_ticks_y(5)
+        .set_label_x("x-label")
+        .set_label_y("y-label")
+        .set_labels("x", "y");
     plot.clear_current_figure();
-    plot.title("my plot");
+    plot.set_title("my plot")
+        .set_frame_borders(false)
+        .set_frame_borders(true)
+        .set_frame_borders(false);
     plot.grid_and_labels("x", "y");
 
     // add curve to plot
     plot.add(&curve);
 
     // save figure
-    let path = Path::new(OUT_DIR).join("plot.svg");
+    let path = Path::new(OUT_DIR).join("integ_plot.svg");
     plot.save(&path)?;
 
     // check number of lines
@@ -60,7 +63,7 @@ fn test_plot() -> Result<(), &'static str> {
 #[test]
 fn test_plot_error() {
     let plot = Plot::new();
-    let path = Path::new(OUT_DIR).join("plot_error.xyz");
+    let path = Path::new(OUT_DIR).join("integ_plot_error.xyz");
     assert_eq!(plot.save(&path).err(), Some("python3 failed; please see the log file"));
 }
 
@@ -76,23 +79,23 @@ fn test_plot_subplots() -> Result<(), &'static str> {
 
     // configure plot
     let mut plot = Plot::new();
-    plot.title_all_subplots("all subplots");
-    plot.subplot_horizontal_gap(0.5);
-    plot.subplot_vertical_gap(0.5);
-    plot.subplot_gap(0.3, 0.2);
+    plot.set_super_title("all subplots");
+    plot.set_horizontal_gap(0.5);
+    plot.set_vertical_gap(0.5);
+    plot.set_gaps(0.3, 0.2);
 
     // add curve to subplots
-    plot.subplot(2, 2, 1);
+    plot.set_subplot(2, 2, 1);
     plot.add(&curve);
-    plot.subplot(2, 2, 2);
+    plot.set_subplot(2, 2, 2);
     plot.add(&curve);
-    plot.subplot(2, 2, 3);
+    plot.set_subplot(2, 2, 3);
     plot.add(&curve);
-    plot.subplot(2, 2, 4);
+    plot.set_subplot(2, 2, 4);
     plot.add(&curve);
 
     // save figure
-    let path = Path::new(OUT_DIR).join("plot_subplots.svg");
+    let path = Path::new(OUT_DIR).join("integ_plot_subplots.svg");
     plot.save(&path)?;
 
     // check number of lines

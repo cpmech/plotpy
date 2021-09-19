@@ -1,4 +1,4 @@
-use super::*;
+use super::{matrix_to_list, vector_to_strings, GraphMaker};
 use std::fmt::Write;
 
 /// Generates a Histogram plot
@@ -8,7 +8,7 @@ use std::fmt::Write;
 /// ```
 /// # fn main() -> Result<(), &'static str> {
 /// // import
-/// use plotpy::*;
+/// use plotpy::{Histogram, Plot};
 /// use std::path::Path;
 ///
 /// // directory to save figures
@@ -22,17 +22,21 @@ use std::fmt::Write;
 /// ];
 ///
 /// // set labels
-/// let labels = ["first".to_string(), "second".to_string(), "third".to_string()];
+/// let labels = ["first", "second", "third"];
 ///
 /// // configure and draw histogram
 /// let mut histogram = Histogram::new();
+/// histogram.set_colors(&["#9de19a", "#e7eca3", "#98a7f2"])
+///     .set_line_width(10.0)
+///     .set_stacked(true)
+///     .set_style("step");
 /// histogram.draw(&values, &labels);
 ///
 /// // add histogram to plot
 /// let mut plot = Plot::new();
-/// plot.add(&histogram);
-/// plot.legend();
-/// plot.grid_and_labels("values", "count");
+/// plot.add(&histogram)
+///     .set_frame_border(true, false, true, false)
+///     .grid_labels_legend("values", "count");
 ///
 /// // save figure
 /// let path = Path::new(OUT_DIR).join("doc_histogram.svg");
@@ -45,10 +49,11 @@ use std::fmt::Write;
 ///
 pub struct Histogram {
     colors: Vec<String>, // Colors for each bar
+    line_width: f64,     // Line width
     style: String,       // Type of histogram; e.g. "bar"
     stacked: bool,       // Draws stacked histogram
     no_fill: bool,       // Skip filling bars
-    number_bins: i32,    // Number of bins
+    number_bins: usize,  // Number of bins
     buffer: String,      // buffer
 }
 
@@ -57,6 +62,7 @@ impl Histogram {
     pub fn new() -> Self {
         Histogram {
             colors: Vec::new(),
+            line_width: 0.0,
             style: String::new(),
             stacked: false,
             no_fill: false,
@@ -74,11 +80,13 @@ impl Histogram {
     ///
     /// # Notes
     ///
-    /// * The type `T` of the input array must be a number.
+    /// * The type `T` must be a number.
+    /// * The type `U` must be a String or &str.
     ///
-    pub fn draw<T>(&mut self, values: &Vec<Vec<T>>, labels: &[String])
+    pub fn draw<T, U>(&mut self, values: &Vec<Vec<T>>, labels: &[U])
     where
         T: std::fmt::Display,
+        U: std::fmt::Display,
     {
         let opt = self.options();
         matrix_to_list(&mut self.buffer, "values", values);
@@ -92,6 +100,12 @@ impl Histogram {
     /// Sets the colors for each bar
     pub fn set_colors(&mut self, colors: &[&str]) -> &mut Self {
         self.colors = colors.iter().map(|color| color.to_string()).collect();
+        self
+    }
+
+    /// Sets the width of the lines
+    pub fn set_line_width(&mut self, width: f64) -> &mut Self {
+        self.line_width = width;
         self
     }
 
@@ -122,7 +136,7 @@ impl Histogram {
     }
 
     /// Sets the number of bins
-    pub fn set_number_bins(&mut self, bins: i32) -> &mut Self {
+    pub fn set_number_bins(&mut self, bins: usize) -> &mut Self {
         self.number_bins = bins;
         self
     }
@@ -132,6 +146,9 @@ impl Histogram {
         let mut opt = String::new();
         if self.colors.len() > 0 {
             write!(&mut opt, ",color=colors").unwrap();
+        }
+        if self.line_width > 0.0 {
+            write!(&mut opt, ",linewidth={}", self.line_width).unwrap();
         }
         if self.style != "" {
             write!(&mut opt, ",histtype='{}'", self.style).unwrap();
@@ -159,12 +176,13 @@ impl GraphMaker for Histogram {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
+    use super::Histogram;
 
     #[test]
     fn new_works() {
         let histogram = Histogram::new();
         assert_eq!(histogram.colors.len(), 0);
+        assert_eq!(histogram.line_width, 0.0);
         assert_eq!(histogram.style.len(), 0);
         assert_eq!(histogram.stacked, false);
         assert_eq!(histogram.no_fill, false);
@@ -175,15 +193,29 @@ mod tests {
     #[test]
     fn options_works() {
         let mut histogram = Histogram::new();
-        histogram.set_stacked(true);
+        histogram
+            .set_colors(&vec!["red", "green"])
+            .set_line_width(10.0)
+            .set_style("step")
+            .set_stacked(true)
+            .set_no_fill(true)
+            .set_number_bins(8);
         let opt = histogram.options();
-        assert_eq!(opt, ",stacked=True");
+        assert_eq!(
+            opt,
+            ",color=colors\
+             ,linewidth=10\
+             ,histtype='step'\
+             ,stacked=True\
+             ,fill=False\
+             ,bins=8"
+        );
     }
 
     #[test]
     fn draw_works() {
         let values = vec![vec![1, 1, 1, 2, 2, 2, 2, 2, 3, 3], vec![5, 6, 7, 8]];
-        let labels = ["first".to_string(), "second".to_string()];
+        let labels = ["first", "second"];
         let mut histogram = Histogram::new();
         histogram.set_colors(&vec!["red", "green"]);
         histogram.draw(&values, &labels);

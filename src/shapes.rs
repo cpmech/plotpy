@@ -1,4 +1,4 @@
-use super::*;
+use super::GraphMaker;
 use std::fmt::Write;
 
 /// Draw polygonal shapes
@@ -8,7 +8,7 @@ use std::fmt::Write;
 /// ```
 /// # fn main() -> Result<(), &'static str> {
 /// // import
-/// use plotpy::*;
+/// use plotpy::{Plot, Shapes};
 /// use std::path::Path;
 ///
 /// // directory to save figures
@@ -40,10 +40,10 @@ use std::fmt::Write;
 ///
 /// // add shapes to plot
 /// let mut plot = Plot::new();
-/// plot.hide_axes();
-/// plot.equal();
-/// plot.range(-0.05, 1.05, -0.05, 1.05);
-/// plot.add(&shapes);
+/// plot.set_hide_axes(true)
+///     .set_equal_axes()
+///     .set_range(-0.05, 1.05, -0.05, 1.05)
+///     .add(&shapes);
 ///
 /// // save figure
 /// let path = Path::new(OUT_DIR).join("doc_shapes.svg");
@@ -235,7 +235,7 @@ impl GraphMaker for Shapes {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
+    use super::Shapes;
 
     #[test]
     fn new_works() {

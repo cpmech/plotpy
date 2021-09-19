@@ -1,9 +1,9 @@
-use plotpy::*;
+use plotpy::{Histogram, Plot};
 use std::fs::File;
 use std::io::{BufRead, BufReader};
 use std::path::Path;
 
-const OUT_DIR: &str = "/tmp/plotpy/integration_tests";
+const OUT_DIR: &str = "/tmp/plotpy/integ_tests";
 
 #[test]
 fn test_histogram_1() -> Result<(), &'static str> {
@@ -26,7 +26,7 @@ fn test_histogram_1() -> Result<(), &'static str> {
     plot.add(&histogram);
 
     // save figure
-    let path = Path::new(OUT_DIR).join("histogram_1.svg");
+    let path = Path::new(OUT_DIR).join("integ_histogram_1.svg");
     plot.save(&path)?;
 
     // check number of lines
@@ -48,7 +48,7 @@ fn test_histogram_2() -> Result<(), &'static str> {
         vec![-1, -1, 0, 1, 2, 3],                    // second series
         vec![5, 6, 7, 8],                            // third series
     ];
-    let labels = ["first".to_string(), "second".to_string(), "third".to_string()];
+    let labels = ["first", "second", "third"];
     histogram.draw(&values, &labels);
 
     // add histogram to plot
@@ -56,7 +56,7 @@ fn test_histogram_2() -> Result<(), &'static str> {
     plot.add(&histogram);
 
     // save figure
-    let path = Path::new(OUT_DIR).join("histogram_2.svg");
+    let path = Path::new(OUT_DIR).join("integ_histogram_2.svg");
     plot.save(&path)?;
 
     // check number of lines

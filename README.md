@@ -4,6 +4,8 @@
 
 This package implements a plotting library, with its own functions. However, internally, this package generates a Python script with Matplotlib commands. Then, this package runs the script using `process::Command`.
 
+For convenience, we use `Vector` and `Matrix` from [Russell Lab](https://github.com/cpmech/russell).
+
 Documentation:
 
 - [API reference (docs.rs)](https://docs.rs/plotpy)

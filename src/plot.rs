@@ -53,27 +53,27 @@ pub trait GraphMaker {
 /// plot.set_gaps(0.35, 0.5);
 ///
 /// // add curve to subplot
-/// plot.subplot(2, 2, 1);
+/// plot.configure_subplot(2, 2, 1);
 /// plot.set_title("first");
 /// plot.add(&curve1);
 /// plot.set_equal_axes();
 /// plot.grid_labels_legend("x", "y");
 ///
 /// // add curve to subplot
-/// plot.subplot(2, 2, 2);
+/// plot.configure_subplot(2, 2, 2);
 /// plot.set_title("second");
 /// plot.add(&curve2);
 /// plot.grid_labels_legend("x", "y");
 ///
 /// // add curve to subplot
-/// plot.subplot(2, 2, 3);
+/// plot.configure_subplot(2, 2, 3);
 /// plot.set_title("third");
 /// plot.add(&curve3);
 /// plot.set_range(-1.0, 1.0, 0.0, 6.0);
 /// plot.grid_labels_legend("x", "y");
 ///
 /// // add curve to subplot
-/// plot.subplot(2, 2, 4);
+/// plot.configure_subplot(2, 2, 4);
 /// plot.set_title("fourth");
 /// plot.add(&curve4);
 /// plot.grid_labels_legend("x", "y");
@@ -182,7 +182,7 @@ impl Plot {
     /// * `col` - number of columns in the subplot grid
     /// * `index` - activate current subplot; **indices start at one** (1-based)
     ///
-    pub fn subplot(&mut self, row: usize, col: usize, index: usize) {
+    pub fn configure_subplot(&mut self, row: usize, col: usize, index: usize) {
         write!(&mut self.buffer, "\nplt.subplot({},{},{})\n", row, col, index).unwrap();
     }
 
@@ -397,7 +397,7 @@ mod tests {
     fn print_log_file_works() -> Result<(), &'static str> {
         const WRONG: usize = 0;
         let mut plot = Plot::new();
-        plot.subplot(1, 1, WRONG);
+        plot.configure_subplot(1, 1, WRONG);
         let path = Path::new(OUT_DIR).join("print_log_file_works.svg");
         assert_eq!(plot.save(&path).err(), Some("python3 failed; please see the log file"));
         plot.print_log_file(&path)?;
@@ -408,7 +408,7 @@ mod tests {
     fn subplot_functions_work() {
         let mut plot = Plot::new();
         plot.set_super_title("all subplots");
-        plot.subplot(2, 2, 1);
+        plot.configure_subplot(2, 2, 1);
         plot.set_horizontal_gap(0.1);
         plot.set_vertical_gap(0.2);
         plot.set_gaps(0.3, 0.4);

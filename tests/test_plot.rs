@@ -17,7 +17,7 @@ fn test_plot() -> Result<(), &'static str> {
 
     // configure plot
     let mut plot = Plot::new();
-    plot.subplot(2, 2, 1);
+    plot.configure_subplot(2, 2, 1);
     plot.set_horizontal_gap(0.1);
     plot.set_vertical_gap(0.2);
     plot.set_gaps(0.3, 0.4);
@@ -82,13 +82,13 @@ fn test_plot_subplots() -> Result<(), &'static str> {
     plot.set_gaps(0.3, 0.2);
 
     // add curve to subplots
-    plot.subplot(2, 2, 1);
+    plot.configure_subplot(2, 2, 1);
     plot.add(&curve);
-    plot.subplot(2, 2, 2);
+    plot.configure_subplot(2, 2, 2);
     plot.add(&curve);
-    plot.subplot(2, 2, 3);
+    plot.configure_subplot(2, 2, 3);
     plot.add(&curve);
-    plot.subplot(2, 2, 4);
+    plot.configure_subplot(2, 2, 4);
     plot.add(&curve);
 
     // save figure

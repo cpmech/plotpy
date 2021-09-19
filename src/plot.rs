@@ -157,7 +157,9 @@ impl Plot {
     pub fn grid_and_labels(&mut self, xlabel: &str, ylabel: &str) {
         write!(
             &mut self.buffer,
-            "plt.grid(linestyle='--',color='grey',zorder=-1000)\nplt.xlabel(r'{}')\nplt.ylabel(r'{}')\n",
+            "plt.gca().set_axisbelow(True)\n\
+             plt.grid(linestyle='--',color='grey',zorder=-1000)\n\
+             plt.xlabel(r'{}')\nplt.ylabel(r'{}')\n",
             xlabel, ylabel
         )
         .unwrap();
@@ -167,7 +169,9 @@ impl Plot {
     pub fn grid_labels_legend(&mut self, xlabel: &str, ylabel: &str) {
         write!(
             &mut self.buffer,
-            "plt.grid(linestyle='--',color='grey',zorder=-1000)\nplt.xlabel(r'{}')\nplt.ylabel(r'{}')\n",
+            "plt.gca().set_axisbelow(True)\n\
+             plt.grid(linestyle='--',color='grey',zorder=-1000)\n\
+             plt.xlabel(r'{}')\nplt.ylabel(r'{}')\n",
             xlabel, ylabel
         )
         .unwrap();
@@ -496,6 +500,7 @@ mod tests {
                              plt.ylabel(r'y-label')\n\
                              plt.xlabel(r'x')\n\
                              plt.ylabel(r'y')\n\
+                             plt.gca().set_axisbelow(True)\n\
                              plt.grid(linestyle='--',color='grey',zorder=-1000)\n\
                              plt.xlabel(r'xx')\n\
                              plt.ylabel(r'yy')\n\

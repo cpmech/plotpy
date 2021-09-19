@@ -9,11 +9,11 @@ const OUT_DIR: &str = "/tmp/plotpy/integration_tests";
 fn test_text() -> Result<(), &'static str> {
     // text object and options
     let mut text = Text::new();
-    text.color = "blue".to_string();
-    text.align_horizontal = "center".to_string();
-    text.align_vertical = "center".to_string();
-    text.font_size = 50.0;
-    text.rotation = 45.0;
+    text.set_color("blue")
+        .set_align_horizontal("center")
+        .set_align_vertical("center")
+        .set_fontsize(50.0)
+        .set_rotation(45.0);
 
     // draw text
     text.draw(0.5, 0.5, "message");

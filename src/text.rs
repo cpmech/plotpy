@@ -16,11 +16,11 @@ use std::fmt::Write;
 ///
 /// // configure and draw text
 /// let mut text = Text::new();
-/// text.color = "#cd0000".to_string();
-/// text.align_horizontal = "center".to_string();
-/// text.align_vertical = "center".to_string();
-/// text.font_size = 30.0;
-/// text.rotation = 45.0;
+/// text.set_color("#cd0000")
+///     .set_align_horizontal("center")
+///     .set_align_vertical("center")
+///     .set_fontsize(30.0)
+///     .set_rotation(45.0);
 /// text.draw(0.0, 0.0, "Hello World!");
 ///
 /// // add text to plot
@@ -39,23 +39,12 @@ use std::fmt::Write;
 /// ![doc_text.svg](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/doc_text.svg)
 ///
 pub struct Text {
-    /// Color
-    pub color: String,
-
-    /// Horizontal alignment: "center", "left", "right"
-    pub align_horizontal: String,
-
-    /// Vertical alignment: "center", "top", "bottom", "baseline", "center_baseline"
-    pub align_vertical: String,
-
-    /// Font size
-    pub font_size: f64,
-
-    /// Text rotation
-    pub rotation: f64,
-
-    // buffer
-    pub(crate) buffer: String,
+    color: String,            // Color
+    align_horizontal: String, // Horizontal alignment
+    align_vertical: String,   // Vertical alignment
+    fontsize: f64,            // Font size
+    rotation: f64,            // Text rotation
+    buffer: String,           // buffer
 }
 
 impl Text {
@@ -65,7 +54,7 @@ impl Text {
             color: String::new(),
             align_horizontal: String::new(),
             align_vertical: String::new(),
-            font_size: 0.0,
+            fontsize: 0.0,
             rotation: 0.0,
             buffer: String::new(),
         }
@@ -75,6 +64,36 @@ impl Text {
     pub fn draw(&mut self, x: f64, y: f64, message: &str) {
         let opt = self.options();
         write!(&mut self.buffer, "plt.text({},{},'{}'{})\n", x, y, message, &opt).unwrap();
+    }
+
+    /// Color
+    pub fn set_color(&mut self, color: &str) -> &mut Self {
+        self.color = String::from(color);
+        self
+    }
+
+    /// Horizontal alignment: "center", "left", "right"
+    pub fn set_align_horizontal(&mut self, option: &str) -> &mut Self {
+        self.align_horizontal = String::from(option);
+        self
+    }
+
+    /// Vertical alignment: "center", "top", "bottom", "baseline", "center_baseline"
+    pub fn set_align_vertical(&mut self, option: &str) -> &mut Self {
+        self.align_vertical = String::from(option);
+        self
+    }
+
+    /// Font size
+    pub fn set_fontsize(&mut self, fontsize: f64) -> &mut Self {
+        self.fontsize = fontsize;
+        self
+    }
+
+    /// Text rotation
+    pub fn set_rotation(&mut self, rotation: f64) -> &mut Self {
+        self.rotation = rotation;
+        self
     }
 
     /// Returns options for text
@@ -89,8 +108,8 @@ impl Text {
         if self.align_vertical != "" {
             write!(&mut opt, ",va='{}'", self.align_vertical).unwrap();
         }
-        if self.font_size > 0.0 {
-            write!(&mut opt, ",fontsize={}", self.font_size).unwrap();
+        if self.fontsize > 0.0 {
+            write!(&mut opt, ",fontsize={}", self.fontsize).unwrap();
         }
         if self.rotation > 0.0 {
             write!(&mut opt, ",rotation={}", self.rotation).unwrap();
@@ -117,7 +136,7 @@ mod tests {
         assert_eq!(text.color.len(), 0);
         assert_eq!(text.align_horizontal.len(), 0);
         assert_eq!(text.align_vertical.len(), 0);
-        assert_eq!(text.font_size, 0.0);
+        assert_eq!(text.fontsize, 0.0);
         assert_eq!(text.rotation, 0.0);
         assert_eq!(text.buffer.len(), 0);
     }
@@ -125,11 +144,11 @@ mod tests {
     #[test]
     fn options_works() {
         let mut text = Text::new();
-        text.color = "red".to_string();
-        text.align_horizontal = "center".to_string();
-        text.align_vertical = "center".to_string();
-        text.font_size = 8.0;
-        text.rotation = 45.0;
+        text.set_color("red")
+            .set_align_horizontal("center")
+            .set_align_vertical("center")
+            .set_fontsize(8.0)
+            .set_rotation(45.0);
         let opt = text.options();
         assert_eq!(
             opt,

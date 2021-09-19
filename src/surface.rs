@@ -8,7 +8,8 @@ use std::fmt::Write;
 /// ```
 /// # fn main() -> Result<(), &'static str> {
 /// // import
-/// use plotpy::*;
+/// use plotpy::{Surface, Plot};
+/// use russell_lab::Matrix;
 /// use std::path::Path;
 ///
 /// // directory to save figures
@@ -16,9 +17,9 @@ use std::fmt::Write;
 ///
 /// // generate (x,y,z) matrices
 /// let n = 21;
-/// let mut x = vec![vec![0.0; n]; n];
-/// let mut y = vec![vec![0.0; n]; n];
-/// let mut z = vec![vec![0.0; n]; n];
+/// let mut x = Matrix::new(n, n);
+/// let mut y = Matrix::new(n, n);
+/// let mut z = Matrix::new(n, n);
 /// let (min, max) = (-2.0, 2.0);
 /// let d = (max - min) / ((n - 1) as f64);
 /// for i in 0..n {
@@ -33,10 +34,12 @@ use std::fmt::Write;
 ///
 /// // configure and draw surface + wireframe
 /// let mut surface = Surface::new();
-/// surface.colormap_name = "seismic".to_string();
-/// surface.colorbar = true;
-/// surface.wireframe = true;
-/// surface.line_width = 0.3;
+/// surface.set_colormap_name("seismic")
+///     .set_with_colorbar(true)
+///     .set_with_wireframe(true)
+///     .set_line_width(0.3);
+///
+/// // draw surface + wireframe
 /// surface.draw(&x, &y, &z);
 ///
 /// // add surface to plot
@@ -55,56 +58,19 @@ use std::fmt::Write;
 /// ![doc_surface.svg](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/doc_surface.svg)
 ///
 pub struct Surface {
-    /// Row stride
-    pub row_stride: i32,
-
-    /// Column stride
-    pub col_stride: i32,
-
-    /// Generates a surface
-    pub surface: bool,
-
-    /// Generates a wireframe
-    pub wireframe: bool,
-
-    /// Colormap index
-    /// * 0 -- bwr
-    /// * 1 -- RdBu
-    /// * 2 -- hsv
-    /// * 3 -- jet
-    /// * 4 -- terrain
-    /// * 5 -- pink
-    /// * 6 -- Greys
-    /// * `>`6 -- starts over from 0
-    pub colormap_index: i32,
-
-    /// Colormap name as defined in <https://matplotlib.org/stable/tutorials/colors/colormaps.html>
-    ///
-    /// Will use `colormap_index` instead if `colormap_name` is empty.
-    pub colormap_name: String,
-
-    /// Draw a colorbar
-    pub colorbar: bool,
-
-    /// Colorbar label
-    pub colorbar_label: String,
-
-    /// Number format for the labels in lines contour (e.g. "%.2f")
-    pub colorbar_number_format: String,
-
-    /// Color of wireframe lines
-    pub line_color: String,
-
-    /// Style of wireframe line
-    ///
-    /// Options: "`-`", "`:`", "`--`", "`-.`"
-    pub line_style: String,
-
-    /// Width of wireframe line
-    pub line_width: f64,
-
-    // buffer
-    pub(crate) buffer: String,
+    row_stride: i32,          // Row stride
+    col_stride: i32,          // Column stride
+    with_surface: bool,       // Generates a surface
+    with_wireframe: bool,     // Generates a wireframe
+    colormap_index: i32,      // Colormap index
+    colormap_name: String,    // Colormap name
+    with_colorbar: bool,      // Draw a colorbar
+    colorbar_label: String,   // Colorbar label
+    number_format_cb: String, // Number format for labels in colorbar
+    line_color: String,       // Color of wireframe lines
+    line_style: String,       // Style of wireframe line
+    line_width: f64,          // Width of wireframe line
+    buffer: String,           // buffer
 }
 
 impl Surface {
@@ -113,13 +79,13 @@ impl Surface {
         Surface {
             row_stride: 0,
             col_stride: 0,
-            surface: true,
-            wireframe: false,
+            with_surface: true,
+            with_wireframe: false,
             colormap_index: 0,
             colormap_name: String::new(),
-            colorbar: false,
+            with_colorbar: false,
             colorbar_label: String::new(),
-            colorbar_number_format: String::new(),
+            number_format_cb: String::new(),
             line_color: "black".to_string(),
             line_style: String::new(),
             line_width: 0.0,
@@ -155,15 +121,15 @@ impl Surface {
         matrix_to_array(&mut self.buffer, "y", y);
         matrix_to_array(&mut self.buffer, "z", z);
         write!(&mut self.buffer, "maybeCreateAX3D()\n").unwrap();
-        if self.surface {
+        if self.with_surface {
             let opt_surface = self.options_surface();
             write!(&mut self.buffer, "sf=AX3D.plot_surface(x,y,z{})\n", &opt_surface).unwrap();
         }
-        if self.wireframe {
+        if self.with_wireframe {
             let opt_wireframe = self.options_wireframe();
             write!(&mut self.buffer, "AX3D.plot_wireframe(x,y,z{})\n", &opt_wireframe).unwrap();
         }
-        if self.colorbar {
+        if self.with_colorbar {
             let opt_colorbar = self.options_colorbar();
             write!(&mut self.buffer, "cb=plt.colorbar(sf{})\n", &opt_colorbar).unwrap();
             if self.colorbar_label != "" {
@@ -172,8 +138,107 @@ impl Surface {
         }
     }
 
+    /// Sets the row stride
+    pub fn set_row_stride(&mut self, value: i32) -> &mut Self {
+        self.row_stride = value;
+        self
+    }
+
+    /// Sets the column stride
+    pub fn set_col_stride(&mut self, value: i32) -> &mut Self {
+        self.col_stride = value;
+        self
+    }
+
+    /// Sets option to generate surface
+    pub fn set_with_surface(&mut self, flag: bool) -> &mut Self {
+        self.with_surface = flag;
+        self
+    }
+
+    /// Sets option to generate wireframe
+    pub fn set_with_wireframe(&mut self, flag: bool) -> &mut Self {
+        self.with_wireframe = flag;
+        self
+    }
+
+    /// Sets the colormap index
+    ///
+    /// Options:
+    ///
+    /// * 0 -- bwr
+    /// * 1 -- RdBu
+    /// * 2 -- hsv
+    /// * 3 -- jet
+    /// * 4 -- terrain
+    /// * 5 -- pink
+    /// * 6 -- Greys
+    /// * `>`6 -- starts over from 0
+    pub fn set_colormap_index(&mut self, index: i32) -> &mut Self {
+        self.colormap_index = index;
+        self.colormap_name = String::new();
+        self
+    }
+
+    /// Sets the colormap name
+    ///
+    /// Options:
+    ///
+    /// * `bwr`
+    /// * `RdBu`
+    /// * `hsv`
+    /// * `jet`
+    /// * `terrain`
+    /// * `pink`
+    /// * `Greys`
+    /// * see more here <https://matplotlib.org/stable/tutorials/colors/colormaps.html>
+    pub fn set_colormap_name(&mut self, name: &str) -> &mut Self {
+        self.colormap_name = String::from(name);
+        self
+    }
+
+    /// Sets option to draw a colorbar
+    pub fn set_with_colorbar(&mut self, flag: bool) -> &mut Self {
+        self.with_colorbar = flag;
+        self
+    }
+
+    /// Sets the colorbar label
+    pub fn set_colorbar_label(&mut self, label: &str) -> &mut Self {
+        self.colorbar_label = String::from(label);
+        self
+    }
+
+    /// Sets the number format for the labels in the colorbar (cb)
+    pub fn set_number_format_cb(&mut self, format: &str) -> &mut Self {
+        self.number_format_cb = String::from(format);
+        self
+    }
+
+    /// Sets the color of wireframe lines
+    pub fn set_line_color(&mut self, color: &str) -> &mut Self {
+        self.line_color = String::from(color);
+        self
+    }
+
+    /// Sets the style of wireframe line
+    ///
+    /// Options:
+    ///
+    /// * "`-`", "`:`", "`--`", "`-.`"
+    pub fn set_line_style(&mut self, style: &str) -> &mut Self {
+        self.line_style = String::from(style);
+        self
+    }
+
+    /// Sets the width of wireframe line
+    pub fn set_line_width(&mut self, width: f64) -> &mut Self {
+        self.line_width = width;
+        self
+    }
+
     /// Returns options for surface
-    pub(crate) fn options_surface(&self) -> String {
+    fn options_surface(&self) -> String {
         let mut opt = String::new();
         if self.row_stride > 0 {
             write!(&mut opt, ",rstride={}", self.row_stride).unwrap();
@@ -190,7 +255,7 @@ impl Surface {
     }
 
     /// Returns options for wireframe
-    pub(crate) fn options_wireframe(&self) -> String {
+    fn options_wireframe(&self) -> String {
         let mut opt = String::new();
         if self.row_stride > 0 {
             write!(&mut opt, ",rstride={}", self.row_stride).unwrap();
@@ -211,10 +276,10 @@ impl Surface {
     }
 
     /// Returns options for colorbar
-    pub(crate) fn options_colorbar(&self) -> String {
+    fn options_colorbar(&self) -> String {
         let mut opt = String::new();
-        if self.colorbar_number_format != "" {
-            write!(&mut opt, ",format='{}'", self.colorbar_number_format).unwrap();
+        if self.number_format_cb != "" {
+            write!(&mut opt, ",format='{}'", self.number_format_cb).unwrap();
         }
         opt
     }
@@ -238,13 +303,13 @@ mod tests {
         let surface = Surface::new();
         assert_eq!(surface.row_stride, 0);
         assert_eq!(surface.col_stride, 0);
-        assert_eq!(surface.surface, true);
-        assert_eq!(surface.wireframe, false);
+        assert_eq!(surface.with_surface, true);
+        assert_eq!(surface.with_wireframe, false);
         assert_eq!(surface.colormap_index, 0);
         assert_eq!(surface.colormap_name.len(), 0);
-        assert_eq!(surface.colorbar, false);
+        assert_eq!(surface.with_colorbar, false);
         assert_eq!(surface.colorbar_label.len(), 0);
-        assert_eq!(surface.colorbar_number_format.len(), 0);
+        assert_eq!(surface.number_format_cb.len(), 0);
         assert_eq!(surface.line_color, "black".to_string());
         assert_eq!(surface.line_style.len(), 0);
         assert_eq!(surface.line_width, 0.0);
@@ -254,8 +319,7 @@ mod tests {
     #[test]
     fn options_surface_works() {
         let mut surface = Surface::new();
-        surface.row_stride = 3;
-        surface.col_stride = 4;
+        surface.set_row_stride(3).set_col_stride(4);
         let opt = surface.options_surface();
         assert_eq!(opt, ",rstride=3,cstride=4,cmap=getColormap(0)");
         surface.colormap_name = "Pastel1".to_string();
@@ -266,11 +330,12 @@ mod tests {
     #[test]
     fn options_wireframe_works() {
         let mut surface = Surface::new();
-        surface.row_stride = 3;
-        surface.col_stride = 4;
-        surface.line_color = "red".to_string();
-        surface.line_style = "--".to_string();
-        surface.line_width = 2.5;
+        surface
+            .set_row_stride(3)
+            .set_col_stride(4)
+            .set_line_color("red")
+            .set_line_style("--")
+            .set_line_width(2.5);
         let opt = surface.options_wireframe();
         assert_eq!(opt, ",rstride=3,cstride=4,color='red',linestyle='--',linewidth=2.5");
     }
@@ -278,7 +343,7 @@ mod tests {
     #[test]
     fn options_colorbar_works() {
         let mut surface = Surface::new();
-        surface.colorbar_number_format = "%.3f".to_string();
+        surface.set_number_format_cb("%.3f");
         let opt = surface.options_colorbar();
         assert_eq!(opt, ",format='%.3f'");
     }
@@ -286,9 +351,10 @@ mod tests {
     #[test]
     fn draw_works() {
         let mut surface = Surface::new();
-        surface.wireframe = true;
-        surface.colorbar = true;
-        surface.colorbar_label = "temperature".to_string();
+        surface
+            .set_with_wireframe(true)
+            .set_with_colorbar(true)
+            .set_colorbar_label("temperature");
         let x = vec![vec![-0.5, 0.0, 0.5], vec![-0.5, 0.0, 0.5], vec![-0.5, 0.0, 0.5]];
         let y = vec![vec![-0.5, -0.5, -0.5], vec![0.0, 0.0, 0.0], vec![0.5, 0.5, 0.5]];
         let z = vec![vec![0.50, 0.25, 0.50], vec![0.25, 0.00, 0.25], vec![0.50, 0.25, 0.50]];

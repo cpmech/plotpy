@@ -10,15 +10,16 @@ Documentation:
 
 ## Installation
 
-### 1 Install Matplotlib
+Install some libraries:
 
 ```bash
-sudo apt-get install python3-matplotlib
+sudo apt-get install \
+    liblapacke-dev \
+    libopenblas-dev \
+    python3-matplotlib
 ```
 
-### 2 Configure Cargo.toml
-
-Add the following lines to Cargo.toml:
+Add this to your Cargo.toml (choose the right version):
 
 ```toml
 [dependencies]
@@ -31,6 +32,7 @@ plotpy = "*"
 
 ```rust
 use plotpy::*;
+use russell_lab::Matrix;
 use std::path::Path;
 
 // directory to save figures
@@ -39,9 +41,9 @@ const OUT_DIR: &str = "/tmp/plotpy/doc_tests";
 fn main() -> Result<(), &'static str> {
     // generate (x,y,z) matrices
     let n = 21;
-    let mut x = vec![vec![0.0; n]; n];
-    let mut y = vec![vec![0.0; n]; n];
-    let mut z = vec![vec![0.0; n]; n];
+    let mut x = Matrix::new(n, n);
+    let mut y = Matrix::new(n, n);
+    let mut z = Matrix::new(n, n);
     let (min, max) = (-2.0, 2.0);
     let d = (max - min) / ((n - 1) as f64);
     for i in 0..n {
@@ -54,12 +56,14 @@ fn main() -> Result<(), &'static str> {
         }
     }
 
-    // configure and draw contour
+    // configure contour
     let mut contour = Contour::new();
-    contour.colorbar_label = "temperature".to_string();
-    contour.colormap_name = "terrain".to_string();
-    contour.with_selected = true;
-    contour.selected_level = 0.0;
+    contour
+        .set_colorbar_label("temperature")
+        .set_colormap_name("terrain")
+        .set_selected_level(0.0, true);
+
+    // draw contour
     contour.draw(&x, &y, &z);
 
     // add contour to plot

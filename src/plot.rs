@@ -27,7 +27,7 @@ pub trait GraphMaker {
 ///
 /// // configure and draw curve
 /// let mut curve = Curve::new();
-/// curve.label = "line".to_string();
+/// curve.set_label("line");
 /// curve.draw(x, y);
 ///
 /// // configure plot
@@ -76,7 +76,7 @@ pub trait GraphMaker {
 /// ![doc_plot.svg](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/doc_plot.svg)
 ///
 pub struct Plot {
-    pub(crate) buffer: String,
+    buffer: String,
 }
 
 impl Plot {

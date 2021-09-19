@@ -44,30 +44,12 @@ use std::fmt::Write;
 /// ![doc_histogram.svg](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/doc_histogram.svg)
 ///
 pub struct Histogram {
-    /// Colors for each bar
-    pub colors: Vec<String>,
-
-    /// Type of histogram; e.g. "bar"
-    ///
-    /// * `bar` is a traditional bar-type histogram. If multiple data are given the bars are arranged side by side.
-    /// * `barstacked` is a bar-type histogram where multiple data are stacked on top of each other.
-    /// * `step` generates a lineplot that is by default unfilled.
-    /// * `stepfilled` generates a lineplot that is by default filled.
-    ///
-    /// As defined in <https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.hist.html>
-    pub style: String,
-
-    /// Draws stacked histogram
-    pub stacked: bool,
-
-    /// Skip filling bars
-    pub no_fill: bool,
-
-    /// Number of bins
-    pub number_bins: i32,
-
-    // buffer
-    pub(crate) buffer: String,
+    colors: Vec<String>, // Colors for each bar
+    style: String,       // Type of histogram; e.g. "bar"
+    stacked: bool,       // Draws stacked histogram
+    no_fill: bool,       // Skip filling bars
+    number_bins: i32,    // Number of bins
+    buffer: String,      // buffer
 }
 
 impl Histogram {
@@ -107,8 +89,46 @@ impl Histogram {
         write!(&mut self.buffer, "plt.hist(values,label=labels{})\n", &opt).unwrap();
     }
 
+    /// Sets the colors for each bar
+    pub fn set_colors(&mut self, colors: &[&str]) -> &mut Self {
+        self.colors = colors.iter().map(|color| color.to_string()).collect();
+        self
+    }
+
+    /// Sets the type of histogram
+    ///
+    /// Options:
+    ///
+    /// * `bar` is a traditional bar-type histogram. If multiple data are given the bars are arranged side by side.
+    /// * `barstacked` is a bar-type histogram where multiple data are stacked on top of each other.
+    /// * `step` generates a lineplot that is by default unfilled.
+    /// * `stepfilled` generates a lineplot that is by default filled.
+    /// * As defined in <https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.hist.html>
+    pub fn set_style(&mut self, style: &str) -> &mut Self {
+        self.style = String::from(style);
+        self
+    }
+
+    /// Sets option to draw stacked histogram
+    pub fn set_stacked(&mut self, flag: bool) -> &mut Self {
+        self.stacked = flag;
+        self
+    }
+
+    /// Sets option to skip filling bars
+    pub fn set_no_fill(&mut self, flag: bool) -> &mut Self {
+        self.no_fill = flag;
+        self
+    }
+
+    /// Sets the number of bins
+    pub fn set_number_bins(&mut self, bins: i32) -> &mut Self {
+        self.number_bins = bins;
+        self
+    }
+
     /// Returns options for histogram
-    pub(crate) fn options(&self) -> String {
+    fn options(&self) -> String {
         let mut opt = String::new();
         if self.colors.len() > 0 {
             write!(&mut opt, ",color=colors").unwrap();
@@ -155,7 +175,7 @@ mod tests {
     #[test]
     fn options_works() {
         let mut histogram = Histogram::new();
-        histogram.stacked = true;
+        histogram.set_stacked(true);
         let opt = histogram.options();
         assert_eq!(opt, ",stacked=True");
     }
@@ -165,7 +185,7 @@ mod tests {
         let values = vec![vec![1, 1, 1, 2, 2, 2, 2, 2, 3, 3], vec![5, 6, 7, 8]];
         let labels = ["first".to_string(), "second".to_string()];
         let mut histogram = Histogram::new();
-        histogram.colors = vec!["red".to_string(), "green".to_string()];
+        histogram.set_colors(&vec!["red", "green"]);
         histogram.draw(&values, &labels);
         let b: &str = "values=[[1,1,1,2,2,2,2,2,3,3,],[5,6,7,8,],]\n\
                        labels=['first','second',]\n\

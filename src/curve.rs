@@ -23,19 +23,21 @@ use std::fmt::Write;
 /// let x = &[1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0];
 /// let y = &[1.0, 4.0, 9.0, 16.0, 25.0, 36.0, 49.0, 64.0];
 ///
-/// // configure and draw curve
+/// // configure curve
 /// let mut curve = Curve::new();
-/// curve.label = "parabolic".to_string();
-/// curve.line_alpha = 0.95;
-/// curve.line_color = "#5f9cd8".to_string();
-/// curve.line_style = "-".to_string();
-/// curve.line_width = 5.0;
-/// curve.marker_color = "#eeea83".to_string();
-/// curve.marker_every = 1;
-/// curve.marker_line_color = "#da98d1".to_string();
-/// curve.marker_line_width = 2.5;
-/// curve.marker_size = 20.0;
-/// curve.marker_style = "*".to_string();
+/// curve.set_label("parabolic")
+///     .set_line_alpha(0.95)
+///     .set_line_color("#5f9cd8")
+///     .set_line_style("-")
+///     .set_line_width(5.0)
+///     .set_marker_color("#eeea83")
+///     .set_marker_every(1)
+///     .set_marker_line_color("#da98d1")
+///     .set_marker_line_width(2.5)
+///     .set_marker_size(20.0)
+///     .set_marker_style("*");
+///
+/// // draw curve
 /// curve.draw(x, y);
 ///
 /// // add curve to plot
@@ -54,50 +56,19 @@ use std::fmt::Write;
 /// ![doc_curve.svg](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/doc_curve.svg)
 ///
 pub struct Curve {
-    /// Label; name of this curve in the legend
-    pub label: String,
-
-    /// Opacity of lines (0, 1]. A<1e-14 => A=1.0
-    pub line_alpha: f64,
-
-    /// Color of lines
-    pub line_color: String,
-
-    /// Style of lines
-    ///
-    /// Options: "`-`", `:`", "`--`", "`-.`", or "`None`"
-    ///
-    /// As defined in <https://matplotlib.org/stable/gallery/lines_bars_and_markers/linestyles.html>
-    pub line_style: String,
-
-    /// Width of lines
-    pub line_width: f64,
-
-    /// Color of markers
-    pub marker_color: String,
-
-    /// Increment of data points to use when drawing markers
-    pub marker_every: i32,
-
-    /// Draw a void marker (draw edge only)
-    pub marker_void: bool,
-
-    /// Edge color of markers
-    pub marker_line_color: String,
-
-    /// Edge width of markers
-    pub marker_line_width: f64,
-
-    /// Size of markers
-    pub marker_size: f64,
-
-    /// Style of markers, e.g., "`o`", "`+`"
-    ///
-    /// As defined in <https://matplotlib.org/stable/api/markers_api.html>
-    pub marker_style: String,
-
-    // buffer
-    pub(crate) buffer: String,
+    label: String,             // Name of this curve in the legend
+    line_alpha: f64,           // Opacity of lines (0, 1]. A<1e-14 => A=1.0
+    line_color: String,        // Color of lines
+    line_style: String,        // Style of lines
+    line_width: f64,           // Width of lines
+    marker_color: String,      // Color of markers
+    marker_every: i32,         // Increment of data points to use when drawing markers
+    marker_void: bool,         // Draw a void marker (draw edge only)
+    marker_line_color: String, // Edge color of markers
+    marker_line_width: f64,    // Edge width of markers
+    marker_size: f64,          // Size of markers
+    marker_style: String,      // Style of markers, e.g., "`o`", "`+`"
+    buffer: String,            // buffer
 }
 
 impl Curve {
@@ -142,8 +113,90 @@ impl Curve {
         write!(&mut self.buffer, "plt.plot(x,y{})\n", &opt).unwrap();
     }
 
+    /// Sets the name of this curve in the legend
+    pub fn set_label(&mut self, label: &str) -> &mut Self {
+        self.label = String::from(label);
+        self
+    }
+
+    /// Sets the opacity of lines (0, 1]. A<1e-14 => A=1.0
+    pub fn set_line_alpha(&mut self, alpha: f64) -> &mut Self {
+        self.line_alpha = alpha;
+        self
+    }
+
+    /// Sets the color of lines
+    pub fn set_line_color(&mut self, color: &str) -> &mut Self {
+        self.line_color = String::from(color);
+        self
+    }
+
+    /// Sets the style of lines
+    ///
+    /// Options:
+    ///
+    /// * "`-`", `:`", "`--`", "`-.`", or "`None`"
+    /// * As defined in <https://matplotlib.org/stable/gallery/lines_bars_and_markers/linestyles.html>
+    pub fn set_line_style(&mut self, style: &str) -> &mut Self {
+        self.line_style = String::from(style);
+        self
+    }
+
+    /// Sets the width of lines
+    pub fn set_line_width(&mut self, width: f64) -> &mut Self {
+        self.line_width = width;
+        self
+    }
+
+    /// Sets the color of markers
+    pub fn set_marker_color(&mut self, color: &str) -> &mut Self {
+        self.marker_color = String::from(color);
+        self
+    }
+
+    /// Sets the increment of data points to use when drawing markers
+    pub fn set_marker_every(&mut self, every: i32) -> &mut Self {
+        self.marker_every = every;
+        self
+    }
+
+    /// Sets the option to draw a void marker (draw edge only)
+    pub fn set_marker_void(&mut self, flag: bool) -> &mut Self {
+        self.marker_void = flag;
+        self
+    }
+
+    /// Sets the edge color of markers
+    pub fn set_marker_line_color(&mut self, color: &str) -> &mut Self {
+        self.marker_line_color = String::from(color);
+        self
+    }
+
+    /// Sets the edge width of markers
+    pub fn set_marker_line_width(&mut self, width: f64) -> &mut Self {
+        self.marker_line_width = width;
+        self
+    }
+
+    /// Sets the size of markers
+    pub fn set_marker_size(&mut self, size: f64) -> &mut Self {
+        self.marker_size = size;
+        self
+    }
+
+    /// Sets the style of markers
+    ///
+    /// Examples:
+    ///
+    /// * "`o`", "`+`"
+    /// * As defined in <https://matplotlib.org/stable/api/markers_api.html>
+    pub fn set_marker_style(&mut self, style: &str) -> &mut Self {
+        self.marker_style = String::from(style);
+        self
+    }
+
     /// Returns options for curve
-    pub(crate) fn options(&self) -> String {
+    fn options(&self) -> String {
         // fix color if marker is void
         let line_color = if self.marker_void && self.line_color == "" {
             "red"
@@ -234,18 +287,19 @@ mod tests {
     #[test]
     fn options_works() {
         let mut curve = Curve::new();
-        curve.label = "my-curve".to_string();
-        curve.line_alpha = 0.7;
-        curve.line_color = "#b33434".to_string();
-        curve.line_style = "-".to_string();
-        curve.line_width = 3.0;
-        curve.marker_color = "#4c4deb".to_string();
-        curve.marker_every = 2;
-        curve.marker_void = false;
-        curve.marker_line_color = "blue".to_string();
-        curve.marker_line_width = 1.5;
-        curve.marker_size = 8.0;
-        curve.marker_style = "o".to_string();
+        curve
+            .set_label("my-curve")
+            .set_line_alpha(0.7)
+            .set_line_color("#b33434")
+            .set_line_style("-")
+            .set_line_width(3.0)
+            .set_marker_color("#4c4deb")
+            .set_marker_every(2)
+            .set_marker_void(false)
+            .set_marker_line_color("blue")
+            .set_marker_line_width(1.5)
+            .set_marker_size(8.0)
+            .set_marker_style("o");
         let options = curve.options();
         assert_eq!(
             options,
@@ -268,7 +322,7 @@ mod tests {
         let x = &[1.0, 2.0, 3.0, 4.0, 5.0];
         let y = &[1.0, 4.0, 9.0, 16.0, 25.0];
         let mut curve = Curve::new();
-        curve.label = "the-curve".to_string();
+        curve.set_label("the-curve");
         curve.draw(x, y);
         let b: &str = "x=np.array([1,2,3,4,5,],dtype=float)\n\
                        y=np.array([1,4,9,16,25,],dtype=float)\n\
@@ -281,7 +335,7 @@ mod tests {
         let x = Vector::from(&[1.0, 2.0, 3.0, 4.0, 5.0]);
         let y = Vector::from(&[1.0, 4.0, 9.0, 16.0, 25.0]);
         let mut curve = Curve::new();
-        curve.label = "the-curve".to_string();
+        curve.set_label("the-curve");
         curve.draw(&x, &y);
         let b: &str = "x=np.array([1,2,3,4,5,],dtype=float)\n\
                        y=np.array([1,4,9,16,25,],dtype=float)\n\

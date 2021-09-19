@@ -1,15 +1,16 @@
 use plotpy::*;
+use russell_lab::Matrix;
 use std::fs::File;
 use std::io::{BufRead, BufReader};
 use std::path::Path;
 
 const OUT_DIR: &str = "/tmp/plotpy/integration_tests";
 
-fn gen_xyz(n: usize) -> (Vec<Vec<f64>>, Vec<Vec<f64>>, Vec<Vec<f64>>) {
+fn gen_xyz(n: usize) -> (Matrix, Matrix, Matrix) {
     assert!(n > 1);
-    let mut x = vec![vec![0.0; n]; n];
-    let mut y = vec![vec![0.0; n]; n];
-    let mut z = vec![vec![0.0; n]; n];
+    let mut x = Matrix::new(n, n);
+    let mut y = Matrix::new(n, n);
+    let mut z = Matrix::new(n, n);
     let (min, max) = (-2.0, 2.0);
     let d = (max - min) / ((n - 1) as f64);
     for i in 0..n {
@@ -27,16 +28,17 @@ fn gen_xyz(n: usize) -> (Vec<Vec<f64>>, Vec<Vec<f64>>, Vec<Vec<f64>>) {
 #[test]
 fn test_surface() -> Result<(), &'static str> {
     let mut surface = Surface::new();
-    surface.row_stride = 1;
-    surface.col_stride = 1;
-    surface.wireframe = true;
-    surface.colormap_name = "Pastel1".to_string();
-    surface.colorbar = true;
-    surface.colorbar_label = "temperature".to_string();
-    surface.colorbar_number_format = "%.1f".to_string();
-    surface.line_color = "#1862ab".to_string();
-    surface.line_style = ":".to_string();
-    surface.line_width = 0.75;
+    surface
+        .set_row_stride(1)
+        .set_col_stride(1)
+        .set_with_wireframe(true)
+        .set_colormap_name("Pastel1")
+        .set_with_colorbar(true)
+        .set_colorbar_label("temperature")
+        .set_number_format_cb("%.1f")
+        .set_line_color("#1862ab")
+        .set_line_style(":")
+        .set_line_width(0.75);
 
     // draw surface
     let n = 9;
@@ -62,8 +64,7 @@ fn test_surface() -> Result<(), &'static str> {
 #[test]
 fn test_wireframe() -> Result<(), &'static str> {
     let mut surface = Surface::new();
-    surface.surface = false;
-    surface.wireframe = true;
+    surface.set_with_surface(false).set_with_wireframe(true);
 
     // draw wireframe
     let n = 9;

@@ -9,24 +9,26 @@ const OUT_DIR: &str = "/tmp/plotpy/integration_tests";
 fn test_curve() -> Result<(), &'static str> {
     // curve object and options
     let mut curve1 = Curve::new();
-    curve1.line_alpha = 0.7;
-    curve1.line_color = "#cd0000".to_string();
-    curve1.line_style = "--".to_string();
-    curve1.line_width = 2.0;
-    curve1.marker_color = "#1862ab".to_string();
-    curve1.marker_every = 2;
-    curve1.marker_void = false;
-    curve1.marker_line_color = "#cda500".to_string();
-    curve1.marker_line_width = 3.0;
-    curve1.marker_size = 8.0;
-    curve1.marker_style = "p".to_string();
+    curve1
+        .set_line_alpha(0.7)
+        .set_line_color("#cd0000")
+        .set_line_style("--")
+        .set_line_width(2.0)
+        .set_marker_color("#1862ab")
+        .set_marker_every(2)
+        .set_marker_void(false)
+        .set_marker_line_color("#cda500")
+        .set_marker_line_width(3.0)
+        .set_marker_size(8.0)
+        .set_marker_style("p");
 
     // another curve
     let mut curve2 = Curve::new();
-    curve2.line_style = "None".to_string();
-    curve2.marker_line_color = "#1862ab".to_string();
-    curve2.marker_style = "s".to_string();
-    curve2.marker_void = true;
+    curve2
+        .set_line_style("None")
+        .set_marker_line_color("#1862ab")
+        .set_marker_style("s")
+        .set_marker_void(true);
 
     // draw curves
     let x = &[1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0];

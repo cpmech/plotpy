@@ -26,13 +26,17 @@ use std::fmt::Write;
 ///
 /// // configure and draw histogram
 /// let mut histogram = Histogram::new();
+/// histogram.set_colors(&["#9de19a", "#e7eca3", "#98a7f2"])
+///     .set_line_width(10.0)
+///     .set_stacked(true)
+///     .set_style("step");
 /// histogram.draw(&values, &labels);
 ///
 /// // add histogram to plot
 /// let mut plot = Plot::new();
 /// plot.add(&histogram);
-/// plot.legend();
-/// plot.grid_and_labels("values", "count");
+/// plot.set_frame_border(true, false, true, false);
+/// plot.grid_labels_legend("values", "count");
 ///
 /// // save figure
 /// let path = Path::new(OUT_DIR).join("doc_histogram.svg");
@@ -45,6 +49,7 @@ use std::fmt::Write;
 ///
 pub struct Histogram {
     colors: Vec<String>, // Colors for each bar
+    line_width: f64,     // Line width
     style: String,       // Type of histogram; e.g. "bar"
     stacked: bool,       // Draws stacked histogram
     no_fill: bool,       // Skip filling bars
@@ -57,6 +62,7 @@ impl Histogram {
     pub fn new() -> Self {
         Histogram {
             colors: Vec::new(),
+            line_width: 0.0,
             style: String::new(),
             stacked: false,
             no_fill: false,
@@ -92,6 +98,12 @@ impl Histogram {
     /// Sets the colors for each bar
     pub fn set_colors(&mut self, colors: &[&str]) -> &mut Self {
         self.colors = colors.iter().map(|color| color.to_string()).collect();
+        self
+    }
+
+    /// Sets the width of the lines
+    pub fn set_line_width(&mut self, width: f64) -> &mut Self {
+        self.line_width = width;
         self
     }
 
@@ -133,6 +145,9 @@ impl Histogram {
         if self.colors.len() > 0 {
             write!(&mut opt, ",color=colors").unwrap();
         }
+        if self.line_width > 0.0 {
+            write!(&mut opt, ",linewidth={}", self.line_width).unwrap();
+        }
         if self.style != "" {
             write!(&mut opt, ",histtype='{}'", self.style).unwrap();
         }
@@ -165,6 +180,7 @@ mod tests {
     fn new_works() {
         let histogram = Histogram::new();
         assert_eq!(histogram.colors.len(), 0);
+        assert_eq!(histogram.line_width, 0.0);
         assert_eq!(histogram.style.len(), 0);
         assert_eq!(histogram.stacked, false);
         assert_eq!(histogram.no_fill, false);
@@ -175,9 +191,23 @@ mod tests {
     #[test]
     fn options_works() {
         let mut histogram = Histogram::new();
-        histogram.set_stacked(true);
+        histogram
+            .set_colors(&vec!["red", "green"])
+            .set_line_width(10.0)
+            .set_style("step")
+            .set_stacked(true)
+            .set_no_fill(true)
+            .set_number_bins(8);
         let opt = histogram.options();
-        assert_eq!(opt, ",stacked=True");
+        assert_eq!(
+            opt,
+            ",color=colors\
+             ,linewidth=10\
+             ,histtype='step'\
+             ,stacked=True\
+             ,fill=False\
+             ,bins=8"
+        );
     }
 
     #[test]

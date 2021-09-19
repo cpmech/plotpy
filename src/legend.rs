@@ -8,56 +8,59 @@ use std::fmt::Write;
 /// ```
 /// # fn main() -> Result<(), &'static str> {
 /// // import
-/// use plotpy::*;
+/// use plotpy::{Curve, Legend, Plot};
+/// use russell_lab::Vector;
 /// use std::path::Path;
 ///
 /// // directory to save figures
 /// const OUT_DIR: &str = "/tmp/plotpy/doc_tests";
 ///
 /// // generate (x,y) points
-/// let x = &[1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0];
-/// let y1 = &[1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5];
-/// let y2 = &[1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0];
-/// let y3 = &[1.0, 4.0, 6.0, 8.0, 10.0, 12.0, 14.0, 16.0];
-/// let y4 = &[1.0, 4.0, 9.0, 16.0, 25.0, 36.0, 49.0, 64.0];
+/// let x  = Vector::linspace(0.0, 5.0, 6);
+/// let y1 = x.get_mapped(|v| 0.5 * v);
+/// let y2 = x.get_mapped(|v| 1.0 * v);
+/// let y3 = x.get_mapped(|v| 1.5 * v);
+/// let y4 = x.get_mapped(|v| 2.0 * v);
 ///
-/// // configure curves
+/// // configure and draw curves
 /// let mut curve1 = Curve::new();
 /// let mut curve2 = Curve::new();
 /// let mut curve3 = Curve::new();
 /// let mut curve4 = Curve::new();
-/// curve1.set_label("first");
-/// curve2.set_label("second");
-/// curve3.set_label("third");
-/// curve4.set_label("fourth");
+/// curve1.set_label("y = 0.5 x");
+/// curve2.set_label("y = 1.0 x");
+/// curve3.set_label("y = 1.5 x");
+/// curve4.set_label("y = 2.0 x");
+/// curve1.draw(&x, &y1);
+/// curve2.draw(&x, &y2);
+/// curve3.draw(&x, &y3);
+/// curve4.draw(&x, &y4);
 ///
-/// // draw curves
-/// curve1.draw(x, y1);
-/// curve2.draw(x, y2);
-/// curve3.draw(x, y3);
-/// curve4.draw(x, y4);
+/// // configure and draw legends
+/// let mut legend1 = Legend::new();
+/// legend1.set_fontsize(14.0)
+///     .set_handle_len(6.0)
+///     .set_num_col(2)
+///     .set_outside(true)
+///     .set_show_frame(false);
+/// legend1.draw();
+/// let mut legend2 = Legend::new();
+/// legend2.draw();
 ///
-/// // add curves to plot
+/// // add curves and legends to subplots
 /// let mut plot = Plot::new();
+/// plot.configure_subplot(2, 1, 1);
 /// plot.add(&curve1);
 /// plot.add(&curve2);
 /// plot.add(&curve3);
 /// plot.add(&curve4);
-///
-/// // configure legend
-/// let mut legend = Legend::new();
-/// legend.set_fontsize(18.0)
-///     .set_handle_len(5.5)
-///     .set_num_col(2)
-///     .set_outside(true)
-///     .set_show_frame(false);
-///
-/// // draw legend
-/// legend.draw();
-///
-/// // add legend to plot
-/// plot.add(&legend);
-/// plot.grid_and_labels("x", "y");
+/// plot.add(&legend1);
+/// plot.configure_subplot(2, 1, 2);
+/// plot.add(&curve1);
+/// plot.add(&curve2);
+/// plot.add(&curve3);
+/// plot.add(&curve4);
+/// plot.add(&legend2);
 ///
 /// // save figure
 /// let path = Path::new(OUT_DIR).join("doc_legend.svg");

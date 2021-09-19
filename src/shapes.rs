@@ -14,35 +14,29 @@ use std::fmt::Write;
 /// // directory to save figures
 /// const OUT_DIR: &str = "/tmp/plotpy/doc_tests";
 ///
-/// // shapes object and options
+/// // shapes object and common options
 /// let mut shapes = Shapes::new();
-/// shapes.line_width = 3.0;
-/// shapes.edge_color = "#cd0000".to_string();
-/// shapes.face_color = "#eeea83".to_string();
+/// shapes.set_line_width(3.0).set_edge_color("#cd0000").set_face_color("#eeea83");
 ///
 /// // draw arc
-/// shapes.arc(0.5, 0.5, 0.4, 195.0, -15.0);
+/// shapes.draw_arc(0.5, 0.5, 0.4, 195.0, -15.0);
 ///
 /// // draw arrow
-/// shapes.arrow_scale = 50.0;
-/// shapes.arrow_style = "fancy".to_string();
-/// shapes.arrow(0.4, 0.3, 0.6, 0.5);
+/// shapes.set_arrow_scale(50.0).set_arrow_style("fancy");
+/// shapes.draw_arrow(0.4, 0.3, 0.6, 0.5);
 ///
 /// // draw circle
-/// shapes.face_color = "None".to_string();
-/// shapes.edge_color = "#1f9c25".to_string();
-/// shapes.line_width = 6.0;
-/// shapes.circle(0.5, 0.5, 0.5);
+/// shapes.set_face_color("None").set_edge_color("#1f9c25").set_line_width(6.0);
+/// shapes.draw_circle(0.5, 0.5, 0.5);
 ///
 /// // draw polyline
-/// shapes.line_width = 3.0;
-/// shapes.edge_color = "blue".to_string();
+/// shapes.set_line_width(3.0).set_edge_color("blue");
 /// let a = 0.2;
 /// let c = f64::sqrt(3.0) / 2.0;
 /// let p = vec![vec![0.1, 0.5], vec![0.1 + a, 0.5], vec![0.1 + a / 2.0, 0.5 + a * c]];
 /// let q = vec![vec![0.9, 0.5], vec![0.9 - a, 0.5], vec![0.9 - a / 2.0, 0.5 + a * c]];
-/// shapes.polyline(&p, true);
-/// shapes.polyline(&q, false);
+/// shapes.draw_polyline(&p, true);
+/// shapes.draw_polyline(&q, false);
 ///
 /// // add shapes to plot
 /// let mut plot = Plot::new();
@@ -61,40 +55,12 @@ use std::fmt::Write;
 /// ![doc_shapes.svg](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/doc_shapes.svg)
 ///
 pub struct Shapes {
-    /// Edge color (shared)
-    pub edge_color: String,
-
-    /// Face color (shared)
-    pub face_color: String,
-
-    /// Line width of edge (shared)
-    pub line_width: f64,
-
-    /// Arrow scale
-    pub arrow_scale: f64,
-
-    /// Arrow style
-    ///
-    /// * "`-`"      -- Curve         : None
-    /// * "`->`"     -- CurveB        : head_length=0.4,head_width=0.2
-    /// * "`-[`"     -- BracketB      : widthB=1.0,lengthB=0.2,angleB=None
-    /// * "`-|>`"    -- CurveFilledB  : head_length=0.4,head_width=0.2
-    /// * "`<-`"     -- CurveA        : head_length=0.4,head_width=0.2
-    /// * "`<->`"    -- CurveAB       : head_length=0.4,head_width=0.2
-    /// * "`<|-`"    -- CurveFilledA  : head_length=0.4,head_width=0.2
-    /// * "`<|-|>`"  -- CurveFilledAB : head_length=0.4,head_width=0.2
-    /// * "`]-`"     -- BracketA      : widthA=1.0,lengthA=0.2,angleA=None
-    /// * "`]-[`"    -- BracketAB     : widthA=1.0,lengthA=0.2,angleA=None,widthB=1.0,lengthB=0.2,angleB=None
-    /// * "`fancy`"  -- Fancy         : head_length=0.4,head_width=0.4,tail_width=0.4
-    /// * "`simple`" -- Simple        : head_length=0.5,head_width=0.5,tail_width=0.2
-    /// * "`wedge`"  -- Wedge         : tail_width=0.3,shrink_factor=0.5
-    /// * "`|-|`"    -- BarAB         : widthA=1.0,angleA=None,widthB=1.0,angleB=None
-    ///
-    /// As defined in <https://matplotlib.org/stable/api/_as_gen/matplotlib.patches.FancyArrowPatch.html>
-    pub arrow_style: String,
-
-    // buffer
-    pub(crate) buffer: String,
+    edge_color: String,  // Edge color (shared)
+    face_color: String,  // Face color (shared)
+    line_width: f64,     // Line width of edge (shared)
+    arrow_scale: f64,    // Arrow scale
+    arrow_style: String, // Arrow style
+    buffer: String,      // buffer
 }
 
 impl Shapes {
@@ -110,7 +76,7 @@ impl Shapes {
     }
 
     /// Draws arc
-    pub fn arc<T>(&mut self, xc: T, yc: T, r: T, ini_angle: T, fin_angle: T)
+    pub fn draw_arc<T>(&mut self, xc: T, yc: T, r: T, ini_angle: T, fin_angle: T)
     where
         T: std::fmt::Display,
     {
@@ -125,7 +91,7 @@ impl Shapes {
     }
 
     /// Draws arrow
-    pub fn arrow<T>(&mut self, xi: T, yi: T, xf: T, yf: T)
+    pub fn draw_arrow<T>(&mut self, xi: T, yi: T, xf: T, yf: T)
     where
         T: std::fmt::Display,
     {
@@ -144,7 +110,7 @@ impl Shapes {
     }
 
     /// Draws circle
-    pub fn circle<T>(&mut self, xc: T, yc: T, r: T)
+    pub fn draw_circle<T>(&mut self, xc: T, yc: T, r: T)
     where
         T: std::fmt::Display,
     {
@@ -159,7 +125,7 @@ impl Shapes {
     }
 
     /// Draws polyline
-    pub fn polyline<T>(&mut self, points: &Vec<Vec<T>>, closed: bool)
+    pub fn draw_polyline<T>(&mut self, points: &Vec<Vec<T>>, closed: bool)
     where
         T: std::fmt::Display,
     {
@@ -181,6 +147,54 @@ impl Shapes {
         write!(&mut self.buffer, "h=pth.Path(pts,cmd)\n").unwrap();
         write!(&mut self.buffer, "p=pat.PathPatch(h{})\n", &opt).unwrap();
         write!(&mut self.buffer, "plt.gca().add_patch(p)\n").unwrap();
+    }
+
+    /// Sets the edge color (shared among shapes)
+    pub fn set_edge_color(&mut self, color: &str) -> &mut Self {
+        self.edge_color = String::from(color);
+        self
+    }
+
+    /// Sets the face color (shared among shapes)
+    pub fn set_face_color(&mut self, color: &str) -> &mut Self {
+        self.face_color = String::from(color);
+        self
+    }
+
+    /// Sets the line width of edge (shared among shapes)
+    pub fn set_line_width(&mut self, width: f64) -> &mut Self {
+        self.line_width = width;
+        self
+    }
+
+    /// Sets the arrow scale
+    pub fn set_arrow_scale(&mut self, scale: f64) -> &mut Self {
+        self.arrow_scale = scale;
+        self
+    }
+
+    /// Sets the arrow style
+    ///
+    /// Options:
+    ///
+    /// * "`-`"      -- Curve         : None
+    /// * "`->`"     -- CurveB        : head_length=0.4,head_width=0.2
+    /// * "`-[`"     -- BracketB      : widthB=1.0,lengthB=0.2,angleB=None
+    /// * "`-|>`"    -- CurveFilledB  : head_length=0.4,head_width=0.2
+    /// * "`<-`"     -- CurveA        : head_length=0.4,head_width=0.2
+    /// * "`<->`"    -- CurveAB       : head_length=0.4,head_width=0.2
+    /// * "`<|-`"    -- CurveFilledA  : head_length=0.4,head_width=0.2
+    /// * "`<|-|>`"  -- CurveFilledAB : head_length=0.4,head_width=0.2
+    /// * "`]-`"     -- BracketA      : widthA=1.0,lengthA=0.2,angleA=None
+    /// * "`]-[`"    -- BracketAB     : widthA=1.0,lengthA=0.2,angleA=None,widthB=1.0,lengthB=0.2,angleB=None
+    /// * "`fancy`"  -- Fancy         : head_length=0.4,head_width=0.4,tail_width=0.4
+    /// * "`simple`" -- Simple        : head_length=0.5,head_width=0.5,tail_width=0.2
+    /// * "`wedge`"  -- Wedge         : tail_width=0.3,shrink_factor=0.5
+    /// * "`|-|`"    -- BarAB         : widthA=1.0,angleA=None,widthB=1.0,angleB=None
+    /// * As defined in <https://matplotlib.org/stable/api/_as_gen/matplotlib.patches.FancyArrowPatch.html>
+    pub fn set_arrow_style(&mut self, style: &str) -> &mut Self {
+        self.arrow_style = String::from(style);
+        self
     }
 
     /// Returns shared options
@@ -237,9 +251,7 @@ mod tests {
     #[test]
     fn options_shared_works() {
         let mut shapes = Shapes::new();
-        shapes.edge_color = "red".to_string();
-        shapes.face_color = "blue".to_string();
-        shapes.line_width = 2.5;
+        shapes.set_edge_color("red").set_face_color("blue").set_line_width(2.5);
         let opt = shapes.options_shared();
         assert_eq!(
             opt,
@@ -252,8 +264,7 @@ mod tests {
     #[test]
     fn options_arrow_works() {
         let mut shapes = Shapes::new();
-        shapes.arrow_scale = 25.0;
-        shapes.arrow_style = "fancy".to_string();
+        shapes.set_arrow_scale(25.0).set_arrow_style("fancy");
         let opt = shapes.options_arrow();
         assert_eq!(
             opt,
@@ -265,7 +276,7 @@ mod tests {
     #[test]
     fn arc_works() {
         let mut shapes = Shapes::new();
-        shapes.arc(0.0, 0.0, 1.0, 30.0, 60.0);
+        shapes.draw_arc(0.0, 0.0, 1.0, 30.0, 60.0);
         let b: &str = "p=pat.Arc((0,0),2*1,2*1,theta1=30,theta2=60,angle=0)\n\
                        plt.gca().add_patch(p)\n";
         assert_eq!(shapes.buffer, b);
@@ -274,7 +285,7 @@ mod tests {
     #[test]
     fn arrow_woks() {
         let mut shapes = Shapes::new();
-        shapes.arrow(0.0, 0.0, 1.0, 1.0);
+        shapes.draw_arrow(0.0, 0.0, 1.0, 1.0);
         let b: &str =
             "p=pat.FancyArrowPatch((0,0),(1,1),shrinkA=0,shrinkB=0,path_effects=[pff.Stroke(joinstyle='miter')])\n\
              plt.gca().add_patch(p)\n";
@@ -284,7 +295,7 @@ mod tests {
     #[test]
     fn circle_works() {
         let mut shapes = Shapes::new();
-        shapes.circle(0.0, 0.0, 1.0);
+        shapes.draw_circle(0.0, 0.0, 1.0);
         let b: &str = "p=pat.Circle((0,0),1)\n\
                        plt.gca().add_patch(p)\n";
         assert_eq!(shapes.buffer, b);
@@ -294,13 +305,12 @@ mod tests {
     fn polyline_works() {
         let mut shapes = Shapes::new();
         let points = vec![vec![1.0, 1.0], vec![2.0, 1.0], vec![1.5, 1.866]];
-        shapes.polyline(&points, true);
-        let b: &str = 
-            "dat=[[pth.Path.MOVETO,(1,1)],[pth.Path.LINETO,(2,1)],[pth.Path.LINETO,(1.5,1.866)],[pth.Path.CLOSEPOLY,(None,None)]]\n\
-             cmd,pts=zip(*dat)\n\
-             h=pth.Path(pts,cmd)\n\
-             p=pat.PathPatch(h)\n\
-             plt.gca().add_patch(p)\n";
+        shapes.draw_polyline(&points, true);
+        let b: &str = "dat=[[pth.Path.MOVETO,(1,1)],[pth.Path.LINETO,(2,1)],[pth.Path.LINETO,(1.5,1.866)],[pth.Path.CLOSEPOLY,(None,None)]]\n\
+                       cmd,pts=zip(*dat)\n\
+                       h=pth.Path(pts,cmd)\n\
+                       p=pat.PathPatch(h)\n\
+                       plt.gca().add_patch(p)\n";
         assert_eq!(shapes.buffer, b);
     }
 }

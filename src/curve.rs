@@ -43,9 +43,9 @@ use std::fmt::Write;
 ///
 /// // add curve to plot
 /// let mut plot = Plot::new();
-/// plot.add(&curve);
-/// plot.set_num_ticks_y(11);
-/// plot.grid_labels_legend("x", "y");
+/// plot.add(&curve)
+///     .set_num_ticks_y(11)
+///     .grid_labels_legend("x", "y");
 ///
 /// // save figure
 /// let path = Path::new(OUT_DIR).join("doc_curve.svg");

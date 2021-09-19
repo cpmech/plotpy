@@ -17,33 +17,33 @@ fn test_plot() -> Result<(), &'static str> {
 
     // configure plot
     let mut plot = Plot::new();
-    plot.configure_subplot(2, 2, 1);
-    plot.set_horizontal_gap(0.1);
-    plot.set_vertical_gap(0.2);
-    plot.set_gaps(0.3, 0.4);
-    plot.set_equal_axes();
-    plot.set_hide_axes(false);
-    plot.set_range(-1.0, 1.0, -1.0, 1.0);
-    plot.set_range_from_vec(&[0.0, 1.0, 0.0, 1.0]);
-    plot.set_xmin(0.0);
-    plot.set_xmax(1.0);
-    plot.set_ymin(0.0);
-    plot.set_ymax(1.0);
-    plot.set_xrange(0.0, 1.0);
-    plot.set_yrange(0.0, 1.0);
-    plot.set_num_ticks_x(0);
-    plot.set_num_ticks_x(8);
-    plot.set_num_ticks_y(0);
-    plot.set_num_ticks_y(5);
-    plot.set_label_x("x-label");
-    plot.set_label_y("y-label");
-    plot.set_labels("x", "y");
+    plot.set_subplot(2, 2, 1)
+        .set_horizontal_gap(0.1)
+        .set_vertical_gap(0.2)
+        .set_gaps(0.3, 0.4)
+        .set_equal_axes()
+        .set_hide_axes(false)
+        .set_range(-1.0, 1.0, -1.0, 1.0)
+        .set_range_from_vec(&[0.0, 1.0, 0.0, 1.0])
+        .set_xmin(0.0)
+        .set_xmax(1.0)
+        .set_ymin(0.0)
+        .set_ymax(1.0)
+        .set_xrange(0.0, 1.0)
+        .set_yrange(0.0, 1.0)
+        .set_num_ticks_x(0)
+        .set_num_ticks_x(8)
+        .set_num_ticks_y(0)
+        .set_num_ticks_y(5)
+        .set_label_x("x-label")
+        .set_label_y("y-label")
+        .set_labels("x", "y");
     plot.clear_current_figure();
-    plot.set_title("my plot");
+    plot.set_title("my plot")
+        .set_frame_borders(false)
+        .set_frame_borders(true)
+        .set_frame_borders(false);
     plot.grid_and_labels("x", "y");
-    plot.set_frame_borders(false);
-    plot.set_frame_borders(true);
-    plot.set_frame_borders(false);
 
     // add curve to plot
     plot.add(&curve);
@@ -85,13 +85,13 @@ fn test_plot_subplots() -> Result<(), &'static str> {
     plot.set_gaps(0.3, 0.2);
 
     // add curve to subplots
-    plot.configure_subplot(2, 2, 1);
+    plot.set_subplot(2, 2, 1);
     plot.add(&curve);
-    plot.configure_subplot(2, 2, 2);
+    plot.set_subplot(2, 2, 2);
     plot.add(&curve);
-    plot.configure_subplot(2, 2, 3);
+    plot.set_subplot(2, 2, 3);
     plot.add(&curve);
-    plot.configure_subplot(2, 2, 4);
+    plot.set_subplot(2, 2, 4);
     plot.add(&curve);
 
     // save figure

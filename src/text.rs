@@ -25,9 +25,9 @@ use std::fmt::Write;
 ///
 /// // add text to plot
 /// let mut plot = Plot::new();
-/// plot.add(&text);
-/// plot.set_range(-1.0, 1.0, -1.0, 1.0);
-/// plot.set_hide_axes(true);
+/// plot.add(&text)
+///     .set_range(-1.0, 1.0, -1.0, 1.0)
+///     .set_hide_axes(true);
 ///
 /// // save figure
 /// let path = Path::new(OUT_DIR).join("doc_text.svg");

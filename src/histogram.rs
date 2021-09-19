@@ -34,9 +34,9 @@ use std::fmt::Write;
 ///
 /// // add histogram to plot
 /// let mut plot = Plot::new();
-/// plot.add(&histogram);
-/// plot.set_frame_border(true, false, true, false);
-/// plot.grid_labels_legend("values", "count");
+/// plot.add(&histogram)
+///     .set_frame_border(true, false, true, false)
+///     .grid_labels_legend("values", "count");
 ///
 /// // save figure
 /// let path = Path::new(OUT_DIR).join("doc_histogram.svg");

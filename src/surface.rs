@@ -44,12 +44,12 @@ use std::fmt::Write;
 ///
 /// // add surface to plot
 /// let mut plot = Plot::new();
-/// plot.add(&surface);
-/// plot.set_camera(20.0, 35.0); // must be after add surface
+/// plot.add(&surface)
+///     .set_title("horse saddle equation") // must be after add surface
+///     .set_camera(20.0, 35.0); // must be after add surface
 ///
 /// // save figure
 /// let path = Path::new(OUT_DIR).join("doc_surface.svg");
-/// plot.set_title("horse saddle equation");
 /// plot.save(&path)?;
 /// # Ok(())
 /// # }

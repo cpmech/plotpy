@@ -49,18 +49,18 @@ use std::fmt::Write;
 ///
 /// // add curves and legends to subplots
 /// let mut plot = Plot::new();
-/// plot.configure_subplot(2, 1, 1);
-/// plot.add(&curve1);
-/// plot.add(&curve2);
-/// plot.add(&curve3);
-/// plot.add(&curve4);
-/// plot.add(&legend1);
-/// plot.configure_subplot(2, 1, 2);
-/// plot.add(&curve1);
-/// plot.add(&curve2);
-/// plot.add(&curve3);
-/// plot.add(&curve4);
-/// plot.add(&legend2);
+/// plot.set_subplot(2, 1, 1)
+///     .add(&curve1)
+///     .add(&curve2)
+///     .add(&curve3)
+///     .add(&curve4)
+///     .add(&legend1);
+/// plot.set_subplot(2, 1, 2)
+///     .add(&curve1)
+///     .add(&curve2)
+///     .add(&curve3)
+///     .add(&curve4)
+///     .add(&legend2);
 ///
 /// // save figure
 /// let path = Path::new(OUT_DIR).join("doc_legend.svg");

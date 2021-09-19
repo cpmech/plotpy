@@ -59,7 +59,7 @@ use std::fmt::Write;
 pub struct Contour {
     colors: Vec<String>,            // Colors to be used instead of colormap
     levels: Vec<f64>,               // Pre-defined levels
-    colormap_index: i32,            // Colormap index
+    colormap_index: usize,          // Colormap index
     colormap_name: String,          // Colormap name
     no_lines: bool,                 // Skip drawing a lines contour
     no_labels: bool,                // Skip adding labels to the lines contour
@@ -190,7 +190,7 @@ impl Contour {
     /// * 5 -- pink
     /// * 6 -- Greys
     /// * `>`6 -- starts over from 0
-    pub fn set_colormap_index(&mut self, index: i32) -> &mut Self {
+    pub fn set_colormap_index(&mut self, index: usize) -> &mut Self {
         self.colors = Vec::new();
         self.colormap_index = index;
         self

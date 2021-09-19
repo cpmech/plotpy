@@ -43,8 +43,7 @@ use std::fmt::Write;
 /// // add curve to plot
 /// let mut plot = Plot::new();
 /// plot.add(&curve);
-/// plot.legend();
-/// plot.grid_and_labels("x", "y");
+/// plot.grid_labels_legend("x", "y");
 ///
 /// // save figure
 /// let path = Path::new(OUT_DIR).join("doc_curve.svg");
@@ -62,7 +61,7 @@ pub struct Curve {
     line_style: String,        // Style of lines
     line_width: f64,           // Width of lines
     marker_color: String,      // Color of markers
-    marker_every: i32,         // Increment of data points to use when drawing markers
+    marker_every: usize,       // Increment of data points to use when drawing markers
     marker_void: bool,         // Draw a void marker (draw edge only)
     marker_line_color: String, // Edge color of markers
     marker_line_width: f64,    // Edge width of markers
@@ -155,7 +154,7 @@ impl Curve {
     }
 
     /// Sets the increment of data points to use when drawing markers
-    pub fn set_marker_every(&mut self, every: i32) -> &mut Self {
+    pub fn set_marker_every(&mut self, every: usize) -> &mut Self {
         self.marker_every = every;
         self
     }

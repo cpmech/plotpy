@@ -48,7 +48,7 @@ pub struct Histogram {
     style: String,       // Type of histogram; e.g. "bar"
     stacked: bool,       // Draws stacked histogram
     no_fill: bool,       // Skip filling bars
-    number_bins: i32,    // Number of bins
+    number_bins: usize,  // Number of bins
     buffer: String,      // buffer
 }
 
@@ -122,7 +122,7 @@ impl Histogram {
     }
 
     /// Sets the number of bins
-    pub fn set_number_bins(&mut self, bins: i32) -> &mut Self {
+    pub fn set_number_bins(&mut self, bins: usize) -> &mut Self {
         self.number_bins = bins;
         self
     }

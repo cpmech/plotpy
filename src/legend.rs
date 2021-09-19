@@ -71,7 +71,7 @@ use std::fmt::Write;
 pub struct Legend {
     fontsize: f64,      // Fontsize
     handle_len: f64,    // Length of legend's indicator line
-    num_col: i32,       // Number of columns
+    num_col: usize,     // Number of columns
     location: String,   // Location, e.g., "best", "right", "center left"
     outside: bool,      // Put legend outside plot area
     show_frame: bool,   // Show frame around legend
@@ -122,7 +122,7 @@ impl Legend {
     }
 
     /// Sets the number of columns
-    pub fn set_num_col(&mut self, num_columns: i32) -> &mut Self {
+    pub fn set_num_col(&mut self, num_columns: usize) -> &mut Self {
         self.num_col = num_columns;
         self
     }

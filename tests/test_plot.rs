@@ -22,7 +22,7 @@ fn test_plot() -> Result<(), &'static str> {
     plot.set_vertical_gap(0.2);
     plot.set_gaps(0.3, 0.4);
     plot.set_equal_axes();
-    plot.hide_axes();
+    plot.set_hide_axes(false);
     plot.set_range(-1.0, 1.0, -1.0, 1.0);
     plot.set_range_from_vec(&[0.0, 1.0, 0.0, 1.0]);
     plot.set_xmin(0.0);

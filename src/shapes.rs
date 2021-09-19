@@ -40,7 +40,7 @@ use std::fmt::Write;
 ///
 /// // add shapes to plot
 /// let mut plot = Plot::new();
-/// plot.hide_axes();
+/// plot.set_hide_axes(true);
 /// plot.set_equal_axes();
 /// plot.set_range(-0.05, 1.05, -0.05, 1.05);
 /// plot.add(&shapes);

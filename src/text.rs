@@ -27,7 +27,7 @@ use std::fmt::Write;
 /// let mut plot = Plot::new();
 /// plot.add(&text);
 /// plot.set_range(-1.0, 1.0, -1.0, 1.0);
-/// plot.hide_axes();
+/// plot.set_hide_axes(true);
 ///
 /// // save figure
 /// let path = Path::new(OUT_DIR).join("doc_text.svg");

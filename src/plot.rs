@@ -221,9 +221,10 @@ impl Plot {
         self.buffer.push_str("plt.axis('equal')\n");
     }
 
-    /// Hides axes
-    pub fn hide_axes(&mut self) {
-        self.buffer.push_str("plt.axis('off')\n");
+    /// Set option to hide axes
+    pub fn set_hide_axes(&mut self, hide: bool) {
+        let option = if hide { "off" } else { "on" };
+        write!(&mut self.buffer, "plt.axis('{}')\n", option).unwrap();
     }
 
     /// Sets axes limits
@@ -426,7 +427,7 @@ mod tests {
         let mut plot = Plot::new();
         plot.set_title(&"my plot".to_string());
         plot.set_equal_axes();
-        plot.hide_axes();
+        plot.set_hide_axes(true);
         plot.set_range(-1.0, 1.0, -1.0, 1.0);
         plot.set_range_from_vec(&[0.0, 1.0, 0.0, 1.0]);
         plot.set_xmin(0.0);

@@ -151,6 +151,8 @@ impl Legend {
     }
 
     /// Sets the normalized coordinates when drawing an outside legend
+    ///
+    /// Example: `[0.0, 1.02, 1.0, 0.102]`
     pub fn set_x_coords(&mut self, coords: &[f64]) -> &mut Self {
         self.x_coords = coords.to_vec();
         self

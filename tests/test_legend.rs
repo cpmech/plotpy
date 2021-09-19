@@ -27,10 +27,12 @@ fn test_legend_1() -> Result<(), &'static str> {
     // legend and options
     let mut legend = Legend::new();
     legend
-        .set_show_frame(false)
+        .set_fontsize(10.0)
+        .set_handle_len(3.2)
+        .set_num_col(2)
         .set_outside(true)
-        .set_fontsize(18.0)
-        .set_num_col(2);
+        .set_show_frame(false)
+        .set_x_coords(&[0.2, 1.05, 0.8, 0.1]);
 
     // draw legend
     legend.draw();
@@ -74,6 +76,7 @@ fn test_legend_2() -> Result<(), &'static str> {
 
     // legend and options
     let mut legend = Legend::new();
+    legend.set_location("lower right");
 
     // draw legend
     legend.draw();

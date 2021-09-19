@@ -15,18 +15,30 @@
 //! # Example
 //!
 //! ```
-//! # use plotpy::*;
+//! # use plotpy::{Plot, Surface};
 //! # use std::path::Path;
-//! # fn main() -> Result<(), Box<dyn std::error::Error>> {
-//! let x = &[1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0];
-//! let y = &[1.0, 4.0, 9.0, 16.0, 25.0, 36.0, 49.0, 64.0];
-//! let mut curve = Curve::new();
-//! curve.draw(x, y);
+//! # fn main() -> Result<(), &'static str> {
+//! use russell_lab::generate3d;
+//! let mut surface = Surface::new();
+//! surface
+//!     .set_with_wireframe(true)
+//!     .set_colormap_name("Pastel1")
+//!     .set_with_colorbar(true)
+//!     .set_colorbar_label("temperature")
+//!     .set_line_color("#1862ab")
+//!     .set_line_style(":")
+//!     .set_line_width(0.75);
 //!
+//! // draw surface
+//! let n = 9;
+//! let (x, y, z) = generate3d(-2.0, 2.0, -2.0, 2.0, n, n, |x, y| x * x + y * y);
+//! surface.draw(&x, &y, &z);
+//!
+//! // add surface to plot
 //! let mut plot = Plot::new();
-//! plot.add(&curve);
-//! plot.grid_and_labels("x", "y");
+//! plot.add(&surface);
 //!
+//! // save figure
 //! plot.save(Path::new("/tmp/plotpy/example_main.svg"))?;
 //! # Ok(())
 //! # }

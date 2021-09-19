@@ -157,7 +157,8 @@ impl Plot {
             &mut self.buffer,
             "plt.gca().set_axisbelow(True)\n\
              plt.grid(linestyle='--',color='grey',zorder=-1000)\n\
-             plt.xlabel(r'{}')\nplt.ylabel(r'{}')\n",
+             plt.xlabel(r'{}')\n\
+             plt.ylabel(r'{}')\n",
             xlabel, ylabel
         )
         .unwrap();
@@ -170,7 +171,8 @@ impl Plot {
             &mut self.buffer,
             "plt.gca().set_axisbelow(True)\n\
              plt.grid(linestyle='--',color='grey',zorder=-1000)\n\
-             plt.xlabel(r'{}')\nplt.ylabel(r'{}')\n",
+             plt.xlabel(r'{}')\n\
+             plt.ylabel(r'{}')\n",
             xlabel, ylabel
         )
         .unwrap();
@@ -468,13 +470,36 @@ mod tests {
             .set_horizontal_gap(0.1)
             .set_vertical_gap(0.2)
             .set_gaps(0.3, 0.4);
-        let correct: &str = "st=plt.suptitle(r'all subplots')\n\
-                             addToEA(st)\n\
-                             \nplt.subplot(2,2,1)\n\
-                               plt.subplots_adjust(wspace=0.1)\n\
-                               plt.subplots_adjust(hspace=0.2)\n\
-                               plt.subplots_adjust(wspace=0.3,hspace=0.4)\n";
-        assert_eq!(plot.buffer, correct);
+        let b: &str = "st=plt.suptitle(r'all subplots')\n\
+                       addToEA(st)\n\
+                       \nplt.subplot(2,2,1)\n\
+                         plt.subplots_adjust(wspace=0.1)\n\
+                         plt.subplots_adjust(hspace=0.2)\n\
+                         plt.subplots_adjust(wspace=0.3,hspace=0.4)\n";
+        assert_eq!(plot.buffer, b);
+    }
+
+    #[test]
+    fn grid_functions_work() {
+        let mut plot = Plot::new();
+        plot.grid_and_labels("xx", "yy").grid_labels_legend("xx", "yy").legend();
+        let b: &str = "plt.gca().set_axisbelow(True)\n\
+                       plt.grid(linestyle='--',color='grey',zorder=-1000)\n\
+                       plt.xlabel(r'xx')\n\
+                       plt.ylabel(r'yy')\n\
+                       plt.gca().set_axisbelow(True)\n\
+                       plt.grid(linestyle='--',color='grey',zorder=-1000)\n\
+                       plt.xlabel(r'xx')\n\
+                       plt.ylabel(r'yy')\n\
+                       h,l=plt.gca().get_legend_handles_labels()\n\
+                       if len(h)>0 and len(l)>0:\n\
+                       \x20\x20\x20\x20leg=plt.legend(handlelength=3,ncol=1,loc='best')\n\
+                       \x20\x20\x20\x20addToEA(leg)\n\
+                       h,l=plt.gca().get_legend_handles_labels()\n\
+                       if len(h)>0 and len(l)>0:\n\
+                       \x20\x20\x20\x20leg=plt.legend(handlelength=3,ncol=1,loc='best')\n\
+                       \x20\x20\x20\x20addToEA(leg)\n";
+        assert_eq!(plot.buffer, b);
     }
 
     #[test]
@@ -497,41 +522,31 @@ mod tests {
             .set_num_ticks_y(5)
             .set_label_x("x-label")
             .set_label_y("y-label")
-            .set_labels("x", "y");
-        plot.grid_and_labels("xx", "yy");
-        plot.clear_current_figure();
-        plot.legend();
-        plot.set_camera(1.0, 10.0);
-        let correct: &str = "plt.title(r'my plot')\n\
-                             plt.axis('equal')\n\
-                             plt.axis('off')\n\
-                             plt.axis([-1,1,-1,1])\n\
-                             plt.axis([0,1,0,1])\n\
-                             plt.axis([0,plt.axis()[1],plt.axis()[2],plt.axis()[3]])\n\
-                             plt.axis([plt.axis()[0],1,plt.axis()[2],plt.axis()[3]])\n\
-                             plt.axis([plt.axis()[0],plt.axis()[1],0,plt.axis()[3]])\n\
-                             plt.axis([plt.axis()[0],plt.axis()[1],plt.axis()[2],1])\n\
-                             plt.axis([0,1,plt.axis()[2],plt.axis()[3]])\n\
-                             plt.axis([plt.axis()[0],plt.axis()[1],0,1])\n\
-                             plt.gca().get_xaxis().set_ticks([])\n\
-                             plt.gca().get_xaxis().set_major_locator(tck.MaxNLocator(8))\n\
-                             plt.gca().get_yaxis().set_ticks([])\n\
-                             plt.gca().get_yaxis().set_major_locator(tck.MaxNLocator(5))\n\
-                             plt.xlabel(r'x-label')\n\
-                             plt.ylabel(r'y-label')\n\
-                             plt.xlabel(r'x')\n\
-                             plt.ylabel(r'y')\n\
-                             plt.gca().set_axisbelow(True)\n\
-                             plt.grid(linestyle='--',color='grey',zorder=-1000)\n\
-                             plt.xlabel(r'xx')\n\
-                             plt.ylabel(r'yy')\n\
-                             plt.clf()\n\
-                             h,l=plt.gca().get_legend_handles_labels()\n\
-                             if len(h)>0 and len(l)>0:\n\
-                             \x20\x20\x20\x20leg=plt.legend(handlelength=3,ncol=1,loc='best')\n\
-                             \x20\x20\x20\x20addToEA(leg)\n\
-                             plt.gca().view_init(elev=1,azim=10)\n";
-        assert_eq!(plot.buffer, correct);
+            .set_labels("x", "y")
+            .set_camera(1.0, 10.0)
+            .clear_current_figure();
+        let b: &str = "plt.title(r'my plot')\n\
+                       plt.axis('equal')\n\
+                       plt.axis('off')\n\
+                       plt.axis([-1,1,-1,1])\n\
+                       plt.axis([0,1,0,1])\n\
+                       plt.axis([0,plt.axis()[1],plt.axis()[2],plt.axis()[3]])\n\
+                       plt.axis([plt.axis()[0],1,plt.axis()[2],plt.axis()[3]])\n\
+                       plt.axis([plt.axis()[0],plt.axis()[1],0,plt.axis()[3]])\n\
+                       plt.axis([plt.axis()[0],plt.axis()[1],plt.axis()[2],1])\n\
+                       plt.axis([0,1,plt.axis()[2],plt.axis()[3]])\n\
+                       plt.axis([plt.axis()[0],plt.axis()[1],0,1])\n\
+                       plt.gca().get_xaxis().set_ticks([])\n\
+                       plt.gca().get_xaxis().set_major_locator(tck.MaxNLocator(8))\n\
+                       plt.gca().get_yaxis().set_ticks([])\n\
+                       plt.gca().get_yaxis().set_major_locator(tck.MaxNLocator(5))\n\
+                       plt.xlabel(r'x-label')\n\
+                       plt.ylabel(r'y-label')\n\
+                       plt.xlabel(r'x')\n\
+                       plt.ylabel(r'y')\n\
+                       plt.gca().view_init(elev=1,azim=10)\n\
+                       plt.clf()\n";
+        assert_eq!(plot.buffer, b);
     }
 
     #[test]
@@ -540,18 +555,18 @@ mod tests {
         plot.set_frame_border(false, false, false, false)
             .set_frame_border(true, true, true, true)
             .set_frame_borders(false);
-        let correct: &str = "plt.gca().spines['left'].set_visible(False)\n\
-                             plt.gca().spines['right'].set_visible(False)\n\
-                             plt.gca().spines['bottom'].set_visible(False)\n\
-                             plt.gca().spines['top'].set_visible(False)\n\
-                             plt.gca().spines['left'].set_visible(True)\n\
-                             plt.gca().spines['right'].set_visible(True)\n\
-                             plt.gca().spines['bottom'].set_visible(True)\n\
-                             plt.gca().spines['top'].set_visible(True)\n\
-                             plt.gca().spines['left'].set_visible(False)\n\
-                             plt.gca().spines['right'].set_visible(False)\n\
-                             plt.gca().spines['bottom'].set_visible(False)\n\
-                             plt.gca().spines['top'].set_visible(False)\n";
-        assert_eq!(plot.buffer, correct);
+        let b: &str = "plt.gca().spines['left'].set_visible(False)\n\
+                       plt.gca().spines['right'].set_visible(False)\n\
+                       plt.gca().spines['bottom'].set_visible(False)\n\
+                       plt.gca().spines['top'].set_visible(False)\n\
+                       plt.gca().spines['left'].set_visible(True)\n\
+                       plt.gca().spines['right'].set_visible(True)\n\
+                       plt.gca().spines['bottom'].set_visible(True)\n\
+                       plt.gca().spines['top'].set_visible(True)\n\
+                       plt.gca().spines['left'].set_visible(False)\n\
+                       plt.gca().spines['right'].set_visible(False)\n\
+                       plt.gca().spines['bottom'].set_visible(False)\n\
+                       plt.gca().spines['top'].set_visible(False)\n";
+        assert_eq!(plot.buffer, b);
     }
 }

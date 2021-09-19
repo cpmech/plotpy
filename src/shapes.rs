@@ -198,7 +198,7 @@ impl Shapes {
     }
 
     /// Returns shared options
-    pub(crate) fn options_shared(&self) -> String {
+    fn options_shared(&self) -> String {
         let mut opt = String::new();
         if self.edge_color != "" {
             write!(&mut opt, ",edgecolor='{}'", self.edge_color).unwrap();
@@ -213,7 +213,7 @@ impl Shapes {
     }
 
     /// Returns options for arrows
-    pub(crate) fn options_arrow(&self) -> String {
+    fn options_arrow(&self) -> String {
         let mut opt = String::new();
         if self.arrow_scale > 0.0 {
             write!(&mut opt, ",mutation_scale={}", self.arrow_scale).unwrap();

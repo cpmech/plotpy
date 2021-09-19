@@ -157,7 +157,7 @@ impl Legend {
     }
 
     /// Returns options for legend
-    pub(crate) fn options(&self) -> String {
+    fn options(&self) -> String {
         let mut opt = String::new();
         let mut comma = "";
         if self.handle_len > 0.0 {

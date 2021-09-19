@@ -128,7 +128,7 @@ impl Histogram {
     }
 
     /// Returns options for histogram
-    pub(crate) fn options(&self) -> String {
+    fn options(&self) -> String {
         let mut opt = String::new();
         if self.colors.len() > 0 {
             write!(&mut opt, ",color=colors").unwrap();

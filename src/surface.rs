@@ -238,7 +238,7 @@ impl Surface {
     }
 
     /// Returns options for surface
-    pub(crate) fn options_surface(&self) -> String {
+    fn options_surface(&self) -> String {
         let mut opt = String::new();
         if self.row_stride > 0 {
             write!(&mut opt, ",rstride={}", self.row_stride).unwrap();
@@ -255,7 +255,7 @@ impl Surface {
     }
 
     /// Returns options for wireframe
-    pub(crate) fn options_wireframe(&self) -> String {
+    fn options_wireframe(&self) -> String {
         let mut opt = String::new();
         if self.row_stride > 0 {
             write!(&mut opt, ",rstride={}", self.row_stride).unwrap();
@@ -276,7 +276,7 @@ impl Surface {
     }
 
     /// Returns options for colorbar
-    pub(crate) fn options_colorbar(&self) -> String {
+    fn options_colorbar(&self) -> String {
         let mut opt = String::new();
         if self.number_format_cb != "" {
             write!(&mut opt, ",format='{}'", self.number_format_cb).unwrap();

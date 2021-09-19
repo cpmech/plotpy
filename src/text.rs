@@ -97,7 +97,7 @@ impl Text {
     }
 
     /// Returns options for text
-    pub(crate) fn options(&self) -> String {
+    fn options(&self) -> String {
         let mut opt = String::new();
         if self.color != "" {
             write!(&mut opt, ",color='{}'", self.color).unwrap();

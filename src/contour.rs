@@ -304,7 +304,7 @@ impl Contour {
     }
 
     /// Returns options for filled contour
-    pub(crate) fn options_filled(&self) -> String {
+    fn options_filled(&self) -> String {
         let mut opt = String::new();
         if self.colors.len() > 0 {
             write!(&mut opt, ",colors=colors",).unwrap();
@@ -322,7 +322,7 @@ impl Contour {
     }
 
     /// Returns options for line contour
-    pub(crate) fn options_line(&self) -> String {
+    fn options_line(&self) -> String {
         let mut opt = String::new();
         if self.line_color != "" {
             write!(&mut opt, ",colors=['{}']", self.line_color).unwrap();
@@ -340,7 +340,7 @@ impl Contour {
     }
 
     /// Returns options for labels
-    pub(crate) fn options_label(&self) -> String {
+    fn options_label(&self) -> String {
         let mut opt = String::new();
         if self.no_inline_labels {
             write!(&mut opt, ",inline=False").unwrap();
@@ -354,7 +354,7 @@ impl Contour {
     }
 
     /// Returns options for colorbar
-    pub(crate) fn options_colorbar(&self) -> String {
+    fn options_colorbar(&self) -> String {
         let mut opt = String::new();
         if self.colorbar_number_format != "" {
             write!(&mut opt, ",format='{}'", self.colorbar_number_format).unwrap();
@@ -363,7 +363,7 @@ impl Contour {
     }
 
     /// Returns options for selected line contour
-    pub(crate) fn options_selected(&self) -> String {
+    fn options_selected(&self) -> String {
         let mut opt = String::new();
         if self.selected_line_color != "" {
             write!(&mut opt, ",colors=['{}']", self.selected_line_color).unwrap();

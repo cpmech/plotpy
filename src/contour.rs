@@ -70,7 +70,7 @@ pub struct Contour {
     line_color: String,             // Line color for the lines contour
     line_style: String,             // Line style for the lines contour
     line_width: f64,                // Line width for the lines contour
-    font_size_labels: f64,          // Font size for labels
+    fontsize_labels: f64,           // Font size for labels
     with_selected: bool,            // Draw a line contour with a selected level
     selected_level: f64,            // Selected level (e.g., 0.0)
     selected_line_color: String,    // Color to mark the selected level
@@ -96,7 +96,7 @@ impl Contour {
             line_color: "black".to_string(),
             line_style: String::new(),
             line_width: 0.0,
-            font_size_labels: 0.0,
+            fontsize_labels: 0.0,
             with_selected: false,
             selected_level: 0.0,
             selected_line_color: "yellow".to_string(),
@@ -267,8 +267,8 @@ impl Contour {
     }
 
     /// Sets the font size for labels
-    pub fn set_font_size_labels(&mut self, font_size: f64) -> &mut Self {
-        self.font_size_labels = font_size;
+    pub fn set_fontsize_labels(&mut self, fontsize: f64) -> &mut Self {
+        self.fontsize_labels = fontsize;
         self
     }
 
@@ -347,8 +347,8 @@ impl Contour {
         } else {
             write!(&mut opt, ",inline=True").unwrap();
         }
-        if self.font_size_labels > 0.0 {
-            write!(&mut opt, ",fontsize={}", self.font_size_labels).unwrap();
+        if self.fontsize_labels > 0.0 {
+            write!(&mut opt, ",fontsize={}", self.fontsize_labels).unwrap();
         }
         opt
     }
@@ -408,7 +408,7 @@ mod tests {
         assert_eq!(contour.line_color, "black".to_string());
         assert_eq!(contour.line_style.len(), 0);
         assert_eq!(contour.line_width, 0.0);
-        assert_eq!(contour.font_size_labels, 0.0);
+        assert_eq!(contour.fontsize_labels, 0.0);
         assert_eq!(contour.with_selected, false);
         assert_eq!(contour.selected_level, 0.0);
         assert_eq!(contour.selected_line_color, "yellow".to_string());
@@ -459,7 +459,7 @@ mod tests {
     #[test]
     fn options_label_works() {
         let mut contour = Contour::new();
-        contour.set_no_inline_labels(false).set_font_size_labels(5.0);
+        contour.set_no_inline_labels(false).set_fontsize_labels(5.0);
         let opt = contour.options_label();
         assert_eq!(
             opt,

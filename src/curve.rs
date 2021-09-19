@@ -1,4 +1,4 @@
-use super::*;
+use super::{vector_to_array, AsVector, GraphMaker};
 use std::fmt::Write;
 
 /// Generates a curve (aka line-plot) given two arrays (x,y)
@@ -264,7 +264,7 @@ impl GraphMaker for Curve {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
+    use super::Curve;
     use russell_lab::Vector;
 
     #[test]

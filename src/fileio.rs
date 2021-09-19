@@ -1,4 +1,4 @@
-use super::*;
+use super::PYTHON_HEADER;
 use std::fs;
 use std::fs::File;
 use std::io::Write;
@@ -66,7 +66,9 @@ pub(crate) fn call_python3(python_commands: &String, path: &Path) -> Result<Stri
 
 #[cfg(test)]
 mod tests {
-    use super::*;
+    use super::{call_python3, PYTHON_HEADER};
+    use std::fs;
+    use std::path::Path;
 
     const OUT_DIR: &str = "/tmp/plotpy/unit_tests";
 

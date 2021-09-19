@@ -29,7 +29,7 @@ def maybeCreateAX3D():
 
 #[cfg(test)]
 mod tests {
-    use super::*;
+    use super::PYTHON_HEADER;
 
     #[test]
     fn constants_are_correct() {

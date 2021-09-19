@@ -1,4 +1,4 @@
-use super::*;
+use super::GraphMaker;
 use std::fmt::Write;
 
 /// Draw polygonal shapes
@@ -8,7 +8,7 @@ use std::fmt::Write;
 /// ```
 /// # fn main() -> Result<(), &'static str> {
 /// // import
-/// use plotpy::*;
+/// use plotpy::{Plot, Shapes};
 /// use std::path::Path;
 ///
 /// // directory to save figures
@@ -235,7 +235,7 @@ impl GraphMaker for Shapes {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
+    use super::Shapes;
 
     #[test]
     fn new_works() {

@@ -1,4 +1,4 @@
-use super::*;
+use super::{matrix_to_array, AsMatrix, GraphMaker};
 use std::fmt::Write;
 
 /// Generates a 3D a surface (or wireframe, or both)
@@ -282,7 +282,7 @@ impl GraphMaker for Surface {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
+    use super::Surface;
     use russell_lab::Matrix;
 
     #[test]

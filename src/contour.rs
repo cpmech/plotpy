@@ -1,4 +1,4 @@
-use super::*;
+use super::{matrix_to_array, vector_to_array, vector_to_strings, AsMatrix, GraphMaker};
 use std::fmt::Write;
 
 /// Generates a contour plot
@@ -379,7 +379,7 @@ impl GraphMaker for Contour {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
+    use super::Contour;
     use russell_lab::Matrix;
 
     #[test]

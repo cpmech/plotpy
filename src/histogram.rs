@@ -1,4 +1,4 @@
-use super::*;
+use super::{matrix_to_list, vector_to_strings, GraphMaker};
 use std::fmt::Write;
 
 /// Generates a Histogram plot
@@ -8,7 +8,7 @@ use std::fmt::Write;
 /// ```
 /// # fn main() -> Result<(), &'static str> {
 /// // import
-/// use plotpy::*;
+/// use plotpy::{Histogram, Plot};
 /// use std::path::Path;
 ///
 /// // directory to save figures
@@ -176,7 +176,7 @@ impl GraphMaker for Histogram {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
+    use super::Histogram;
 
     #[test]
     fn new_works() {

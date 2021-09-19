@@ -1,4 +1,4 @@
-use super::*;
+use super::{call_python3, Legend};
 use std::fmt::Write;
 use std::fs::{self, File};
 use std::io::Write as IoWrite;
@@ -15,7 +15,7 @@ pub trait GraphMaker {
 /// ```
 /// # fn main() -> Result<(), &'static str> {
 /// // import
-/// use plotpy::*;
+/// use plotpy::{Curve, Plot};
 /// use russell_lab::Vector;
 /// use std::path::Path;
 ///
@@ -427,8 +427,10 @@ impl Plot {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
+    use super::Plot;
+    use std::fs::File;
     use std::io::{BufRead, BufReader};
+    use std::path::Path;
 
     const OUT_DIR: &str = "/tmp/plotpy/unit_tests";
 

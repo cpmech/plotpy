@@ -1,4 +1,4 @@
-use super::*;
+use super::{AsMatrix, AsVector};
 use std::fmt::Write;
 
 /// Converts vector to a Python list of numbers
@@ -77,7 +77,7 @@ where
 
 #[cfg(test)]
 mod tests {
-    use super::*;
+    use super::{matrix_to_array, matrix_to_list, vector_to_array, vector_to_numbers, vector_to_strings};
 
     #[test]
     fn vector_to_numbers_works() {

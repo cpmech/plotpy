@@ -1,4 +1,4 @@
-use plotpy::*;
+use plotpy::{Contour, Plot};
 use russell_lab::generate3d;
 use std::fs::File;
 use std::io::{BufRead, BufReader};

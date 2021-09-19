@@ -1,4 +1,4 @@
-use super::*;
+use super::GraphMaker;
 use std::fmt::Write;
 
 /// Creates text to be added to a plot
@@ -8,7 +8,7 @@ use std::fmt::Write;
 /// ```
 /// # fn main() -> Result<(), &'static str> {
 /// // import
-/// use plotpy::*;
+/// use plotpy::{Plot, Text};
 /// use std::path::Path;
 ///
 /// // directory to save figures
@@ -128,7 +128,7 @@ impl GraphMaker for Text {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
+    use super::Text;
 
     #[test]
     fn new_works() {

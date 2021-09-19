@@ -1,4 +1,4 @@
-use plotpy::*;
+use plotpy::{Histogram, Plot};
 use std::fs::File;
 use std::io::{BufRead, BufReader};
 use std::path::Path;

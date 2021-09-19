@@ -1,4 +1,4 @@
-use plotpy::*;
+use plotpy::{Curve, Plot};
 use std::fs::File;
 use std::io::{BufRead, BufReader};
 use std::path::Path;

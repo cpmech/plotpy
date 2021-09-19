@@ -1,4 +1,4 @@
-use super::*;
+use super::{vector_to_numbers, GraphMaker};
 use std::fmt::Write;
 
 /// Generates a Legend
@@ -203,7 +203,7 @@ impl GraphMaker for Legend {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
+    use super::Legend;
 
     #[test]
     fn new_works() {

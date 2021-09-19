@@ -48,7 +48,7 @@ fn test_histogram_2() -> Result<(), &'static str> {
         vec![-1, -1, 0, 1, 2, 3],                    // second series
         vec![5, 6, 7, 8],                            // third series
     ];
-    let labels = ["first".to_string(), "second".to_string(), "third".to_string()];
+    let labels = ["first", "second", "third"];
     histogram.draw(&values, &labels);
 
     // add histogram to plot

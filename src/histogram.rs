@@ -22,7 +22,7 @@ use std::fmt::Write;
 /// ];
 ///
 /// // set labels
-/// let labels = ["first".to_string(), "second".to_string(), "third".to_string()];
+/// let labels = ["first", "second", "third"];
 ///
 /// // configure and draw histogram
 /// let mut histogram = Histogram::new();
@@ -80,11 +80,13 @@ impl Histogram {
     ///
     /// # Notes
     ///
-    /// * The type `T` of the input array must be a number.
+    /// * The type `T` must be a number.
+    /// * The type `U` must be a String or &str.
     ///
-    pub fn draw<T>(&mut self, values: &Vec<Vec<T>>, labels: &[String])
+    pub fn draw<T, U>(&mut self, values: &Vec<Vec<T>>, labels: &[U])
     where
         T: std::fmt::Display,
+        U: std::fmt::Display,
     {
         let opt = self.options();
         matrix_to_list(&mut self.buffer, "values", values);
@@ -213,7 +215,7 @@ mod tests {
     #[test]
     fn draw_works() {
         let values = vec![vec![1, 1, 1, 2, 2, 2, 2, 2, 3, 3], vec![5, 6, 7, 8]];
-        let labels = ["first".to_string(), "second".to_string()];
+        let labels = ["first", "second"];
         let mut histogram = Histogram::new();
         histogram.set_colors(&vec!["red", "green"]);
         histogram.draw(&values, &labels);

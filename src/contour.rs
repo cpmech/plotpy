@@ -9,7 +9,7 @@ use std::fmt::Write;
 /// # fn main() -> Result<(), &'static str> {
 /// // import
 /// use plotpy::{Contour, Plot};
-/// use russell_lab::Matrix;
+/// use russell_lab::generate3d;
 /// use std::path::Path;
 ///
 /// // directory to save figures
@@ -17,20 +17,7 @@ use std::fmt::Write;
 ///
 /// // generate (x,y,z) matrices
 /// let n = 21;
-/// let mut x = Matrix::new(n, n);
-/// let mut y = Matrix::new(n, n);
-/// let mut z = Matrix::new(n, n);
-/// let (min, max) = (-2.0, 2.0);
-/// let d = (max - min) / ((n - 1) as f64);
-/// for i in 0..n {
-///     let v = min + (i as f64) * d;
-///     for j in 0..n {
-///         let u = min + (j as f64) * d;
-///         x[i][j] = u;
-///         y[i][j] = v;
-///         z[i][j] = u * u - v * v;
-///     }
-/// }
+/// let (x, y, z) = generate3d(-2.0, 2.0, -2.0, 2.0, n, n, |x, y| x * x - y * y);
 ///
 /// // configure contour
 /// let mut contour = Contour::new();

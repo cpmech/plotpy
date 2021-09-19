@@ -322,9 +322,18 @@ mod tests {
         surface.set_row_stride(3).set_col_stride(4);
         let opt = surface.options_surface();
         assert_eq!(opt, ",rstride=3,cstride=4,cmap=getColormap(0)");
-        surface.colormap_name = "Pastel1".to_string();
+
+        surface.set_colormap_name("Pastel1");
         let opt = surface.options_surface();
         assert_eq!(opt, ",rstride=3,cstride=4,cmap=plt.get_cmap('Pastel1')");
+
+        surface.set_colormap_index(3);
+        let opt = surface.options_surface();
+        assert_eq!(opt, ",rstride=3,cstride=4,cmap=getColormap(3)");
+
+        surface.set_colormap_name("turbo");
+        let opt = surface.options_surface();
+        assert_eq!(opt, ",rstride=3,cstride=4,cmap=plt.get_cmap('turbo')");
     }
 
     #[test]

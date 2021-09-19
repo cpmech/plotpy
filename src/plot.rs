@@ -76,7 +76,7 @@ pub trait GraphMaker {
 /// ![doc_plot.svg](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/doc_plot.svg)
 ///
 pub struct Plot {
-    pub(crate) buffer: String,
+    buffer: String,
 }
 
 impl Plot {

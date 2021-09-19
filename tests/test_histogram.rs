@@ -8,8 +8,9 @@ const OUT_DIR: &str = "/tmp/plotpy/integration_tests";
 #[test]
 fn test_histogram_1() -> Result<(), &'static str> {
     let mut histogram = Histogram::new();
-    histogram.set_colors(&vec!["#cd0000", "#1862ab", "#cd8c00"]);
-    histogram.style = "barstacked".to_string();
+    histogram
+        .set_colors(&vec!["#cd0000", "#1862ab", "#cd8c00"])
+        .set_style("barstacked");
 
     // draw histogram
     let values = vec![
@@ -39,9 +40,7 @@ fn test_histogram_1() -> Result<(), &'static str> {
 #[test]
 fn test_histogram_2() -> Result<(), &'static str> {
     let mut histogram = Histogram::new();
-    histogram.no_fill = true;
-    histogram.number_bins = 16;
-    histogram.stacked = true;
+    histogram.set_no_fill(true).set_number_bins(16).set_stacked(true);
 
     // draw histogram
     let values = vec![

@@ -76,7 +76,7 @@ pub struct Contour {
     selected_line_color: String,    // Color to mark the selected level
     selected_line_style: String,    // Line style for the selected level
     selected_line_width: f64,       // Line width for the selected level
-    pub(crate) buffer: String,      // buffer
+    buffer: String,                 // buffer
 }
 
 impl Contour {

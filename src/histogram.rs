@@ -44,12 +44,12 @@ use std::fmt::Write;
 /// ![doc_histogram.svg](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/doc_histogram.svg)
 ///
 pub struct Histogram {
-    pub colors: Vec<String>,   // Colors for each bar
-    pub style: String,         // Type of histogram; e.g. "bar"
-    pub stacked: bool,         // Draws stacked histogram
-    pub no_fill: bool,         // Skip filling bars
-    pub number_bins: i32,      // Number of bins
-    pub(crate) buffer: String, // buffer
+    colors: Vec<String>, // Colors for each bar
+    style: String,       // Type of histogram; e.g. "bar"
+    stacked: bool,       // Draws stacked histogram
+    no_fill: bool,       // Skip filling bars
+    number_bins: i32,    // Number of bins
+    buffer: String,      // buffer
 }
 
 impl Histogram {

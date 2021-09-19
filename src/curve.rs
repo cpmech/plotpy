@@ -68,7 +68,7 @@ pub struct Curve {
     marker_line_width: f64,    // Edge width of markers
     marker_size: f64,          // Size of markers
     marker_style: String,      // Style of markers, e.g., "`o`", "`+`"
-    pub(crate) buffer: String, // buffer
+    buffer: String,            // buffer
 }
 
 impl Curve {

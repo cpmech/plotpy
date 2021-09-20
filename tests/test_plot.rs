@@ -56,8 +56,7 @@ fn test_plot() -> Result<(), &'static str> {
     let file = File::open(path).map_err(|_| "cannot open file")?;
     let buffered = BufReader::new(file);
     let lines_iter = buffered.lines();
-    println!("count = {}", lines_iter.count());
-    // assert!(lines_iter.count() > 670);
+    assert!(lines_iter.count() > 650);
     Ok(())
 }
 
@@ -103,7 +102,6 @@ fn test_plot_subplots() -> Result<(), &'static str> {
     let file = File::open(path).map_err(|_| "cannot open file")?;
     let buffered = BufReader::new(file);
     let lines_iter = buffered.lines();
-    println!("count = {}", lines_iter.count());
-    // assert!(lines_iter.count() > 980);
+    assert!(lines_iter.count() > 980);
     Ok(())
 }

@@ -1,4 +1,5 @@
 use super::{call_python3, Legend};
+use std::ffi::OsStr;
 use std::fmt::Write;
 use std::fs::{self, File};
 use std::io::Write as IoWrite;
@@ -100,12 +101,20 @@ impl Plot {
     }
 
     /// Calls python3 and saves the python script and figure
-    pub fn save(&self, figure_path: &Path) -> Result<(), &'static str> {
+    ///
+    /// # Input
+    ///
+    /// * `figure_path` -- may be a String, &str, or Path
+    pub fn save<S>(&self, figure_path: &S) -> Result<(), &'static str>
+    where
+        S: AsRef<OsStr> + ?Sized,
+    {
         // update commands
+        let fig_path = Path::new(figure_path);
         let commands = format!(
             "{}\nfn='{}'\nplt.savefig(fn, bbox_inches='tight', bbox_extra_artists=EXTRA_ARTISTS)\n",
             self.buffer,
-            figure_path.to_string_lossy(),
+            fig_path.to_string_lossy(),
         );
 
         // call python
@@ -123,7 +132,6 @@ impl Plot {
                 .map_err(|_| "cannot write to log file")?;
             return Err("python3 failed; please see the log file");
         }
-
         Ok(())
     }
 
@@ -446,7 +454,20 @@ mod tests {
         assert_eq!(plot.buffer.len(), 0);
         let path = Path::new(OUT_DIR).join("save_works.svg");
         plot.save(&path)?;
-        let file = File::open(path).map_err(|_| "cannot open file")?;
+        let file = File::open(&path).map_err(|_| "cannot open file")?;
+        let buffered = BufReader::new(file);
+        let lines_iter = buffered.lines();
+        assert!(lines_iter.count() > 20);
+        Ok(())
+    }
+
+    #[test]
+    fn save_str_works() -> Result<(), &'static str> {
+        let plot = Plot::new();
+        assert_eq!(plot.buffer.len(), 0);
+        let path = "/tmp/plotpy/unit_tests/save_str_works.svg";
+        plot.save(&path)?;
+        let file = File::open(&path).map_err(|_| "cannot open file")?;
         let buffered = BufReader::new(file);
         let lines_iter = buffered.lines();
         assert!(lines_iter.count() > 20);

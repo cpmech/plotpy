@@ -6,6 +6,7 @@ import matplotlib.patches as pat
 import matplotlib.path as pth
 import matplotlib.patheffects as pff
 import matplotlib.lines as lns
+import matplotlib.transforms as tra
 import mpl_toolkits.mplot3d as m3d
 NaN = np.NaN
 EXTRA_ARTISTS = []
@@ -33,6 +34,6 @@ mod tests {
 
     #[test]
     fn constants_are_correct() {
-        assert_eq!(PYTHON_HEADER.len(), 779);
+        assert_eq!(PYTHON_HEADER.len(), 815);
     }
 }

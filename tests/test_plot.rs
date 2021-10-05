@@ -22,7 +22,7 @@ fn test_plot() -> Result<(), &'static str> {
         .set_horizontal_gap(0.1)
         .set_vertical_gap(0.2)
         .set_gaps(0.3, 0.4)
-        .set_equal_axes()
+        .set_equal_axes(true)
         .set_hide_axes(false)
         .set_range(-1.0, 1.0, -1.0, 1.0)
         .set_range_from_vec(&[0.0, 1.0, 0.0, 1.0])

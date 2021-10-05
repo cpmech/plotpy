@@ -54,7 +54,7 @@ pub trait GraphMaker {
 ///     .set_title("first")
 ///     .add(&curve1)
 ///     .grid_labels_legend("x", "y")
-///     .set_equal_axes();
+///     .set_equal_axes(true);
 ///
 /// // add curve to subplot
 /// plot.set_subplot(2, 2, 2)
@@ -236,8 +236,12 @@ impl Plot {
     }
 
     /// Sets same scale for both axes
-    pub fn set_equal_axes(&mut self) -> &mut Self {
-        self.buffer.push_str("plt.axis('equal')\n");
+    pub fn set_equal_axes(&mut self, equal: bool) -> &mut Self {
+        if equal {
+            self.buffer.push_str("plt.gca().axes.set_aspect('equal')\n");
+        } else {
+            self.buffer.push_str("plt.gca().axes.set_aspect('auto')\n");
+        }
         self
     }
 
@@ -549,7 +553,8 @@ mod tests {
     fn set_functions_work() {
         let mut plot = Plot::new();
         plot.set_title("my plot")
-            .set_equal_axes()
+            .set_equal_axes(true)
+            .set_equal_axes(false)
             .set_hide_axes(true)
             .set_range(-1.0, 1.0, -1.0, 1.0)
             .set_range_from_vec(&[0.0, 1.0, 0.0, 1.0])
@@ -573,7 +578,8 @@ mod tests {
             .set_camera(1.0, 10.0)
             .clear_current_figure();
         let b: &str = "plt.title(r'my plot')\n\
-                       plt.axis('equal')\n\
+                       plt.gca().axes.set_aspect('equal')\n\
+                       plt.gca().axes.set_aspect('auto')\n\
                        plt.axis('off')\n\
                        plt.axis([-1,1,-1,1])\n\
                        plt.axis([0,1,0,1])\n\

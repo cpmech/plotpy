@@ -1,4 +1,5 @@
 use plotpy::{Curve, Plot};
+use russell_lab::Vector;
 use std::fs::File;
 use std::io::{BufRead, BufReader};
 use std::path::Path;
@@ -79,10 +80,10 @@ fn test_plot_subplots() -> Result<(), &'static str> {
 
     // configure plot
     let mut plot = Plot::new();
-    plot.set_super_title("all subplots");
-    plot.set_horizontal_gap(0.5);
-    plot.set_vertical_gap(0.5);
-    plot.set_gaps(0.3, 0.2);
+    plot.set_super_title("all subplots")
+        .set_horizontal_gap(0.5)
+        .set_vertical_gap(0.5)
+        .set_gaps(0.3, 0.2);
 
     // add curve to subplots
     plot.set_subplot(2, 2, 1);
@@ -96,6 +97,58 @@ fn test_plot_subplots() -> Result<(), &'static str> {
 
     // save figure
     let path = Path::new(OUT_DIR).join("integ_plot_subplots.svg");
+    plot.save(&path)?;
+
+    // check number of lines
+    let file = File::open(path).map_err(|_| "cannot open file")?;
+    let buffered = BufReader::new(file);
+    let lines_iter = buffered.lines();
+    assert!(lines_iter.count() > 980);
+    Ok(())
+}
+
+#[test]
+fn test_plot_log() -> Result<(), &'static str> {
+    // curves
+    let mut curve1 = Curve::new();
+    let mut curve2 = Curve::new();
+    let mut curve3 = Curve::new();
+    let mut curve4 = Curve::new();
+
+    // draw curve
+    let x = Vector::linspace(1.0, 11.0, 11);
+    let y = x.get_mapped(|v| f64::exp(v));
+    curve1.draw(&x, &x);
+    curve2.draw(&x, &y);
+    curve3.draw(&y, &x);
+    curve4.draw(&y, &y);
+
+    // configure plot
+    let mut plot = Plot::new();
+
+    // add curve to subplots
+    plot.set_subplot(2, 2, 1);
+    plot.set_log_x(false);
+    plot.set_log_y(false);
+    plot.add(&curve1);
+
+    plot.set_subplot(2, 2, 2);
+    plot.set_log_x(false);
+    plot.set_log_y(true);
+    plot.add(&curve2);
+
+    plot.set_subplot(2, 2, 3);
+    plot.set_log_x(true);
+    plot.set_log_y(false);
+    plot.add(&curve3);
+
+    plot.set_subplot(2, 2, 4);
+    plot.set_log_x(true);
+    plot.set_log_y(true);
+    plot.add(&curve4);
+
+    // save figure
+    let path = Path::new(OUT_DIR).join("integ_plot_log.svg");
     plot.save(&path)?;
 
     // check number of lines

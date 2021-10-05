@@ -361,6 +361,26 @@ impl Plot {
         self
     }
 
+    // Sets a log10 x-scale
+    pub fn set_log_x(&mut self, log: bool) -> &mut Self {
+        if log {
+            self.buffer.push_str("plt.gca().set_xscale('log')\n");
+        } else {
+            self.buffer.push_str("plt.gca().set_xscale('linear')\n");
+        }
+        self
+    }
+
+    // Sets a log10 y-scale
+    pub fn set_log_y(&mut self, log: bool) -> &mut Self {
+        if log {
+            self.buffer.push_str("plt.gca().set_yscale('log')\n");
+        } else {
+            self.buffer.push_str("plt.gca().set_yscale('linear')\n");
+        }
+        self
+    }
+
     /// Sets the label for the x-axis
     pub fn set_label_x(&mut self, label: &str) -> &mut Self {
         write!(&mut self.buffer, "plt.xlabel(r'{}')\n", label).unwrap();
@@ -543,6 +563,10 @@ mod tests {
             .set_num_ticks_x(8)
             .set_num_ticks_y(0)
             .set_num_ticks_y(5)
+            .set_log_x(true)
+            .set_log_y(true)
+            .set_log_x(false)
+            .set_log_y(false)
             .set_label_x("x-label")
             .set_label_y("y-label")
             .set_labels("x", "y")
@@ -563,6 +587,10 @@ mod tests {
                        plt.gca().get_xaxis().set_major_locator(tck.MaxNLocator(8))\n\
                        plt.gca().get_yaxis().set_ticks([])\n\
                        plt.gca().get_yaxis().set_major_locator(tck.MaxNLocator(5))\n\
+                       plt.gca().set_xscale('log')\n\
+                       plt.gca().set_yscale('log')\n\
+                       plt.gca().set_xscale('linear')\n\
+                       plt.gca().set_yscale('linear')\n\
                        plt.xlabel(r'x-label')\n\
                        plt.ylabel(r'y-label')\n\
                        plt.xlabel(r'x')\n\

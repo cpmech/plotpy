@@ -130,6 +130,10 @@ impl Plot {
             log_file
                 .write_all(output.as_bytes())
                 .map_err(|_| "cannot write to log file")?;
+
+            // TODO: if not CI, do not print the log file by default
+            self.print_log_file(&figure_path)?;
+
             return Err("python3 failed; please see the log file");
         }
         Ok(())
@@ -138,7 +142,10 @@ impl Plot {
     /// Prints the log file created by the save command
     ///
     /// **Note:** the log file is **only** generated when python fails
-    pub fn print_log_file(&self, figure_path: &Path) -> Result<(), &'static str> {
+    pub fn print_log_file<S>(&self, figure_path: &S) -> Result<(), &'static str>
+    where
+        S: AsRef<OsStr> + ?Sized,
+    {
         let mut log_path = Path::new(figure_path).to_path_buf();
         log_path.set_extension("log");
         let output = fs::read_to_string(log_path).map_err(|_| "cannot read log file")?;

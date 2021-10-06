@@ -1,6 +1,77 @@
 use super::GraphMaker;
 use std::fmt::Write;
 
+/// Creates an icon to indicate the slope of lines
+///
+/// # Notes
+///
+/// When using log_x or log_y, `plot.set_log_x(true)` or
+/// `plot.set_log_y(true)` must be called before adding curves.
+///
+/// # Example
+///
+/// ```
+/// # fn main() -> Result<(), &'static str> {
+/// // import
+/// use plotpy::{Curve, SlopeIcon, Plot};
+/// use russell_lab::Vector;
+/// use std::path::Path;
+///
+/// // models
+/// let slope = 2.0;
+/// let (xi, xf, yi) = (0.0, 10.0, 0.0);
+/// let f = |x: f64| yi + slope * (x - xi);
+/// let g = |x: f64| f(xf) - slope * (x - xi);
+///
+/// // curves
+/// let mut curve1 = Curve::new();
+/// let mut curve2 = Curve::new();
+/// let x = Vector::linspace(xi, xf, 3);
+/// let y1 = x.get_mapped(f);
+/// let y2 = x.get_mapped(g);
+/// curve1.set_marker_style("o").draw(&x, &y1);
+/// curve2.set_marker_style("*").draw(&x, &y2);
+///
+/// // icons
+/// let mut icon1 = SlopeIcon::new();
+/// let mut icon2 = SlopeIcon::new();
+/// let mut icon3 = SlopeIcon::new();
+/// let mut icon4 = SlopeIcon::new();
+/// icon2.set_above(true);
+/// icon4.set_above(true);
+/// icon1.draw(slope, 2.5, f(2.5));
+/// icon2.draw(slope, 7.5, f(7.5));
+/// icon3.draw(-slope, 2.5, g(2.5));
+/// icon4.draw(-slope, 7.5, g(7.5));
+///
+/// // plot
+/// let mut plot = Plot::new();
+/// plot.set_horizontal_gap(0.2);
+/// plot.set_subplot(2, 2, 1)
+///     .add(&curve1)
+///     .add(&curve2)
+///     .add(&icon1)
+///     .add(&icon2)
+///     .add(&icon3)
+///     .add(&icon4)
+///     .grid_and_labels("x", "y");
+///
+/// // directory to save figures
+/// const OUT_DIR: &str = "/tmp/plotpy/doc_tests";
+///
+/// // save figure
+/// let path = Path::new(OUT_DIR).join("doc_slope_icon.svg");
+/// plot.save(&path)?;
+/// # Ok(())
+/// # }
+/// ```
+///
+/// ![doc_slope_icon.svg](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/doc_slope_icon.svg)
+///
+/// See also integration test in the **tests** directory.
+///
+/// ![integ_slope_icon_example.svg](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_slope_icon_example.svg)
+///
 pub struct SlopeIcon {
     above: bool,        // draw icon above line
     log_x: bool,        // x-axis is logarithm

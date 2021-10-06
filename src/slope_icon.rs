@@ -29,7 +29,7 @@ impl SlopeIcon {
             above: false,
             log_x: false,
             log_y: false,
-            edge_color: "black".to_string(),
+            edge_color: "#000000".to_string(),
             face_color: "#f7f7f7".to_string(),
             line_style: String::new(),
             line_width: 0.0,
@@ -40,7 +40,7 @@ impl SlopeIcon {
             precision: 0,
             text_h: "1".to_string(),
             text_v: String::new(),
-            text_color: "black".to_string(),
+            text_color: "#000000".to_string(),
             text_offset_h: 3.0,
             text_offset_v: 2.0,
             buffer: String::new(),
@@ -356,11 +356,11 @@ impl SlopeIcon {
         if self.face_color != "" {
             write!(&mut opt, ",facecolor='{}'", self.face_color).unwrap();
         }
-        if self.line_width > 0.0 {
-            write!(&mut opt, ",linewidth={}", self.line_width).unwrap();
-        }
         if self.line_style != "" {
             write!(&mut opt, ",linestyle='{}'", self.line_style).unwrap();
+        }
+        if self.line_width > 0.0 {
+            write!(&mut opt, ",linewidth={}", self.line_width).unwrap();
         }
         opt
     }
@@ -402,12 +402,16 @@ mod tests {
         assert_eq!(icon.edge_color.len(), 7);
         assert_eq!(icon.line_style.len(), 0);
         assert_eq!(icon.line_width, 0.0);
+        assert_eq!(icon.length, 0.1);
         assert_eq!(icon.offset_v, 5.0);
         assert_eq!(icon.no_text, false);
         assert_eq!(icon.fontsize, 0.0);
+        assert_eq!(icon.precision, 0);
+        assert_eq!(icon.text_h.len(), 1);
         assert_eq!(icon.text_v.len(), 0);
+        assert_eq!(icon.text_color.len(), 7);
         assert_eq!(icon.text_offset_h, 3.0);
-        assert_eq!(icon.text_offset_v, 3.0);
+        assert_eq!(icon.text_offset_v, 2.0);
         assert_eq!(icon.buffer.len(), 0);
     }
 
@@ -418,26 +422,26 @@ mod tests {
         icon.set_above(false);
         assert_eq!(
             icon.transform(1.0),
-            "tf=tra.offset_copy(plt.gca().transData,fig=plt.gcf(),x=0,y=-7,units='points')\n"
+            "tf=tra.offset_copy(plt.gca().transAxes,fig=plt.gcf(),x=0,y=-7,units='points')\n"
         );
         icon.set_above(true);
         assert_eq!(
             icon.transform(1.0),
-            "tf=tra.offset_copy(plt.gca().transData,fig=plt.gcf(),x=0,y=7,units='points')\n"
+            "tf=tra.offset_copy(plt.gca().transAxes,fig=plt.gcf(),x=0,y=7,units='points')\n"
         );
         icon.set_above(false);
         assert_eq!(
             icon.transform(-1.0),
-            "tf=tra.offset_copy(plt.gca().transData,fig=plt.gcf(),x=0,y=7,units='points')\n"
+            "tf=tra.offset_copy(plt.gca().transAxes,fig=plt.gcf(),x=0,y=-7,units='points')\n"
         );
         icon.set_above(true);
         assert_eq!(
             icon.transform(-1.0),
-            "tf=tra.offset_copy(plt.gca().transData,fig=plt.gcf(),x=0,y=-7,units='points')\n"
+            "tf=tra.offset_copy(plt.gca().transAxes,fig=plt.gcf(),x=0,y=7,units='points')\n"
         );
         icon.set_offset_v(0.0);
         icon.set_above(false);
-        assert_eq!(icon.transform(-1.0), "");
+        assert_eq!(icon.transform(-1.0), "tf=plt.gca().transAxes\n");
     }
 
     #[test]
@@ -450,52 +454,78 @@ mod tests {
         icon.set_above(false);
         assert_eq!(
             icon.transform_text(1.0),
-            "tfx=tra.offset_copy(plt.gca().transData,fig=plt.gcf(),x=0,y=-10,units='points')\n\
-             tfy=tra.offset_copy(plt.gca().transData,fig=plt.gcf(),x=1,y=-7,units='points')\n"
+            "tfx=tra.offset_copy(plt.gca().transAxes,fig=plt.gcf(),x=0,y=-10,units='points')\n\
+             tfy=tra.offset_copy(plt.gca().transAxes,fig=plt.gcf(),x=1,y=-7,units='points')\n"
         );
         icon.set_above(true);
         assert_eq!(
             icon.transform_text(1.0),
-            "tfx=tra.offset_copy(plt.gca().transData,fig=plt.gcf(),x=0,y=10,units='points')\n\
-             tfy=tra.offset_copy(plt.gca().transData,fig=plt.gcf(),x=-1,y=7,units='points')\n"
+            "tfx=tra.offset_copy(plt.gca().transAxes,fig=plt.gcf(),x=0,y=10,units='points')\n\
+             tfy=tra.offset_copy(plt.gca().transAxes,fig=plt.gcf(),x=-1,y=7,units='points')\n"
         );
         icon.set_above(false);
         assert_eq!(
             icon.transform_text(-1.0),
-            "tfx=tra.offset_copy(plt.gca().transData,fig=plt.gcf(),x=0,y=10,units='points')\n\
-             tfy=tra.offset_copy(plt.gca().transData,fig=plt.gcf(),x=1,y=7,units='points')\n"
+            "tfx=tra.offset_copy(plt.gca().transAxes,fig=plt.gcf(),x=0,y=-10,units='points')\n\
+             tfy=tra.offset_copy(plt.gca().transAxes,fig=plt.gcf(),x=-1,y=-7,units='points')\n"
         );
         icon.set_above(true);
         assert_eq!(
             icon.transform_text(-1.0),
-            "tfx=tra.offset_copy(plt.gca().transData,fig=plt.gcf(),x=0,y=-10,units='points')\n\
-             tfy=tra.offset_copy(plt.gca().transData,fig=plt.gcf(),x=-1,y=-7,units='points')\n"
+            "tfx=tra.offset_copy(plt.gca().transAxes,fig=plt.gcf(),x=0,y=10,units='points')\n\
+             tfy=tra.offset_copy(plt.gca().transAxes,fig=plt.gcf(),x=1,y=7,units='points')\n"
         );
 
         icon.set_offset_v(0.0);
         icon.set_above(false);
         assert_eq!(
             icon.transform_text(1.0),
-            "tfx=tra.offset_copy(plt.gca().transData,fig=plt.gcf(),x=0,y=-3,units='points')\n\
-             tfy=tra.offset_copy(plt.gca().transData,fig=plt.gcf(),x=1,y=-0,units='points')\n"
+            "tfx=tra.offset_copy(plt.gca().transAxes,fig=plt.gcf(),x=0,y=-3,units='points')\n\
+             tfy=tra.offset_copy(plt.gca().transAxes,fig=plt.gcf(),x=1,y=-0,units='points')\n"
         );
         icon.set_above(true);
         assert_eq!(
             icon.transform_text(1.0),
-            "tfx=tra.offset_copy(plt.gca().transData,fig=plt.gcf(),x=0,y=3,units='points')\n\
-             tfy=tra.offset_copy(plt.gca().transData,fig=plt.gcf(),x=-1,y=0,units='points')\n"
+            "tfx=tra.offset_copy(plt.gca().transAxes,fig=plt.gcf(),x=0,y=3,units='points')\n\
+             tfy=tra.offset_copy(plt.gca().transAxes,fig=plt.gcf(),x=-1,y=0,units='points')\n"
         );
         icon.set_above(false);
         assert_eq!(
             icon.transform_text(-1.0),
-            "tfx=tra.offset_copy(plt.gca().transData,fig=plt.gcf(),x=0,y=3,units='points')\n\
-             tfy=tra.offset_copy(plt.gca().transData,fig=plt.gcf(),x=1,y=0,units='points')\n"
+            "tfx=tra.offset_copy(plt.gca().transAxes,fig=plt.gcf(),x=0,y=-3,units='points')\n\
+             tfy=tra.offset_copy(plt.gca().transAxes,fig=plt.gcf(),x=-1,y=-0,units='points')\n"
         );
         icon.set_above(true);
         assert_eq!(
             icon.transform_text(-1.0),
-            "tfx=tra.offset_copy(plt.gca().transData,fig=plt.gcf(),x=0,y=-3,units='points')\n\
-             tfy=tra.offset_copy(plt.gca().transData,fig=plt.gcf(),x=-1,y=-0,units='points')\n"
+            "tfx=tra.offset_copy(plt.gca().transAxes,fig=plt.gcf(),x=0,y=3,units='points')\n\
+             tfy=tra.offset_copy(plt.gca().transAxes,fig=plt.gcf(),x=1,y=0,units='points')\n"
+        );
+
+        icon.set_offset_v(0.0);
+        icon.set_text_offset_v(0.0);
+        icon.set_text_offset_h(0.0);
+        icon.set_above(false);
+        assert_eq!(
+            icon.transform_text(1.0),
+            "tfx=plt.gca().transAxes\n\
+             tfy=plt.gca().transAxes\n"
+        );
+        assert_eq!(
+            icon.transform_text(-1.0),
+            "tfx=plt.gca().transAxes\n\
+             tfy=plt.gca().transAxes\n"
+        );
+        icon.set_above(true);
+        assert_eq!(
+            icon.transform_text(1.0),
+            "tfx=plt.gca().transAxes\n\
+             tfy=plt.gca().transAxes\n"
+        );
+        assert_eq!(
+            icon.transform_text(-1.0),
+            "tfx=plt.gca().transAxes\n\
+             tfy=plt.gca().transAxes\n"
         );
     }
 
@@ -503,31 +533,75 @@ mod tests {
     fn options_works() {
         let mut icon = SlopeIcon::new();
         icon.set_edge_color("red")
+            .set_face_color("gold")
             .set_line_style("--")
-            .set_line_width(2.0)
-            .set_offset_v(12.0);
+            .set_line_width(2.0);
         let options = icon.options();
         assert_eq!(
             options,
-            ",color='red'\
+            ",transform=tf\
+             ,edgecolor='red'\
+             ,facecolor='gold'\
              ,linestyle='--'\
-             ,linewidth=2\
-             ,transform=tf"
+             ,linewidth=2"
+        );
+    }
+
+    #[test]
+    fn options_text_works() {
+        let mut icon = SlopeIcon::new();
+        icon.set_text_color("red").set_fontsize(12.0);
+        let (opt_x, opt_y) = icon.options_text();
+        assert_eq!(
+            opt_x,
+            ",transform=tfx\
+             ,color='red'\
+             ,fontsize=12"
+        );
+        assert_eq!(
+            opt_y,
+            ",transform=tfy\
+             ,color='red'\
+             ,fontsize=12"
         );
     }
 
     #[test]
     fn draw_works() {
         let mut icon = SlopeIcon::new();
-        icon.draw(1.0, 0.5, 0.5);
-        let b: &str = "x=np.array([0.4,0.6,0.6,0.4,],dtype=float)\n\
-                       y=np.array([0.4,0.4,0.6,0.4,],dtype=float)\n\
-                       tf=tra.offset_copy(plt.gca().transData,fig=plt.gcf(),x=0,y=-5,units='points')\n\
-                       plt.plot(x,y,color='#3f3f3f',transform=tf)\n\
-                       tfx=tra.offset_copy(plt.gca().transData,fig=plt.gcf(),x=0,y=-8,units='points')\n\
-                       tfy=tra.offset_copy(plt.gca().transData,fig=plt.gcf(),x=3,y=-5,units='points')\n\
-                       plt.text(0.5,0.4,'1',ha='center',va='top',color='#3f3f3f',transform=tfx)\n\
-                       plt.text(0.6,0.5,'1',ha='left',va='center',color='#3f3f3f',transform=tfy)\n";
+        icon.set_above(true)
+            .set_log_x(false)
+            .set_log_y(false)
+            .set_edge_color("red")
+            .set_face_color("blue")
+            .set_line_style(":")
+            .set_line_width(1.1)
+            .set_length(0.2)
+            .set_offset_v(3.0)
+            .set_no_text(false)
+            .set_fontsize(4.0)
+            .set_precision(5)
+            .set_text_h("one")
+            .set_text_v("lambda")
+            .set_text_color("gold")
+            .set_text_offset_h(6.0)
+            .set_text_offset_v(7.0)
+            .draw(10.0, 0.5, 0.1);
+        let b: &str = "xc,yc=dataToAxis((0.5,0.1))\n\
+                       xa,ya=dataToAxis((1.5,10.1))\n\
+                       m,l=(ya-yc)/(xa-xc),0.1\n\
+                       dat=[[pth.Path.MOVETO,(xc-l,yc-m*l)],[pth.Path.LINETO,(xc-l,yc+m*l)],[pth.Path.LINETO,(xc+l,yc+m*l)],[pth.Path.CLOSEPOLY,(None,None)]]\n\
+                       tf=tra.offset_copy(plt.gca().transAxes,fig=plt.gcf(),x=0,y=3,units='points')\n\
+                       cmd,pts=zip(*dat)\n\
+                       h=pth.Path(pts,cmd)\n\
+                       p=pat.PathPatch(h,transform=tf,edgecolor='red',facecolor='blue',linestyle=':',linewidth=1.1)\n\
+                       plt.gca().add_patch(p)\n\
+                       xm,ym=xc-l,yc-m*l\n\
+                       xp,yp=xc+l,yc+m*l\n\
+                       tfx=tra.offset_copy(plt.gca().transAxes,fig=plt.gcf(),x=0,y=10,units='points')\n\
+                       tfy=tra.offset_copy(plt.gca().transAxes,fig=plt.gcf(),x=-6,y=3,units='points')\n\
+                       plt.text(xc,yp,r'one',ha='center',va='bottom',transform=tfx,color='gold',fontsize=4)\n\
+                       plt.text(xm,yc,r'lambda',ha='right',va='center',transform=tfy,color='gold',fontsize=4)\n";
         assert_eq!(icon.buffer, b);
     }
 }

@@ -45,7 +45,7 @@ fn test_slope_icon_below() -> Result<(), &'static str> {
         .set_offset_v(1.0)
         .set_text_offset_h(1.0)
         .set_text_offset_v(1.0);
-    icon4.set_precision(3).set_offset_v(1.0);
+    icon4.set_precision(3).set_offset_v(1.0).set_line_width(2.0);
 
     // draw icon
     let xc = x[0] + dx / 4.0;

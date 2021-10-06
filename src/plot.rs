@@ -5,6 +5,7 @@ use std::fs::{self, File};
 use std::io::Write as IoWrite;
 use std::path::Path;
 
+/// Defines the trait used by Plot to add graph entities
 pub trait GraphMaker {
     fn get_buffer<'a>(&'a self) -> &'a String;
 }

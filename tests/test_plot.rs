@@ -18,6 +18,7 @@ fn test_plot() -> Result<(), &'static str> {
 
     // configure plot
     let mut plot = Plot::new();
+    plot.set_figure_size(400.0, 0.5);
     plot.set_subplot(2, 2, 1)
         .set_horizontal_gap(0.1)
         .set_vertical_gap(0.2)
@@ -57,7 +58,7 @@ fn test_plot() -> Result<(), &'static str> {
     let file = File::open(path).map_err(|_| "cannot open file")?;
     let buffered = BufReader::new(file);
     let lines_iter = buffered.lines();
-    assert!(lines_iter.count() > 650);
+    assert!(lines_iter.count() > 550);
     Ok(())
 }
 

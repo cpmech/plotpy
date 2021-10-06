@@ -468,6 +468,23 @@ impl Plot {
     pub fn set_frame_borders(&mut self, show_all: bool) -> &mut Self {
         self.set_frame_border(show_all, show_all, show_all, show_all)
     }
+
+    /// Sets the figure size
+    ///
+    /// # Note
+    ///
+    /// This function must be called right at the beginning.
+    pub fn set_figure_size(&mut self, width_points: f64, proportion: f64) -> &mut Self {
+        let w = width_points / 72.27; // width in inches
+        let h = w * proportion;
+        write!(
+            &mut self.buffer,
+            "plt.rcParams.update({{'figure.figsize':[{},{}]}})\n",
+            w as i32, h as i32
+        )
+        .unwrap();
+        self
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -567,6 +584,7 @@ mod tests {
     #[test]
     fn set_functions_work() {
         let mut plot = Plot::new();
+        plot.set_figure_size(400.0, 0.5);
         plot.set_title("my plot")
             .set_equal_axes(true)
             .set_equal_axes(false)
@@ -592,7 +610,8 @@ mod tests {
             .set_labels("x", "y")
             .set_camera(1.0, 10.0)
             .clear_current_figure();
-        let b: &str = "plt.title(r'my plot')\n\
+        let b: &str = "plt.rcParams.update({'figure.figsize':[5,2]})\n\
+                       plt.title(r'my plot')\n\
                        setEqualAspect()\n\
                        plt.gca().axes.set_aspect('auto')\n\
                        plt.axis('off')\n\

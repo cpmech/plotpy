@@ -2,20 +2,21 @@ use super::GraphMaker;
 use std::fmt::Write;
 
 pub struct SlopeIcon {
-    flipped: bool,      // icon is flipped
+    above: bool,        // draw icon above line
     log_x: bool,        // x-axis is logarithm
     log_y: bool,        // y-axis is logarithm
     edge_color: String, // Color of icon lines
     face_color: String, // Color of icon faces
     line_style: String, // Style of lines
     line_width: f64,    // Width of lines
-    length: f64,        // horizontal length of icon in Axes coords
+    length: f64,        // horizontal length of icon in Axes coords [0,1]
     offset_v: f64,      // vertical offset in points
     no_text: bool,      // do not draw text
     fontsize: f64,      // text font size
     precision: usize,   // precision of slope number in label
+    text_h: String,     // use fixed text for horizontal value
+    text_v: String,     // use fixed text for vertical (slope) value
     text_color: String, // Color of text
-    text_slope: String, // use fixed text for slope value
     text_offset_h: f64, // horizontal offset for text in points
     text_offset_v: f64, // vertical offset for text in points
     buffer: String,     // buffer
@@ -25,7 +26,7 @@ impl SlopeIcon {
     /// Creates a new SlopeIcon object
     pub fn new() -> Self {
         SlopeIcon {
-            flipped: false,
+            above: false,
             log_x: false,
             log_y: false,
             edge_color: "black".to_string(),
@@ -37,10 +38,11 @@ impl SlopeIcon {
             no_text: false,
             fontsize: 0.0,
             precision: 0,
+            text_h: "1".to_string(),
+            text_v: String::new(),
             text_color: "black".to_string(),
-            text_slope: String::new(),
             text_offset_h: 3.0,
-            text_offset_v: 3.0,
+            text_offset_v: 2.0,
             buffer: String::new(),
         }
     }
@@ -48,7 +50,7 @@ impl SlopeIcon {
     /// Draws an icon of line slope
     pub fn draw(&mut self, slope: f64, x_center: f64, y_center: f64) {
         // set flip flag
-        let flip = if slope < 0.0 { !self.flipped } else { self.flipped };
+        let flip = if slope < 0.0 { !self.above } else { self.above };
 
         // compute axis (normalized) coordinates and slope
         let (mut xc, mut yc) = (x_center, y_center);
@@ -66,7 +68,11 @@ impl SlopeIcon {
             "xc,yc=dataToAxis(({},{}))\n\
              xa,ya=dataToAxis(({},{}))\n\
              m,l=(ya-yc)/(xa-xc),{}\n",
-            xc, yc, xa, ya, self.length,
+            xc,
+            yc,
+            xa,
+            ya,
+            self.length / 2.0,
         )
         .unwrap();
 
@@ -113,14 +119,14 @@ impl SlopeIcon {
 
         // slope text
         let mut text = String::new();
-        if self.text_slope == "" {
+        if self.text_v == "" {
             if self.precision == 0 {
-                write!(&mut text, "'{}'", f64::abs(slope)).unwrap();
+                write!(&mut text, "{}", f64::abs(slope)).unwrap();
             } else {
-                write!(&mut text, "'{:.1$}'", f64::abs(slope), self.precision).unwrap();
+                write!(&mut text, "{:.1$}", f64::abs(slope), self.precision).unwrap();
             }
         } else {
-            write!(&mut text, "{}", self.text_slope).unwrap();
+            write!(&mut text, "{}", self.text_v).unwrap();
         }
 
         // draw labels
@@ -129,18 +135,23 @@ impl SlopeIcon {
         let (opt_x, opt_y) = self.options_text();
         if flip {
             if slope < 0.0 {
-                write!(&mut self.buffer, "plt.text(xc,yp,'1',ha='center',va='top'{})\n", opt_x).unwrap();
+                write!(
+                    &mut self.buffer,
+                    "plt.text(xc,yp,r'{}',ha='center',va='top'{})\n",
+                    self.text_h, opt_x
+                )
+                .unwrap();
             } else {
                 write!(
                     &mut self.buffer,
-                    "plt.text(xc,yp,'1',ha='center',va='bottom'{})\n",
-                    opt_x
+                    "plt.text(xc,yp,r'{}',ha='center',va='bottom'{})\n",
+                    self.text_h, opt_x
                 )
                 .unwrap();
             }
             write!(
                 &mut self.buffer,
-                "plt.text(xm,yc,{},ha='right',va='center'{})\n",
+                "plt.text(xm,yc,r'{}',ha='right',va='center'{})\n",
                 text, opt_y
             )
             .unwrap();
@@ -148,35 +159,40 @@ impl SlopeIcon {
             if slope < 0.0 {
                 write!(
                     &mut self.buffer,
-                    "plt.text(xc,ym,'1',ha='center',va='bottom'{})\n",
-                    opt_x
+                    "plt.text(xc,ym,r'{}',ha='center',va='bottom'{})\n",
+                    self.text_h, opt_x
                 )
                 .unwrap();
             } else {
-                write!(&mut self.buffer, "plt.text(xc,ym,'1',ha='center',va='top'{})\n", opt_x).unwrap();
+                write!(
+                    &mut self.buffer,
+                    "plt.text(xc,ym,r'{}',ha='center',va='top'{})\n",
+                    self.text_h, opt_x
+                )
+                .unwrap();
             }
             write!(
                 &mut self.buffer,
-                "plt.text(xp,yc,{},ha='left',va='center'{})\n",
+                "plt.text(xp,yc,r'{}',ha='left',va='center'{})\n",
                 text, opt_y
             )
             .unwrap();
         }
     }
 
-    /// Sets option to draw flipped icon
-    pub fn set_flipped(&mut self, flag: bool) -> &mut Self {
-        self.flipped = flag;
+    /// Sets option to draw icon above line
+    pub fn set_above(&mut self, flag: bool) -> &mut Self {
+        self.above = flag;
         self
     }
 
-    /// Set option to consider the x axis being scaled using log10
+    /// Sets option to consider the x axis being scaled using log10
     pub fn set_log_x(&mut self, flag: bool) -> &mut Self {
         self.log_x = flag;
         self
     }
 
-    /// Set option to consider the y axis being scaled using log10
+    /// Sets option to consider the y axis being scaled using log10
     pub fn set_log_y(&mut self, flag: bool) -> &mut Self {
         self.log_y = flag;
         self
@@ -185,6 +201,12 @@ impl SlopeIcon {
     /// Sets the color of icon lines
     pub fn set_edge_color(&mut self, color: &str) -> &mut Self {
         self.edge_color = String::from(color);
+        self
+    }
+
+    /// Sets the color of icon face
+    pub fn set_face_color(&mut self, color: &str) -> &mut Self {
+        self.face_color = String::from(color);
         self
     }
 
@@ -202,6 +224,12 @@ impl SlopeIcon {
     /// Sets the width of lines
     pub fn set_line_width(&mut self, width: f64) -> &mut Self {
         self.line_width = width;
+        self
+    }
+
+    /// Sets the (horizontal) length of the icon in Axes coordinates [0, 1]
+    pub fn set_length(&mut self, value: f64) -> &mut Self {
+        self.length = value;
         self
     }
 
@@ -229,9 +257,21 @@ impl SlopeIcon {
         self
     }
 
-    /// Sets text of slope icon
-    pub fn set_text_slope(&mut self, slope: &str) -> &mut Self {
-        self.text_slope = String::from(slope);
+    /// Sets text of horizontal value (== 1)
+    pub fn set_text_h(&mut self, one: &str) -> &mut Self {
+        self.text_h = String::from(one);
+        self
+    }
+
+    /// Sets text of vertical value (slope)
+    pub fn set_text_v(&mut self, slope: &str) -> &mut Self {
+        self.text_v = String::from(slope);
+        self
+    }
+
+    /// Sets the color of text
+    pub fn set_text_color(&mut self, color: &str) -> &mut Self {
+        self.text_color = String::from(color);
         self
     }
 
@@ -249,7 +289,7 @@ impl SlopeIcon {
 
     /// Returns the icon's (whole) coordinate transform
     fn transform(&self, slope: f64) -> String {
-        let flip = if slope < 0.0 { !self.flipped } else { self.flipped };
+        let flip = if slope < 0.0 { !self.above } else { self.above };
         let mut opt = String::new();
         if self.offset_v > 0.0 {
             let dv = if flip {
@@ -271,7 +311,7 @@ impl SlopeIcon {
 
     /// Returns the coordinate transform for text
     fn transform_text(&self, slope: f64) -> String {
-        let flip = if slope < 0.0 { !self.flipped } else { self.flipped };
+        let flip = if slope < 0.0 { !self.above } else { self.above };
         let mut opt = String::new();
         if self.offset_v > 0.0 || self.text_offset_v > 0.0 {
             let dv = if flip {
@@ -319,6 +359,9 @@ impl SlopeIcon {
         if self.line_width > 0.0 {
             write!(&mut opt, ",linewidth={}", self.line_width).unwrap();
         }
+        if self.line_style != "" {
+            write!(&mut opt, ",linestyle='{}'", self.line_style).unwrap();
+        }
         opt
     }
 
@@ -353,7 +396,7 @@ mod tests {
     #[test]
     fn new_works() {
         let icon = SlopeIcon::new();
-        assert_eq!(icon.flipped, false);
+        assert_eq!(icon.above, false);
         assert_eq!(icon.log_x, false);
         assert_eq!(icon.log_y, false);
         assert_eq!(icon.edge_color.len(), 7);
@@ -362,7 +405,7 @@ mod tests {
         assert_eq!(icon.offset_v, 5.0);
         assert_eq!(icon.no_text, false);
         assert_eq!(icon.fontsize, 0.0);
-        assert_eq!(icon.text_slope.len(), 0);
+        assert_eq!(icon.text_v.len(), 0);
         assert_eq!(icon.text_offset_h, 3.0);
         assert_eq!(icon.text_offset_v, 3.0);
         assert_eq!(icon.buffer.len(), 0);
@@ -372,28 +415,28 @@ mod tests {
     fn transform_works() {
         let mut icon = SlopeIcon::new();
         icon.set_offset_v(7.0);
-        icon.set_flipped(false);
+        icon.set_above(false);
         assert_eq!(
             icon.transform(1.0),
             "tf=tra.offset_copy(plt.gca().transData,fig=plt.gcf(),x=0,y=-7,units='points')\n"
         );
-        icon.set_flipped(true);
+        icon.set_above(true);
         assert_eq!(
             icon.transform(1.0),
             "tf=tra.offset_copy(plt.gca().transData,fig=plt.gcf(),x=0,y=7,units='points')\n"
         );
-        icon.set_flipped(false);
+        icon.set_above(false);
         assert_eq!(
             icon.transform(-1.0),
             "tf=tra.offset_copy(plt.gca().transData,fig=plt.gcf(),x=0,y=7,units='points')\n"
         );
-        icon.set_flipped(true);
+        icon.set_above(true);
         assert_eq!(
             icon.transform(-1.0),
             "tf=tra.offset_copy(plt.gca().transData,fig=plt.gcf(),x=0,y=-7,units='points')\n"
         );
         icon.set_offset_v(0.0);
-        icon.set_flipped(false);
+        icon.set_above(false);
         assert_eq!(icon.transform(-1.0), "");
     }
 
@@ -404,25 +447,25 @@ mod tests {
         icon.set_offset_v(7.0);
         icon.set_text_offset_h(1.0);
         icon.set_text_offset_v(3.0);
-        icon.set_flipped(false);
+        icon.set_above(false);
         assert_eq!(
             icon.transform_text(1.0),
             "tfx=tra.offset_copy(plt.gca().transData,fig=plt.gcf(),x=0,y=-10,units='points')\n\
              tfy=tra.offset_copy(plt.gca().transData,fig=plt.gcf(),x=1,y=-7,units='points')\n"
         );
-        icon.set_flipped(true);
+        icon.set_above(true);
         assert_eq!(
             icon.transform_text(1.0),
             "tfx=tra.offset_copy(plt.gca().transData,fig=plt.gcf(),x=0,y=10,units='points')\n\
              tfy=tra.offset_copy(plt.gca().transData,fig=plt.gcf(),x=-1,y=7,units='points')\n"
         );
-        icon.set_flipped(false);
+        icon.set_above(false);
         assert_eq!(
             icon.transform_text(-1.0),
             "tfx=tra.offset_copy(plt.gca().transData,fig=plt.gcf(),x=0,y=10,units='points')\n\
              tfy=tra.offset_copy(plt.gca().transData,fig=plt.gcf(),x=1,y=7,units='points')\n"
         );
-        icon.set_flipped(true);
+        icon.set_above(true);
         assert_eq!(
             icon.transform_text(-1.0),
             "tfx=tra.offset_copy(plt.gca().transData,fig=plt.gcf(),x=0,y=-10,units='points')\n\
@@ -430,25 +473,25 @@ mod tests {
         );
 
         icon.set_offset_v(0.0);
-        icon.set_flipped(false);
+        icon.set_above(false);
         assert_eq!(
             icon.transform_text(1.0),
             "tfx=tra.offset_copy(plt.gca().transData,fig=plt.gcf(),x=0,y=-3,units='points')\n\
              tfy=tra.offset_copy(plt.gca().transData,fig=plt.gcf(),x=1,y=-0,units='points')\n"
         );
-        icon.set_flipped(true);
+        icon.set_above(true);
         assert_eq!(
             icon.transform_text(1.0),
             "tfx=tra.offset_copy(plt.gca().transData,fig=plt.gcf(),x=0,y=3,units='points')\n\
              tfy=tra.offset_copy(plt.gca().transData,fig=plt.gcf(),x=-1,y=0,units='points')\n"
         );
-        icon.set_flipped(false);
+        icon.set_above(false);
         assert_eq!(
             icon.transform_text(-1.0),
             "tfx=tra.offset_copy(plt.gca().transData,fig=plt.gcf(),x=0,y=3,units='points')\n\
              tfy=tra.offset_copy(plt.gca().transData,fig=plt.gcf(),x=1,y=0,units='points')\n"
         );
-        icon.set_flipped(true);
+        icon.set_above(true);
         assert_eq!(
             icon.transform_text(-1.0),
             "tfx=tra.offset_copy(plt.gca().transData,fig=plt.gcf(),x=0,y=-3,units='points')\n\

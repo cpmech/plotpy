@@ -26,9 +26,25 @@ fn test_slope_icon_below() -> Result<(), &'static str> {
     let mut icon4 = SlopeIcon::new();
 
     // configure icons
-    icon1.set_precision(3).set_offset_v(1.0);
-    icon2.set_precision(3).set_offset_v(1.0);
-    icon3.set_precision(3).set_offset_v(1.0);
+    icon1
+        .set_precision(3)
+        .set_offset_v(1.0)
+        .set_line_style("--")
+        .set_face_color("gold")
+        .set_length(0.25)
+        .set_no_text(true);
+    icon2
+        .set_precision(3)
+        .set_offset_v(1.0)
+        .set_fontsize(14.0)
+        .set_text_h("")
+        .set_text_v("$\\mathrm{\\lambda}$")
+        .set_text_color("blue");
+    icon3
+        .set_precision(3)
+        .set_offset_v(1.0)
+        .set_text_offset_h(1.0)
+        .set_text_offset_v(1.0);
     icon4.set_precision(3).set_offset_v(1.0);
 
     // draw icon
@@ -86,10 +102,10 @@ fn test_slope_icon_above() -> Result<(), &'static str> {
     let mut icon4 = SlopeIcon::new();
 
     // configure icons
-    icon1.set_precision(3).set_offset_v(1.0).set_flipped(true);
-    icon2.set_precision(3).set_offset_v(1.0).set_flipped(true);
-    icon3.set_precision(3).set_offset_v(1.0).set_flipped(true);
-    icon4.set_precision(3).set_offset_v(1.0).set_flipped(true);
+    icon1.set_precision(3).set_offset_v(1.0).set_above(true);
+    icon2.set_precision(3).set_offset_v(1.0).set_above(true);
+    icon3.set_precision(3).set_offset_v(1.0).set_above(true);
+    icon4.set_precision(3).set_offset_v(1.0).set_above(true);
 
     // draw icon
     let xc = x[0] + dx / 4.0;
@@ -151,13 +167,13 @@ fn test_slope_icon_linx_liny() -> Result<(), &'static str> {
 
     // configure icons
     icon1.set_precision(3).set_offset_v(1.0);
-    icon2.set_precision(3).set_offset_v(1.0).set_flipped(true);
+    icon2.set_precision(3).set_offset_v(1.0).set_above(true);
     icon3.set_precision(3).set_offset_v(1.0);
-    icon4.set_precision(3).set_offset_v(1.0).set_flipped(true);
+    icon4.set_precision(3).set_offset_v(1.0).set_above(true);
     icon5.set_precision(3).set_offset_v(1.0);
-    icon6.set_precision(3).set_offset_v(1.0).set_flipped(true);
+    icon6.set_precision(3).set_offset_v(1.0).set_above(true);
     icon7.set_precision(3).set_offset_v(1.0);
-    icon8.set_precision(3).set_offset_v(1.0).set_flipped(true);
+    icon8.set_precision(3).set_offset_v(1.0).set_above(true);
 
     // draw icon
     let xc = x[0] + dx / 4.0;
@@ -237,13 +253,13 @@ fn test_slope_icon_logx_liny() -> Result<(), &'static str> {
     // configure icons
     let offset = 1.5;
     icon1.set_offset_v(offset).set_log_x(true);
-    icon2.set_offset_v(offset).set_log_x(true).set_flipped(true);
+    icon2.set_offset_v(offset).set_log_x(true).set_above(true);
     icon3.set_offset_v(offset).set_log_x(true);
-    icon4.set_offset_v(offset).set_log_x(true).set_flipped(true);
+    icon4.set_offset_v(offset).set_log_x(true).set_above(true);
     icon5.set_offset_v(offset).set_log_x(true);
-    icon6.set_offset_v(offset).set_log_x(true).set_flipped(true);
+    icon6.set_offset_v(offset).set_log_x(true).set_above(true);
     icon7.set_offset_v(offset).set_log_x(true);
-    icon8.set_offset_v(offset).set_log_x(true).set_flipped(true);
+    icon8.set_offset_v(offset).set_log_x(true).set_above(true);
 
     // draw icon
     icon1.draw(slope, 1e2, f1(1e2));
@@ -316,13 +332,13 @@ fn test_slope_icon_linx_logy() -> Result<(), &'static str> {
 
     // configure icons
     icon1.set_offset_v(2.0).set_log_y(true);
-    icon2.set_offset_v(2.0).set_log_y(true).set_flipped(true);
+    icon2.set_offset_v(2.0).set_log_y(true).set_above(true);
     icon3.set_offset_v(2.0).set_log_y(true);
-    icon4.set_offset_v(2.0).set_log_y(true).set_flipped(true);
+    icon4.set_offset_v(2.0).set_log_y(true).set_above(true);
     icon5.set_offset_v(2.0).set_log_y(true);
-    icon6.set_offset_v(2.0).set_log_y(true).set_flipped(true);
+    icon6.set_offset_v(2.0).set_log_y(true).set_above(true);
     icon7.set_offset_v(2.0).set_log_y(true);
-    icon8.set_offset_v(2.0).set_log_y(true).set_flipped(true);
+    icon8.set_offset_v(2.0).set_log_y(true).set_above(true);
 
     // draw icon
     icon1.draw(slope, g1(1e2), 1e2);
@@ -402,25 +418,25 @@ fn test_slope_icon_logx_logy() -> Result<(), &'static str> {
         .set_offset_v(offset)
         .set_log_x(true)
         .set_log_y(true)
-        .set_flipped(true);
+        .set_above(true);
     icon3.set_offset_v(offset).set_log_x(true).set_log_y(true);
     icon4
         .set_offset_v(offset)
         .set_log_x(true)
         .set_log_y(true)
-        .set_flipped(true);
+        .set_above(true);
     icon5.set_offset_v(offset).set_log_x(true).set_log_y(true);
     icon6
         .set_offset_v(offset)
         .set_log_x(true)
         .set_log_y(true)
-        .set_flipped(true);
+        .set_above(true);
     icon7.set_offset_v(offset).set_log_x(true).set_log_y(true);
     icon8
         .set_offset_v(offset)
         .set_log_x(true)
         .set_log_y(true)
-        .set_flipped(true);
+        .set_above(true);
 
     // draw icon
     icon1.draw(slope, 1e2, f1(1e2));

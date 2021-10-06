@@ -335,7 +335,7 @@ impl Plot {
         self
     }
 
-    // Sets number of ticks along x
+    /// Sets number of ticks along x
     pub fn set_num_ticks_x(&mut self, num: usize) -> &mut Self {
         if num == 0 {
             self.buffer.push_str("plt.gca().get_xaxis().set_ticks([])\n");
@@ -350,7 +350,7 @@ impl Plot {
         self
     }
 
-    // Sets number of ticks along y
+    /// Sets number of ticks along y
     pub fn set_num_ticks_y(&mut self, num: usize) -> &mut Self {
         if num == 0 {
             self.buffer.push_str("plt.gca().get_yaxis().set_ticks([])\n");
@@ -365,7 +365,11 @@ impl Plot {
         self
     }
 
-    // Sets a log10 x-scale
+    /// Sets a log10 x-scale
+    ///
+    /// # Note
+    ///
+    /// `set_log_x(true)` must be called before adding curves.
     pub fn set_log_x(&mut self, log: bool) -> &mut Self {
         if log {
             self.buffer.push_str("plt.gca().set_xscale('log')\n");
@@ -375,7 +379,11 @@ impl Plot {
         self
     }
 
-    // Sets a log10 y-scale
+    /// Sets a log10 y-scale
+    ///
+    /// # Note
+    ///
+    /// `set_log_y(true)` must be called before adding curves.
     pub fn set_log_y(&mut self, log: bool) -> &mut Self {
         if log {
             self.buffer.push_str("plt.gca().set_yscale('log')\n");

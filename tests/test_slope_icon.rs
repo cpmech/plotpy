@@ -223,11 +223,10 @@ fn test_slope_icon_logx_liny() -> Result<(), &'static str> {
     // linear models on logx-y
     let (p, slope) = (5.0, 0.5);
     let (x0, y0) = (10.0, 0.0);
-    let lx0 = f64::log10(x0);
-    let f1 = |x: f64| y0 + slope * (f64::log10(x) - lx0);
+    let f1 = |x: f64| y0 + slope * (f64::log10(x / x0));
     let xmax = x0 + f64::powf(10.0, p);
     let ymax = f1(xmax);
-    let f2 = |x: f64| ymax - slope * (f64::log10(x) - lx0);
+    let f2 = |x: f64| ymax - slope * (f64::log10(x / x0));
 
     // curves
     let mut curve1 = Curve::new();
@@ -471,5 +470,161 @@ fn test_slope_icon_logx_logy() -> Result<(), &'static str> {
     let buffered = BufReader::new(file);
     let lines_iter = buffered.lines();
     assert!(lines_iter.count() > 610);
+    Ok(())
+}
+
+#[test]
+fn test_slope_icon_example() -> Result<(), &'static str> {
+    // linear y vs linear x //////////////////////////////////////////
+
+    // models
+    let slope1 = 0.5;
+    let (x1i, x1f, y1i) = (2.0, 12.0, 3.0);
+    let f1a = |x: f64| y1i + slope1 * (x - x1i);
+    let f1b = |x: f64| f1a(x1f) - slope1 * (x - x1i);
+
+    // curves
+    let mut curve1a = Curve::new();
+    let mut curve1b = Curve::new();
+    let x1 = Vector::linspace(x1i, x1f, 3);
+    let y1a = x1.get_mapped(f1a);
+    let y1b = x1.get_mapped(f1b);
+    curve1a.set_marker_style("o").draw(&x1, &y1a);
+    curve1b.set_marker_style("*").draw(&x1, &y1b);
+
+    // icons
+    let mut icon1a = SlopeIcon::new();
+    let mut icon1b = SlopeIcon::new();
+    icon1a.set_offset_v(0.0);
+    icon1b.set_offset_v(0.0);
+    icon1a.draw(slope1, 5.0, f1a(5.0));
+    icon1b.draw(-slope1, 5.0, f1b(5.0));
+
+    // plot
+    let mut plot = Plot::new();
+    plot.set_horizontal_gap(0.2);
+    plot.set_subplot(2, 2, 1)
+        .add(&curve1a)
+        .add(&curve1b)
+        .add(&icon1a)
+        .add(&icon1b)
+        .set_equal_axes(true)
+        .grid_and_labels("x", "y");
+
+    // linear y vs log10 x //////////////////////////////////////////
+
+    // models
+    let slope2 = 0.75;
+    let (x2i, x2f, y2i) = (1.0, 1e6, 0.0);
+    let f2a = |x: f64| y2i + slope2 * f64::log10(x / x2i);
+    let f2b = |x: f64| f2a(x2f) - slope2 * f64::log10(x / x2i);
+
+    // curves
+    let mut curve2a = Curve::new();
+    let mut curve2b = Curve::new();
+    let x2 = Vector::linspace(x2i, x2f, 3);
+    let y2a = x2.get_mapped(f2a);
+    let y2b = x2.get_mapped(f2b);
+    curve2a.set_marker_style("o").draw(&x2, &y2a);
+    curve2b.set_marker_style("*").draw(&x2, &y2b);
+
+    // icons
+    let mut icon2a = SlopeIcon::new();
+    let mut icon2b = SlopeIcon::new();
+    icon2a.set_offset_v(0.0).set_log_x(true);
+    icon2b.set_offset_v(0.0).set_log_x(true);
+    icon2a.draw(slope2, 2e1, f2a(2e1));
+    icon2b.draw(-slope2, 2e1, f2b(2e1));
+
+    // plot
+    plot.set_subplot(2, 2, 2)
+        .set_log_x(true) // must be set before adding curves
+        .add(&curve2a)
+        .add(&curve2b)
+        .add(&icon2a)
+        .add(&icon2b)
+        .set_equal_axes(true)
+        .grid_and_labels("x", "y");
+
+    // log y vs linear x ////////////////////////////////////////////
+
+    // models
+    let slope3 = 1.25;
+    let (x3i, x3f, y3i) = (2.0, 12.0, 1.0);
+    let f3a = |x: f64| y3i * f64::powf(10.0, slope3 * (x - x3i));
+    let f3b = |x: f64| f3a(x3f) * f64::powf(10.0, -slope3 * (x - x3i));
+
+    // curves
+    let mut curve3a = Curve::new();
+    let mut curve3b = Curve::new();
+    let x3 = Vector::linspace(x3i, x3f, 3);
+    let y3a = x3.get_mapped(f3a);
+    let y3b = x3.get_mapped(f3b);
+    curve3a.set_marker_style("o").draw(&x3, &y3a);
+    curve3b.set_marker_style("*").draw(&x3, &y3b);
+
+    // icons
+    let mut icon3a = SlopeIcon::new();
+    let mut icon3b = SlopeIcon::new();
+    icon3a.set_offset_v(0.0).set_log_y(true);
+    icon3b.set_offset_v(0.0).set_log_y(true);
+    icon3a.draw(slope3, 5.0, f3a(5.0));
+    icon3b.draw(-slope3, 5.0, f3b(5.0));
+
+    // plot
+    plot.set_subplot(2, 2, 3)
+        .set_log_y(true) // must be set before adding curves
+        .add(&curve3a)
+        .add(&curve3b)
+        .add(&icon3a)
+        .add(&icon3b)
+        .set_equal_axes(true)
+        .grid_and_labels("x", "y");
+
+    // log y vs log x ///////////////////////////////////////////////
+
+    // models
+    let slope4 = 1.5;
+    let (x4i, x4f, y4i) = (1.0, 1e6, 1.0);
+    let f4a = |x: f64| y4i * f64::powf(x / x4i, slope4);
+    let f4b = |x: f64| f4a(x4f) * f64::powf(x / x4i, -slope4);
+
+    // curves
+    let mut curve4a = Curve::new();
+    let mut curve4b = Curve::new();
+    let x4 = Vector::linspace(x4i, x4f, 4);
+    let y4a = x4.get_mapped(f4a);
+    let y4b = x4.get_mapped(f4b);
+    curve4a.set_marker_style("o").draw(&x4, &y4a);
+    curve4b.set_marker_style("*").draw(&x4, &y4b);
+
+    // icons
+    let mut icon4a = SlopeIcon::new();
+    let mut icon4b = SlopeIcon::new();
+    icon4a.set_offset_v(0.0).set_log_x(true).set_log_y(true);
+    icon4b.set_offset_v(0.0).set_log_x(true).set_log_y(true).set_above(true);
+    icon4a.draw(slope4, 2e1, f4a(2e1));
+    icon4b.draw(-slope4, 2e1, f4b(2e1));
+
+    // plot
+    plot.set_subplot(2, 2, 4)
+        .set_log_x(true)
+        .set_log_y(true) // must be set before adding curves
+        .add(&curve4a)
+        .add(&curve4b)
+        .add(&icon4a)
+        .add(&icon4b)
+        .set_equal_axes(true)
+        .grid_and_labels("x", "y");
+
+    // save figure
+    let path = Path::new(OUT_DIR).join("integ_slope_icon_example.svg");
+    plot.save(&path)?;
+
+    // check number of lines
+    let file = File::open(path).map_err(|_| "cannot open file")?;
+    let buffered = BufReader::new(file);
+    let lines_iter = buffered.lines();
+    assert!(lines_iter.count() > 1300);
     Ok(())
 }

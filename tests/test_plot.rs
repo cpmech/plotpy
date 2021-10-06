@@ -50,6 +50,9 @@ fn test_plot() -> Result<(), &'static str> {
     // add curve to plot
     plot.add(&curve);
 
+    // extra commands
+    plot.write_extra("plt.plot([2.0,10.0],[3.0,1.0])\n");
+
     // save figure
     let path = Path::new(OUT_DIR).join("integ_plot.svg");
     plot.save(&path)?;

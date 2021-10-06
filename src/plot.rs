@@ -194,6 +194,16 @@ impl Plot {
         self.legend()
     }
 
+    /// Writes extra Python/Matplotlib commands to buffer
+    ///
+    /// # Note
+    ///
+    /// The other of commands matter (as usual in a Python/Matplotlib script).
+    pub fn write_extra(&mut self, commands: &str) -> &mut Self {
+        self.buffer.push_str(commands);
+        self
+    }
+
     /// Configures subplots
     ///
     /// # Arguments
@@ -538,6 +548,19 @@ mod tests {
         let path = Path::new(OUT_DIR).join("print_log_file_works.svg");
         assert_eq!(plot.save(&path).err(), Some("python3 failed; please see the log file"));
         plot.print_log_file(&path)?;
+        Ok(())
+    }
+
+    #[test]
+    fn basic_functions_work() -> Result<(), &'static str> {
+        let mut plot = Plot::new();
+        plot.legend().write_extra("print('Hello World')\n");
+        let b: &str = "h,l=plt.gca().get_legend_handles_labels()\n\
+                       if len(h)>0 and len(l)>0:\n\
+                       \x20\x20\x20\x20leg=plt.legend(handlelength=3,ncol=1,loc='best')\n\
+                       \x20\x20\x20\x20addToEA(leg)\n\
+                       print('Hello World')\n";
+        assert_eq!(plot.buffer, b);
         Ok(())
     }
 

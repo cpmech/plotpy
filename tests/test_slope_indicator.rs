@@ -83,7 +83,164 @@ fn test_slope_indicator() -> Result<(), &'static str> {
 }
 
 #[test]
-fn test_slope_indicator_log() -> Result<(), &'static str> {
+fn test_slope_indicator_logx() -> Result<(), &'static str> {
+    // linear models on logx-y
+    let (p, slope) = (5.0, 0.5);
+    let (x0, y0) = (10.0, 0.0);
+    let lx0 = f64::log10(x0);
+    let f1 = |x: f64| y0 + slope * (f64::log10(x) - lx0);
+    let xmax = x0 + f64::powf(10.0, p);
+    let ymax = f1(xmax);
+    let f2 = |x: f64| ymax - slope * (f64::log10(x) - lx0);
+
+    // curves
+    let mut curve1 = Curve::new();
+    let mut curve2 = Curve::new();
+    curve1.set_marker_style("o");
+    curve2.set_marker_style("*");
+    let x = Vector::linspace(x0, xmax, 5);
+    let y1 = x.get_mapped(f1);
+    let y2 = x.get_mapped(f2);
+    curve1.draw(&x, &y1);
+    curve2.draw(&x, &y2);
+
+    // indicator object and options
+    let mut indicator1 = SlopeIndicator::new();
+    let mut indicator2 = SlopeIndicator::new();
+    let mut indicator3 = SlopeIndicator::new();
+    let mut indicator4 = SlopeIndicator::new();
+    let mut indicator5 = SlopeIndicator::new();
+    let mut indicator6 = SlopeIndicator::new();
+    let mut indicator7 = SlopeIndicator::new();
+    let mut indicator8 = SlopeIndicator::new();
+
+    // configure indicators
+    indicator1.set_offset_v(0.0).set_log_x(true);
+    indicator2.set_offset_v(0.0).set_log_x(true).set_flipped(true);
+    indicator3.set_offset_v(0.0).set_log_x(true);
+    indicator4.set_offset_v(0.0).set_log_x(true).set_flipped(true);
+    indicator5.set_offset_v(0.0).set_log_x(true);
+    indicator6.set_offset_v(0.0).set_log_x(true).set_flipped(true);
+    indicator7.set_offset_v(0.0).set_log_x(true);
+    indicator8.set_offset_v(0.0).set_log_x(true).set_flipped(true);
+
+    // draw indicator
+    indicator1.draw(slope, 1e2, f1(1e2));
+    indicator2.draw(slope, 1e2, f1(1e2));
+    indicator3.draw(slope, 1e4, f1(1e4));
+    indicator4.draw(slope, 1e4, f1(1e4));
+    indicator5.draw(-slope, 1e2, f2(1e2));
+    indicator6.draw(-slope, 1e2, f2(1e2));
+    indicator7.draw(-slope, 1e4, f2(1e4));
+    indicator8.draw(-slope, 1e4, f2(1e4));
+
+    // add features to plot
+    let mut plot = Plot::new();
+    plot.set_log_x(true)
+        .add(&curve1)
+        .add(&curve2)
+        .add(&indicator1)
+        .add(&indicator2)
+        .add(&indicator3)
+        .add(&indicator4)
+        .add(&indicator5)
+        .add(&indicator6)
+        .add(&indicator7)
+        .add(&indicator8);
+
+    // save figure
+    let path = Path::new(OUT_DIR).join("integ_slope_indicator_logx.svg");
+    plot.set_equal_axes(true).grid_and_labels("x", "y").save(&path)?;
+
+    // check number of lines
+    let file = File::open(path).map_err(|_| "cannot open file")?;
+    let buffered = BufReader::new(file);
+    let lines_iter = buffered.lines();
+    assert!(lines_iter.count() > 930);
+    Ok(())
+}
+
+#[test]
+fn test_slope_indicator_logy() -> Result<(), &'static str> {
+    // linear models on x-logy
+    let (p, slope) = (5.0, 1.5);
+    let (x0, y0) = (0.0, 10.0);
+    let f1 = |x: f64| y0 * f64::powf(10.0, slope * (x - x0));
+    let g1 = |y: f64| x0 + (1.0 / slope) * f64::log10(y / y0);
+    let ymax = y0 + f64::powf(10.0, p);
+    let xmax = x0 + f64::log10(ymax / y0) / slope;
+    let f2 = |x: f64| ymax * f64::powf(10.0, -slope * (x - x0));
+    let g2 = |y: f64| x0 - (1.0 / slope) * f64::log10(y / ymax);
+
+    // curves
+    let mut curve1 = Curve::new();
+    let mut curve2 = Curve::new();
+    curve1.set_marker_style("o");
+    curve2.set_marker_style("*");
+    let x = Vector::linspace(x0, xmax, 5);
+    let y1 = x.get_mapped(f1);
+    let y2 = x.get_mapped(f2);
+    curve1.draw(&x, &y1);
+    curve2.draw(&x, &y2);
+
+    // indicator object and options
+    let mut indicator1 = SlopeIndicator::new();
+    let mut indicator2 = SlopeIndicator::new();
+    let mut indicator3 = SlopeIndicator::new();
+    let mut indicator4 = SlopeIndicator::new();
+    let mut indicator5 = SlopeIndicator::new();
+    let mut indicator6 = SlopeIndicator::new();
+    let mut indicator7 = SlopeIndicator::new();
+    let mut indicator8 = SlopeIndicator::new();
+
+    // configure indicators
+    indicator1.set_offset_v(0.0).set_log_y(true);
+    indicator2.set_offset_v(0.0).set_log_y(true).set_flipped(true);
+    indicator3.set_offset_v(0.0).set_log_y(true);
+    indicator4.set_offset_v(0.0).set_log_y(true).set_flipped(true);
+    indicator5.set_offset_v(0.0).set_log_y(true);
+    indicator6.set_offset_v(0.0).set_log_y(true).set_flipped(true);
+    indicator7.set_offset_v(0.0).set_log_y(true);
+    indicator8.set_offset_v(0.0).set_log_y(true).set_flipped(true);
+
+    // draw indicator
+    indicator1.draw(slope, g1(1e2), 1e2);
+    indicator2.draw(slope, g1(1e2), 1e2);
+    indicator3.draw(slope, g1(1e4), 1e4);
+    indicator4.draw(slope, g1(1e4), 1e4);
+    indicator5.draw(-slope, g2(1e2), 1e2);
+    indicator6.draw(-slope, g2(1e2), 1e2);
+    indicator7.draw(-slope, g2(1e4), 1e4);
+    indicator8.draw(-slope, g2(1e4), 1e4);
+
+    // add features to plot
+    let mut plot = Plot::new();
+    plot.set_log_y(true)
+        .add(&curve1)
+        .add(&curve2)
+        .add(&indicator1)
+        .add(&indicator2)
+        .add(&indicator3)
+        .add(&indicator4)
+        .add(&indicator5)
+        .add(&indicator6)
+        .add(&indicator7)
+        .add(&indicator8);
+
+    // save figure
+    let path = Path::new(OUT_DIR).join("integ_slope_indicator_logy.svg");
+    plot.set_equal_axes(true).grid_and_labels("x", "y").save(&path)?;
+
+    // check number of lines
+    let file = File::open(path).map_err(|_| "cannot open file")?;
+    let buffered = BufReader::new(file);
+    let lines_iter = buffered.lines();
+    assert!(lines_iter.count() > 880);
+    Ok(())
+}
+
+#[test]
+fn test_slope_indicator_loglog() -> Result<(), &'static str> {
     // linear models on log-log
     let (p, slope) = (5.0, 2.0);
     let (x0, y0) = (10.0, 100.0);
@@ -144,7 +301,6 @@ fn test_slope_indicator_log() -> Result<(), &'static str> {
         .set_flipped(true);
 
     // draw indicator
-    println!("{},{}", 1e2, f2(1e2));
     indicator1.draw(slope, 1e2, f1(1e2));
     indicator2.draw(slope, 1e2, f1(1e2));
     indicator3.draw(slope, 1e4, f1(1e4));
@@ -170,7 +326,7 @@ fn test_slope_indicator_log() -> Result<(), &'static str> {
         .add(&indicator8);
 
     // save figure
-    let path = Path::new(OUT_DIR).join("integ_slope_indicator_log.svg");
+    let path = Path::new(OUT_DIR).join("integ_slope_indicator_loglog.svg");
     plot.set_equal_axes(true).grid_and_labels("x", "y").save(&path)?;
 
     // check number of lines

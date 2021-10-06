@@ -29,7 +29,7 @@ impl SlopeIndicator {
             log_x: false,
             log_y: false,
             edge_color: "black".to_string(),
-            face_color: "#f3f3f3".to_string(),
+            face_color: "#f7f7f7".to_string(),
             line_style: String::new(),
             line_width: 0.0,
             length: 0.1,

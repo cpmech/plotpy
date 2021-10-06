@@ -245,7 +245,7 @@ impl Plot {
     /// Sets same scale for both axes
     pub fn set_equal_axes(&mut self, equal: bool) -> &mut Self {
         if equal {
-            self.buffer.push_str("plt.gca().axes.set_aspect('equal')\n");
+            self.buffer.push_str("setEqualAspect()\n");
         } else {
             self.buffer.push_str("plt.gca().axes.set_aspect('auto')\n");
         }
@@ -593,7 +593,7 @@ mod tests {
             .set_camera(1.0, 10.0)
             .clear_current_figure();
         let b: &str = "plt.title(r'my plot')\n\
-                       plt.gca().axes.set_aspect('equal')\n\
+                       setEqualAspect()\n\
                        plt.gca().axes.set_aspect('auto')\n\
                        plt.axis('off')\n\
                        plt.axis([-1,1,-1,1])\n\

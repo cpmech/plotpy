@@ -506,9 +506,9 @@ fn test_slope_icon_example() -> Result<(), &'static str> {
     plot.set_subplot(2, 2, 1)
         .add(&curve1a)
         .add(&curve1b)
+        .set_equal_axes(true)
         .add(&icon1a)
         .add(&icon1b)
-        .set_equal_axes(true)
         .grid_and_labels("x", "y");
 
     // linear y vs log10 x //////////////////////////////////////////
@@ -538,12 +538,11 @@ fn test_slope_icon_example() -> Result<(), &'static str> {
 
     // plot
     plot.set_subplot(2, 2, 2)
-        .set_log_x(true) // must be set before adding curves
         .add(&curve2a)
         .add(&curve2b)
+        .set_log_x(true) // must be set before adding icons
         .add(&icon2a)
         .add(&icon2b)
-        .set_equal_axes(true)
         .grid_and_labels("x", "y");
 
     // log y vs linear x ////////////////////////////////////////////
@@ -573,12 +572,11 @@ fn test_slope_icon_example() -> Result<(), &'static str> {
 
     // plot
     plot.set_subplot(2, 2, 3)
-        .set_log_y(true) // must be set before adding curves
         .add(&curve3a)
         .add(&curve3b)
+        .set_log_y(true) // must be set before adding icons
         .add(&icon3a)
         .add(&icon3b)
-        .set_equal_axes(true)
         .grid_and_labels("x", "y");
 
     // log y vs log x ///////////////////////////////////////////////
@@ -608,13 +606,13 @@ fn test_slope_icon_example() -> Result<(), &'static str> {
 
     // plot
     plot.set_subplot(2, 2, 4)
-        .set_log_x(true)
-        .set_log_y(true) // must be set before adding curves
         .add(&curve4a)
         .add(&curve4b)
+        .set_log_x(true) // must be set before adding icons
+        .set_log_y(true) // must be set before adding icons
+        .set_equal_axes(true)
         .add(&icon4a)
         .add(&icon4b)
-        .set_equal_axes(true)
         .grid_and_labels("x", "y");
 
     // save figure

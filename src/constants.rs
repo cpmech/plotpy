@@ -23,6 +23,10 @@ def maybeCreateAX3D():
         AX3D.set_ylabel('y')
         AX3D.set_zlabel('z')
         addToEA(AX3D)
+def setEqualAspect():
+    x,y=(plt.gca().get_xscale(),plt.gca().get_yscale())
+    if (x=='linear' and y=='linear') or (x=='log' and y=='log'):
+        plt.gca().axes.set_aspect('equal')
 def dataToAxis(coords):
     plt.axis() # must call this first
     return plt.gca().transLimits.transform(coords)
@@ -40,6 +44,6 @@ mod tests {
 
     #[test]
     fn constants_are_correct() {
-        assert_eq!(PYTHON_HEADER.len(), 1052);
+        assert_eq!(PYTHON_HEADER.len(), 1238);
     }
 }

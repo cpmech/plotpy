@@ -286,7 +286,10 @@ fn test_slope_icon_logx_liny() -> Result<(), &'static str> {
 
     // save figure
     let path = Path::new(OUT_DIR).join("integ_slope_icon_logx_liny.svg");
-    plot.set_equal_axes(true).grid_and_labels("x", "y").save(&path)?;
+    plot.set_equal_axes(true)
+        .grid_and_labels("x", "y")
+        .print_log_file(&path)?;
+    // .save(&path)?;
 
     // check number of lines
     let file = File::open(path).map_err(|_| "cannot open file")?;

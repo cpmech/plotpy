@@ -379,16 +379,15 @@ fn test_slope_icon_linx_logy() -> Result<(), &'static str> {
 #[test]
 fn test_slope_icon_logx_logy() -> Result<(), &'static str> {
     // linear models on log-log
+    //        y/y0  = (x/x0)^m
+    //  log10(y/y0) = m * log10(x/x0)
+    //     log10(y) = log10(y0) + m * (log10(x) - log10(x0))
     let (p, slope) = (5.0, 2.0);
     let (x0, y0) = (10.0, 100.0);
-    let (lx0, ly0) = (f64::log10(x0), f64::log10(y0));
-    let ly1 = |lx: f64| ly0 + slope * (lx - lx0);
-    let f1 = |x: f64| f64::powf(10.0, ly1(f64::log10(x)));
+    let f1 = |x: f64| y0 * f64::powf(x / x0, slope);
     let xmax = x0 + f64::powf(10.0, p);
     let ymax = f1(xmax);
-    let ly00 = f64::log10(ymax);
-    let ly2 = |lx: f64| ly00 - slope * (lx - lx0);
-    let f2 = |x: f64| f64::powf(10.0, ly2(f64::log10(x)));
+    let f2 = |x: f64| ymax * f64::powf(x / x0, -slope);
 
     // curves
     let mut curve1 = Curve::new();

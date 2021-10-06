@@ -5,8 +5,8 @@ use std::fmt::Write;
 ///
 /// # Notes
 ///
-/// When using log_x or log_y, `plot.set_log_x(true)` or
-/// `plot.set_log_y(true)` must be called before adding curves.
+/// When using log scales, `plot.set_log_x(true)` or `plot.set_log_y(true)`
+/// must be called before adding the icon.
 ///
 /// # Example
 ///
@@ -74,8 +74,6 @@ use std::fmt::Write;
 ///
 pub struct SlopeIcon {
     above: bool,        // draw icon above line
-    log_x: bool,        // x-axis is logarithm
-    log_y: bool,        // y-axis is logarithm
     edge_color: String, // Color of icon lines
     face_color: String, // Color of icon faces
     line_style: String, // Style of lines
@@ -98,8 +96,6 @@ impl SlopeIcon {
     pub fn new() -> Self {
         SlopeIcon {
             above: false,
-            log_x: false,
-            log_y: false,
             edge_color: "#000000".to_string(),
             face_color: "#f7f7f7".to_string(),
             line_style: String::new(),
@@ -124,25 +120,17 @@ impl SlopeIcon {
         let flip = if slope < 0.0 { !self.above } else { self.above };
 
         // compute axis (normalized) coordinates and slope
-        let (mut xc, mut yc) = (x_center, y_center);
-        let (mut xa, mut ya) = (xc + 1.0, yc + slope);
-        if self.log_x {
-            xc = f64::log10(xc);
-            xa = xc + 1.0;
-        }
-        if self.log_y {
-            yc = f64::log10(yc);
-            ya = yc + slope;
-        }
         write!(
             &mut self.buffer,
-            "xc,yc=dataToAxis(({},{}))\n\
-             xa,ya=dataToAxis(({},{}))\n\
+            "slope,cx,cy=float({}),float({}),float({})\n\
+             if plt.gca().get_xscale() == 'log': cx=np.log10(cx)\n\
+             if plt.gca().get_yscale() == 'log': cy=np.log10(cy)\n\
+             xc,yc=dataToAxis((cx,cy))\n\
+             xa,ya=dataToAxis((cx+1.0,cy+slope))\n\
              m,l=(ya-yc)/(xa-xc),{}\n",
-            xc,
-            yc,
-            xa,
-            ya,
+            slope,
+            x_center,
+            y_center,
             self.length / 2.0,
         )
         .unwrap();
@@ -254,18 +242,6 @@ impl SlopeIcon {
     /// Sets option to draw icon above line
     pub fn set_above(&mut self, flag: bool) -> &mut Self {
         self.above = flag;
-        self
-    }
-
-    /// Sets option to consider the x axis being scaled using log10
-    pub fn set_log_x(&mut self, flag: bool) -> &mut Self {
-        self.log_x = flag;
-        self
-    }
-
-    /// Sets option to consider the y axis being scaled using log10
-    pub fn set_log_y(&mut self, flag: bool) -> &mut Self {
-        self.log_y = flag;
         self
     }
 
@@ -468,8 +444,6 @@ mod tests {
     fn new_works() {
         let icon = SlopeIcon::new();
         assert_eq!(icon.above, false);
-        assert_eq!(icon.log_x, false);
-        assert_eq!(icon.log_y, false);
         assert_eq!(icon.edge_color.len(), 7);
         assert_eq!(icon.line_style.len(), 0);
         assert_eq!(icon.line_width, 0.0);
@@ -641,8 +615,6 @@ mod tests {
     fn draw_works() {
         let mut icon = SlopeIcon::new();
         icon.set_above(true)
-            .set_log_x(false)
-            .set_log_y(false)
             .set_edge_color("red")
             .set_face_color("blue")
             .set_line_style(":")
@@ -658,8 +630,11 @@ mod tests {
             .set_text_offset_h(6.0)
             .set_text_offset_v(7.0)
             .draw(10.0, 0.5, 0.1);
-        let b: &str = "xc,yc=dataToAxis((0.5,0.1))\n\
-                       xa,ya=dataToAxis((1.5,10.1))\n\
+        let b: &str = "slope,cx,cy=float(10),float(0.5),float(0.1)\n\
+                       if plt.gca().get_xscale() == 'log': cx=np.log10(cx)\n\
+                       if plt.gca().get_yscale() == 'log': cy=np.log10(cy)\n\
+                       xc,yc=dataToAxis((cx,cy))\n\
+                       xa,ya=dataToAxis((cx+1.0,cy+slope))\n\
                        m,l=(ya-yc)/(xa-xc),0.1\n\
                        dat=[[pth.Path.MOVETO,(xc-l,yc-m*l)],[pth.Path.LINETO,(xc-l,yc+m*l)],[pth.Path.LINETO,(xc+l,yc+m*l)],[pth.Path.CLOSEPOLY,(None,None)]]\n\
                        tf=tra.offset_copy(plt.gca().transAxes,fig=plt.gcf(),x=0,y=3,units='points')\n\
@@ -673,31 +648,6 @@ mod tests {
                        tfy=tra.offset_copy(plt.gca().transAxes,fig=plt.gcf(),x=-6,y=3,units='points')\n\
                        plt.text(xc,yp,r'one',ha='center',va='bottom',transform=tfx,color='gold',fontsize=4)\n\
                        plt.text(xm,yc,r'lambda',ha='right',va='center',transform=tfy,color='gold',fontsize=4)\n";
-        assert_eq!(icon.buffer, b);
-    }
-
-    #[test]
-    fn draw_log_log_works() {
-        let mut icon = SlopeIcon::new();
-        icon.set_above(true)
-            .set_log_x(true)
-            .set_log_y(true)
-            .draw(2.0, 10.0, 100.0);
-        let b: &str = "xc,yc=dataToAxis((1,2))\n\
-                       xa,ya=dataToAxis((2,4))\n\
-                       m,l=(ya-yc)/(xa-xc),0.05\n\
-                       dat=[[pth.Path.MOVETO,(xc-l,yc-m*l)],[pth.Path.LINETO,(xc-l,yc+m*l)],[pth.Path.LINETO,(xc+l,yc+m*l)],[pth.Path.CLOSEPOLY,(None,None)]]\n\
-                       tf=tra.offset_copy(plt.gca().transAxes,fig=plt.gcf(),x=0,y=5,units='points')\n\
-                       cmd,pts=zip(*dat)\n\
-                       h=pth.Path(pts,cmd)\n\
-                       p=pat.PathPatch(h,transform=tf,edgecolor='#000000',facecolor='#f7f7f7')\n\
-                       plt.gca().add_patch(p)\n\
-                       xm,ym=xc-l,yc-m*l\n\
-                       xp,yp=xc+l,yc+m*l\n\
-                       tfx=tra.offset_copy(plt.gca().transAxes,fig=plt.gcf(),x=0,y=7,units='points')\n\
-                       tfy=tra.offset_copy(plt.gca().transAxes,fig=plt.gcf(),x=-3,y=5,units='points')\n\
-                       plt.text(xc,yp,r'1',ha='center',va='bottom',transform=tfx,color='#000000')\n\
-                       plt.text(xm,yc,r'2',ha='right',va='center',transform=tfy,color='#000000')\n";
         assert_eq!(icon.buffer, b);
     }
 }

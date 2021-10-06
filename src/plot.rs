@@ -132,7 +132,7 @@ impl Plot {
                 .map_err(|_| "cannot write to log file")?;
 
             // TODO: if not CI, do not print the log file by default
-            self.print_log_file(&figure_path)?;
+            // self.print_log_file(&figure_path)?;
 
             return Err("python3 failed; please see the log file");
         }

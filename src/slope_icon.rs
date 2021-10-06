@@ -604,4 +604,29 @@ mod tests {
                        plt.text(xm,yc,r'lambda',ha='right',va='center',transform=tfy,color='gold',fontsize=4)\n";
         assert_eq!(icon.buffer, b);
     }
+
+    #[test]
+    fn draw_log_log_works() {
+        let mut icon = SlopeIcon::new();
+        icon.set_above(true)
+            .set_log_x(true)
+            .set_log_y(true)
+            .draw(2.0, 10.0, 100.0);
+        let b: &str = "xc,yc=dataToAxis((1,2))\n\
+                       xa,ya=dataToAxis((2,4))\n\
+                       m,l=(ya-yc)/(xa-xc),0.05\n\
+                       dat=[[pth.Path.MOVETO,(xc-l,yc-m*l)],[pth.Path.LINETO,(xc-l,yc+m*l)],[pth.Path.LINETO,(xc+l,yc+m*l)],[pth.Path.CLOSEPOLY,(None,None)]]\n\
+                       tf=tra.offset_copy(plt.gca().transAxes,fig=plt.gcf(),x=0,y=5,units='points')\n\
+                       cmd,pts=zip(*dat)\n\
+                       h=pth.Path(pts,cmd)\n\
+                       p=pat.PathPatch(h,transform=tf,edgecolor='#000000',facecolor='#f7f7f7')\n\
+                       plt.gca().add_patch(p)\n\
+                       xm,ym=xc-l,yc-m*l\n\
+                       xp,yp=xc+l,yc+m*l\n\
+                       tfx=tra.offset_copy(plt.gca().transAxes,fig=plt.gcf(),x=0,y=7,units='points')\n\
+                       tfy=tra.offset_copy(plt.gca().transAxes,fig=plt.gcf(),x=-3,y=5,units='points')\n\
+                       plt.text(xc,yp,r'1',ha='center',va='bottom',transform=tfx,color='#000000')\n\
+                       plt.text(xm,yc,r'2',ha='right',va='center',transform=tfy,color='#000000')\n";
+        assert_eq!(icon.buffer, b);
+    }
 }

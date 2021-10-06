@@ -47,6 +47,9 @@ impl SlopeIcon {
 
     /// Draws an icon of line slope
     pub fn draw(&mut self, slope: f64, x_center: f64, y_center: f64) {
+        // set flip flag
+        let flip = if slope < 0.0 { !self.flipped } else { self.flipped };
+
         // compute axis (normalized) coordinates and slope
         let (mut xc, mut yc) = (x_center, y_center);
         let (mut xa, mut ya) = (xc + 1.0, yc + slope);
@@ -68,7 +71,7 @@ impl SlopeIcon {
         .unwrap();
 
         // set polygon
-        if self.flipped {
+        if flip {
             self.buffer.push_str(
                 "dat=[[pth.Path.MOVETO,(xc-l,yc-m*l)],\
                       [pth.Path.LINETO,(xc-l,yc+m*l)],\
@@ -124,7 +127,7 @@ impl SlopeIcon {
         let tf_txt = self.transform_text(slope);
         self.buffer.push_str(&tf_txt);
         let (opt_x, opt_y) = self.options_text();
-        if self.flipped {
+        if flip {
             if slope < 0.0 {
                 write!(&mut self.buffer, "plt.text(xc,yp,'1',ha='center',va='top'{})\n", opt_x).unwrap();
             } else {
@@ -246,9 +249,10 @@ impl SlopeIcon {
 
     /// Returns the icon's (whole) coordinate transform
     fn transform(&self, slope: f64) -> String {
+        let flip = if slope < 0.0 { !self.flipped } else { self.flipped };
         let mut opt = String::new();
         if self.offset_v > 0.0 {
-            let dv = if self.flipped {
+            let dv = if flip {
                 self.offset_v * f64::signum(slope)
             } else {
                 -self.offset_v * f64::signum(slope)
@@ -267,9 +271,10 @@ impl SlopeIcon {
 
     /// Returns the coordinate transform for text
     fn transform_text(&self, slope: f64) -> String {
+        let flip = if slope < 0.0 { !self.flipped } else { self.flipped };
         let mut opt = String::new();
         if self.offset_v > 0.0 || self.text_offset_v > 0.0 {
-            let dv = if self.flipped {
+            let dv = if flip {
                 (self.offset_v + self.text_offset_v) * f64::signum(slope)
             } else {
                 -(self.offset_v + self.text_offset_v) * f64::signum(slope)
@@ -284,16 +289,12 @@ impl SlopeIcon {
             opt.push_str("tfx=plt.gca().transAxes\n");
         }
         if self.offset_v > 0.0 || self.text_offset_h > 0.0 {
-            let dv = if self.flipped {
+            let dv = if flip {
                 self.offset_v * f64::signum(slope)
             } else {
                 -self.offset_v * f64::signum(slope)
             };
-            let dh = if self.flipped {
-                -self.text_offset_h
-            } else {
-                self.text_offset_h
-            };
+            let dh = if flip { -self.text_offset_h } else { self.text_offset_h };
             write!(
                 &mut opt,
                 "tfy=tra.offset_copy(plt.gca().transAxes,fig=plt.gcf(),x={},y={},units='points')\n",

@@ -1,15 +1,15 @@
 use super::GraphMaker;
 use std::fmt::Write;
 
-pub struct SlopeIndicator {
-    flipped: bool,      // indicator is flipped
+pub struct SlopeIcon {
+    flipped: bool,      // icon is flipped
     log_x: bool,        // x-axis is logarithm
     log_y: bool,        // y-axis is logarithm
-    edge_color: String, // Color of indicator lines
-    face_color: String, // Color of indicator faces
+    edge_color: String, // Color of icon lines
+    face_color: String, // Color of icon faces
     line_style: String, // Style of lines
     line_width: f64,    // Width of lines
-    length: f64,        // horizontal length of indicator in Axes coords
+    length: f64,        // horizontal length of icon in Axes coords
     offset_v: f64,      // vertical offset in points
     no_text: bool,      // do not draw text
     fontsize: f64,      // text font size
@@ -21,10 +21,10 @@ pub struct SlopeIndicator {
     buffer: String,     // buffer
 }
 
-impl SlopeIndicator {
-    /// Creates a new SlopeIndicator object
+impl SlopeIcon {
+    /// Creates a new SlopeIcon object
     pub fn new() -> Self {
-        SlopeIndicator {
+        SlopeIcon {
             flipped: false,
             log_x: false,
             log_y: false,
@@ -45,7 +45,7 @@ impl SlopeIndicator {
         }
     }
 
-    /// Draws an indicator of line slope
+    /// Draws an icon of line slope
     pub fn draw(&mut self, slope: f64, x_center: f64, y_center: f64) {
         // compute axis (normalized) coordinates and slope
         let (mut xc, mut yc) = (x_center, y_center);
@@ -161,7 +161,7 @@ impl SlopeIndicator {
         }
     }
 
-    /// Sets option to draw flipped indicator
+    /// Sets option to draw flipped icon
     pub fn set_flipped(&mut self, flag: bool) -> &mut Self {
         self.flipped = flag;
         self
@@ -179,7 +179,7 @@ impl SlopeIndicator {
         self
     }
 
-    /// Sets the color of indicator lines
+    /// Sets the color of icon lines
     pub fn set_edge_color(&mut self, color: &str) -> &mut Self {
         self.edge_color = String::from(color);
         self
@@ -202,7 +202,7 @@ impl SlopeIndicator {
         self
     }
 
-    /// Sets the whole indicator's offset in normalized axes coordinates in points
+    /// Sets the whole icon's offset in normalized axes coordinates in points
     pub fn set_offset_v(&mut self, value: f64) -> &mut Self {
         self.offset_v = value;
         self
@@ -226,7 +226,7 @@ impl SlopeIndicator {
         self
     }
 
-    /// Sets text of slope indicator
+    /// Sets text of slope icon
     pub fn set_text_slope(&mut self, slope: &str) -> &mut Self {
         self.text_slope = String::from(slope);
         self
@@ -244,7 +244,7 @@ impl SlopeIndicator {
         self
     }
 
-    /// Returns the indicator's (whole) coordinate transform
+    /// Returns the icon's (whole) coordinate transform
     fn transform(&self, slope: f64) -> String {
         let mut opt = String::new();
         if self.offset_v > 0.0 {
@@ -306,7 +306,7 @@ impl SlopeIndicator {
         opt
     }
 
-    /// Returns options for slope indicator
+    /// Returns options for slope icon
     fn options(&self) -> String {
         let mut opt = String::from(",transform=tf");
         if self.edge_color != "" {
@@ -337,7 +337,7 @@ impl SlopeIndicator {
     }
 }
 
-impl GraphMaker for SlopeIndicator {
+impl GraphMaker for SlopeIcon {
     fn get_buffer<'a>(&'a self) -> &'a String {
         &self.buffer
     }
@@ -347,109 +347,109 @@ impl GraphMaker for SlopeIndicator {
 
 #[cfg(test)]
 mod tests {
-    use super::SlopeIndicator;
+    use super::SlopeIcon;
 
     #[test]
     fn new_works() {
-        let indicator = SlopeIndicator::new();
-        assert_eq!(indicator.flipped, false);
-        assert_eq!(indicator.log_x, false);
-        assert_eq!(indicator.log_y, false);
-        assert_eq!(indicator.edge_color.len(), 7);
-        assert_eq!(indicator.line_style.len(), 0);
-        assert_eq!(indicator.line_width, 0.0);
-        assert_eq!(indicator.offset_v, 5.0);
-        assert_eq!(indicator.no_text, false);
-        assert_eq!(indicator.fontsize, 0.0);
-        assert_eq!(indicator.text_slope.len(), 0);
-        assert_eq!(indicator.text_offset_h, 3.0);
-        assert_eq!(indicator.text_offset_v, 3.0);
-        assert_eq!(indicator.buffer.len(), 0);
+        let icon = SlopeIcon::new();
+        assert_eq!(icon.flipped, false);
+        assert_eq!(icon.log_x, false);
+        assert_eq!(icon.log_y, false);
+        assert_eq!(icon.edge_color.len(), 7);
+        assert_eq!(icon.line_style.len(), 0);
+        assert_eq!(icon.line_width, 0.0);
+        assert_eq!(icon.offset_v, 5.0);
+        assert_eq!(icon.no_text, false);
+        assert_eq!(icon.fontsize, 0.0);
+        assert_eq!(icon.text_slope.len(), 0);
+        assert_eq!(icon.text_offset_h, 3.0);
+        assert_eq!(icon.text_offset_v, 3.0);
+        assert_eq!(icon.buffer.len(), 0);
     }
 
     #[test]
     fn transform_works() {
-        let mut indicator = SlopeIndicator::new();
-        indicator.set_offset_v(7.0);
-        indicator.set_flipped(false);
+        let mut icon = SlopeIcon::new();
+        icon.set_offset_v(7.0);
+        icon.set_flipped(false);
         assert_eq!(
-            indicator.transform(1.0),
+            icon.transform(1.0),
             "tf=tra.offset_copy(plt.gca().transData,fig=plt.gcf(),x=0,y=-7,units='points')\n"
         );
-        indicator.set_flipped(true);
+        icon.set_flipped(true);
         assert_eq!(
-            indicator.transform(1.0),
+            icon.transform(1.0),
             "tf=tra.offset_copy(plt.gca().transData,fig=plt.gcf(),x=0,y=7,units='points')\n"
         );
-        indicator.set_flipped(false);
+        icon.set_flipped(false);
         assert_eq!(
-            indicator.transform(-1.0),
+            icon.transform(-1.0),
             "tf=tra.offset_copy(plt.gca().transData,fig=plt.gcf(),x=0,y=7,units='points')\n"
         );
-        indicator.set_flipped(true);
+        icon.set_flipped(true);
         assert_eq!(
-            indicator.transform(-1.0),
+            icon.transform(-1.0),
             "tf=tra.offset_copy(plt.gca().transData,fig=plt.gcf(),x=0,y=-7,units='points')\n"
         );
-        indicator.set_offset_v(0.0);
-        indicator.set_flipped(false);
-        assert_eq!(indicator.transform(-1.0), "");
+        icon.set_offset_v(0.0);
+        icon.set_flipped(false);
+        assert_eq!(icon.transform(-1.0), "");
     }
 
     #[test]
     fn transform_text_works() {
-        let mut indicator = SlopeIndicator::new();
+        let mut icon = SlopeIcon::new();
 
-        indicator.set_offset_v(7.0);
-        indicator.set_text_offset_h(1.0);
-        indicator.set_text_offset_v(3.0);
-        indicator.set_flipped(false);
+        icon.set_offset_v(7.0);
+        icon.set_text_offset_h(1.0);
+        icon.set_text_offset_v(3.0);
+        icon.set_flipped(false);
         assert_eq!(
-            indicator.transform_text(1.0),
+            icon.transform_text(1.0),
             "tfx=tra.offset_copy(plt.gca().transData,fig=plt.gcf(),x=0,y=-10,units='points')\n\
              tfy=tra.offset_copy(plt.gca().transData,fig=plt.gcf(),x=1,y=-7,units='points')\n"
         );
-        indicator.set_flipped(true);
+        icon.set_flipped(true);
         assert_eq!(
-            indicator.transform_text(1.0),
+            icon.transform_text(1.0),
             "tfx=tra.offset_copy(plt.gca().transData,fig=plt.gcf(),x=0,y=10,units='points')\n\
              tfy=tra.offset_copy(plt.gca().transData,fig=plt.gcf(),x=-1,y=7,units='points')\n"
         );
-        indicator.set_flipped(false);
+        icon.set_flipped(false);
         assert_eq!(
-            indicator.transform_text(-1.0),
+            icon.transform_text(-1.0),
             "tfx=tra.offset_copy(plt.gca().transData,fig=plt.gcf(),x=0,y=10,units='points')\n\
              tfy=tra.offset_copy(plt.gca().transData,fig=plt.gcf(),x=1,y=7,units='points')\n"
         );
-        indicator.set_flipped(true);
+        icon.set_flipped(true);
         assert_eq!(
-            indicator.transform_text(-1.0),
+            icon.transform_text(-1.0),
             "tfx=tra.offset_copy(plt.gca().transData,fig=plt.gcf(),x=0,y=-10,units='points')\n\
              tfy=tra.offset_copy(plt.gca().transData,fig=plt.gcf(),x=-1,y=-7,units='points')\n"
         );
 
-        indicator.set_offset_v(0.0);
-        indicator.set_flipped(false);
+        icon.set_offset_v(0.0);
+        icon.set_flipped(false);
         assert_eq!(
-            indicator.transform_text(1.0),
+            icon.transform_text(1.0),
             "tfx=tra.offset_copy(plt.gca().transData,fig=plt.gcf(),x=0,y=-3,units='points')\n\
              tfy=tra.offset_copy(plt.gca().transData,fig=plt.gcf(),x=1,y=-0,units='points')\n"
         );
-        indicator.set_flipped(true);
+        icon.set_flipped(true);
         assert_eq!(
-            indicator.transform_text(1.0),
+            icon.transform_text(1.0),
             "tfx=tra.offset_copy(plt.gca().transData,fig=plt.gcf(),x=0,y=3,units='points')\n\
              tfy=tra.offset_copy(plt.gca().transData,fig=plt.gcf(),x=-1,y=0,units='points')\n"
         );
-        indicator.set_flipped(false);
+        icon.set_flipped(false);
         assert_eq!(
-            indicator.transform_text(-1.0),
+            icon.transform_text(-1.0),
             "tfx=tra.offset_copy(plt.gca().transData,fig=plt.gcf(),x=0,y=3,units='points')\n\
              tfy=tra.offset_copy(plt.gca().transData,fig=plt.gcf(),x=1,y=0,units='points')\n"
         );
-        indicator.set_flipped(true);
+        icon.set_flipped(true);
         assert_eq!(
-            indicator.transform_text(-1.0),
+            icon.transform_text(-1.0),
             "tfx=tra.offset_copy(plt.gca().transData,fig=plt.gcf(),x=0,y=-3,units='points')\n\
              tfy=tra.offset_copy(plt.gca().transData,fig=plt.gcf(),x=-1,y=-0,units='points')\n"
         );
@@ -457,13 +457,12 @@ mod tests {
 
     #[test]
     fn options_works() {
-        let mut indicator = SlopeIndicator::new();
-        indicator
-            .set_edge_color("red")
+        let mut icon = SlopeIcon::new();
+        icon.set_edge_color("red")
             .set_line_style("--")
             .set_line_width(2.0)
             .set_offset_v(12.0);
-        let options = indicator.options();
+        let options = icon.options();
         assert_eq!(
             options,
             ",color='red'\
@@ -475,8 +474,8 @@ mod tests {
 
     #[test]
     fn draw_works() {
-        let mut indicator = SlopeIndicator::new();
-        indicator.draw(1.0, 0.5, 0.5);
+        let mut icon = SlopeIcon::new();
+        icon.draw(1.0, 0.5, 0.5);
         let b: &str = "x=np.array([0.4,0.6,0.6,0.4,],dtype=float)\n\
                        y=np.array([0.4,0.4,0.6,0.4,],dtype=float)\n\
                        tf=tra.offset_copy(plt.gca().transData,fig=plt.gcf(),x=0,y=-5,units='points')\n\
@@ -485,6 +484,6 @@ mod tests {
                        tfy=tra.offset_copy(plt.gca().transData,fig=plt.gcf(),x=3,y=-5,units='points')\n\
                        plt.text(0.5,0.4,'1',ha='center',va='top',color='#3f3f3f',transform=tfx)\n\
                        plt.text(0.6,0.5,'1',ha='left',va='center',color='#3f3f3f',transform=tfy)\n";
-        assert_eq!(indicator.buffer, b);
+        assert_eq!(icon.buffer, b);
     }
 }

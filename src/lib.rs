@@ -59,7 +59,7 @@ mod histogram;
 mod legend;
 mod plot;
 mod shapes;
-mod slope_indicator;
+mod slope_icon;
 mod surface;
 mod text;
 pub use crate::as_matrix::*;
@@ -73,7 +73,7 @@ pub use crate::histogram::*;
 pub use crate::legend::*;
 pub use crate::plot::*;
 pub use crate::shapes::*;
-pub use crate::slope_indicator::*;
+pub use crate::slope_icon::*;
 pub use crate::surface::*;
 pub use crate::text::*;
 

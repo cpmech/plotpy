@@ -45,6 +45,10 @@ use std::fmt::Write;
 ///
 /// ![doc_contour.svg](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/doc_contour.svg)
 ///
+/// See also integration test in the **tests** directory.
+///
+/// ![integ_contour.svg](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_contour.svg)
+///
 pub struct Contour {
     colors: Vec<String>,         // Colors to be used instead of colormap
     levels: Vec<f64>,            // Pre-defined levels

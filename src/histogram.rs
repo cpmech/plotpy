@@ -47,6 +47,10 @@ use std::fmt::Write;
 ///
 /// ![doc_histogram.svg](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/doc_histogram.svg)
 ///
+/// See also integration test in the **tests** directory.
+///
+/// ![integ_histogram_1.svg](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_histogram_1.svg)
+///
 pub struct Histogram {
     colors: Vec<String>, // Colors for each bar
     line_width: f64,     // Line width

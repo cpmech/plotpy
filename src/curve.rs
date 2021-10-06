@@ -56,6 +56,10 @@ use std::fmt::Write;
 ///
 /// ![doc_curve.svg](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/doc_curve.svg)
 ///
+/// See also integration test in the **tests** directory.
+///
+/// ![integ_curve.svg](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_curve.svg)
+///
 pub struct Curve {
     label: String,             // Name of this curve in the legend
     line_alpha: f64,           // Opacity of lines (0, 1]. A<1e-14 => A=1.0

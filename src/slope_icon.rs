@@ -70,7 +70,15 @@ use std::fmt::Write;
 ///
 /// See also integration test in the **tests** directory.
 ///
+/// ![integ_slope_icon_above.svg](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_slope_icon_above.svg)
+///
+/// ![integ_slope_icon_below.svg](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_slope_icon_below.svg)
+///
 /// ![integ_slope_icon_example.svg](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_slope_icon_example.svg)
+///
+/// ![integ_slope_icon_linx_liny.svg](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_slope_icon_linx_liny.svg)
+///
+/// ![integ_slope_icon_logx_logy.svg](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_slope_icon_logx_logy.svg)
 ///
 pub struct SlopeIcon {
     above: bool,        // draw icon above line

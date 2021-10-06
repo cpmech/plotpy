@@ -66,31 +66,35 @@ impl Text {
         write!(&mut self.buffer, "plt.text({},{},'{}'{})\n", x, y, message, &opt).unwrap();
     }
 
-    /// Color
+    /// Sets the text color
     pub fn set_color(&mut self, color: &str) -> &mut Self {
         self.color = String::from(color);
         self
     }
 
-    /// Horizontal alignment: "center", "left", "right"
+    /// Sets the horizontal alignment
+    ///
+    /// Options: "center", "left", "right"
     pub fn set_align_horizontal(&mut self, option: &str) -> &mut Self {
         self.align_horizontal = String::from(option);
         self
     }
 
-    /// Vertical alignment: "center", "top", "bottom", "baseline", "center_baseline"
+    /// Sets the vertical alignment
+    ///
+    /// Options: "center", "top", "bottom", "baseline", "center_baseline"
     pub fn set_align_vertical(&mut self, option: &str) -> &mut Self {
         self.align_vertical = String::from(option);
         self
     }
 
-    /// Font size
+    /// Sets the font size
     pub fn set_fontsize(&mut self, fontsize: f64) -> &mut Self {
         self.fontsize = fontsize;
         self
     }
 
-    /// Text rotation
+    /// Sets the text rotation
     pub fn set_rotation(&mut self, rotation: f64) -> &mut Self {
         self.rotation = rotation;
         self

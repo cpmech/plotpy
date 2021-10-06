@@ -1,4 +1,5 @@
 use super::{call_python3, Legend};
+use std::ffi::OsStr;
 use std::fmt::Write;
 use std::fs::{self, File};
 use std::io::Write as IoWrite;
@@ -53,7 +54,7 @@ pub trait GraphMaker {
 ///     .set_title("first")
 ///     .add(&curve1)
 ///     .grid_labels_legend("x", "y")
-///     .set_equal_axes();
+///     .set_equal_axes(true);
 ///
 /// // add curve to subplot
 /// plot.set_subplot(2, 2, 2)
@@ -100,12 +101,20 @@ impl Plot {
     }
 
     /// Calls python3 and saves the python script and figure
-    pub fn save(&self, figure_path: &Path) -> Result<(), &'static str> {
+    ///
+    /// # Input
+    ///
+    /// * `figure_path` -- may be a String, &str, or Path
+    pub fn save<S>(&self, figure_path: &S) -> Result<(), &'static str>
+    where
+        S: AsRef<OsStr> + ?Sized,
+    {
         // update commands
+        let fig_path = Path::new(figure_path);
         let commands = format!(
             "{}\nfn='{}'\nplt.savefig(fn, bbox_inches='tight', bbox_extra_artists=EXTRA_ARTISTS)\n",
             self.buffer,
-            figure_path.to_string_lossy(),
+            fig_path.to_string_lossy(),
         );
 
         // call python
@@ -123,7 +132,6 @@ impl Plot {
                 .map_err(|_| "cannot write to log file")?;
             return Err("python3 failed; please see the log file");
         }
-
         Ok(())
     }
 
@@ -228,8 +236,12 @@ impl Plot {
     }
 
     /// Sets same scale for both axes
-    pub fn set_equal_axes(&mut self) -> &mut Self {
-        self.buffer.push_str("plt.axis('equal')\n");
+    pub fn set_equal_axes(&mut self, equal: bool) -> &mut Self {
+        if equal {
+            self.buffer.push_str("plt.gca().axes.set_aspect('equal')\n");
+        } else {
+            self.buffer.push_str("plt.gca().axes.set_aspect('auto')\n");
+        }
         self
     }
 
@@ -323,7 +335,7 @@ impl Plot {
         self
     }
 
-    // Sets number of ticks along x
+    /// Sets number of ticks along x
     pub fn set_num_ticks_x(&mut self, num: usize) -> &mut Self {
         if num == 0 {
             self.buffer.push_str("plt.gca().get_xaxis().set_ticks([])\n");
@@ -338,7 +350,7 @@ impl Plot {
         self
     }
 
-    // Sets number of ticks along y
+    /// Sets number of ticks along y
     pub fn set_num_ticks_y(&mut self, num: usize) -> &mut Self {
         if num == 0 {
             self.buffer.push_str("plt.gca().get_yaxis().set_ticks([])\n");
@@ -349,6 +361,34 @@ impl Plot {
                 num
             )
             .unwrap();
+        }
+        self
+    }
+
+    /// Sets a log10 x-scale
+    ///
+    /// # Note
+    ///
+    /// `set_log_x(true)` must be called before adding curves.
+    pub fn set_log_x(&mut self, log: bool) -> &mut Self {
+        if log {
+            self.buffer.push_str("plt.gca().set_xscale('log')\n");
+        } else {
+            self.buffer.push_str("plt.gca().set_xscale('linear')\n");
+        }
+        self
+    }
+
+    /// Sets a log10 y-scale
+    ///
+    /// # Note
+    ///
+    /// `set_log_y(true)` must be called before adding curves.
+    pub fn set_log_y(&mut self, log: bool) -> &mut Self {
+        if log {
+            self.buffer.push_str("plt.gca().set_yscale('log')\n");
+        } else {
+            self.buffer.push_str("plt.gca().set_yscale('linear')\n");
         }
         self
     }
@@ -446,7 +486,20 @@ mod tests {
         assert_eq!(plot.buffer.len(), 0);
         let path = Path::new(OUT_DIR).join("save_works.svg");
         plot.save(&path)?;
-        let file = File::open(path).map_err(|_| "cannot open file")?;
+        let file = File::open(&path).map_err(|_| "cannot open file")?;
+        let buffered = BufReader::new(file);
+        let lines_iter = buffered.lines();
+        assert!(lines_iter.count() > 20);
+        Ok(())
+    }
+
+    #[test]
+    fn save_str_works() -> Result<(), &'static str> {
+        let plot = Plot::new();
+        assert_eq!(plot.buffer.len(), 0);
+        let path = "/tmp/plotpy/unit_tests/save_str_works.svg";
+        plot.save(&path)?;
+        let file = File::open(&path).map_err(|_| "cannot open file")?;
         let buffered = BufReader::new(file);
         let lines_iter = buffered.lines();
         assert!(lines_iter.count() > 20);
@@ -508,7 +561,8 @@ mod tests {
     fn set_functions_work() {
         let mut plot = Plot::new();
         plot.set_title("my plot")
-            .set_equal_axes()
+            .set_equal_axes(true)
+            .set_equal_axes(false)
             .set_hide_axes(true)
             .set_range(-1.0, 1.0, -1.0, 1.0)
             .set_range_from_vec(&[0.0, 1.0, 0.0, 1.0])
@@ -522,13 +576,18 @@ mod tests {
             .set_num_ticks_x(8)
             .set_num_ticks_y(0)
             .set_num_ticks_y(5)
+            .set_log_x(true)
+            .set_log_y(true)
+            .set_log_x(false)
+            .set_log_y(false)
             .set_label_x("x-label")
             .set_label_y("y-label")
             .set_labels("x", "y")
             .set_camera(1.0, 10.0)
             .clear_current_figure();
         let b: &str = "plt.title(r'my plot')\n\
-                       plt.axis('equal')\n\
+                       plt.gca().axes.set_aspect('equal')\n\
+                       plt.gca().axes.set_aspect('auto')\n\
                        plt.axis('off')\n\
                        plt.axis([-1,1,-1,1])\n\
                        plt.axis([0,1,0,1])\n\
@@ -542,6 +601,10 @@ mod tests {
                        plt.gca().get_xaxis().set_major_locator(tck.MaxNLocator(8))\n\
                        plt.gca().get_yaxis().set_ticks([])\n\
                        plt.gca().get_yaxis().set_major_locator(tck.MaxNLocator(5))\n\
+                       plt.gca().set_xscale('log')\n\
+                       plt.gca().set_yscale('log')\n\
+                       plt.gca().set_xscale('linear')\n\
+                       plt.gca().set_yscale('linear')\n\
                        plt.xlabel(r'x-label')\n\
                        plt.ylabel(r'y-label')\n\
                        plt.xlabel(r'x')\n\

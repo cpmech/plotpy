@@ -41,7 +41,7 @@ use std::fmt::Write;
 /// // add shapes to plot
 /// let mut plot = Plot::new();
 /// plot.set_hide_axes(true)
-///     .set_equal_axes()
+///     .set_equal_axes(true)
 ///     .set_range(-0.05, 1.05, -0.05, 1.05)
 ///     .add(&shapes);
 ///
@@ -142,11 +142,16 @@ impl Shapes {
             write!(&mut self.buffer, ",[pth.Path.CLOSEPOLY,(None,None)]").unwrap();
         }
         let opt = self.options_shared();
-        write!(&mut self.buffer, "]\n").unwrap();
-        write!(&mut self.buffer, "cmd,pts=zip(*dat)\n").unwrap();
-        write!(&mut self.buffer, "h=pth.Path(pts,cmd)\n").unwrap();
-        write!(&mut self.buffer, "p=pat.PathPatch(h{})\n", &opt).unwrap();
-        write!(&mut self.buffer, "plt.gca().add_patch(p)\n").unwrap();
+        write!(
+            &mut self.buffer,
+            "]\n\
+             cmd,pts=zip(*dat)\n\
+             h=pth.Path(pts,cmd)\n\
+             p=pat.PathPatch(h{})\n\
+             plt.gca().add_patch(p)\n",
+            &opt
+        )
+        .unwrap();
     }
 
     /// Sets the edge color (shared among shapes)

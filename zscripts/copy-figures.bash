@@ -11,6 +11,7 @@ DOC_TESTS="
     legend
     plot
     shapes
+    slope_icon
     surface
     text
 "

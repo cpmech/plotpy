@@ -6,6 +6,7 @@ import matplotlib.patches as pat
 import matplotlib.path as pth
 import matplotlib.patheffects as pff
 import matplotlib.lines as lns
+import matplotlib.transforms as tra
 import mpl_toolkits.mplot3d as m3d
 NaN = np.NaN
 EXTRA_ARTISTS = []
@@ -22,6 +23,12 @@ def maybeCreateAX3D():
         AX3D.set_ylabel('y')
         AX3D.set_zlabel('z')
         addToEA(AX3D)
+def dataToAxis(coords):
+    plt.axis() # must call this first
+    return plt.gca().transLimits.transform(coords)
+def axisToData(coords):
+    plt.axis() # must call this first
+    return plt.gca().transLimits.inverted().transform(coords)
 
 ";
 
@@ -33,6 +40,6 @@ mod tests {
 
     #[test]
     fn constants_are_correct() {
-        assert_eq!(PYTHON_HEADER.len(), 779);
+        assert_eq!(PYTHON_HEADER.len(), 1052);
     }
 }

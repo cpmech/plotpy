@@ -439,7 +439,7 @@ impl Plot {
         self
     }
 
-    // Sets option to hide (or show) frame borders
+    /// Sets option to hide (or show) frame borders
     pub fn set_frame_border(&mut self, left: bool, right: bool, bottom: bool, top: bool) -> &mut Self {
         if left {
             self.buffer.push_str("plt.gca().spines['left'].set_visible(True)\n");
@@ -464,7 +464,7 @@ impl Plot {
         self
     }
 
-    // HideAllBorders hides all frame borders
+    /// Sets visibility of all frame borders
     pub fn set_frame_borders(&mut self, show_all: bool) -> &mut Self {
         self.set_frame_border(show_all, show_all, show_all, show_all)
     }

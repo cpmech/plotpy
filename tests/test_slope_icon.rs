@@ -235,14 +235,15 @@ fn test_slope_icon_logx_liny() -> Result<(), &'static str> {
     let mut icon8 = SlopeIcon::new();
 
     // configure icons
-    icon1.set_offset_v(1.0).set_log_x(true);
-    icon2.set_offset_v(1.0).set_log_x(true).set_flipped(true);
-    icon3.set_offset_v(1.0).set_log_x(true);
-    icon4.set_offset_v(1.0).set_log_x(true).set_flipped(true);
-    icon5.set_offset_v(1.0).set_log_x(true);
-    icon6.set_offset_v(1.0).set_log_x(true).set_flipped(true);
-    icon7.set_offset_v(1.0).set_log_x(true);
-    icon8.set_offset_v(1.0).set_log_x(true).set_flipped(true);
+    let offset = 1.5;
+    icon1.set_offset_v(offset).set_log_x(true);
+    icon2.set_offset_v(offset).set_log_x(true).set_flipped(true);
+    icon3.set_offset_v(offset).set_log_x(true);
+    icon4.set_offset_v(offset).set_log_x(true).set_flipped(true);
+    icon5.set_offset_v(offset).set_log_x(true);
+    icon6.set_offset_v(offset).set_log_x(true).set_flipped(true);
+    icon7.set_offset_v(offset).set_log_x(true);
+    icon8.set_offset_v(offset).set_log_x(true).set_flipped(true);
 
     // draw icon
     icon1.draw(slope, 1e2, f1(1e2));
@@ -314,14 +315,14 @@ fn test_slope_icon_linx_logy() -> Result<(), &'static str> {
     let mut icon8 = SlopeIcon::new();
 
     // configure icons
-    icon1.set_offset_v(1.0).set_log_y(true);
-    icon2.set_offset_v(1.0).set_log_y(true).set_flipped(true);
-    icon3.set_offset_v(1.0).set_log_y(true);
-    icon4.set_offset_v(1.0).set_log_y(true).set_flipped(true);
-    icon5.set_offset_v(1.0).set_log_y(true);
-    icon6.set_offset_v(1.0).set_log_y(true).set_flipped(true);
-    icon7.set_offset_v(1.0).set_log_y(true);
-    icon8.set_offset_v(1.0).set_log_y(true).set_flipped(true);
+    icon1.set_offset_v(2.0).set_log_y(true);
+    icon2.set_offset_v(2.0).set_log_y(true).set_flipped(true);
+    icon3.set_offset_v(2.0).set_log_y(true);
+    icon4.set_offset_v(2.0).set_log_y(true).set_flipped(true);
+    icon5.set_offset_v(2.0).set_log_y(true);
+    icon6.set_offset_v(2.0).set_log_y(true).set_flipped(true);
+    icon7.set_offset_v(2.0).set_log_y(true);
+    icon8.set_offset_v(2.0).set_log_y(true).set_flipped(true);
 
     // draw icon
     icon1.draw(slope, g1(1e2), 1e2);
@@ -395,27 +396,28 @@ fn test_slope_icon_logx_logy() -> Result<(), &'static str> {
     let mut icon8 = SlopeIcon::new();
 
     // configure icons
-    icon1.set_offset_v(1.0).set_log_x(true).set_log_y(true);
+    let offset = 2.0;
+    icon1.set_offset_v(offset).set_log_x(true).set_log_y(true);
     icon2
-        .set_offset_v(1.0)
+        .set_offset_v(offset)
         .set_log_x(true)
         .set_log_y(true)
         .set_flipped(true);
-    icon3.set_offset_v(1.0).set_log_x(true).set_log_y(true);
+    icon3.set_offset_v(offset).set_log_x(true).set_log_y(true);
     icon4
-        .set_offset_v(1.0)
+        .set_offset_v(offset)
         .set_log_x(true)
         .set_log_y(true)
         .set_flipped(true);
-    icon5.set_offset_v(1.0).set_log_x(true).set_log_y(true);
+    icon5.set_offset_v(offset).set_log_x(true).set_log_y(true);
     icon6
-        .set_offset_v(1.0)
+        .set_offset_v(offset)
         .set_log_x(true)
         .set_log_y(true)
         .set_flipped(true);
-    icon7.set_offset_v(1.0).set_log_x(true).set_log_y(true);
+    icon7.set_offset_v(offset).set_log_x(true).set_log_y(true);
     icon8
-        .set_offset_v(1.0)
+        .set_offset_v(offset)
         .set_log_x(true)
         .set_log_y(true)
         .set_flipped(true);

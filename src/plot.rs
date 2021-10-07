@@ -199,7 +199,7 @@ impl Plot {
     ///
     /// # Note
     ///
-    /// The other of commands matter (as usual in a Python/Matplotlib script).
+    /// The order of commands matter (as usual in a Python/Matplotlib script).
     pub fn write_extra(&mut self, commands: &str) -> &mut Self {
         self.buffer.push_str(commands);
         self

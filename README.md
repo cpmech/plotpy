@@ -21,11 +21,11 @@ sudo apt-get install \
     python3-matplotlib
 ```
 
-Add this to your Cargo.toml (choose the right version):
+Add this to your Cargo.toml:
 
 ```toml
 [dependencies]
-plotpy = "*"
+plotpy = "0.2"
 ```
 
 ## Examples
@@ -35,7 +35,6 @@ plotpy = "*"
 ```rust
 use plotpy::{Contour, Plot};
 use russell_lab::generate3d;
-use std::path::Path;
 
 fn main() -> Result<(), &'static str> {
     // generate (x,y,z) matrices
@@ -58,7 +57,7 @@ fn main() -> Result<(), &'static str> {
     plot.set_labels("x", "y");
 
     // save figure
-    plot.save(Path::new("/tmp/plotpy/readme_contour.svg"))?;
+    plot.save("/tmp/plotpy/readme_contour.svg")?;
     Ok(())
 }
 ```

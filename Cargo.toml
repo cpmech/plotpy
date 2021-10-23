@@ -1,7 +1,7 @@
 [package]
 name = "plotpy"
 version = "0.2.4"
-edition = "2018"
+edition = "2021"
 license = "MIT"
 description = "Rust plotting library using Python (Matplotlib)"
 homepage = "https://github.com/cpmech/plotpy"

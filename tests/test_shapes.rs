@@ -52,7 +52,7 @@ fn test_shapes() -> Result<(), &'static str> {
 fn test_shapes_grid_2d() -> Result<(), &'static str> {
     // shapes object and common options
     let mut s2d = Shapes::new();
-    s2d.draw_grid(&[-0.2, -0.2], &[0.8, 1.8], &[5, 5], true)?;
+    s2d.draw_grid(&[-0.2, -0.2], &[0.8, 1.8], &[5, 5], true, true)?;
 
     // add shapes to plot
     let mut plot = Plot::new();
@@ -75,7 +75,7 @@ fn test_shapes_grid_2d() -> Result<(), &'static str> {
 fn test_shapes_grid_3d() -> Result<(), &'static str> {
     // shapes object and common options
     let mut s3d = Shapes::new();
-    s3d.draw_grid(&[-1.0, -1.0, -1.0], &[1.0, 1.0, 1.0], &[2, 2, 2], true)?;
+    s3d.draw_grid(&[-1.0, -1.0, -1.0], &[1.0, 1.0, 1.0], &[2, 2, 2], true, true)?;
 
     // add shapes to plot
     let mut plot = Plot::new();

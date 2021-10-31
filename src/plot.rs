@@ -146,11 +146,6 @@ impl Plot {
         Ok(())
     }
 
-    pub fn show(&self) -> Result<(), &'static str> {
-        // todo
-        Ok(())
-    }
-
     /// Clears current figure
     pub fn clear_current_figure(&mut self) -> &mut Self {
         self.buffer.push_str("plt.clf()\n");

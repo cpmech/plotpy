@@ -820,7 +820,7 @@ mod tests {
     #[test]
     fn grid_2d_works() -> Result<(), &'static str> {
         let mut shapes = Shapes::new();
-        shapes.draw_grid(&[0.0, 0.0], &[1.0, 1.0], &[1, 1], true, false)?;
+        shapes.draw_grid(&[0.0, 0.0], &[1.0, 1.0], &[1, 1], true, true)?;
         let b: &str = "dat=[\n\
                       \x20\x20\x20\x20[pth.Path.MOVETO,(0,0)],[pth.Path.LINETO,(0,1)],\n\
                       \x20\x20\x20\x20[pth.Path.MOVETO,(1,0)],[pth.Path.LINETO,(1,1)],\n\
@@ -835,6 +835,7 @@ mod tests {
                       plt.text(1,0,'1',color='#a81414',fontsize=8,rotation=45)\n\
                       plt.text(0,1,'2',color='#a81414',fontsize=8,rotation=45)\n\
                       plt.text(1,1,'3',color='#a81414',fontsize=8,rotation=45)\n\
+                      plt.text(0.5,0.5,'0',color='#343434',ha='center',va='center',fontsize=10)\n\
                       plt.axis([-0.1,1.1,-0.1,1.1])\n";
         assert_eq!(shapes.buffer, b);
         Ok(())
@@ -843,7 +844,7 @@ mod tests {
     #[test]
     fn grid_3d_works() -> Result<(), &'static str> {
         let mut shapes = Shapes::new();
-        shapes.draw_grid(&[0.0, 0.0, 0.0], &[1.0, 1.0, 1.0], &[1, 1, 1], true, false)?;
+        shapes.draw_grid(&[0.0, 0.0, 0.0], &[1.0, 1.0, 1.0], &[1, 1, 1], true, true)?;
         let b: &str = "maybeCreateAX3D()\n\
                        AX3D.plot([0,0],[0,1],[0,0],color='#427ce5')\n\
                        AX3D.plot([1,1],[0,1],[0,0],color='#427ce5')\n\
@@ -861,6 +862,7 @@ mod tests {
                        AX3D.text(1,0,1,'5',color='#a81414',fontsize=8,rotation=45)\n\
                        AX3D.text(0,1,1,'6',color='#a81414',fontsize=8,rotation=45)\n\
                        AX3D.text(1,1,1,'7',color='#a81414',fontsize=8,rotation=45)\n\
+                       AX3D.text(0.5,0.5,0.5,'0',color='#343434',ha='center',va='center',fontsize=10)\n\
                        AX3D.plot([0,0],[0,0],[0,1],color='#427ce5')\n\
                        AX3D.plot([1,1],[0,0],[0,1],color='#427ce5')\n\
                        AX3D.plot([0,0],[1,1],[0,1],color='#427ce5')\n\

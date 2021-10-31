@@ -68,9 +68,14 @@ impl Text {
 
     /// Draws text in 3D plot
     pub fn draw_3d(&mut self, x: f64, y: f64, z: f64, message: &str) {
-        write!(&mut self.buffer, "maybeCreateAX3D()\n").unwrap();
         let opt = self.options();
-        write!(&mut self.buffer, "AX3D.text({},{},{},'{}'{})\n", x, y, z, message, &opt).unwrap();
+        write!(
+            &mut self.buffer,
+            "maybeCreateAX3D()\n\
+             AX3D.text({},{},{},'{}'{})\n",
+            x, y, z, message, &opt
+        )
+        .unwrap();
     }
 
     /// Sets the text color

@@ -65,10 +65,7 @@ fn test_contour_colors() -> Result<(), &'static str> {
 
     // save figure
     let path = Path::new(OUT_DIR).join("integ_contour_colors.svg");
-    match plot.save(&path) {
-        Err(_) => plot.print_log_file(&path)?,
-        Ok(_) => (),
-    }
+    plot.save(&path)?;
 
     // check number of lines
     let file = File::open(path).map_err(|_| "cannot open file")?;

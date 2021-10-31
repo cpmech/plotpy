@@ -1,7 +1,7 @@
 use super::{call_python3, Legend};
 use std::ffi::OsStr;
 use std::fmt::Write;
-use std::fs::{self, File};
+use std::fs::File;
 use std::io::Write as IoWrite;
 use std::path::Path;
 
@@ -85,13 +85,17 @@ pub trait GraphMaker {
 /// ![doc_plot.svg](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/doc_plot.svg)
 ///
 pub struct Plot {
-    buffer: String,
+    show_errors: bool, // show python errors, if any
+    buffer: String,    // buffer
 }
 
 impl Plot {
     /// Creates new Plot object
     pub fn new() -> Self {
-        Plot { buffer: String::new() }
+        Plot {
+            show_errors: false,
+            buffer: String::new(),
+        }
     }
 
     /// Adds new graph entity
@@ -105,6 +109,10 @@ impl Plot {
     /// # Input
     ///
     /// * `figure_path` -- may be a String, &str, or Path
+    ///
+    /// # Note
+    ///
+    /// Call `set_show_errors` to configure how the errors (if any) are printed.
     pub fn save<S>(&self, figure_path: &S) -> Result<(), &'static str>
     where
         S: AsRef<OsStr> + ?Sized,
@@ -130,19 +138,11 @@ impl Plot {
             log_file
                 .write_all(output.as_bytes())
                 .map_err(|_| "cannot write to log file")?;
+            if self.show_errors {
+                println!("{}", output);
+            }
             return Err("python3 failed; please see the log file");
         }
-        Ok(())
-    }
-
-    /// Prints the log file created by the save command
-    ///
-    /// **Note:** the log file is **only** generated when python fails
-    pub fn print_log_file(&self, figure_path: &Path) -> Result<(), &'static str> {
-        let mut log_path = Path::new(figure_path).to_path_buf();
-        log_path.set_extension("log");
-        let output = fs::read_to_string(log_path).map_err(|_| "cannot read log file")?;
-        println!("{}", output);
         Ok(())
     }
 
@@ -185,6 +185,12 @@ impl Plot {
         )
         .unwrap();
         self.legend()
+    }
+
+    /// Set flag to print python errors (if any) when calling save
+    pub fn set_show_errors(&mut self, option: bool) -> &mut Self {
+        self.show_errors = option;
+        self
     }
 
     /// Configures subplots
@@ -507,13 +513,13 @@ mod tests {
     }
 
     #[test]
-    fn print_log_file_works() -> Result<(), &'static str> {
+    fn show_errors_works() -> Result<(), &'static str> {
         const WRONG: usize = 0;
         let mut plot = Plot::new();
+        plot.set_show_errors(true);
         plot.set_subplot(1, 1, WRONG);
-        let path = Path::new(OUT_DIR).join("print_log_file_works.svg");
+        let path = Path::new(OUT_DIR).join("show_errors_works.svg");
         assert_eq!(plot.save(&path).err(), Some("python3 failed; please see the log file"));
-        plot.print_log_file(&path)?;
         Ok(())
     }
 
@@ -560,7 +566,8 @@ mod tests {
     #[test]
     fn set_functions_work() {
         let mut plot = Plot::new();
-        plot.set_title("my plot")
+        plot.set_show_errors(true)
+            .set_title("my plot")
             .set_equal_axes(true)
             .set_equal_axes(false)
             .set_hide_axes(true)
@@ -612,6 +619,7 @@ mod tests {
                        plt.gca().view_init(elev=1,azim=10)\n\
                        plt.clf()\n";
         assert_eq!(plot.buffer, b);
+        assert_eq!(plot.show_errors, true);
     }
 
     #[test]

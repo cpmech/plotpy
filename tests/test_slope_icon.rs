@@ -284,12 +284,11 @@ fn test_slope_icon_logx_liny() -> Result<(), &'static str> {
         .add(&icon7)
         .add(&icon8);
 
+    // NOTE: cannot set equal_axes when using log-lin axes
+
     // save figure
     let path = Path::new(OUT_DIR).join("integ_slope_icon_logx_liny.svg");
-    plot.set_show_errors(true)
-        .set_equal_axes(true)
-        .grid_and_labels("x", "y")
-        .save(&path)?;
+    plot.grid_and_labels("x", "y").save(&path)?;
 
     // check number of lines
     let file = File::open(path).map_err(|_| "cannot open file")?;
@@ -366,17 +365,17 @@ fn test_slope_icon_linx_logy() -> Result<(), &'static str> {
         .add(&icon7)
         .add(&icon8);
 
+    // NOTE: cannot set equal_axes when using log-lin axes
+
     // save figure
-    /*
     let path = Path::new(OUT_DIR).join("integ_slope_icon_linx_logy.svg");
-    plot.set_equal_axes(true).grid_and_labels("x", "y").save(&path)?;
+    plot.grid_and_labels("x", "y").save(&path)?;
 
     // check number of lines
     let file = File::open(path).map_err(|_| "cannot open file")?;
     let buffered = BufReader::new(file);
     let lines_iter = buffered.lines();
     assert!(lines_iter.count() > 880);
-    */
     Ok(())
 }
 
@@ -467,7 +466,6 @@ fn test_slope_icon_logx_logy() -> Result<(), &'static str> {
         .add(&icon8);
 
     // save figure
-    /*
     let path = Path::new(OUT_DIR).join("integ_slope_icon_logx_logy.svg");
     plot.set_equal_axes(true).grid_and_labels("x", "y").save(&path)?;
 
@@ -476,7 +474,6 @@ fn test_slope_icon_logx_logy() -> Result<(), &'static str> {
     let buffered = BufReader::new(file);
     let lines_iter = buffered.lines();
     assert!(lines_iter.count() > 610);
-    */
     Ok(())
 }
 
@@ -543,6 +540,8 @@ fn test_slope_icon_example() -> Result<(), &'static str> {
     icon2a.draw(slope2, 2e1, f2a(2e1));
     icon2b.draw(-slope2, 2e1, f2b(2e1));
 
+    // NOTE: cannot set equal_axes when using log-lin axes
+
     // plot
     plot.set_subplot(2, 2, 2)
         .set_log_x(true) // must be set before adding curves
@@ -550,7 +549,6 @@ fn test_slope_icon_example() -> Result<(), &'static str> {
         .add(&curve2b)
         .add(&icon2a)
         .add(&icon2b)
-        .set_equal_axes(true)
         .grid_and_labels("x", "y");
 
     // log y vs linear x ////////////////////////////////////////////
@@ -578,6 +576,8 @@ fn test_slope_icon_example() -> Result<(), &'static str> {
     icon3a.draw(slope3, 5.0, f3a(5.0));
     icon3b.draw(-slope3, 5.0, f3b(5.0));
 
+    // NOTE: cannot set equal_axes when using log-lin axes
+
     // plot
     plot.set_subplot(2, 2, 3)
         .set_log_y(true) // must be set before adding curves
@@ -585,7 +585,6 @@ fn test_slope_icon_example() -> Result<(), &'static str> {
         .add(&curve3b)
         .add(&icon3a)
         .add(&icon3b)
-        .set_equal_axes(true)
         .grid_and_labels("x", "y");
 
     // log y vs log x ///////////////////////////////////////////////
@@ -624,7 +623,6 @@ fn test_slope_icon_example() -> Result<(), &'static str> {
         .set_equal_axes(true)
         .grid_and_labels("x", "y");
 
-    /*
     // save figure
     let path = Path::new(OUT_DIR).join("integ_slope_icon_example.svg");
     plot.save(&path)?;
@@ -634,6 +632,5 @@ fn test_slope_icon_example() -> Result<(), &'static str> {
     let buffered = BufReader::new(file);
     let lines_iter = buffered.lines();
     assert!(lines_iter.count() > 1300);
-    */
     Ok(())
 }

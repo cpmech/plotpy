@@ -285,16 +285,17 @@ fn test_slope_icon_logx_liny() -> Result<(), &'static str> {
         .add(&icon8);
 
     // save figure
-    /*
     let path = Path::new(OUT_DIR).join("integ_slope_icon_logx_liny.svg");
-    plot.set_equal_axes(true).grid_and_labels("x", "y").save(&path)?;
+    plot.set_show_errors(true)
+        .set_equal_axes(true)
+        .grid_and_labels("x", "y")
+        .save(&path)?;
 
     // check number of lines
     let file = File::open(path).map_err(|_| "cannot open file")?;
     let buffered = BufReader::new(file);
     let lines_iter = buffered.lines();
     assert!(lines_iter.count() > 930);
-    */
     Ok(())
 }
 

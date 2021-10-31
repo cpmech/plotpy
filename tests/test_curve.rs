@@ -81,6 +81,7 @@ fn test_curve_3d() -> Result<(), &'static str> {
 
     // add curves to plot
     let mut plot = Plot::new();
+    plot.set_range_3d(-0.5, 6.0, -0.5, 30.0, -0.5, 1.5);
     plot.add(&curve);
 
     // save figure

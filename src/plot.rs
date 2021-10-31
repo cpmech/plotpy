@@ -146,6 +146,11 @@ impl Plot {
         Ok(())
     }
 
+    pub fn show(&self) -> Result<(), &'static str> {
+        // todo
+        Ok(())
+    }
+
     /// Clears current figure
     pub fn clear_current_figure(&mut self) -> &mut Self {
         self.buffer.push_str("plt.clf()\n");
@@ -255,6 +260,20 @@ impl Plot {
     pub fn set_hide_axes(&mut self, hide: bool) -> &mut Self {
         let option = if hide { "off" } else { "on" };
         write!(&mut self.buffer, "plt.axis('{}')\n", option).unwrap();
+        self
+    }
+
+    /// Sets axes limits
+    pub fn set_range_3d(&mut self, xmin: f64, xmax: f64, ymin: f64, ymax: f64, zmin: f64, zmax: f64) -> &mut Self {
+        write!(
+            &mut self.buffer,
+            "maybeCreateAX3D()\n\
+             AX3D.set_xlim3d({},{})\n\
+             AX3D.set_ylim3d({},{})\n\
+             AX3D.set_zlim3d({},{})\n",
+            xmin, xmax, ymin, ymax, zmin, zmax,
+        )
+        .unwrap();
         self
     }
 
@@ -571,6 +590,7 @@ mod tests {
             .set_equal_axes(true)
             .set_equal_axes(false)
             .set_hide_axes(true)
+            .set_range_3d(-1.0, 1.0, -1.0, 1.0, -1.0, 1.0)
             .set_range(-1.0, 1.0, -1.0, 1.0)
             .set_range_from_vec(&[0.0, 1.0, 0.0, 1.0])
             .set_xmin(0.0)
@@ -596,6 +616,10 @@ mod tests {
                        plt.gca().axes.set_aspect('equal')\n\
                        plt.gca().axes.set_aspect('auto')\n\
                        plt.axis('off')\n\
+                       maybeCreateAX3D()\n\
+                       AX3D.set_xlim3d(-1,1)\n\
+                       AX3D.set_ylim3d(-1,1)\n\
+                       AX3D.set_zlim3d(-1,1)\n\
                        plt.axis([-1,1,-1,1])\n\
                        plt.axis([0,1,0,1])\n\
                        plt.axis([0,plt.axis()[1],plt.axis()[2],plt.axis()[3]])\n\

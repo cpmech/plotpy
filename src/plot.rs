@@ -251,6 +251,20 @@ impl Plot {
         self
     }
 
+    /// Sets the figure size in inches
+    pub fn set_figure_size_inches(&mut self, width: f64, height: f64) -> &mut Self {
+        write!(&mut self.buffer, "plt.gcf().set_size_inches({},{})\n", width, height).unwrap();
+        self
+    }
+
+    /// Sets the figure size in points
+    #[rustfmt::skip]
+    pub fn set_figure_size_points(&mut self, width: f64, height: f64) -> &mut Self {
+        const FACTOR: f64 = 72.27;
+        write!(&mut self.buffer, "plt.gcf().set_size_inches({},{})\n", width / FACTOR, height / FACTOR).unwrap();
+        self
+    }
+
     /// Set option to hide axes
     pub fn set_hide_axes(&mut self, hide: bool) -> &mut Self {
         let option = if hide { "off" } else { "on" };
@@ -650,6 +664,8 @@ mod tests {
             .set_camera(1.0, 10.0)
             .set_ticks_x(1.5, 0.5, "%.2f")
             .set_ticks_y(0.5, 0.1, "%g")
+            .set_figure_size_inches(2.0, 2.0)
+            .set_figure_size_points(7227.0, 7227.0)
             .clear_current_figure();
         let b: &str = "plt.title(r'my plot')\n\
                        plt.gca().axes.set_aspect('equal')\n\
@@ -700,6 +716,8 @@ mod tests {
                        \x20\x20\x20\x20plt.gca().yaxis.set_minor_locator(minorLocator)\n\
                        majorFormatter = tck.FormatStrFormatter(r'%g')\n\
                        plt.gca().yaxis.set_major_formatter(majorFormatter)\n\
+                       plt.gcf().set_size_inches(2,2)\n\
+                       plt.gcf().set_size_inches(100,100)\n\
                        plt.clf()\n";
         assert_eq!(plot.buffer, b);
         assert_eq!(plot.show_errors, true);

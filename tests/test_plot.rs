@@ -53,13 +53,14 @@ fn test_plot() -> Result<(), &'static str> {
 
     // save figure
     let path = Path::new(OUT_DIR).join("integ_plot.svg");
+    plot.set_figure_size_points(250.0, 250.0 * 0.75);
     plot.save(&path)?;
 
     // check number of lines
     let file = File::open(path).map_err(|_| "cannot open file")?;
     let buffered = BufReader::new(file);
     let lines_iter = buffered.lines();
-    assert!(lines_iter.count() > 650);
+    assert!(lines_iter.count() > 900);
     Ok(())
 }
 

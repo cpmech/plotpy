@@ -385,6 +385,48 @@ impl Plot {
         self
     }
 
+    #[rustfmt::skip]
+    pub fn set_ticks_x(&mut self, major_every: f64, minor_every: f64, major_format: &str) -> &mut Self {
+        if major_every > 0.0 {
+            write!(&mut self.buffer, "majorLocator = tck.MultipleLocator({})\n", major_every).unwrap();
+            write!(&mut self.buffer, "n_ticks = (plt.gca().axis()[1] - plt.gca().axis()[0]) / {}\n", major_every).unwrap();
+            write!(&mut self.buffer, "if n_ticks < majorLocator.MAXTICKS * 0.9:\n").unwrap();
+            write!(&mut self.buffer, "    plt.gca().xaxis.set_major_locator(majorLocator)\n").unwrap();
+        }
+        if minor_every > 0.0 {
+            write!(&mut self.buffer, "minorLocator = tck.MultipleLocator({})\n", minor_every).unwrap();
+            write!(&mut self.buffer, "n_ticks = (plt.gca().axis()[1] - plt.gca().axis()[0]) / {}\n", minor_every).unwrap();
+            write!(&mut self.buffer, "if n_ticks < minorLocator.MAXTICKS * 0.9:\n").unwrap();
+            write!(&mut self.buffer, "    plt.gca().xaxis.set_minor_locator(minorLocator)\n").unwrap();
+        }
+        if major_format != "" {
+            write!(&mut self.buffer, "majorFormatter = tck.FormatStrFormatter(r'{}')\n", major_format).unwrap();
+            write!(&mut self.buffer, "plt.gca().xaxis.set_major_formatter(majorFormatter)\n").unwrap();
+        }
+        self
+    }
+
+    #[rustfmt::skip]
+    pub fn set_ticks_y(&mut self, major_every: f64, minor_every: f64, major_format: &str) -> &mut Self {
+        if major_every > 0.0 {
+            write!(&mut self.buffer, "majorLocator = tck.MultipleLocator({})\n", major_every).unwrap();
+            write!(&mut self.buffer, "n_ticks = (plt.gca().axis()[3] - plt.gca().axis()[2]) / {}\n", major_every).unwrap();
+            write!(&mut self.buffer, "if n_ticks < majorLocator.MAXTICKS * 0.9:\n").unwrap();
+            write!(&mut self.buffer, "    plt.gca().yaxis.set_major_locator(majorLocator)\n").unwrap();
+        }
+        if minor_every > 0.0 {
+            write!(&mut self.buffer, "minorLocator = tck.MultipleLocator({})\n", minor_every).unwrap();
+            write!(&mut self.buffer, "n_ticks = (plt.gca().axis()[3] - plt.gca().axis()[2]) / {}\n", minor_every).unwrap();
+            write!(&mut self.buffer, "if n_ticks < minorLocator.MAXTICKS * 0.9:\n").unwrap();
+            write!(&mut self.buffer, "    plt.gca().yaxis.set_minor_locator(minorLocator)\n").unwrap();
+        }
+        if major_format != "" {
+            write!(&mut self.buffer, "majorFormatter = tck.FormatStrFormatter(r'{}')\n", major_format).unwrap();
+            write!(&mut self.buffer, "plt.gca().yaxis.set_major_formatter(majorFormatter)\n").unwrap();
+        }
+        self
+    }
+
     /// Sets a log10 x-scale
     ///
     /// # Note
@@ -606,6 +648,8 @@ mod tests {
             .set_label_y("y-label")
             .set_labels("x", "y")
             .set_camera(1.0, 10.0)
+            .set_ticks_x(1.5, 0.5, "%.2f")
+            .set_ticks_y(0.5, 0.1, "%g")
             .clear_current_figure();
         let b: &str = "plt.title(r'my plot')\n\
                        plt.gca().axes.set_aspect('equal')\n\
@@ -636,6 +680,26 @@ mod tests {
                        plt.xlabel(r'x')\n\
                        plt.ylabel(r'y')\n\
                        plt.gca().view_init(elev=1,azim=10)\n\
+                       majorLocator = tck.MultipleLocator(1.5)\n\
+                       n_ticks = (plt.gca().axis()[1] - plt.gca().axis()[0]) / 1.5\n\
+                       if n_ticks < majorLocator.MAXTICKS * 0.9:\n\
+                       \x20\x20\x20\x20plt.gca().xaxis.set_major_locator(majorLocator)\n\
+                       minorLocator = tck.MultipleLocator(0.5)\n\
+                       n_ticks = (plt.gca().axis()[1] - plt.gca().axis()[0]) / 0.5\n\
+                       if n_ticks < minorLocator.MAXTICKS * 0.9:\n\
+                       \x20\x20\x20\x20plt.gca().xaxis.set_minor_locator(minorLocator)\n\
+                       majorFormatter = tck.FormatStrFormatter(r'%.2f')\n\
+                       plt.gca().xaxis.set_major_formatter(majorFormatter)\n\
+                       majorLocator = tck.MultipleLocator(0.5)\n\
+                       n_ticks = (plt.gca().axis()[3] - plt.gca().axis()[2]) / 0.5\n\
+                       if n_ticks < majorLocator.MAXTICKS * 0.9:\n\
+                       \x20\x20\x20\x20plt.gca().yaxis.set_major_locator(majorLocator)\n\
+                       minorLocator = tck.MultipleLocator(0.1)\n\
+                       n_ticks = (plt.gca().axis()[3] - plt.gca().axis()[2]) / 0.1\n\
+                       if n_ticks < minorLocator.MAXTICKS * 0.9:\n\
+                       \x20\x20\x20\x20plt.gca().yaxis.set_minor_locator(minorLocator)\n\
+                       majorFormatter = tck.FormatStrFormatter(r'%g')\n\
+                       plt.gca().yaxis.set_major_formatter(majorFormatter)\n\
                        plt.clf()\n";
         assert_eq!(plot.buffer, b);
         assert_eq!(plot.show_errors, true);

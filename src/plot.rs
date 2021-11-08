@@ -1,4 +1,4 @@
-use super::{call_python3, Legend};
+use super::{call_python3, Legend, StrError};
 use std::ffi::OsStr;
 use std::fmt::Write;
 use std::fs::File;
@@ -113,7 +113,7 @@ impl Plot {
     /// # Note
     ///
     /// Call `set_show_errors` to configure how the errors (if any) are printed.
-    pub fn save<S>(&self, figure_path: &S) -> Result<(), &'static str>
+    pub fn save<S>(&self, figure_path: &S) -> Result<(), StrError>
     where
         S: AsRef<OsStr> + ?Sized,
     {
@@ -543,7 +543,7 @@ impl Plot {
 
 #[cfg(test)]
 mod tests {
-    use super::Plot;
+    use super::{Plot, StrError};
     use std::fs::File;
     use std::io::{BufRead, BufReader};
     use std::path::Path;
@@ -557,7 +557,7 @@ mod tests {
     }
 
     #[test]
-    fn save_works() -> Result<(), &'static str> {
+    fn save_works() -> Result<(), StrError> {
         let plot = Plot::new();
         assert_eq!(plot.buffer.len(), 0);
         let path = Path::new(OUT_DIR).join("save_works.svg");
@@ -570,7 +570,7 @@ mod tests {
     }
 
     #[test]
-    fn save_str_works() -> Result<(), &'static str> {
+    fn save_str_works() -> Result<(), StrError> {
         let plot = Plot::new();
         assert_eq!(plot.buffer.len(), 0);
         let path = "/tmp/plotpy/unit_tests/save_str_works.svg";
@@ -583,7 +583,7 @@ mod tests {
     }
 
     #[test]
-    fn show_errors_works() -> Result<(), &'static str> {
+    fn show_errors_works() -> Result<(), StrError> {
         const WRONG: usize = 0;
         let mut plot = Plot::new();
         plot.set_show_errors(true);

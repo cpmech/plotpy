@@ -1,4 +1,4 @@
-use plotpy::{Contour, Plot};
+use plotpy::{Contour, Plot, StrError};
 use russell_lab::generate3d;
 use std::fs::File;
 use std::io::{BufRead, BufReader};
@@ -7,7 +7,7 @@ use std::path::Path;
 const OUT_DIR: &str = "/tmp/plotpy/integ_tests";
 
 #[test]
-fn test_contour() -> Result<(), &'static str> {
+fn test_contour() -> Result<(), StrError> {
     // contour object and options
     let mut contour = Contour::new();
     contour
@@ -43,7 +43,7 @@ fn test_contour() -> Result<(), &'static str> {
 }
 
 #[test]
-fn test_contour_colors() -> Result<(), &'static str> {
+fn test_contour_colors() -> Result<(), StrError> {
     // contour object and options
     let mut contour = Contour::new();
     contour
@@ -76,7 +76,7 @@ fn test_contour_colors() -> Result<(), &'static str> {
 }
 
 #[test]
-fn test_contour_colormap_index() -> Result<(), &'static str> {
+fn test_contour_colormap_index() -> Result<(), StrError> {
     for index in 0..10 {
         // contour object and options
         let mut contour = Contour::new();
@@ -111,7 +111,7 @@ fn test_contour_colormap_index() -> Result<(), &'static str> {
 }
 
 #[test]
-fn test_contour_colormap_name() -> Result<(), &'static str> {
+fn test_contour_colormap_name() -> Result<(), StrError> {
     for name in ["Pastel1", "tab20c", "gnuplot2"] {
         // contour object and options
         let mut contour = Contour::new();

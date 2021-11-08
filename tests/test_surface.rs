@@ -1,4 +1,4 @@
-use plotpy::{Plot, Surface};
+use plotpy::{Plot, StrError, Surface};
 use russell_lab::generate3d;
 use std::fs::File;
 use std::io::{BufRead, BufReader};
@@ -7,7 +7,7 @@ use std::path::Path;
 const OUT_DIR: &str = "/tmp/plotpy/integ_tests";
 
 #[test]
-fn test_surface() -> Result<(), &'static str> {
+fn test_surface() -> Result<(), StrError> {
     let mut surface = Surface::new();
     surface
         .set_row_stride(1)
@@ -43,7 +43,7 @@ fn test_surface() -> Result<(), &'static str> {
 }
 
 #[test]
-fn test_wireframe() -> Result<(), &'static str> {
+fn test_wireframe() -> Result<(), StrError> {
     let mut surface = Surface::new();
     surface.set_with_surface(false).set_with_wireframe(true);
 

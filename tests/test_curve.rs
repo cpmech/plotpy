@@ -1,4 +1,4 @@
-use plotpy::{Curve, Plot};
+use plotpy::{Curve, Plot, StrError};
 use std::fs::File;
 use std::io::{BufRead, BufReader};
 use std::path::Path;
@@ -6,7 +6,7 @@ use std::path::Path;
 const OUT_DIR: &str = "/tmp/plotpy/integ_tests";
 
 #[test]
-fn test_curve() -> Result<(), &'static str> {
+fn test_curve() -> Result<(), StrError> {
     // curve object and options
     let mut curve1 = Curve::new();
     curve1
@@ -57,7 +57,7 @@ fn test_curve() -> Result<(), &'static str> {
 }
 
 #[test]
-fn test_curve_3d() -> Result<(), &'static str> {
+fn test_curve_3d() -> Result<(), StrError> {
     // curve object and options
     let mut curve = Curve::new();
     curve

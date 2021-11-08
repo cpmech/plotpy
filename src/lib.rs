@@ -15,9 +15,9 @@
 //! # Example
 //!
 //! ```
-//! # use plotpy::{Plot, Surface};
+//! # use plotpy::{Plot, StrError, Surface};
 //! # use std::path::Path;
-//! # fn main() -> Result<(), &'static str> {
+//! # fn main() -> Result<(), StrError> {
 //! use russell_lab::generate3d;
 //! let mut surface = Surface::new();
 //! surface
@@ -46,6 +46,9 @@
 //!
 //! ![example_main.svg](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/example_main.svg)
 //!
+
+/// Defines a type alias for the error type as a static string
+pub type StrError = &'static str;
 
 // modules ////////////////////////////////////////
 mod as_matrix;

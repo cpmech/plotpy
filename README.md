@@ -33,11 +33,11 @@ plotpy = "*"
 ### Contour
 
 ```rust
-use plotpy::{Contour, Plot};
+use plotpy::{Contour, Plot, StrError};
 use russell_lab::generate3d;
 use std::path::Path;
 
-fn main() -> Result<(), &'static str> {
+fn main() -> Result<(), StrError> {
     // generate (x,y,z) matrices
     let n = 21;
     let (x, y, z) = generate3d(-2.0, 2.0, -2.0, 2.0, n, n, |x, y| x * x - y * y);

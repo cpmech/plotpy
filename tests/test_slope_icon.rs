@@ -1,4 +1,4 @@
-use plotpy::{Curve, Plot, SlopeIcon};
+use plotpy::{Curve, Plot, SlopeIcon, StrError};
 use russell_lab::Vector;
 use std::fs::File;
 use std::io::{BufRead, BufReader};
@@ -7,7 +7,7 @@ use std::path::Path;
 const OUT_DIR: &str = "/tmp/plotpy/integ_tests";
 
 #[test]
-fn test_slope_icon_below() -> Result<(), &'static str> {
+fn test_slope_icon_below() -> Result<(), StrError> {
     // curves
     let mut curve1 = Curve::new();
     let mut curve2 = Curve::new();
@@ -83,7 +83,7 @@ fn test_slope_icon_below() -> Result<(), &'static str> {
 }
 
 #[test]
-fn test_slope_icon_above() -> Result<(), &'static str> {
+fn test_slope_icon_above() -> Result<(), StrError> {
     // curves
     let mut curve1 = Curve::new();
     let mut curve2 = Curve::new();
@@ -143,7 +143,7 @@ fn test_slope_icon_above() -> Result<(), &'static str> {
 }
 
 #[test]
-fn test_slope_icon_linx_liny() -> Result<(), &'static str> {
+fn test_slope_icon_linx_liny() -> Result<(), StrError> {
     // curves
     let mut curve1 = Curve::new();
     let mut curve2 = Curve::new();
@@ -219,7 +219,7 @@ fn test_slope_icon_linx_liny() -> Result<(), &'static str> {
 }
 
 #[test]
-fn test_slope_icon_logx_liny() -> Result<(), &'static str> {
+fn test_slope_icon_logx_liny() -> Result<(), StrError> {
     // linear models on logx-y
     let (p, slope) = (5.0, 0.5);
     let (x0, y0) = (10.0, 0.0);
@@ -299,7 +299,7 @@ fn test_slope_icon_logx_liny() -> Result<(), &'static str> {
 }
 
 #[test]
-fn test_slope_icon_linx_logy() -> Result<(), &'static str> {
+fn test_slope_icon_linx_logy() -> Result<(), StrError> {
     // linear models on x-logy
     let (p, slope) = (5.0, 1.5);
     let (x0, y0) = (0.0, 10.0);
@@ -380,7 +380,7 @@ fn test_slope_icon_linx_logy() -> Result<(), &'static str> {
 }
 
 #[test]
-fn test_slope_icon_logx_logy() -> Result<(), &'static str> {
+fn test_slope_icon_logx_logy() -> Result<(), StrError> {
     // linear models on log-log
     //        y/y0  = (x/x0)^m
     //  log10(y/y0) = m * log10(x/x0)
@@ -478,7 +478,7 @@ fn test_slope_icon_logx_logy() -> Result<(), &'static str> {
 }
 
 #[test]
-fn test_slope_icon_example() -> Result<(), &'static str> {
+fn test_slope_icon_example() -> Result<(), StrError> {
     // linear y vs linear x //////////////////////////////////////////
 
     // models

@@ -1,4 +1,4 @@
-use plotpy::{Curve, Plot};
+use plotpy::{Curve, Plot, StrError};
 use russell_lab::Vector;
 use std::fs::File;
 use std::io::{BufRead, BufReader};
@@ -7,7 +7,7 @@ use std::path::Path;
 const OUT_DIR: &str = "/tmp/plotpy/integ_tests";
 
 #[test]
-fn test_plot() -> Result<(), &'static str> {
+fn test_plot() -> Result<(), StrError> {
     // curve object and options
     let mut curve = Curve::new();
 
@@ -72,7 +72,7 @@ fn test_plot_error() {
 }
 
 #[test]
-fn test_plot_subplots() -> Result<(), &'static str> {
+fn test_plot_subplots() -> Result<(), StrError> {
     // curve object and options
     let mut curve = Curve::new();
 
@@ -111,7 +111,7 @@ fn test_plot_subplots() -> Result<(), &'static str> {
 }
 
 #[test]
-fn test_plot_log() -> Result<(), &'static str> {
+fn test_plot_log() -> Result<(), StrError> {
     // curves
     let mut curve1 = Curve::new();
     let mut curve2 = Curve::new();

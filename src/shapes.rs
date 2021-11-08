@@ -1,4 +1,4 @@
-use super::GraphMaker;
+use super::{GraphMaker, StrError};
 use std::fmt::Write;
 
 /// Draw polygonal shapes
@@ -198,7 +198,7 @@ impl Shapes {
         ndiv: &[usize],
         with_point_ids: bool,
         with_cell_ids: bool,
-    ) -> Result<(), &'static str> {
+    ) -> Result<(), StrError> {
         // check input
         let ndim = ndiv.len();
         if ndim < 2 || ndim > 3 {
@@ -610,7 +610,7 @@ impl GraphMaker for Shapes {
 
 #[cfg(test)]
 mod tests {
-    use super::Shapes;
+    use super::{Shapes, StrError};
 
     #[test]
     fn new_works() {
@@ -799,7 +799,7 @@ mod tests {
     }
 
     #[test]
-    fn grid_no_ids_works() -> Result<(), &'static str> {
+    fn grid_no_ids_works() -> Result<(), StrError> {
         let mut shapes = Shapes::new();
         shapes.draw_grid(&[0.0, 0.0], &[1.0, 1.0], &[1, 1], false, false)?;
         let b: &str = "dat=[\n\
@@ -818,7 +818,7 @@ mod tests {
     }
 
     #[test]
-    fn grid_2d_works() -> Result<(), &'static str> {
+    fn grid_2d_works() -> Result<(), StrError> {
         let mut shapes = Shapes::new();
         shapes.draw_grid(&[0.0, 0.0], &[1.0, 1.0], &[1, 1], true, true)?;
         let b: &str = "dat=[\n\
@@ -842,7 +842,7 @@ mod tests {
     }
 
     #[test]
-    fn grid_3d_works() -> Result<(), &'static str> {
+    fn grid_3d_works() -> Result<(), StrError> {
         let mut shapes = Shapes::new();
         shapes.draw_grid(&[0.0, 0.0, 0.0], &[1.0, 1.0, 1.0], &[1, 1, 1], true, true)?;
         let b: &str = "maybeCreateAX3D()\n\

@@ -13,7 +13,7 @@ use std::fmt::Write;
 /// ```
 /// # fn main() -> Result<(), &'static str> {
 /// // import
-/// use plotpy::{Curve, SlopeIcon, Plot};
+/// use plotpy::{Curve, Plot, SlopeIcon};
 /// use russell_lab::Vector;
 /// use std::path::Path;
 ///

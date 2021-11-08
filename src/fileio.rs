@@ -1,4 +1,4 @@
-use super::PYTHON_HEADER;
+use super::{StrError, PYTHON_HEADER};
 use std::fs;
 use std::fs::File;
 use std::io::Write;
@@ -17,7 +17,7 @@ use std::process::Command;
 ///
 /// The contents of PYTHON_HEADER are added at the beginning of the file.
 ///
-pub(crate) fn call_python3(python_commands: &String, path: &Path) -> Result<String, &'static str> {
+pub(crate) fn call_python3(python_commands: &String, path: &Path) -> Result<String, StrError> {
     // create directory
     if let Some(p) = path.parent() {
         fs::create_dir_all(p).map_err(|_| "cannot create directory")?;
@@ -60,14 +60,14 @@ pub(crate) fn call_python3(python_commands: &String, path: &Path) -> Result<Stri
 
 #[cfg(test)]
 mod tests {
-    use super::{call_python3, PYTHON_HEADER};
+    use super::{call_python3, StrError, PYTHON_HEADER};
     use std::fs;
     use std::path::Path;
 
     const OUT_DIR: &str = "/tmp/plotpy/unit_tests";
 
     #[test]
-    fn call_python3_works() -> Result<(), &'static str> {
+    fn call_python3_works() -> Result<(), StrError> {
         let commands = "print(\"Python says: Hello World!\")".to_string();
         let path = Path::new("call_python3_works.py");
         let output = call_python3(&commands, &path)?;
@@ -80,7 +80,7 @@ mod tests {
     }
 
     #[test]
-    fn call_python3_create_dir_works() -> Result<(), &'static str> {
+    fn call_python3_create_dir_works() -> Result<(), StrError> {
         let commands = "print(\"Python says: Hello World!\")".to_string();
         let path = Path::new(OUT_DIR).join("call_python3_works.py");
         let output = call_python3(&commands, &path)?;
@@ -93,7 +93,7 @@ mod tests {
     }
 
     #[test]
-    fn call_python3_twice_works() -> Result<(), &'static str> {
+    fn call_python3_twice_works() -> Result<(), StrError> {
         let path = Path::new(OUT_DIR).join("call_python3_twice_works.py");
         // first
         let commands_first = "print(\"Python says: Hello World!\")".to_string();

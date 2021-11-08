@@ -1,4 +1,4 @@
-use plotpy::{Plot, Text};
+use plotpy::{Plot, StrError, Text};
 use std::fs::File;
 use std::io::{BufRead, BufReader};
 use std::path::Path;
@@ -6,7 +6,7 @@ use std::path::Path;
 const OUT_DIR: &str = "/tmp/plotpy/integ_tests";
 
 #[test]
-fn test_text() -> Result<(), &'static str> {
+fn test_text() -> Result<(), StrError> {
     // text object and options
     let mut text = Text::new();
     text.set_color("blue")
@@ -35,7 +35,7 @@ fn test_text() -> Result<(), &'static str> {
 }
 
 #[test]
-fn test_text_3d() -> Result<(), &'static str> {
+fn test_text_3d() -> Result<(), StrError> {
     // text object and options
     let mut text = Text::new();
     text.set_color("blue")

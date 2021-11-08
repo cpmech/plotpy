@@ -67,3 +67,31 @@ fn test_wireframe() -> Result<(), StrError> {
     assert!(lines_iter.count() > 890);
     Ok(())
 }
+
+#[test]
+fn test_cylinder() -> Result<(), StrError> {
+    let mut surface = Surface::new();
+    surface.set_with_colormap(false);
+    surface.draw_cylinder(&[0.0, 0.0, 0.0], &[5.0, 0.0, 0.0], 0.5, 1, 20)?;
+    surface.draw_cylinder(&[0.0, 0.0, 0.0], &[0.0, 5.0, 0.0], 0.5, 1, 20)?;
+    surface.draw_cylinder(&[0.0, 0.0, 0.0], &[0.0, 0.0, 5.0], 0.5, 1, 20)?;
+    surface.draw_cylinder(&[0.0, 0.0, 0.0], &[5.0, 5.0, 5.0], 0.5, 1, 20)?;
+    surface.draw_cylinder(&[5.0, 5.0, 0.0], &[5.0, 5.0, 5.0], 0.5, 1, 20)?;
+
+    // add surface to plot
+    let mut plot = Plot::new();
+    plot.add(&surface);
+
+    // save figure
+    let path = Path::new(OUT_DIR).join("integ_cylinder.svg");
+    plot.set_range_3d(-1.0, 6.0, -1.0, 6.0, -1.0, 6.0);
+    plot.save(&path)?;
+    // plot.save_and_show(&path)?;
+
+    // check number of lines
+    let file = File::open(path).map_err(|_| "cannot open file")?;
+    let buffered = BufReader::new(file);
+    let lines_iter = buffered.lines();
+    assert!(lines_iter.count() > 1340);
+    Ok(())
+}

@@ -1,4 +1,5 @@
-use super::{matrix_to_array, AsMatrix, GraphMaker};
+use super::{matrix_to_array, AsMatrix, GraphMaker, StrError};
+use russell_lab::Matrix;
 use std::fmt::Write;
 
 /// Generates a 3D a surface (or wireframe, or both)
@@ -51,6 +52,7 @@ pub struct Surface {
     with_wireframe: bool,     // Generates a wireframe
     colormap_index: usize,    // Colormap index
     colormap_name: String,    // Colormap name
+    with_colormap: bool,      // Use colormap
     with_colorbar: bool,      // Draw a colorbar
     colorbar_label: String,   // Colorbar label
     number_format_cb: String, // Number format for labels in colorbar
@@ -70,6 +72,7 @@ impl Surface {
             with_wireframe: false,
             colormap_index: 0,
             colormap_name: String::new(),
+            with_colormap: true,
             with_colorbar: false,
             colorbar_label: String::new(),
             number_format_cb: String::new(),
@@ -123,6 +126,61 @@ impl Surface {
                 write!(&mut self.buffer, "cb.ax.set_ylabel(r'{}')\n", self.colorbar_label).unwrap();
             }
         }
+    }
+
+    /// Draws a cylinder
+    ///
+    /// # Input
+    ///
+    /// * `a` -- first point on the cylinder (centered) axis
+    /// * `b` -- second point on the cylinder (centered) axis
+    /// * `radius` -- the cylinder's radius
+    /// * `ndiv_axis` -- number of divisions along the axis (>= 1)
+    /// * `ndiv_perimeter` -- number of divisions along the cross-sectional circle perimeter (>= 3)
+    pub fn draw_cylinder(
+        &mut self,
+        a: &[f64],
+        b: &[f64],
+        radius: f64,
+        ndiv_axis: usize,
+        ndiv_perimeter: usize,
+    ) -> Result<(), StrError> {
+        if a.len() != 3 {
+            return Err("a.len() must equal 3");
+        }
+        if b.len() != 3 {
+            return Err("b.len() must equal 3");
+        }
+        if ndiv_axis < 1 {
+            return Err("ndiv_axis must be greater than or equal to 1");
+        }
+        if ndiv_perimeter < 3 {
+            return Err("ndiv_perimeter must be greater than or equal to 3");
+        }
+        let (e0, e1, e2) = Surface::aligned_system(a, b)?;
+        let cylinder_height =
+            f64::sqrt((b[0] - a[0]) * (b[0] - a[0]) + (b[1] - a[1]) * (b[1] - a[1]) + (b[2] - a[2]) * (b[2] - a[2]));
+        let (n_height, n_alpha) = (ndiv_axis + 1, ndiv_perimeter + 1);
+        let mut x = Matrix::new(n_alpha, n_height);
+        let mut y = Matrix::new(n_alpha, n_height);
+        let mut z = Matrix::new(n_alpha, n_height);
+        let delta_height = cylinder_height / ((n_height - 1) as f64);
+        let delta_alpha = 2.0 * std::f64::consts::PI / ((n_alpha - 1) as f64);
+        let mut p = vec![0.0; 3];
+        for i in 0..n_alpha {
+            let v = (i as f64) * delta_alpha;
+            for j in 0..n_height {
+                let u = (j as f64) * delta_height;
+                for k in 0..3 {
+                    p[k] = a[k] + u * e0[k] + radius * f64::sin(v) * e1[k] + radius * f64::cos(v) * e2[k];
+                }
+                x[i][j] = p[0];
+                y[i][j] = p[1];
+                z[i][j] = p[2];
+            }
+        }
+        self.draw(&x, &y, &z);
+        Ok(())
     }
 
     /// Sets the row stride
@@ -184,6 +242,12 @@ impl Surface {
         self
     }
 
+    /// Sets option to use a colormap
+    pub fn set_with_colormap(&mut self, flag: bool) -> &mut Self {
+        self.with_colormap = flag;
+        self
+    }
+
     /// Sets option to draw a colorbar
     pub fn set_with_colorbar(&mut self, flag: bool) -> &mut Self {
         self.with_colorbar = flag;
@@ -233,10 +297,12 @@ impl Surface {
         if self.col_stride > 0 {
             write!(&mut opt, ",cstride={}", self.col_stride).unwrap();
         }
-        if self.colormap_name != "" {
-            write!(&mut opt, ",cmap=plt.get_cmap('{}')", self.colormap_name).unwrap();
-        } else {
-            write!(&mut opt, ",cmap=getColormap({})", self.colormap_index).unwrap();
+        if self.with_colormap {
+            if self.colormap_name != "" {
+                write!(&mut opt, ",cmap=plt.get_cmap('{}')", self.colormap_name).unwrap();
+            } else {
+                write!(&mut opt, ",cmap=getColormap({})", self.colormap_index).unwrap();
+            }
         }
         opt
     }
@@ -270,6 +336,44 @@ impl Surface {
         }
         opt
     }
+
+    /// Creates a triad aligned to an axis passing through a and b
+    fn aligned_system(a: &[f64], b: &[f64]) -> Result<(Vec<f64>, Vec<f64>, Vec<f64>), StrError> {
+        // vector aligned with the axis
+        let n = vec![b[0] - a[0], b[1] - a[1], b[2] - a[2]];
+        let n_dot_n = n[0] * n[0] + n[1] * n[1] + n[2] * n[2];
+        if n_dot_n <= f64::EPSILON {
+            return Err("a-to-b segment is too short");
+        }
+
+        // arbitrary vector not parallel to n
+        let x = if f64::abs(n[1]) <= f64::EPSILON && f64::abs(n[2]) <= f64::EPSILON {
+            vec![n[0], n[1] + 1.0, n[2]] // parallel to x => distort along y
+        } else {
+            vec![n[0] + 1.0, n[1], n[2]] // distort along x
+        };
+
+        // orthogonal projection of x onto the axis
+        // q = x - p = x - n * (x⋅n)/(n⋅n)
+        let x_dot_n = x[0] * n[0] + x[1] * n[1] + x[2] * n[2];
+        let q = vec![
+            x[0] - n[0] * x_dot_n / n_dot_n,
+            x[1] - n[1] * x_dot_n / n_dot_n,
+            x[2] - n[2] * x_dot_n / n_dot_n,
+        ];
+
+        // local system aligned with the axis (parallel to n)
+        let norm_n = f64::sqrt(n_dot_n);
+        let norm_q = f64::sqrt(q[0] * q[0] + q[1] * q[1] + q[2] * q[2]);
+        let e0 = vec![n[0] / norm_n, n[1] / norm_n, n[2] / norm_n];
+        let e1 = vec![q[0] / norm_q, q[1] / norm_q, q[2] / norm_q];
+        let e2 = vec![
+            e0[1] * e1[2] - e0[2] * e1[1],
+            e0[2] * e1[0] - e0[0] * e1[2],
+            e0[0] * e1[1] - e0[1] * e1[0],
+        ];
+        Ok((e0, e1, e2))
+    }
 }
 
 impl GraphMaker for Surface {
@@ -282,7 +386,8 @@ impl GraphMaker for Surface {
 
 #[cfg(test)]
 mod tests {
-    use super::Surface;
+    use super::{StrError, Surface};
+    use russell_chk::assert_vec_approx_eq;
     use russell_lab::Matrix;
 
     #[test]
@@ -379,5 +484,48 @@ mod tests {
                        maybeCreateAX3D()\n\
                        sf=AX3D.plot_surface(x,y,z,cmap=getColormap(0))\n";
         assert_eq!(surface.buffer, b);
+    }
+
+    #[test]
+    fn aligned_system_works() -> Result<(), StrError> {
+        let (e0, e1, e2) = Surface::aligned_system(&[-1.0, 0.0, 0.0], &[8.0, 0.0, 0.0])?;
+        assert_eq!(e0, &[1.0, 0.0, 0.0]);
+        assert_eq!(e1, &[0.0, 1.0, 0.0]);
+        assert_eq!(e2, &[0.0, 0.0, 1.0]);
+
+        let (e0, e1, e2) = Surface::aligned_system(&[0.0, -3.0, 0.0], &[0.0, 3.0, 0.0])?;
+        assert_eq!(e0, &[0.0, 1.0, 0.0]);
+        assert_eq!(e1, &[1.0, 0.0, 0.0]);
+        assert_eq!(e2, &[0.0, 0.0, -1.0]);
+
+        let (e0, e1, e2) = Surface::aligned_system(&[0.0, 10.0, 0.0], &[0.0, 3.0, 0.0])?;
+        assert_eq!(e0, &[0.0, -1.0, 0.0]);
+        assert_eq!(e1, &[1.0, 0.0, 0.0]);
+        assert_eq!(e2, &[0.0, 0.0, 1.0]);
+
+        let (e0, e1, e2) = Surface::aligned_system(&[0.0, 0.0, 80.0], &[0.0, 0.0, 7770.0])?;
+        assert_eq!(e0, &[0.0, 0.0, 1.0]);
+        assert_eq!(e1, &[1.0, 0.0, 0.0]);
+        assert_eq!(e2, &[0.0, 1.0, 0.0]);
+
+        let (m, n, l) = (3.0, 4.0, 5.0);
+        let (e0, e1, e2) = Surface::aligned_system(&[2.0, -7.0, 5.0], &[2.0 + m, -7.0 + n, 5.0])?;
+        assert_vec_approx_eq!(e0, &[m / l, n / l, 0.0], 1e-15);
+        assert_vec_approx_eq!(e1, &[n / l, -m / l, 0.0], 1e-15);
+        assert_vec_approx_eq!(e2, &[0.0, 0.0, -1.0], 1e-15);
+
+        let s = f64::sqrt(2.0) / 2.0;
+        let (e0, e1, e2) = Surface::aligned_system(&[0.0, 0.0, 1.0], &[1.0, 0.0, 2.0])?;
+        assert_vec_approx_eq!(e0, &[s, 0.0, s], 1e-15);
+        assert_vec_approx_eq!(e1, &[s, 0.0, -s], 1e-15);
+        assert_vec_approx_eq!(e2, &[0.0, 1.0, 0.0], 1e-15);
+
+        let (c, d, e) = (1.0 / f64::sqrt(3.0), 1.0 / f64::sqrt(6.0), 1.0 / f64::sqrt(2.0));
+        let (e0, e1, e2) = Surface::aligned_system(&[3.0, 4.0, 5.0], &[13.0, 14.0, 15.0])?;
+        assert_vec_approx_eq!(e0, &[c, c, c], 1e-15);
+        assert_vec_approx_eq!(e1, &[2.0 * d, -d, -d], 1e-15);
+        assert_vec_approx_eq!(e2, &[0.0, e, -e], 1e-15);
+
+        Ok(())
     }
 }

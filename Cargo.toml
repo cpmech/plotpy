@@ -12,4 +12,5 @@ categories = ["mathematics", "science"]
 keywords = ["plot", "2D", "3D", "python", "matplotlib"]
 
 [dependencies]
+russell_chk = "0.2"
 russell_lab = "0.2"

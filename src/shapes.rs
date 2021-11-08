@@ -106,7 +106,7 @@ impl Shapes {
         }
     }
 
-    /// Draws arc
+    /// Draws arc (2D only)
     pub fn draw_arc<T>(&mut self, xc: T, yc: T, r: T, ini_angle: T, fin_angle: T)
     where
         T: std::fmt::Display,
@@ -121,7 +121,7 @@ impl Shapes {
         .unwrap();
     }
 
-    /// Draws arrow
+    /// Draws arrow (2D only)
     pub fn draw_arrow<T>(&mut self, xi: T, yi: T, xf: T, yf: T)
     where
         T: std::fmt::Display,
@@ -140,7 +140,7 @@ impl Shapes {
         .unwrap();
     }
 
-    /// Draws circle
+    /// Draws circle (2D only)
     pub fn draw_circle<T>(&mut self, xc: T, yc: T, r: T)
     where
         T: std::fmt::Display,
@@ -155,7 +155,7 @@ impl Shapes {
         .unwrap();
     }
 
-    /// Draws polyline
+    /// Draws polyline (2D only)
     pub fn draw_polyline<T>(&mut self, points: &Vec<Vec<T>>, closed: bool)
     where
         T: std::fmt::Display,

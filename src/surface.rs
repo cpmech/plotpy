@@ -426,6 +426,10 @@ mod tests {
         surface.set_colormap_name("turbo");
         let opt = surface.options_surface();
         assert_eq!(opt, ",rstride=3,cstride=4,cmap=plt.get_cmap('turbo')");
+
+        surface.set_with_colormap(false);
+        let opt = surface.options_surface();
+        assert_eq!(opt, ",rstride=3,cstride=4");
     }
 
     #[test]
@@ -484,6 +488,40 @@ mod tests {
                        maybeCreateAX3D()\n\
                        sf=AX3D.plot_surface(x,y,z,cmap=getColormap(0))\n";
         assert_eq!(surface.buffer, b);
+    }
+
+    #[test]
+    fn draw_cylinder_fails_on_wrong_input() {
+        let mut surface = Surface::new();
+        let res = surface.draw_cylinder(&[0.0, 0.0], &[1.0, 1.0, 1.0], 1.0, 1, 3);
+        assert_eq!(res.err(), Some("a.len() must equal 3"));
+
+        let res = surface.draw_cylinder(&[0.0, 0.0, 0.0], &[1.0, 1.0], 1.0, 1, 3);
+        assert_eq!(res.err(), Some("b.len() must equal 3"));
+
+        let res = surface.draw_cylinder(&[0.0, 0.0, 0.0], &[1.0, 1.0, 1.0], 1.0, 0, 3);
+        assert_eq!(res.err(), Some("ndiv_axis must be greater than or equal to 1"));
+
+        let res = surface.draw_cylinder(&[0.0, 0.0, 0.0], &[1.0, 1.0, 1.0], 1.0, 1, 2);
+        assert_eq!(res.err(), Some("ndiv_perimeter must be greater than or equal to 3"));
+
+        let res = surface.draw_cylinder(&[0.0, 0.0, 0.0], &[0.0, 0.0, 0.0], 1.0, 1, 3);
+        assert_eq!(res.err(), Some("a-to-b segment is too short"));
+    }
+
+    #[test]
+    fn draw_cylinder_works() -> Result<(), StrError> {
+        let mut surface = Surface::new();
+        surface.set_with_wireframe(true).set_with_colorbar(true);
+        surface.draw_cylinder(&[0.0, 0.0, 0.0], &[1.0, 0.0, 0.0], 1.0, 1, 3)?;
+        assert!(surface.buffer.len() > 480);
+        Ok(())
+    }
+
+    #[test]
+    fn aligned_system_fails_on_wrong_input() {
+        let res = Surface::aligned_system(&[0.0, 0.0, 0.0], &[0.0, 0.0, 0.0]);
+        assert_eq!(res.err(), Some("a-to-b segment is too short"));
     }
 
     #[test]

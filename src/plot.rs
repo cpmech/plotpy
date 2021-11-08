@@ -117,33 +117,23 @@ impl Plot {
     where
         S: AsRef<OsStr> + ?Sized,
     {
-        // update commands
-        let fig_path = Path::new(figure_path);
-        let commands = format!(
-            "{}\nfn='{}'\nplt.savefig(fn, bbox_inches='tight', bbox_extra_artists=EXTRA_ARTISTS)\n",
-            self.buffer,
-            fig_path.to_string_lossy(),
-        );
+        self.run(figure_path, false)
+    }
 
-        // call python
-        let mut path = Path::new(figure_path).to_path_buf();
-        path.set_extension("py");
-        let output = call_python3(&commands, &path)?;
-
-        // handle error => write log file
-        if output != "" {
-            let mut log_path = Path::new(figure_path).to_path_buf();
-            log_path.set_extension("log");
-            let mut log_file = File::create(log_path).map_err(|_| "cannot create log file")?;
-            log_file
-                .write_all(output.as_bytes())
-                .map_err(|_| "cannot write to log file")?;
-            if self.show_errors {
-                println!("{}", output);
-            }
-            return Err("python3 failed; please see the log file");
-        }
-        Ok(())
+    /// Calls python3, saves the python script and figure, and show the plot window
+    ///
+    /// # Input
+    ///
+    /// * `figure_path` -- may be a String, &str, or Path
+    ///
+    /// # Note
+    ///
+    /// Call `set_show_errors` to configure how the errors (if any) are printed.
+    pub fn save_and_show<S>(&self, figure_path: &S) -> Result<(), StrError>
+    where
+        S: AsRef<OsStr> + ?Sized,
+    {
+        self.run(figure_path, true)
     }
 
     /// Clears current figure
@@ -536,6 +526,41 @@ impl Plot {
     // HideAllBorders hides all frame borders
     pub fn set_frame_borders(&mut self, show_all: bool) -> &mut Self {
         self.set_frame_border(show_all, show_all, show_all, show_all)
+    }
+
+    /// Run python
+    fn run<S>(&self, figure_path: &S, show: bool) -> Result<(), StrError>
+    where
+        S: AsRef<OsStr> + ?Sized,
+    {
+        // update commands
+        let fig_path = Path::new(figure_path);
+        let txt = if show {
+            "plt.savefig(fn,bbox_inches='tight',bbox_extra_artists=EXTRA_ARTISTS)\nplt.show()\n"
+        } else {
+            "plt.savefig(fn,bbox_inches='tight',bbox_extra_artists=EXTRA_ARTISTS)\n"
+        };
+        let commands = format!("{}\nfn='{}'\n{}", self.buffer, fig_path.to_string_lossy(), txt);
+
+        // call python
+        let mut path = Path::new(figure_path).to_path_buf();
+        path.set_extension("py");
+        let output = call_python3(&commands, &path)?;
+
+        // handle error => write log file
+        if output != "" {
+            let mut log_path = Path::new(figure_path).to_path_buf();
+            log_path.set_extension("log");
+            let mut log_file = File::create(log_path).map_err(|_| "cannot create log file")?;
+            log_file
+                .write_all(output.as_bytes())
+                .map_err(|_| "cannot write to log file")?;
+            if self.show_errors {
+                println!("{}", output);
+            }
+            return Err("python3 failed; please see the log file");
+        }
+        Ok(())
     }
 }
 

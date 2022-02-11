@@ -25,7 +25,7 @@ pub trait GraphMaker {
 ///
 /// // generate (x,y) points
 /// let n = 11;
-/// let x = Vector::linspace(-1.0, 1.0, n);
+/// let x = Vector::linspace(-1.0, 1.0, n)?;
 /// let y1 = x.get_copy();
 /// let y2 = x.get_mapped(|v| f64::abs(v));
 /// let y3 = x.get_mapped(|v| f64::exp(1.0 + v) - 1.0);

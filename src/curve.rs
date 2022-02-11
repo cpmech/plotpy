@@ -21,7 +21,7 @@ use std::fmt::Write;
 /// const OUT_DIR: &str = "/tmp/plotpy/doc_tests";
 ///
 /// // generate (x,y) points
-/// let x = Vector::linspace(-1.0, 1.0, 21);
+/// let x = Vector::linspace(-1.0, 1.0, 21)?;
 /// let y = x.get_mapped(|v| 1.0 / (1.0 + f64::exp(-5.0 * v)));
 ///
 /// // configure curve

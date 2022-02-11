@@ -119,7 +119,7 @@ fn test_plot_log() -> Result<(), StrError> {
     let mut curve4 = Curve::new();
 
     // draw curve
-    let x = Vector::linspace(1.0, 11.0, 11);
+    let x = Vector::linspace(1.0, 11.0, 11)?;
     let y = x.get_mapped(|v| f64::exp(v));
     curve1.draw(&x, &x);
     curve2.draw(&x, &y);

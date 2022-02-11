@@ -233,7 +233,7 @@ fn test_slope_icon_logx_liny() -> Result<(), StrError> {
     let mut curve2 = Curve::new();
     curve1.set_marker_style("o");
     curve2.set_marker_style("*");
-    let x = Vector::linspace(x0, xmax, 5);
+    let x = Vector::linspace(x0, xmax, 5)?;
     let y1 = x.get_mapped(f1);
     let y2 = x.get_mapped(f2);
     curve1.draw(&x, &y1);
@@ -315,7 +315,7 @@ fn test_slope_icon_linx_logy() -> Result<(), StrError> {
     let mut curve2 = Curve::new();
     curve1.set_marker_style("o");
     curve2.set_marker_style("*");
-    let x = Vector::linspace(x0, xmax, 5);
+    let x = Vector::linspace(x0, xmax, 5)?;
     let y1 = x.get_mapped(f1);
     let y2 = x.get_mapped(f2);
     curve1.draw(&x, &y1);
@@ -397,7 +397,7 @@ fn test_slope_icon_logx_logy() -> Result<(), StrError> {
     let mut curve2 = Curve::new();
     curve1.set_marker_style("o");
     curve2.set_marker_style("*");
-    let x = Vector::linspace(x0, xmax, 5);
+    let x = Vector::linspace(x0, xmax, 5)?;
     let y1 = x.get_mapped(f1);
     let y2 = x.get_mapped(f2);
     curve1.draw(&x, &y1);
@@ -490,7 +490,7 @@ fn test_slope_icon_example() -> Result<(), StrError> {
     // curves
     let mut curve1a = Curve::new();
     let mut curve1b = Curve::new();
-    let x1 = Vector::linspace(x1i, x1f, 3);
+    let x1 = Vector::linspace(x1i, x1f, 3)?;
     let y1a = x1.get_mapped(f1a);
     let y1b = x1.get_mapped(f1b);
     curve1a.set_marker_style("o").draw(&x1, &y1a);
@@ -526,7 +526,7 @@ fn test_slope_icon_example() -> Result<(), StrError> {
     // curves
     let mut curve2a = Curve::new();
     let mut curve2b = Curve::new();
-    let x2 = Vector::linspace(x2i, x2f, 3);
+    let x2 = Vector::linspace(x2i, x2f, 3)?;
     let y2a = x2.get_mapped(f2a);
     let y2b = x2.get_mapped(f2b);
     curve2a.set_marker_style("o").draw(&x2, &y2a);
@@ -562,7 +562,7 @@ fn test_slope_icon_example() -> Result<(), StrError> {
     // curves
     let mut curve3a = Curve::new();
     let mut curve3b = Curve::new();
-    let x3 = Vector::linspace(x3i, x3f, 3);
+    let x3 = Vector::linspace(x3i, x3f, 3)?;
     let y3a = x3.get_mapped(f3a);
     let y3b = x3.get_mapped(f3b);
     curve3a.set_marker_style("o").draw(&x3, &y3a);
@@ -598,7 +598,7 @@ fn test_slope_icon_example() -> Result<(), StrError> {
     // curves
     let mut curve4a = Curve::new();
     let mut curve4b = Curve::new();
-    let x4 = Vector::linspace(x4i, x4f, 4);
+    let x4 = Vector::linspace(x4i, x4f, 4)?;
     let y4a = x4.get_mapped(f4a);
     let y4b = x4.get_mapped(f4b);
     curve4a.set_marker_style("o").draw(&x4, &y4a);

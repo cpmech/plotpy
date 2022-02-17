@@ -26,7 +26,7 @@ pub trait GraphMaker {
 /// // generate (x,y) points
 /// let n = 11;
 /// let x = Vector::linspace(-1.0, 1.0, n)?;
-/// let y1 = x.get_copy();
+/// let y1 = x.clone();
 /// let y2 = x.get_mapped(|v| f64::abs(v));
 /// let y3 = x.get_mapped(|v| f64::exp(1.0 + v) - 1.0);
 /// let y4 = x.get_mapped(|v| f64::sqrt(1.0 + v));
@@ -234,7 +234,7 @@ impl Plot {
     /// Sets same scale for both axes
     pub fn set_equal_axes(&mut self, equal: bool) -> &mut Self {
         if equal {
-            self.buffer.push_str("plt.gca().axes.set_aspect('equal')\n");
+            self.buffer.push_str("set_equal_axes()\n");
         } else {
             self.buffer.push_str("plt.gca().axes.set_aspect('auto')\n");
         }
@@ -693,7 +693,7 @@ mod tests {
             .set_figure_size_points(7227.0, 7227.0)
             .clear_current_figure();
         let b: &str = "plt.title(r'my plot')\n\
-                       plt.gca().axes.set_aspect('equal')\n\
+                       set_equal_axes()\n\
                        plt.gca().axes.set_aspect('auto')\n\
                        plt.axis('off')\n\
                        maybeCreateAX3D()\n\

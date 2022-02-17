@@ -84,7 +84,7 @@ fn test_cylinder() -> Result<(), StrError> {
 
     // save figure
     let path = Path::new(OUT_DIR).join("integ_cylinder.svg");
-    plot.set_range_3d(-1.0, 6.0, -1.0, 6.0, -1.0, 6.0);
+    plot.set_range_3d(-1.0, 6.0, -1.0, 6.0, -1.0, 6.0).set_equal_axes(true);
     plot.save(&path)?;
     // plot.save_and_show(&path)?;
 

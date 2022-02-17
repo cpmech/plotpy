@@ -64,6 +64,7 @@ mod plot;
 mod shapes;
 mod slope_icon;
 mod surface;
+mod surface_geometry;
 mod text;
 pub use crate::as_matrix::*;
 pub use crate::as_vector::*;
@@ -78,6 +79,7 @@ pub use crate::plot::*;
 pub use crate::shapes::*;
 pub use crate::slope_icon::*;
 pub use crate::surface::*;
+pub use crate::surface_geometry::*;
 pub use crate::text::*;
 
 // run code from README file

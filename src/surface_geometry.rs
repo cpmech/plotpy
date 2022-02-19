@@ -5,7 +5,7 @@ use std::f64::consts::PI;
 impl Surface {
     /// Draws a plane that has a normal vector with a non-zero z (nzz) component
     ///
-    /// The plane may be perpendicular to z if n = [0,0,1]
+    /// The plane may be perpendicular to z if n = (0,0,1)
     ///
     /// # Input
     ///

@@ -10,8 +10,8 @@ impl Surface {
     /// * `a` -- first point on the cylinder (centered) axis
     /// * `b` -- second point on the cylinder (centered) axis
     /// * `radius` -- the cylinder's radius
-    /// * `ndiv_axis` -- number of divisions along the axis (>= 1)
-    /// * `ndiv_perimeter` -- number of divisions along the cross-sectional circle perimeter (>= 3)
+    /// * `ndiv_axis` -- number of divisions along the axis (≥ 1)
+    /// * `ndiv_perimeter` -- number of divisions along the cross-sectional circle perimeter (≥ 3)
     pub fn draw_cylinder(
         &mut self,
         a: &[f64],
@@ -21,16 +21,16 @@ impl Surface {
         ndiv_perimeter: usize,
     ) -> Result<(), StrError> {
         if a.len() != 3 {
-            return Err("a.len() must equal 3");
+            return Err("a.len() must equal to 3");
         }
         if b.len() != 3 {
-            return Err("b.len() must equal 3");
+            return Err("b.len() must equal to 3");
         }
         if ndiv_axis < 1 {
-            return Err("ndiv_axis must be greater than or equal to 1");
+            return Err("ndiv_axis must be ≥ 1");
         }
         if ndiv_perimeter < 3 {
-            return Err("ndiv_perimeter must be greater than or equal to 3");
+            return Err("ndiv_perimeter must be ≥ 3");
         }
         let (e0, e1, e2) = Surface::aligned_system(a, b)?;
         let cylinder_height =
@@ -68,8 +68,8 @@ impl Surface {
     /// * `n` -- (len=3) normal vector
     /// * `xmin` and `xmax` -- limits along x
     /// * `ymin` and `ymax` -- limits along y
-    /// * `nx` -- number of divisions along x
-    /// * `ny` -- number of divisions along y
+    /// * `nx` -- number of divisions along x (must be ≥ 2)
+    /// * `ny` -- number of divisions along y (must be ≥ 2)
     ///
     /// # Output
     ///
@@ -91,8 +91,8 @@ impl Surface {
         if f64::abs(n[2]) < 1e-10 {
             return Err("the z-component of the normal vector cannot be zero");
         }
-        if nx < 1 || ny < 1 {
-            return Err("nx and ny must be greater than or equal to 2");
+        if nx < 2 || ny < 2 {
+            return Err("nx and ny must be ≥ 2");
         }
         let d = -n[0] * p[0] - n[1] * p[1] - n[2] * p[2];
         let (x, y, z) = generate3d(xmin, xmax, ymin, ymax, nx + 1, ny + 1, |x, y| {
@@ -110,8 +110,8 @@ impl Surface {
     /// * `r` -- radius
     /// * `alpha_min` -- min α angle in [-180, 180) degrees
     /// * `alpha_max` -- max α angle in (-180, 180] degrees
-    /// * `n_alpha` -- number of divisions along α
-    /// * `n_theta` -- number of divisions along θ
+    /// * `n_alpha` -- number of divisions along α (must be ≥ 2)
+    /// * `n_theta` -- number of divisions along θ (must be ≥ 2)
     /// * `cup` -- upside-down; like a cup
     ///
     /// # Output
@@ -130,8 +130,8 @@ impl Surface {
         if c.len() != 3 {
             return Err("c.len() must be equal to 3");
         }
-        if n_alpha < 1 || n_theta < 1 {
-            return Err("n_alpha and n_theta must be greater than or equal to 1");
+        if n_alpha < 2 || n_theta < 2 {
+            return Err("n_alpha and n_theta must be ≥ 2");
         }
         let a_min = alpha_min * PI / 180.0;
         let a_max = alpha_max * PI / 180.0;
@@ -165,13 +165,13 @@ impl Surface {
     ///
     /// * `c` -- (len=3) center coordinates
     /// * `r` -- (len=3) radii
-    /// * `k` -- (len=3) exponents
+    /// * `k` -- (len=3) exponents (must all be ≥ 0)
     /// * `alpha_min` -- min α angle in [-180, 180) degrees
     /// * `alpha_max` -- max α angle in (-180, 180] degrees
     /// * `theta_min` -- min θ angle in [-90, 90) degrees
     /// * `theta_max` -- max θ angle in (-90, 90] degrees
-    /// * `n_alpha` -- number of divisions along α
-    /// * `n_theta` -- number of divisions along θ
+    /// * `n_alpha` -- number of divisions along α (must be ≥ 2)
+    /// * `n_theta` -- number of divisions along θ (must be ≥ 2)
     ///
     /// # Output
     ///
@@ -193,8 +193,8 @@ impl Surface {
         if c.len() != 3 || r.len() != 3 || k.len() != 3 {
             return Err("c.len(), r.len(), and k.len() must be equal to 3");
         }
-        if n_alpha < 1 || n_theta < 1 {
-            return Err("n_alpha and n_theta must be greater than or equal to 1");
+        if n_alpha < 2 || n_theta < 2 {
+            return Err("n_alpha and n_theta must be ≥ 2");
         }
         if k[0] < 0.0 || k[1] < 0.0 || k[2] < 0.0 {
             return Err("exponents k must be greater than zero");
@@ -228,8 +228,8 @@ impl Surface {
     ///
     /// * `c` -- (len=3) center coordinates
     /// * `r` -- radius
-    /// * `n_alpha` -- number of divisions along α
-    /// * `n_theta` -- number of divisions along θ
+    /// * `n_alpha` -- number of divisions along α (must be ≥ 2)
+    /// * `n_theta` -- number of divisions along θ (must be ≥ 2)
     ///
     /// # Output:
     ///
@@ -244,8 +244,8 @@ impl Surface {
         if c.len() != 3 {
             return Err("c.len() must be equal to 3");
         }
-        if n_alpha < 1 || n_theta < 1 {
-            return Err("n_alpha and n_theta must be greater than or equal to 1");
+        if n_alpha < 2 || n_theta < 2 {
+            return Err("n_alpha and n_theta must be ≥ 2");
         }
         let (alpha_min, alpha_max) = (-180.0, 180.0);
         let (theta_min, theta_max) = (-90.0, 90.0);
@@ -271,20 +271,88 @@ mod tests {
 
     #[test]
     fn draw_cylinder_fails_on_wrong_input() {
-        let mut surface = Surface::new();
-        let res = surface.draw_cylinder(&[0.0, 0.0], &[1.0, 1.0, 1.0], 1.0, 1, 3);
-        assert_eq!(res.err(), Some("a.len() must equal 3"));
+        let mut surf = Surface::new();
+        let res = surf.draw_cylinder(&[0.0, 0.0], &[1.0, 1.0, 1.0], 1.0, 1, 3);
+        assert_eq!(res.err(), Some("a.len() must equal to 3"));
 
-        let res = surface.draw_cylinder(&[0.0, 0.0, 0.0], &[1.0, 1.0], 1.0, 1, 3);
-        assert_eq!(res.err(), Some("b.len() must equal 3"));
+        let res = surf.draw_cylinder(&[0.0, 0.0, 0.0], &[1.0, 1.0], 1.0, 1, 3);
+        assert_eq!(res.err(), Some("b.len() must equal to 3"));
 
-        let res = surface.draw_cylinder(&[0.0, 0.0, 0.0], &[1.0, 1.0, 1.0], 1.0, 0, 3);
-        assert_eq!(res.err(), Some("ndiv_axis must be greater than or equal to 1"));
+        let res = surf.draw_cylinder(&[0.0, 0.0, 0.0], &[1.0, 1.0, 1.0], 1.0, 0, 3);
+        assert_eq!(res.err(), Some("ndiv_axis must be ≥ 1"));
 
-        let res = surface.draw_cylinder(&[0.0, 0.0, 0.0], &[1.0, 1.0, 1.0], 1.0, 1, 2);
-        assert_eq!(res.err(), Some("ndiv_perimeter must be greater than or equal to 3"));
+        let res = surf.draw_cylinder(&[0.0, 0.0, 0.0], &[1.0, 1.0, 1.0], 1.0, 1, 2);
+        assert_eq!(res.err(), Some("ndiv_perimeter must be ≥ 3"));
 
-        let res = surface.draw_cylinder(&[0.0, 0.0, 0.0], &[0.0, 0.0, 0.0], 1.0, 1, 3);
+        let res = surf.draw_cylinder(&[0.0, 0.0, 0.0], &[0.0, 0.0, 0.0], 1.0, 1, 3);
         assert_eq!(res.err(), Some("a-to-b segment is too short"));
+    }
+
+    #[test]
+    fn draw_plane_nzz_fails_on_wrong_input() {
+        let mut surf = Surface::new();
+        let res = surf.draw_plane_nzz(&[0.0, 0.0], &[1.0, 1.0], 0.0, 1.0, 0.0, 1.0, 2, 2);
+        assert_eq!(res.err(), Some("p.len() and n.len() must be equal to 3"));
+        let res = surf.draw_plane_nzz(&[0.0, 0.0, 0.0], &[1.0, 1.0], 0.0, 1.0, 0.0, 1.0, 2, 2);
+        assert_eq!(res.err(), Some("p.len() and n.len() must be equal to 3"));
+
+        let res = surf.draw_plane_nzz(&[0.0, 0.0, 0.0], &[1.0, 1.0, 0.0], 0.0, 1.0, 0.0, 1.0, 2, 2);
+        assert_eq!(res.err(), Some("the z-component of the normal vector cannot be zero"));
+
+        let res = surf.draw_plane_nzz(&[0.0, 0.0, 0.0], &[1.0, 1.0, 1.0], 0.0, 1.0, 0.0, 1.0, 1, 2);
+        assert_eq!(res.err(), Some("nx and ny must be ≥ 2"));
+        let res = surf.draw_plane_nzz(&[0.0, 0.0, 0.0], &[1.0, 1.0, 1.0], 0.0, 1.0, 0.0, 1.0, 2, 1);
+        assert_eq!(res.err(), Some("nx and ny must be ≥ 2"));
+    }
+
+    #[test]
+    fn draw_hemisphere_fails_on_wrong_input() {
+        let mut surf = Surface::new();
+        let res = surf.draw_hemisphere(&[0.0, 0.0], 1.0, 0.0, 180.0, 2, 2, false);
+        assert_eq!(res.err(), Some("c.len() must be equal to 3"));
+
+        let res = surf.draw_hemisphere(&[0.0, 0.0, 0.0], 1.0, 0.0, 180.0, 1, 2, false);
+        assert_eq!(res.err(), Some("n_alpha and n_theta must be ≥ 2"));
+        let res = surf.draw_hemisphere(&[0.0, 0.0, 0.0], 1.0, 0.0, 180.0, 2, 1, false);
+        assert_eq!(res.err(), Some("n_alpha and n_theta must be ≥ 2"));
+    }
+
+    #[test]
+    fn draw_superquadric_fails_on_wrong_input() {
+        let d2 = &[0.0, 0.0];
+        let d3 = &[0.0, 0.0, 0.0];
+
+        let mut surf = Surface::new();
+        let res = surf.draw_superquadric(d2, d3, d3, 0.0, 180.0, 0.0, 180.0, 2, 2);
+        assert_eq!(res.err(), Some("c.len(), r.len(), and k.len() must be equal to 3"));
+        let res = surf.draw_superquadric(d3, d2, d3, 0.0, 180.0, 0.0, 180.0, 2, 2);
+        assert_eq!(res.err(), Some("c.len(), r.len(), and k.len() must be equal to 3"));
+        let res = surf.draw_superquadric(d3, d3, d2, 0.0, 180.0, 0.0, 180.0, 2, 2);
+        assert_eq!(res.err(), Some("c.len(), r.len(), and k.len() must be equal to 3"));
+
+        let res = surf.draw_superquadric(d3, d3, d3, 0.0, 180.0, 0.0, 180.0, 1, 2);
+        assert_eq!(res.err(), Some("n_alpha and n_theta must be ≥ 2"));
+
+        let ka = &[-1.0, 0.0, 0.0];
+        let kb = &[0.0, -1.0, 0.0];
+        let kc = &[0.0, 0.0, -1.0];
+        let res = surf.draw_superquadric(d3, d3, ka, 0.0, 180.0, 0.0, 180.0, 2, 2);
+        assert_eq!(res.err(), Some("exponents k must be greater than zero"));
+        let res = surf.draw_superquadric(d3, d3, kb, 0.0, 180.0, 0.0, 180.0, 2, 2);
+        assert_eq!(res.err(), Some("exponents k must be greater than zero"));
+        let res = surf.draw_superquadric(d3, d3, kc, 0.0, 180.0, 0.0, 180.0, 2, 2);
+        assert_eq!(res.err(), Some("exponents k must be greater than zero"));
+    }
+
+    #[test]
+    fn draw_sphere_fails_on_wrong_input() {
+        let mut sphere = Surface::new();
+        let res = sphere.draw_sphere(&[0.0, 0.0], 1.0, 2, 2);
+        assert_eq!(res.err(), Some("c.len() must be equal to 3"));
+
+        let res = sphere.draw_sphere(&[0.0, 0.0, 0.0], 1.0, 1, 2);
+        assert_eq!(res.err(), Some("n_alpha and n_theta must be ≥ 2"));
+        let res = sphere.draw_sphere(&[0.0, 0.0, 0.0], 1.0, 2, 1);
+        assert_eq!(res.err(), Some("n_alpha and n_theta must be ≥ 2"));
     }
 }

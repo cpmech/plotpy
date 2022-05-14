@@ -18,7 +18,6 @@ fn test_plot() -> Result<(), StrError> {
 
     // configure plot
     let mut plot = Plot::new();
-    plot.set_figure_size(400.0, 0.5);
     plot.set_subplot(2, 2, 1)
         .set_horizontal_gap(0.1)
         .set_vertical_gap(0.2)
@@ -51,9 +50,6 @@ fn test_plot() -> Result<(), StrError> {
 
     // add curve to plot
     plot.add(&curve);
-
-    // extra commands
-    plot.write_extra("plt.plot([2.0,10.0],[3.0,1.0])\n");
 
     // save figure
     let path = Path::new(OUT_DIR).join("integ_plot.svg");

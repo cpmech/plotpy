@@ -47,7 +47,7 @@ def set_equal_axes():
     except:
         import matplotlib
         print('VERSION of MATPLOTLIB = {}'.format(matplotlib.__version__))
-        print('ERROR: MATPLOTLIB IS TOO OLD')
+        print('ERROR: set_box_aspect is missing in this version of Matplotlib')
 ";
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -58,6 +58,6 @@ mod tests {
 
     #[test]
     fn constants_are_correct() {
-        assert_eq!(PYTHON_HEADER.len(), 1850);
+        assert_eq!(PYTHON_HEADER.len(), 1884);
     }
 }

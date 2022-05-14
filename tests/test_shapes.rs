@@ -83,7 +83,7 @@ fn test_shapes_grid_3d() -> Result<(), StrError> {
 
     // save figure
     let path = Path::new(OUT_DIR).join("integ_shapes_grid_3d.svg");
-    plot.set_equal_axes(true);
+    plot.set_equal_axes(true).set_show_errors(true);
     plot.save(&path)?;
 
     // check number of lines

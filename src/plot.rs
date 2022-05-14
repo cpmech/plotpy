@@ -178,7 +178,7 @@ impl Plot {
         self.legend()
     }
 
-    /// Set flag to print python errors (if any) when calling save
+    /// Sets flag to print python errors (if any) when calling save
     pub fn set_show_errors(&mut self, option: bool) -> &mut Self {
         self.show_errors = option;
         self

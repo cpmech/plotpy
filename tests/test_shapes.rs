@@ -90,6 +90,6 @@ fn test_shapes_grid_3d() -> Result<(), StrError> {
     let file = File::open(path).map_err(|_| "cannot open file")?;
     let buffered = BufReader::new(file);
     let lines_iter = buffered.lines();
-    assert!(lines_iter.count() > 1020);
+    assert!(lines_iter.count() > 1000);
     Ok(())
 }

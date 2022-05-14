@@ -20,7 +20,7 @@ impl Surface {
     /// use std::path::Path;
     ///
     /// fn main() -> Result<(), StrError> {
-    ///     // configure and draw surface + wireframe
+    ///     // configure and draw surface
     ///     let mut surface = Surface::new();
     ///     let a = &[0.0, 0.0, 0.0];
     ///     let b = &[0.0, 0.0, 1.0];
@@ -33,6 +33,7 @@ impl Surface {
     ///
     ///     // save figure
     ///     plot.set_range_3d(-1.0, 1.0, -1.0, 1.0, 0.0, 1.0)
+    ///         .set_equal_axes(true)
     ///         .save("/tmp/plotpy/doc_tests/doc_cylinder.svg")?;
     ///     Ok(())
     /// }
@@ -104,6 +105,37 @@ impl Surface {
     /// # Output
     ///
     /// * `x`, `y`, `z` -- the coordinates of all points as in a meshgrid
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use plotpy::{Plot, StrError, Surface};
+    /// use std::path::Path;
+    ///
+    /// fn main() -> Result<(), StrError> {
+    ///     // configure and draw surface
+    ///     let mut surface = Surface::new();
+    ///     let p = &[0.0, 0.0, 0.0];
+    ///     let n = &[0.0, 0.0, 1.0];
+    ///     surface.set_solid_color("#5359e9")
+    ///            .draw_plane_nzz(p, n, -1.0, 1.0, -1.0, 1.0, 3, 3)?;
+    ///
+    ///     // add surface to plot
+    ///     let mut plot = Plot::new();
+    ///     plot.add(&surface);
+    ///
+    ///     // save figure
+    ///     plot.set_range_3d(-1.0, 1.0, -1.0, 1.0, 0.0, 1.0)
+    ///         .set_equal_axes(true)
+    ///         .save("/tmp/plotpy/doc_tests/doc_plane_nzz.svg")?;
+    ///     Ok(())
+    /// }
+    /// ```
+    ///
+    /// ![doc_plane_nzz.svg](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/doc_plane_nzz.svg)
+    ///
+    /// See also integration test in the **tests** directory.
+    ///
     pub fn draw_plane_nzz(
         &mut self,
         p: &[f64],
@@ -147,6 +179,42 @@ impl Surface {
     /// # Output
     ///
     /// * `x`, `y`, `z` -- the coordinates of all points as in a meshgrid
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use plotpy::{Plot, StrError, Surface};
+    /// use std::path::Path;
+    ///
+    /// fn main() -> Result<(), StrError> {
+    ///     // draw hat
+    ///     let mut hat = Surface::new();
+    ///     let c = &[-0.5, 0.0, 0.0];
+    ///     hat.set_solid_color("#17af14")
+    ///        .draw_hemisphere(c, 0.5, -180.0, 180.0, 20, 20, false)?;
+    ///
+    ///     // draw cup
+    ///     let mut cup = Surface::new();
+    ///     let c = &[0.5, 0.0, 0.0];
+    ///     cup.set_solid_color("#ff8787")
+    ///        .draw_hemisphere(c, 0.5, -180.0, 180.0, 20, 20, true)?;
+    ///
+    ///     // add surfaces to plot
+    ///     let mut plot = Plot::new();
+    ///     plot.add(&hat).add(&cup);
+    ///
+    ///     // save figure
+    ///     plot.set_range_3d(-1.0, 1.0, -1.0, 1.0, 0.0, 1.0)
+    ///         .set_equal_axes(true)
+    ///         .save("/tmp/plotpy/doc_tests/doc_hemisphere.svg")?;
+    ///     Ok(())
+    /// }
+    /// ```
+    ///
+    /// ![doc_hemisphere.svg](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/doc_hemisphere.svg)
+    ///
+    /// See also integration test in the **tests** directory.
+    ///
     pub fn draw_hemisphere(
         &mut self,
         c: &[f64],
@@ -208,6 +276,37 @@ impl Surface {
     /// * `x`, `y`, `z` -- the coordinates of all points as in a meshgrid
     ///
     /// Reference: <https://en.wikipedia.org/wiki/Superquadrics>
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use plotpy::{Plot, StrError, Surface};
+    /// use std::path::Path;
+    ///
+    /// fn main() -> Result<(), StrError> {
+    ///     // configure and draw surface
+    ///     let c = &[0.0, 0.0, 0.0];
+    ///     let r = &[1.0, 1.0, 1.0];
+    ///     let k = &[1.0, 2.0, 0.5];
+    ///     let mut surface = Surface::new();
+    ///     surface.set_solid_color("#cd0000")
+    ///         .draw_superquadric(c, r, k, -180.0, 180.0, -90.0, 90.0, 40, 20)?;
+    ///
+    ///     // add surface to plot
+    ///     let mut plot = Plot::new();
+    ///     plot.add(&surface);
+    ///
+    ///     // save figure
+    ///     plot.set_equal_axes(true)
+    ///         .save("/tmp/plotpy/doc_tests/doc_superquadric.svg")?;
+    ///     Ok(())
+    /// }
+    /// ```
+    ///
+    /// ![doc_superquadric.svg](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/doc_superquadric.svg)
+    ///
+    /// See also integration test in the **tests** directory.
+    ///
     pub fn draw_superquadric(
         &mut self,
         c: &[f64],
@@ -264,6 +363,35 @@ impl Surface {
     /// # Output:
     ///
     /// * `x`, `y`, `z` -- the coordinates of all points as in a meshgrid
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use plotpy::{Plot, StrError, Surface};
+    /// use std::path::Path;
+    ///
+    /// fn main() -> Result<(), StrError> {
+    ///     // configure and draw surface
+    ///     let mut surface = Surface::new();
+    ///     let c = &[0.0, 0.0, 0.0];
+    ///     surface.set_solid_color("#7812c3")
+    ///            .draw_sphere(c, 1.0, 20, 20)?;
+    ///
+    ///     // add surface to plot
+    ///     let mut plot = Plot::new();
+    ///     plot.add(&surface);
+    ///
+    ///     // save figure
+    ///     plot.set_equal_axes(true)
+    ///         .save("/tmp/plotpy/doc_tests/doc_sphere.svg")?;
+    ///     Ok(())
+    /// }
+    /// ```
+    ///
+    /// ![doc_sphere.svg](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/doc_sphere.svg)
+    ///
+    /// See also integration test in the **tests** directory.
+    ///
     pub fn draw_sphere(
         &mut self,
         c: &[f64],
@@ -297,9 +425,8 @@ impl Surface {
 
 #[cfg(test)]
 mod tests {
-    use crate::{GraphMaker, StrError};
-
     use super::Surface;
+    use crate::{GraphMaker, StrError};
 
     #[test]
     fn draw_cylinder_fails_on_wrong_input() {

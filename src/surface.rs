@@ -1,5 +1,4 @@
 use super::{matrix_to_array, AsMatrix, GraphMaker, StrError};
-use russell_lab::Matrix;
 use std::fmt::Write;
 
 /// Generates a 3D a surface (or wireframe, or both)
@@ -130,61 +129,6 @@ impl Surface {
                 write!(&mut self.buffer, "cb.ax.set_ylabel(r'{}')\n", self.colorbar_label).unwrap();
             }
         }
-    }
-
-    /// Draws a cylinder
-    ///
-    /// # Input
-    ///
-    /// * `a` -- first point on the cylinder (centered) axis
-    /// * `b` -- second point on the cylinder (centered) axis
-    /// * `radius` -- the cylinder's radius
-    /// * `ndiv_axis` -- number of divisions along the axis (>= 1)
-    /// * `ndiv_perimeter` -- number of divisions along the cross-sectional circle perimeter (>= 3)
-    pub fn draw_cylinder(
-        &mut self,
-        a: &[f64],
-        b: &[f64],
-        radius: f64,
-        ndiv_axis: usize,
-        ndiv_perimeter: usize,
-    ) -> Result<(), StrError> {
-        if a.len() != 3 {
-            return Err("a.len() must equal 3");
-        }
-        if b.len() != 3 {
-            return Err("b.len() must equal 3");
-        }
-        if ndiv_axis < 1 {
-            return Err("ndiv_axis must be greater than or equal to 1");
-        }
-        if ndiv_perimeter < 3 {
-            return Err("ndiv_perimeter must be greater than or equal to 3");
-        }
-        let (e0, e1, e2) = Surface::aligned_system(a, b)?;
-        let cylinder_height =
-            f64::sqrt((b[0] - a[0]) * (b[0] - a[0]) + (b[1] - a[1]) * (b[1] - a[1]) + (b[2] - a[2]) * (b[2] - a[2]));
-        let (n_height, n_alpha) = (ndiv_axis + 1, ndiv_perimeter + 1);
-        let mut x = Matrix::new(n_alpha, n_height);
-        let mut y = Matrix::new(n_alpha, n_height);
-        let mut z = Matrix::new(n_alpha, n_height);
-        let delta_height = cylinder_height / ((n_height - 1) as f64);
-        let delta_alpha = 2.0 * std::f64::consts::PI / ((n_alpha - 1) as f64);
-        let mut p = vec![0.0; 3];
-        for i in 0..n_alpha {
-            let v = (i as f64) * delta_alpha;
-            for j in 0..n_height {
-                let u = (j as f64) * delta_height;
-                for k in 0..3 {
-                    p[k] = a[k] + u * e0[k] + radius * f64::sin(v) * e1[k] + radius * f64::cos(v) * e2[k];
-                }
-                x[i][j] = p[0];
-                y[i][j] = p[1];
-                z[i][j] = p[2];
-            }
-        }
-        self.draw(&x, &y, &z);
-        Ok(())
     }
 
     /// Sets the row stride
@@ -342,7 +286,7 @@ impl Surface {
     }
 
     /// Creates a triad aligned to an axis passing through a and b
-    fn aligned_system(a: &[f64], b: &[f64]) -> Result<(Vec<f64>, Vec<f64>, Vec<f64>), StrError> {
+    pub(super) fn aligned_system(a: &[f64], b: &[f64]) -> Result<(Vec<f64>, Vec<f64>, Vec<f64>), StrError> {
         // vector aligned with the axis
         let n = vec![b[0] - a[0], b[1] - a[1], b[2] - a[2]];
         let n_dot_n = n[0] * n[0] + n[1] * n[1] + n[2] * n[2];
@@ -492,34 +436,6 @@ mod tests {
                        maybeCreateAX3D()\n\
                        sf=AX3D.plot_surface(x,y,z,cmap=getColormap(0))\n";
         assert_eq!(surface.buffer, b);
-    }
-
-    #[test]
-    fn draw_cylinder_fails_on_wrong_input() {
-        let mut surface = Surface::new();
-        let res = surface.draw_cylinder(&[0.0, 0.0], &[1.0, 1.0, 1.0], 1.0, 1, 3);
-        assert_eq!(res.err(), Some("a.len() must equal 3"));
-
-        let res = surface.draw_cylinder(&[0.0, 0.0, 0.0], &[1.0, 1.0], 1.0, 1, 3);
-        assert_eq!(res.err(), Some("b.len() must equal 3"));
-
-        let res = surface.draw_cylinder(&[0.0, 0.0, 0.0], &[1.0, 1.0, 1.0], 1.0, 0, 3);
-        assert_eq!(res.err(), Some("ndiv_axis must be greater than or equal to 1"));
-
-        let res = surface.draw_cylinder(&[0.0, 0.0, 0.0], &[1.0, 1.0, 1.0], 1.0, 1, 2);
-        assert_eq!(res.err(), Some("ndiv_perimeter must be greater than or equal to 3"));
-
-        let res = surface.draw_cylinder(&[0.0, 0.0, 0.0], &[0.0, 0.0, 0.0], 1.0, 1, 3);
-        assert_eq!(res.err(), Some("a-to-b segment is too short"));
-    }
-
-    #[test]
-    fn draw_cylinder_works() -> Result<(), StrError> {
-        let mut surface = Surface::new();
-        surface.set_with_wireframe(true).set_with_colorbar(true);
-        surface.draw_cylinder(&[0.0, 0.0, 0.0], &[1.0, 0.0, 0.0], 1.0, 1, 3)?;
-        assert!(surface.buffer.len() > 480);
-        Ok(())
     }
 
     #[test]

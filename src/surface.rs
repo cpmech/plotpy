@@ -6,40 +6,34 @@ use std::fmt::Write;
 /// # Example
 ///
 /// ```
-/// # fn main() -> Result<(), &'static str> {
-/// // import
-/// use plotpy::{Surface, Plot};
+/// use plotpy::{Plot, StrError, Surface};
 /// use russell_lab::generate3d;
-/// use std::path::Path;
 ///
-/// // directory to save figures
-/// const OUT_DIR: &str = "/tmp/plotpy/doc_tests";
+/// fn main() -> Result<(), StrError> {
+///     // generate (x,y,z) matrices
+///     let n = 21;
+///     let (x, y, z) = generate3d(-2.0, 2.0, -2.0, 2.0, n, n, |x, y| x * x - y * y);
 ///
-/// // generate (x,y,z) matrices
-/// let n = 21;
-/// let (x, y, z) = generate3d(-2.0, 2.0, -2.0, 2.0, n, n, |x, y| x * x - y * y);
+///     // configure and draw surface + wireframe
+///     let mut surface = Surface::new();
+///     surface.set_colormap_name("seismic")
+///         .set_with_colorbar(true)
+///         .set_with_wireframe(true)
+///         .set_line_width(0.3);
 ///
-/// // configure and draw surface + wireframe
-/// let mut surface = Surface::new();
-/// surface.set_colormap_name("seismic")
-///     .set_with_colorbar(true)
-///     .set_with_wireframe(true)
-///     .set_line_width(0.3);
+///     // draw surface + wireframe
+///     surface.draw(&x, &y, &z);
 ///
-/// // draw surface + wireframe
-/// surface.draw(&x, &y, &z);
+///     // add surface to plot
+///     let mut plot = Plot::new();
+///     plot.add(&surface)
+///         .set_title("horse saddle equation") // must be after add surface
+///         .set_camera(20.0, 35.0); // must be after add surface
 ///
-/// // add surface to plot
-/// let mut plot = Plot::new();
-/// plot.add(&surface)
-///     .set_title("horse saddle equation") // must be after add surface
-///     .set_camera(20.0, 35.0); // must be after add surface
-///
-/// // save figure
-/// let path = Path::new(OUT_DIR).join("doc_surface.svg");
-/// plot.save(&path)?;
-/// # Ok(())
-/// # }
+///     // save figure
+///     plot.save("/tmp/plotpy/doc_tests/doc_surface.svg")?;
+///     Ok(())
+/// }
 /// ```
 ///
 /// ![doc_surface.svg](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/doc_surface.svg)

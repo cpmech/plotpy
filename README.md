@@ -18,8 +18,11 @@ Install some libraries:
 sudo apt-get install \
     liblapacke-dev \
     libopenblas-dev \
-    python3-matplotlib
+    python3-pip3
+pip3 install matplotlib
 ```
+
+**Note** We use pip3 because the version of Matplotlib needs to be at least 3.3.0 and "old" Ubuntu comes with 3.1.2.
 
 Add this to your Cargo.toml:
 

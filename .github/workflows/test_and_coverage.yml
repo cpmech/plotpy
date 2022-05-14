@@ -7,7 +7,8 @@ jobs:
       - uses: actions/checkout@v2
       - name: Install Libraries
         run: |
-          sudo apt-get update -y && sudo apt-get install -y liblapacke-dev libopenblas-dev python3-matplotlib
+          sudo apt-get update -y && sudo apt-get install -y liblapacke-dev libopenblas-dev python3-pip
+          sudo pip3 install matplotlib
       - name: Install Rust
         run: |
           rustup toolchain install nightly --component llvm-tools-preview

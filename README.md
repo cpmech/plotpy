@@ -63,3 +63,62 @@ fn main() -> Result<(), StrError> {
 ```
 
 ![readme_contour.svg](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/readme_contour.svg)
+
+### Superquadric
+
+```rust
+use plotpy::{Plot, StrError, Surface};
+
+fn main() -> Result<(), StrError> {
+    // star
+    let r = &[1.0, 1.0, 1.0];
+    let c = &[-1.0, -1.0, -1.0];
+    let k = &[0.5, 0.5, 0.5];
+    let mut star = Surface::new();
+    star.set_colormap_name("jet")
+        .draw_superquadric(c, r, k, -180.0, 180.0, -90.0, 90.0, 40, 20)?;
+
+    // pyramids
+    let c = &[1.0, -1.0, -1.0];
+    let k = &[1.0, 1.0, 1.0];
+    let mut pyramids = Surface::new();
+    pyramids
+        .set_colormap_name("inferno")
+        .draw_superquadric(c, r, k, -180.0, 180.0, -90.0, 90.0, 40, 20)?;
+
+    // rounded cube
+    let c = &[-1.0, 1.0, 1.0];
+    let k = &[4.0, 4.0, 4.0];
+    let mut cube = Surface::new();
+    cube.set_solid_color("#ee29f2")
+        .draw_superquadric(c, r, k, -180.0, 180.0, -90.0, 90.0, 40, 20)?;
+
+    // sphere
+    let c = &[0.0, 0.0, 0.0];
+    let k = &[2.0, 2.0, 2.0];
+    let mut sphere = Surface::new();
+    sphere
+        .set_colormap_name("rainbow")
+        .draw_superquadric(c, r, k, -180.0, 180.0, -90.0, 90.0, 40, 20)?;
+
+    // sphere (direct)
+    let mut sphere_direct = Surface::new();
+    sphere_direct.draw_sphere(&[1.0, 1.0, 1.0], 1.0, 40, 20)?;
+
+    // add features to plot
+    let mut plot = Plot::new();
+    plot.add(&star)
+        .add(&pyramids)
+        .add(&cube)
+        .add(&sphere)
+        .add(&sphere_direct);
+
+    // save figure
+    plot.set_equal_axes(true)
+        .set_figure_size_points(600.0, 600.0)
+        .save("/tmp/plotpy/readme_superquadric.svg")?;
+    Ok(())
+}
+```
+
+![readme_contour.svg](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/readme_contour.svg)

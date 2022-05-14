@@ -59,6 +59,7 @@ pub struct Surface {
     with_colorbar: bool,      // Draw a colorbar
     colorbar_label: String,   // Colorbar label
     number_format_cb: String, // Number format for labels in colorbar
+    solid_color: String,      // Solid color of surface (when not using colormap)
     line_color: String,       // Color of wireframe lines
     line_style: String,       // Style of wireframe line
     line_width: f64,          // Width of wireframe line
@@ -79,6 +80,7 @@ impl Surface {
             with_colorbar: false,
             colorbar_label: String::new(),
             number_format_cb: String::new(),
+            solid_color: String::new(),
             line_color: "black".to_string(),
             line_style: String::new(),
             line_width: 0.0,
@@ -214,6 +216,13 @@ impl Surface {
         self
     }
 
+    /// Sets a solid color for the surface (disables colormap)
+    pub fn set_solid_color(&mut self, color: &str) -> &mut Self {
+        self.solid_color = String::from(color);
+        self.with_colormap = false;
+        self
+    }
+
     /// Sets the color of wireframe lines
     pub fn set_line_color(&mut self, color: &str) -> &mut Self {
         self.line_color = String::from(color);
@@ -244,6 +253,9 @@ impl Surface {
         }
         if self.col_stride > 0 {
             write!(&mut opt, ",cstride={}", self.col_stride).unwrap();
+        }
+        if self.solid_color != "" {
+            write!(&mut opt, ",color='{}'", self.solid_color).unwrap();
         }
         if self.with_colormap {
             if self.colormap_name != "" {
@@ -378,6 +390,11 @@ mod tests {
         surface.set_with_colormap(false);
         let opt = surface.options_surface();
         assert_eq!(opt, ",rstride=3,cstride=4");
+
+        surface.set_with_colormap(true).set_solid_color("blue");
+        let opt = surface.options_surface();
+        assert_eq!(surface.with_colormap, false);
+        assert_eq!(opt, ",rstride=3,cstride=4,color='blue'");
     }
 
     #[test]

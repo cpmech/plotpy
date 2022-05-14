@@ -76,63 +76,59 @@ fn test_cylinder() -> Result<(), StrError> {
 
 #[test]
 fn test_superquadric() -> Result<(), StrError> {
-    let mut s1 = Surface::new();
-    s1.draw_superquadric(
-        &[-1.0, -1.0, -1.0],
-        &[1.0, 1.0, 1.0],
-        &[0.5, 0.5, 0.5],
-        -180.0,
-        180.0,
-        -90.0,
-        90.0,
-        40,
-        20,
-    )?;
+    // star
+    let r = &[1.0, 1.0, 1.0];
+    let c = &[-1.0, -1.0, -1.0];
+    let k = &[0.5, 0.5, 0.5];
+    let mut star = Surface::new();
+    star.set_colormap_name("jet")
+        .draw_superquadric(c, r, k, -180.0, 180.0, -90.0, 90.0, 40, 20)?;
 
-    let mut s2 = Surface::new();
-    s2.draw_superquadric(
-        &[1.0, -1.0, -1.0],
-        &[1.0, 1.0, 1.0],
-        &[1.0, 1.0, 1.0],
-        -180.0,
-        180.0,
-        -90.0,
-        90.0,
-        40,
-        20,
-    )?;
+    // pyramids
+    let c = &[1.0, -1.0, -1.0];
+    let k = &[1.0, 1.0, 1.0];
+    let mut pyramids = Surface::new();
+    pyramids
+        .set_colormap_name("inferno")
+        .draw_superquadric(c, r, k, -180.0, 180.0, -90.0, 90.0, 40, 20)?;
 
-    let mut s3 = Surface::new();
-    s3.draw_superquadric(
-        &[-1.0, 1.0, 1.0],
-        &[1.0, 1.0, 1.0],
-        &[4.0, 4.0, 4.0],
-        -180.0,
-        180.0,
-        -90.0,
-        90.0,
-        40,
-        20,
-    )?;
+    // rounded cube
+    let c = &[-1.0, 1.0, 1.0];
+    let k = &[4.0, 4.0, 4.0];
+    let mut cube = Surface::new();
+    cube.set_solid_color("#ee29f2")
+        .draw_superquadric(c, r, k, -180.0, 180.0, -90.0, 90.0, 40, 20)?;
 
-    let mut s4 = Surface::new();
-    s4.draw_sphere(&[1.0, 1.0, 1.0], 1.0, 40, 20)?;
+    // sphere
+    let c = &[0.0, 0.0, 0.0];
+    let k = &[2.0, 2.0, 2.0];
+    let mut sphere = Surface::new();
+    sphere
+        .set_colormap_name("rainbow")
+        .draw_superquadric(c, r, k, -180.0, 180.0, -90.0, 90.0, 40, 20)?;
+
+    // sphere (direct)
+    let mut sphere_direct = Surface::new();
+    sphere_direct.draw_sphere(&[1.0, 1.0, 1.0], 1.0, 40, 20)?;
 
     // add features to plot
     let mut plot = Plot::new();
-    plot.add(&s1).add(&s2).add(&s3).add(&s4);
+    plot.add(&star)
+        .add(&pyramids)
+        .add(&cube)
+        .add(&sphere)
+        .add(&sphere_direct);
 
     // save figure
     let path = Path::new(OUT_DIR).join("integ_superquadric.svg");
     plot.set_equal_axes(true)
         .set_figure_size_points(600.0, 600.0)
-        // .save_and_show(&path)?;
         .save(&path)?;
 
     // check number of lines
     let file = File::open(path).map_err(|_| "cannot open file")?;
     let buffered = BufReader::new(file);
     let lines_iter = buffered.lines();
-    assert!(lines_iter.count() > 19950);
+    assert!(lines_iter.count() > 24780);
     Ok(())
 }

@@ -5,7 +5,7 @@
 //! If an error occurs, a log file is created (also named as the figure).
 //!
 //! The main idea here is to create objects such as `Curve`, `Contour`, `Histogram`,
-//! or `Surface` and add it to a plot using the `add` command. The plot may
+//! or `Surface` and add them to a plot using the `add` command. The plot may
 //! also configured using the methods of `Plot`.
 //!
 //! Each object (e.g. `Curve`, `Legend`, `Text`) defines a number of configuration options

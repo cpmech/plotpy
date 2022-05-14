@@ -620,19 +620,6 @@ mod tests {
     }
 
     #[test]
-    fn basic_functions_work() -> Result<(), &'static str> {
-        let mut plot = Plot::new();
-        plot.legend().write_extra("print('Hello World')\n");
-        let b: &str = "h,l=plt.gca().get_legend_handles_labels()\n\
-                       if len(h)>0 and len(l)>0:\n\
-                       \x20\x20\x20\x20leg=plt.legend(handlelength=3,ncol=1,loc='best')\n\
-                       \x20\x20\x20\x20addToEA(leg)\n\
-                       print('Hello World')\n";
-        assert_eq!(plot.buffer, b);
-        Ok(())
-    }
-
-    #[test]
     fn subplot_functions_work() {
         let mut plot = Plot::new();
         plot.set_super_title("all subplots")

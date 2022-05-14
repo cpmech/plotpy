@@ -15,10 +15,7 @@ Documentation:
 Install some libraries:
 
 ```bash
-sudo apt-get install \
-    liblapacke-dev \
-    libopenblas-dev \
-    python3-pip3
+sudo apt-get install liblapacke-dev libopenblas-dev python3-pip3
 pip3 install matplotlib
 ```
 

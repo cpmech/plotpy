@@ -5,6 +5,7 @@ use std::fs::File;
 use std::io::Write as IoWrite;
 use std::path::Path;
 
+/// Defines the trait used by Plot to add graph entities
 pub trait GraphMaker {
     fn get_buffer<'a>(&'a self) -> &'a String;
 }
@@ -498,7 +499,7 @@ impl Plot {
         self
     }
 
-    // Sets option to hide (or show) frame borders
+    /// Sets option to hide (or show) frame borders
     pub fn set_frame_border(&mut self, left: bool, right: bool, bottom: bool, top: bool) -> &mut Self {
         if left {
             self.buffer.push_str("plt.gca().spines['left'].set_visible(True)\n");
@@ -523,7 +524,7 @@ impl Plot {
         self
     }
 
-    // HideAllBorders hides all frame borders
+    /// Sets visibility of all frame borders
     pub fn set_frame_borders(&mut self, show_all: bool) -> &mut Self {
         self.set_frame_border(show_all, show_all, show_all, show_all)
     }
@@ -615,6 +616,19 @@ mod tests {
         plot.set_subplot(1, 1, WRONG);
         let path = Path::new(OUT_DIR).join("show_errors_works.svg");
         assert_eq!(plot.save(&path).err(), Some("python3 failed; please see the log file"));
+        Ok(())
+    }
+
+    #[test]
+    fn basic_functions_work() -> Result<(), &'static str> {
+        let mut plot = Plot::new();
+        plot.legend().write_extra("print('Hello World')\n");
+        let b: &str = "h,l=plt.gca().get_legend_handles_labels()\n\
+                       if len(h)>0 and len(l)>0:\n\
+                       \x20\x20\x20\x20leg=plt.legend(handlelength=3,ncol=1,loc='best')\n\
+                       \x20\x20\x20\x20addToEA(leg)\n\
+                       print('Hello World')\n";
+        assert_eq!(plot.buffer, b);
         Ok(())
     }
 

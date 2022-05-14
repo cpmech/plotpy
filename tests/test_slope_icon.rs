@@ -251,14 +251,14 @@ fn test_slope_icon_logx_liny() -> Result<(), StrError> {
 
     // configure icons
     let offset = 1.5;
-    icon1.set_offset_v(offset).set_log_x(true);
-    icon2.set_offset_v(offset).set_log_x(true).set_above(true);
-    icon3.set_offset_v(offset).set_log_x(true);
-    icon4.set_offset_v(offset).set_log_x(true).set_above(true);
-    icon5.set_offset_v(offset).set_log_x(true);
-    icon6.set_offset_v(offset).set_log_x(true).set_above(true);
-    icon7.set_offset_v(offset).set_log_x(true);
-    icon8.set_offset_v(offset).set_log_x(true).set_above(true);
+    icon1.set_offset_v(offset);
+    icon2.set_offset_v(offset).set_above(true);
+    icon3.set_offset_v(offset);
+    icon4.set_offset_v(offset).set_above(true);
+    icon5.set_offset_v(offset);
+    icon6.set_offset_v(offset).set_above(true);
+    icon7.set_offset_v(offset);
+    icon8.set_offset_v(offset).set_above(true);
 
     // draw icon
     icon1.draw(slope, 1e2, f1(1e2));
@@ -294,7 +294,7 @@ fn test_slope_icon_logx_liny() -> Result<(), StrError> {
     let file = File::open(path).map_err(|_| "cannot open file")?;
     let buffered = BufReader::new(file);
     let lines_iter = buffered.lines();
-    assert!(lines_iter.count() > 930);
+    assert!(lines_iter.count() > 1030);
     Ok(())
 }
 
@@ -332,14 +332,14 @@ fn test_slope_icon_linx_logy() -> Result<(), StrError> {
     let mut icon8 = SlopeIcon::new();
 
     // configure icons
-    icon1.set_offset_v(2.0).set_log_y(true);
-    icon2.set_offset_v(2.0).set_log_y(true).set_above(true);
-    icon3.set_offset_v(2.0).set_log_y(true);
-    icon4.set_offset_v(2.0).set_log_y(true).set_above(true);
-    icon5.set_offset_v(2.0).set_log_y(true);
-    icon6.set_offset_v(2.0).set_log_y(true).set_above(true);
-    icon7.set_offset_v(2.0).set_log_y(true);
-    icon8.set_offset_v(2.0).set_log_y(true).set_above(true);
+    icon1.set_offset_v(2.0);
+    icon2.set_offset_v(2.0).set_above(true);
+    icon3.set_offset_v(2.0);
+    icon4.set_offset_v(2.0).set_above(true);
+    icon5.set_offset_v(2.0);
+    icon6.set_offset_v(2.0).set_above(true);
+    icon7.set_offset_v(2.0);
+    icon8.set_offset_v(2.0).set_above(true);
 
     // draw icon
     icon1.draw(slope, g1(1e2), 1e2);
@@ -375,7 +375,7 @@ fn test_slope_icon_linx_logy() -> Result<(), StrError> {
     let file = File::open(path).map_err(|_| "cannot open file")?;
     let buffered = BufReader::new(file);
     let lines_iter = buffered.lines();
-    assert!(lines_iter.count() > 880);
+    assert!(lines_iter.count() > 950);
     Ok(())
 }
 
@@ -415,30 +415,14 @@ fn test_slope_icon_logx_logy() -> Result<(), StrError> {
 
     // configure icons
     let offset = 2.0;
-    icon1.set_offset_v(offset).set_log_x(true).set_log_y(true);
-    icon2
-        .set_offset_v(offset)
-        .set_log_x(true)
-        .set_log_y(true)
-        .set_above(true);
-    icon3.set_offset_v(offset).set_log_x(true).set_log_y(true);
-    icon4
-        .set_offset_v(offset)
-        .set_log_x(true)
-        .set_log_y(true)
-        .set_above(true);
-    icon5.set_offset_v(offset).set_log_x(true).set_log_y(true);
-    icon6
-        .set_offset_v(offset)
-        .set_log_x(true)
-        .set_log_y(true)
-        .set_above(true);
-    icon7.set_offset_v(offset).set_log_x(true).set_log_y(true);
-    icon8
-        .set_offset_v(offset)
-        .set_log_x(true)
-        .set_log_y(true)
-        .set_above(true);
+    icon1.set_offset_v(offset);
+    icon2.set_offset_v(offset).set_above(true);
+    icon3.set_offset_v(offset);
+    icon4.set_offset_v(offset).set_above(true);
+    icon5.set_offset_v(offset);
+    icon6.set_offset_v(offset).set_above(true);
+    icon7.set_offset_v(offset);
+    icon8.set_offset_v(offset).set_above(true);
 
     // draw icon
     icon1.draw(slope, 1e2, f1(1e2));
@@ -510,9 +494,9 @@ fn test_slope_icon_example() -> Result<(), StrError> {
     plot.set_subplot(2, 2, 1)
         .add(&curve1a)
         .add(&curve1b)
+        .set_equal_axes(true)
         .add(&icon1a)
         .add(&icon1b)
-        .set_equal_axes(true)
         .grid_and_labels("x", "y");
 
     // linear y vs log10 x //////////////////////////////////////////
@@ -535,8 +519,8 @@ fn test_slope_icon_example() -> Result<(), StrError> {
     // icons
     let mut icon2a = SlopeIcon::new();
     let mut icon2b = SlopeIcon::new();
-    icon2a.set_offset_v(0.0).set_log_x(true);
-    icon2b.set_offset_v(0.0).set_log_x(true);
+    icon2a.set_offset_v(0.0);
+    icon2b.set_offset_v(0.0);
     icon2a.draw(slope2, 2e1, f2a(2e1));
     icon2b.draw(-slope2, 2e1, f2b(2e1));
 
@@ -544,9 +528,9 @@ fn test_slope_icon_example() -> Result<(), StrError> {
 
     // plot
     plot.set_subplot(2, 2, 2)
-        .set_log_x(true) // must be set before adding curves
         .add(&curve2a)
         .add(&curve2b)
+        .set_log_x(true) // must be set before adding icons
         .add(&icon2a)
         .add(&icon2b)
         .grid_and_labels("x", "y");
@@ -571,8 +555,8 @@ fn test_slope_icon_example() -> Result<(), StrError> {
     // icons
     let mut icon3a = SlopeIcon::new();
     let mut icon3b = SlopeIcon::new();
-    icon3a.set_offset_v(0.0).set_log_y(true);
-    icon3b.set_offset_v(0.0).set_log_y(true);
+    icon3a.set_offset_v(0.0);
+    icon3b.set_offset_v(0.0);
     icon3a.draw(slope3, 5.0, f3a(5.0));
     icon3b.draw(-slope3, 5.0, f3b(5.0));
 
@@ -580,9 +564,9 @@ fn test_slope_icon_example() -> Result<(), StrError> {
 
     // plot
     plot.set_subplot(2, 2, 3)
-        .set_log_y(true) // must be set before adding curves
         .add(&curve3a)
         .add(&curve3b)
+        .set_log_y(true) // must be set before adding icons
         .add(&icon3a)
         .add(&icon3b)
         .grid_and_labels("x", "y");
@@ -607,20 +591,20 @@ fn test_slope_icon_example() -> Result<(), StrError> {
     // icons
     let mut icon4a = SlopeIcon::new();
     let mut icon4b = SlopeIcon::new();
-    icon4a.set_offset_v(0.0).set_log_x(true).set_log_y(true);
-    icon4b.set_offset_v(0.0).set_log_x(true).set_log_y(true).set_above(true);
+    icon4a.set_offset_v(0.0);
+    icon4b.set_offset_v(0.0).set_above(true);
     icon4a.draw(slope4, 2e1, f4a(2e1));
     icon4b.draw(-slope4, 2e1, f4b(2e1));
 
     // plot
     plot.set_subplot(2, 2, 4)
-        .set_log_x(true)
-        .set_log_y(true) // must be set before adding curves
         .add(&curve4a)
         .add(&curve4b)
+        .set_log_x(true) // must be set before adding icons
+        .set_log_y(true) // must be set before adding icons
+        .set_equal_axes(true)
         .add(&icon4a)
         .add(&icon4b)
-        .set_equal_axes(true)
         .grid_and_labels("x", "y");
 
     // save figure
@@ -631,6 +615,6 @@ fn test_slope_icon_example() -> Result<(), StrError> {
     let file = File::open(path).map_err(|_| "cannot open file")?;
     let buffered = BufReader::new(file);
     let lines_iter = buffered.lines();
-    assert!(lines_iter.count() > 1300);
+    assert!(lines_iter.count() > 1400);
     Ok(())
 }

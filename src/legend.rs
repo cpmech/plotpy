@@ -16,7 +16,7 @@ use std::fmt::Write;
 /// const OUT_DIR: &str = "/tmp/plotpy/doc_tests";
 ///
 /// // generate (x,y) points
-/// let x  = Vector::linspace(0.0, 5.0, 6);
+/// let x  = Vector::linspace(0.0, 5.0, 6)?;
 /// let y1 = x.get_mapped(|v| 0.5 * v);
 /// let y2 = x.get_mapped(|v| 1.0 * v);
 /// let y3 = x.get_mapped(|v| 1.5 * v);

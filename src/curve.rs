@@ -21,7 +21,7 @@ use std::fmt::Write;
 /// const OUT_DIR: &str = "/tmp/plotpy/doc_tests";
 ///
 /// // generate (x,y) points
-/// let x = Vector::linspace(-1.0, 1.0, 21);
+/// let x = Vector::linspace(-1.0, 1.0, 21)?;
 /// let y = x.get_mapped(|v| 1.0 / (1.0 + f64::exp(-5.0 * v)));
 ///
 /// // configure curve
@@ -116,6 +116,31 @@ impl Curve {
         vector_to_array(&mut self.buffer, "y", y);
         let opt = self.options();
         write!(&mut self.buffer, "plt.plot(x,y{})\n", &opt).unwrap();
+    }
+
+    /// Draws curve in 3D plot
+    ///
+    /// # Input
+    ///
+    /// * `x` - x values
+    /// * `y` - y values
+    /// * `z` - z values
+    ///
+    /// # Notes
+    ///
+    /// * The type `U` of the input array must be a number.
+    ///
+    pub fn draw_3d<'a, T, U>(&mut self, x: &'a T, y: &'a T, z: &'a T)
+    where
+        T: AsVector<'a, U>,
+        U: 'a + std::fmt::Display,
+    {
+        vector_to_array(&mut self.buffer, "x", x);
+        vector_to_array(&mut self.buffer, "y", y);
+        vector_to_array(&mut self.buffer, "z", z);
+        let opt = self.options();
+        write!(&mut self.buffer, "maybeCreateAX3D()\n").unwrap();
+        write!(&mut self.buffer, "AX3D.plot(x,y,z{})\n", &opt).unwrap();
     }
 
     /// Sets the name of this curve in the legend
@@ -345,6 +370,22 @@ mod tests {
         let b: &str = "x=np.array([1,2,3,4,5,],dtype=float)\n\
                        y=np.array([1,4,9,16,25,],dtype=float)\n\
                        plt.plot(x,y,label='the-curve')\n";
+        assert_eq!(curve.buffer, b);
+    }
+
+    #[test]
+    fn draw_3d_works() {
+        let x = &[1.0, 2.0, 3.0, 4.0, 5.0];
+        let y = &[1.0, 4.0, 9.0, 16.0, 25.0];
+        let z = &[0.0, 0.0, 0.0, 1.0, 1.0];
+        let mut curve = Curve::new();
+        curve.set_label("the-curve");
+        curve.draw_3d(x, y, z);
+        let b: &str = "x=np.array([1,2,3,4,5,],dtype=float)\n\
+                       y=np.array([1,4,9,16,25,],dtype=float)\n\
+                       z=np.array([0,0,0,1,1,],dtype=float)\n\
+                       maybeCreateAX3D()\n\
+                       AX3D.plot(x,y,z,label='the-curve')\n";
         assert_eq!(curve.buffer, b);
     }
 }

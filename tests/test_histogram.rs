@@ -1,4 +1,4 @@
-use plotpy::{Histogram, Plot};
+use plotpy::{Histogram, Plot, StrError};
 use std::fs::File;
 use std::io::{BufRead, BufReader};
 use std::path::Path;
@@ -6,7 +6,7 @@ use std::path::Path;
 const OUT_DIR: &str = "/tmp/plotpy/integ_tests";
 
 #[test]
-fn test_histogram_1() -> Result<(), &'static str> {
+fn test_histogram_1() -> Result<(), StrError> {
     let mut histogram = Histogram::new();
     histogram
         .set_colors(&vec!["#cd0000", "#1862ab", "#cd8c00"])
@@ -38,7 +38,7 @@ fn test_histogram_1() -> Result<(), &'static str> {
 }
 
 #[test]
-fn test_histogram_2() -> Result<(), &'static str> {
+fn test_histogram_2() -> Result<(), StrError> {
     let mut histogram = Histogram::new();
     histogram.set_no_fill(true).set_number_bins(16).set_stacked(true);
 

@@ -33,7 +33,20 @@ def dataToAxis(coords):
 def axisToData(coords):
     plt.axis() # must call this first
     return plt.gca().transLimits.inverted().transform(coords)
-
+def set_equal_axes():
+    ax = plt.gca()
+    if AX3D == None:
+        ax.axes.set_aspect('equal')
+        return
+    # https://stackoverflow.com/questions/13685386/matplotlib-equal-unit-length-with-equal-aspect-ratio-z-axis-is-not-equal-to
+    ax.set_box_aspect([1,1,1])
+    limits = np.array([ax.get_xlim3d(), ax.get_ylim3d(), ax.get_zlim3d()])
+    origin = np.mean(limits, axis=1)
+    radius = 0.5 * np.max(np.abs(limits[:, 1] - limits[:, 0]))
+    x, y, z = origin
+    ax.set_xlim3d([x - radius, x + radius])
+    ax.set_ylim3d([y - radius, y + radius])
+    ax.set_zlim3d([z - radius, z + radius])
 ";
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -44,6 +57,6 @@ mod tests {
 
     #[test]
     fn constants_are_correct() {
-        assert_eq!(PYTHON_HEADER.len(), 1238);
+        assert_eq!(PYTHON_HEADER.len(), 1650);
     }
 }

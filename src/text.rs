@@ -66,6 +66,18 @@ impl Text {
         write!(&mut self.buffer, "plt.text({},{},'{}'{})\n", x, y, message, &opt).unwrap();
     }
 
+    /// Draws text in 3D plot
+    pub fn draw_3d(&mut self, x: f64, y: f64, z: f64, message: &str) {
+        let opt = self.options();
+        write!(
+            &mut self.buffer,
+            "maybeCreateAX3D()\n\
+             AX3D.text({},{},{},'{}'{})\n",
+            x, y, z, message, &opt
+        )
+        .unwrap();
+    }
+
     /// Sets the text color
     pub fn set_color(&mut self, color: &str) -> &mut Self {
         self.color = String::from(color);
@@ -169,6 +181,15 @@ mod tests {
         let mut text = Text::new();
         text.draw(1.2, 3.4, &"message".to_string());
         let b: &str = "plt.text(1.2,3.4,'message')\n";
+        assert_eq!(text.buffer, b);
+    }
+
+    #[test]
+    fn draw_3d_works() {
+        let mut text = Text::new();
+        text.draw_3d(1.2, 3.4, 5.6, &"message".to_string());
+        let b: &str = "maybeCreateAX3D()\n\
+                       AX3D.text(1.2,3.4,5.6,'message')\n";
         assert_eq!(text.buffer, b);
     }
 }

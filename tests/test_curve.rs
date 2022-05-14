@@ -1,4 +1,4 @@
-use plotpy::{Curve, Plot};
+use plotpy::{Curve, Plot, StrError};
 use std::fs::File;
 use std::io::{BufRead, BufReader};
 use std::path::Path;
@@ -6,7 +6,7 @@ use std::path::Path;
 const OUT_DIR: &str = "/tmp/plotpy/integ_tests";
 
 #[test]
-fn test_curve() -> Result<(), &'static str> {
+fn test_curve() -> Result<(), StrError> {
     // curve object and options
     let mut curve1 = Curve::new();
     curve1
@@ -53,5 +53,45 @@ fn test_curve() -> Result<(), &'static str> {
     let buffered = BufReader::new(file);
     let lines_iter = buffered.lines();
     assert!(lines_iter.count() > 490);
+    Ok(())
+}
+
+#[test]
+fn test_curve_3d() -> Result<(), StrError> {
+    // curve object and options
+    let mut curve = Curve::new();
+    curve
+        .set_line_alpha(0.7)
+        .set_line_color("#cd0000")
+        .set_line_style("--")
+        .set_line_width(2.0)
+        .set_marker_color("#1862ab")
+        .set_marker_every(2)
+        .set_marker_void(false)
+        .set_marker_line_color("#cda500")
+        .set_marker_line_width(3.0)
+        .set_marker_size(8.0)
+        .set_marker_style("p");
+
+    // draw curves
+    let x = &[1.0, 2.0, 3.0, 4.0, 5.0];
+    let y = &[1.0, 4.0, 9.0, 16.0, 25.0];
+    let z = &[0.0, 0.0, 0.0, 1.0, 1.0];
+    curve.draw_3d(x, y, z);
+
+    // add curves to plot
+    let mut plot = Plot::new();
+    plot.set_range_3d(-0.5, 6.0, -0.5, 30.0, -0.5, 1.5);
+    plot.add(&curve);
+
+    // save figure
+    let path = Path::new(OUT_DIR).join("integ_curve_3d.svg");
+    plot.save(&path)?;
+
+    // check number of lines
+    let file = File::open(path).map_err(|_| "cannot open file")?;
+    let buffered = BufReader::new(file);
+    let lines_iter = buffered.lines();
+    assert!(lines_iter.count() > 700);
     Ok(())
 }

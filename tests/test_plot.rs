@@ -1,4 +1,4 @@
-use plotpy::{Curve, Plot};
+use plotpy::{Curve, Plot, StrError};
 use russell_lab::Vector;
 use std::fs::File;
 use std::io::{BufRead, BufReader};
@@ -7,7 +7,7 @@ use std::path::Path;
 const OUT_DIR: &str = "/tmp/plotpy/integ_tests";
 
 #[test]
-fn test_plot() -> Result<(), &'static str> {
+fn test_plot() -> Result<(), StrError> {
     // curve object and options
     let mut curve = Curve::new();
 
@@ -44,7 +44,9 @@ fn test_plot() -> Result<(), &'static str> {
     plot.set_title("my plot")
         .set_frame_borders(false)
         .set_frame_borders(true)
-        .set_frame_borders(false);
+        .set_frame_borders(false)
+        .set_ticks_x(1.5, 0.5, "%.2f")
+        .set_ticks_y(0.5, 0.1, "%g");
     plot.grid_and_labels("x", "y");
 
     // add curve to plot
@@ -55,13 +57,14 @@ fn test_plot() -> Result<(), &'static str> {
 
     // save figure
     let path = Path::new(OUT_DIR).join("integ_plot.svg");
+    plot.set_figure_size_points(250.0, 250.0 * 0.75);
     plot.save(&path)?;
 
     // check number of lines
     let file = File::open(path).map_err(|_| "cannot open file")?;
     let buffered = BufReader::new(file);
     let lines_iter = buffered.lines();
-    assert!(lines_iter.count() > 550);
+    assert!(lines_iter.count() > 900);
     Ok(())
 }
 
@@ -73,7 +76,7 @@ fn test_plot_error() {
 }
 
 #[test]
-fn test_plot_subplots() -> Result<(), &'static str> {
+fn test_plot_subplots() -> Result<(), StrError> {
     // curve object and options
     let mut curve = Curve::new();
 
@@ -112,7 +115,7 @@ fn test_plot_subplots() -> Result<(), &'static str> {
 }
 
 #[test]
-fn test_plot_log() -> Result<(), &'static str> {
+fn test_plot_log() -> Result<(), StrError> {
     // curves
     let mut curve1 = Curve::new();
     let mut curve2 = Curve::new();
@@ -120,7 +123,7 @@ fn test_plot_log() -> Result<(), &'static str> {
     let mut curve4 = Curve::new();
 
     // draw curve
-    let x = Vector::linspace(1.0, 11.0, 11);
+    let x = Vector::linspace(1.0, 11.0, 11)?;
     let y = x.get_mapped(|v| f64::exp(v));
     curve1.draw(&x, &x);
     curve2.draw(&x, &y);

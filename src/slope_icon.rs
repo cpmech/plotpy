@@ -13,7 +13,7 @@ use std::fmt::Write;
 /// ```
 /// # fn main() -> Result<(), &'static str> {
 /// // import
-/// use plotpy::{Curve, SlopeIcon, Plot};
+/// use plotpy::{Curve, Plot, SlopeIcon};
 /// use russell_lab::Vector;
 /// use std::path::Path;
 ///
@@ -26,7 +26,7 @@ use std::fmt::Write;
 /// // curves
 /// let mut curve1 = Curve::new();
 /// let mut curve2 = Curve::new();
-/// let x = Vector::linspace(xi, xf, 3);
+/// let x = Vector::linspace(xi, xf, 3)?;
 /// let y1 = x.get_mapped(f);
 /// let y2 = x.get_mapped(g);
 /// curve1.set_marker_style("o").draw(&x, &y1);

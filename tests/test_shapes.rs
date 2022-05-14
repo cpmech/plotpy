@@ -1,4 +1,4 @@
-use plotpy::{Plot, Shapes};
+use plotpy::{Plot, Shapes, StrError};
 use std::fs::File;
 use std::io::{BufRead, BufReader};
 use std::path::Path;
@@ -6,7 +6,7 @@ use std::path::Path;
 const OUT_DIR: &str = "/tmp/plotpy/integ_tests";
 
 #[test]
-fn test_shapes() -> Result<(), &'static str> {
+fn test_shapes() -> Result<(), StrError> {
     // shapes object and common options
     let mut shapes = Shapes::new();
     shapes.set_edge_color("#cd0000").set_face_color("#1862ab");
@@ -45,5 +45,51 @@ fn test_shapes() -> Result<(), &'static str> {
     let buffered = BufReader::new(file);
     let lines_iter = buffered.lines();
     assert!(lines_iter.count() > 450);
+    Ok(())
+}
+
+#[test]
+fn test_shapes_grid_2d() -> Result<(), StrError> {
+    // shapes object and common options
+    let mut s2d = Shapes::new();
+    s2d.draw_grid(&[-0.2, -0.2], &[0.8, 1.8], &[5, 5], true, true)?;
+
+    // add shapes to plot
+    let mut plot = Plot::new();
+    plot.add(&s2d);
+
+    // save figure
+    let path = Path::new(OUT_DIR).join("integ_shapes_grid_2d.svg");
+    plot.set_equal_axes(true).grid_and_labels("x", "y");
+    plot.save(&path)?;
+
+    // check number of lines
+    let file = File::open(path).map_err(|_| "cannot open file")?;
+    let buffered = BufReader::new(file);
+    let lines_iter = buffered.lines();
+    assert!(lines_iter.count() > 780);
+    Ok(())
+}
+
+#[test]
+fn test_shapes_grid_3d() -> Result<(), StrError> {
+    // shapes object and common options
+    let mut s3d = Shapes::new();
+    s3d.draw_grid(&[-1.0, -1.0, -1.0], &[1.0, 1.0, 1.0], &[2, 2, 2], true, true)?;
+
+    // add shapes to plot
+    let mut plot = Plot::new();
+    plot.add(&s3d);
+
+    // save figure
+    let path = Path::new(OUT_DIR).join("integ_shapes_grid_3d.svg");
+    plot.set_equal_axes(true);
+    plot.save(&path)?;
+
+    // check number of lines
+    let file = File::open(path).map_err(|_| "cannot open file")?;
+    let buffered = BufReader::new(file);
+    let lines_iter = buffered.lines();
+    assert!(lines_iter.count() > 1020);
     Ok(())
 }

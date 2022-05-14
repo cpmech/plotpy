@@ -1,7 +1,7 @@
-use super::{call_python3, Legend};
+use super::{call_python3, Legend, StrError};
 use std::ffi::OsStr;
 use std::fmt::Write;
-use std::fs::{self, File};
+use std::fs::File;
 use std::io::Write as IoWrite;
 use std::path::Path;
 
@@ -26,8 +26,8 @@ pub trait GraphMaker {
 ///
 /// // generate (x,y) points
 /// let n = 11;
-/// let x = Vector::linspace(-1.0, 1.0, n);
-/// let y1 = x.get_copy();
+/// let x = Vector::linspace(-1.0, 1.0, n)?;
+/// let y1 = x.clone();
 /// let y2 = x.get_mapped(|v| f64::abs(v));
 /// let y3 = x.get_mapped(|v| f64::exp(1.0 + v) - 1.0);
 /// let y4 = x.get_mapped(|v| f64::sqrt(1.0 + v));
@@ -86,13 +86,17 @@ pub trait GraphMaker {
 /// ![doc_plot.svg](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/doc_plot.svg)
 ///
 pub struct Plot {
-    buffer: String,
+    show_errors: bool, // show python errors, if any
+    buffer: String,    // buffer
 }
 
 impl Plot {
     /// Creates new Plot object
     pub fn new() -> Self {
-        Plot { buffer: String::new() }
+        Plot {
+            show_errors: false,
+            buffer: String::new(),
+        }
     }
 
     /// Adds new graph entity
@@ -106,52 +110,31 @@ impl Plot {
     /// # Input
     ///
     /// * `figure_path` -- may be a String, &str, or Path
-    pub fn save<S>(&self, figure_path: &S) -> Result<(), &'static str>
+    ///
+    /// # Note
+    ///
+    /// Call `set_show_errors` to configure how the errors (if any) are printed.
+    pub fn save<S>(&self, figure_path: &S) -> Result<(), StrError>
     where
         S: AsRef<OsStr> + ?Sized,
     {
-        // update commands
-        let fig_path = Path::new(figure_path);
-        let commands = format!(
-            "{}\nfn='{}'\nplt.savefig(fn, bbox_inches='tight', bbox_extra_artists=EXTRA_ARTISTS)\n",
-            self.buffer,
-            fig_path.to_string_lossy(),
-        );
-
-        // call python
-        let mut path = Path::new(figure_path).to_path_buf();
-        path.set_extension("py");
-        let output = call_python3(&commands, &path)?;
-
-        // handle error => write log file
-        if output != "" {
-            let mut log_path = Path::new(figure_path).to_path_buf();
-            log_path.set_extension("log");
-            let mut log_file = File::create(log_path).map_err(|_| "cannot create log file")?;
-            log_file
-                .write_all(output.as_bytes())
-                .map_err(|_| "cannot write to log file")?;
-
-            // TODO: if not CI, do not print the log file by default
-            // self.print_log_file(&figure_path)?;
-
-            return Err("python3 failed; please see the log file");
-        }
-        Ok(())
+        self.run(figure_path, false)
     }
 
-    /// Prints the log file created by the save command
+    /// Calls python3, saves the python script and figure, and show the plot window
     ///
-    /// **Note:** the log file is **only** generated when python fails
-    pub fn print_log_file<S>(&self, figure_path: &S) -> Result<(), &'static str>
+    /// # Input
+    ///
+    /// * `figure_path` -- may be a String, &str, or Path
+    ///
+    /// # Note
+    ///
+    /// Call `set_show_errors` to configure how the errors (if any) are printed.
+    pub fn save_and_show<S>(&self, figure_path: &S) -> Result<(), StrError>
     where
         S: AsRef<OsStr> + ?Sized,
     {
-        let mut log_path = Path::new(figure_path).to_path_buf();
-        log_path.set_extension("log");
-        let output = fs::read_to_string(log_path).map_err(|_| "cannot read log file")?;
-        println!("{}", output);
-        Ok(())
+        self.run(figure_path, true)
     }
 
     /// Clears current figure
@@ -195,13 +178,9 @@ impl Plot {
         self.legend()
     }
 
-    /// Writes extra Python/Matplotlib commands to buffer
-    ///
-    /// # Note
-    ///
-    /// The order of commands matter (as usual in a Python/Matplotlib script).
-    pub fn write_extra(&mut self, commands: &str) -> &mut Self {
-        self.buffer.push_str(commands);
+    /// Set flag to print python errors (if any) when calling save
+    pub fn set_show_errors(&mut self, option: bool) -> &mut Self {
+        self.show_errors = option;
         self
     }
 
@@ -256,10 +235,24 @@ impl Plot {
     /// Sets same scale for both axes
     pub fn set_equal_axes(&mut self, equal: bool) -> &mut Self {
         if equal {
-            self.buffer.push_str("setEqualAspect()\n");
+            self.buffer.push_str("set_equal_axes()\n");
         } else {
             self.buffer.push_str("plt.gca().axes.set_aspect('auto')\n");
         }
+        self
+    }
+
+    /// Sets the figure size in inches
+    pub fn set_figure_size_inches(&mut self, width: f64, height: f64) -> &mut Self {
+        write!(&mut self.buffer, "plt.gcf().set_size_inches({},{})\n", width, height).unwrap();
+        self
+    }
+
+    /// Sets the figure size in points
+    #[rustfmt::skip]
+    pub fn set_figure_size_points(&mut self, width: f64, height: f64) -> &mut Self {
+        const FACTOR: f64 = 72.27;
+        write!(&mut self.buffer, "plt.gcf().set_size_inches({},{})\n", width / FACTOR, height / FACTOR).unwrap();
         self
     }
 
@@ -267,6 +260,20 @@ impl Plot {
     pub fn set_hide_axes(&mut self, hide: bool) -> &mut Self {
         let option = if hide { "off" } else { "on" };
         write!(&mut self.buffer, "plt.axis('{}')\n", option).unwrap();
+        self
+    }
+
+    /// Sets axes limits
+    pub fn set_range_3d(&mut self, xmin: f64, xmax: f64, ymin: f64, ymax: f64, zmin: f64, zmax: f64) -> &mut Self {
+        write!(
+            &mut self.buffer,
+            "maybeCreateAX3D()\n\
+             AX3D.set_xlim3d({},{})\n\
+             AX3D.set_ylim3d({},{})\n\
+             AX3D.set_zlim3d({},{})\n",
+            xmin, xmax, ymin, ymax, zmin, zmax,
+        )
+        .unwrap();
         self
     }
 
@@ -383,6 +390,48 @@ impl Plot {
         self
     }
 
+    #[rustfmt::skip]
+    pub fn set_ticks_x(&mut self, major_every: f64, minor_every: f64, major_format: &str) -> &mut Self {
+        if major_every > 0.0 {
+            write!(&mut self.buffer, "majorLocator = tck.MultipleLocator({})\n", major_every).unwrap();
+            write!(&mut self.buffer, "n_ticks = (plt.gca().axis()[1] - plt.gca().axis()[0]) / {}\n", major_every).unwrap();
+            write!(&mut self.buffer, "if n_ticks < majorLocator.MAXTICKS * 0.9:\n").unwrap();
+            write!(&mut self.buffer, "    plt.gca().xaxis.set_major_locator(majorLocator)\n").unwrap();
+        }
+        if minor_every > 0.0 {
+            write!(&mut self.buffer, "minorLocator = tck.MultipleLocator({})\n", minor_every).unwrap();
+            write!(&mut self.buffer, "n_ticks = (plt.gca().axis()[1] - plt.gca().axis()[0]) / {}\n", minor_every).unwrap();
+            write!(&mut self.buffer, "if n_ticks < minorLocator.MAXTICKS * 0.9:\n").unwrap();
+            write!(&mut self.buffer, "    plt.gca().xaxis.set_minor_locator(minorLocator)\n").unwrap();
+        }
+        if major_format != "" {
+            write!(&mut self.buffer, "majorFormatter = tck.FormatStrFormatter(r'{}')\n", major_format).unwrap();
+            write!(&mut self.buffer, "plt.gca().xaxis.set_major_formatter(majorFormatter)\n").unwrap();
+        }
+        self
+    }
+
+    #[rustfmt::skip]
+    pub fn set_ticks_y(&mut self, major_every: f64, minor_every: f64, major_format: &str) -> &mut Self {
+        if major_every > 0.0 {
+            write!(&mut self.buffer, "majorLocator = tck.MultipleLocator({})\n", major_every).unwrap();
+            write!(&mut self.buffer, "n_ticks = (plt.gca().axis()[3] - plt.gca().axis()[2]) / {}\n", major_every).unwrap();
+            write!(&mut self.buffer, "if n_ticks < majorLocator.MAXTICKS * 0.9:\n").unwrap();
+            write!(&mut self.buffer, "    plt.gca().yaxis.set_major_locator(majorLocator)\n").unwrap();
+        }
+        if minor_every > 0.0 {
+            write!(&mut self.buffer, "minorLocator = tck.MultipleLocator({})\n", minor_every).unwrap();
+            write!(&mut self.buffer, "n_ticks = (plt.gca().axis()[3] - plt.gca().axis()[2]) / {}\n", minor_every).unwrap();
+            write!(&mut self.buffer, "if n_ticks < minorLocator.MAXTICKS * 0.9:\n").unwrap();
+            write!(&mut self.buffer, "    plt.gca().yaxis.set_minor_locator(minorLocator)\n").unwrap();
+        }
+        if major_format != "" {
+            write!(&mut self.buffer, "majorFormatter = tck.FormatStrFormatter(r'{}')\n", major_format).unwrap();
+            write!(&mut self.buffer, "plt.gca().yaxis.set_major_formatter(majorFormatter)\n").unwrap();
+        }
+        self
+    }
+
     /// Sets a log10 x-scale
     ///
     /// # Note
@@ -480,21 +529,39 @@ impl Plot {
         self.set_frame_border(show_all, show_all, show_all, show_all)
     }
 
-    /// Sets the figure size
-    ///
-    /// # Note
-    ///
-    /// This function must be called right at the beginning.
-    pub fn set_figure_size(&mut self, width_points: f64, proportion: f64) -> &mut Self {
-        let w = width_points / 72.27; // width in inches
-        let h = w * proportion;
-        write!(
-            &mut self.buffer,
-            "plt.rcParams.update({{'figure.figsize':[{},{}]}})\n",
-            w as i32, h as i32
-        )
-        .unwrap();
-        self
+    /// Run python
+    fn run<S>(&self, figure_path: &S, show: bool) -> Result<(), StrError>
+    where
+        S: AsRef<OsStr> + ?Sized,
+    {
+        // update commands
+        let fig_path = Path::new(figure_path);
+        let txt = if show {
+            "plt.savefig(fn,bbox_inches='tight',bbox_extra_artists=EXTRA_ARTISTS)\nplt.show()\n"
+        } else {
+            "plt.savefig(fn,bbox_inches='tight',bbox_extra_artists=EXTRA_ARTISTS)\n"
+        };
+        let commands = format!("{}\nfn='{}'\n{}", self.buffer, fig_path.to_string_lossy(), txt);
+
+        // call python
+        let mut path = Path::new(figure_path).to_path_buf();
+        path.set_extension("py");
+        let output = call_python3(&commands, &path)?;
+
+        // handle error => write log file
+        if output != "" {
+            let mut log_path = Path::new(figure_path).to_path_buf();
+            log_path.set_extension("log");
+            let mut log_file = File::create(log_path).map_err(|_| "cannot create log file")?;
+            log_file
+                .write_all(output.as_bytes())
+                .map_err(|_| "cannot write to log file")?;
+            if self.show_errors {
+                println!("{}", output);
+            }
+            return Err("python3 failed; please see the log file");
+        }
+        Ok(())
     }
 }
 
@@ -502,7 +569,7 @@ impl Plot {
 
 #[cfg(test)]
 mod tests {
-    use super::Plot;
+    use super::{Plot, StrError};
     use std::fs::File;
     use std::io::{BufRead, BufReader};
     use std::path::Path;
@@ -516,7 +583,7 @@ mod tests {
     }
 
     #[test]
-    fn save_works() -> Result<(), &'static str> {
+    fn save_works() -> Result<(), StrError> {
         let plot = Plot::new();
         assert_eq!(plot.buffer.len(), 0);
         let path = Path::new(OUT_DIR).join("save_works.svg");
@@ -529,7 +596,7 @@ mod tests {
     }
 
     #[test]
-    fn save_str_works() -> Result<(), &'static str> {
+    fn save_str_works() -> Result<(), StrError> {
         let plot = Plot::new();
         assert_eq!(plot.buffer.len(), 0);
         let path = "/tmp/plotpy/unit_tests/save_str_works.svg";
@@ -542,13 +609,13 @@ mod tests {
     }
 
     #[test]
-    fn print_log_file_works() -> Result<(), &'static str> {
+    fn show_errors_works() -> Result<(), StrError> {
         const WRONG: usize = 0;
         let mut plot = Plot::new();
+        plot.set_show_errors(true);
         plot.set_subplot(1, 1, WRONG);
-        let path = Path::new(OUT_DIR).join("print_log_file_works.svg");
+        let path = Path::new(OUT_DIR).join("show_errors_works.svg");
         assert_eq!(plot.save(&path).err(), Some("python3 failed; please see the log file"));
-        plot.print_log_file(&path)?;
         Ok(())
     }
 
@@ -608,11 +675,12 @@ mod tests {
     #[test]
     fn set_functions_work() {
         let mut plot = Plot::new();
-        plot.set_figure_size(400.0, 0.5);
-        plot.set_title("my plot")
+        plot.set_show_errors(true)
+            .set_title("my plot")
             .set_equal_axes(true)
             .set_equal_axes(false)
             .set_hide_axes(true)
+            .set_range_3d(-1.0, 1.0, -1.0, 1.0, -1.0, 1.0)
             .set_range(-1.0, 1.0, -1.0, 1.0)
             .set_range_from_vec(&[0.0, 1.0, 0.0, 1.0])
             .set_xmin(0.0)
@@ -633,12 +701,19 @@ mod tests {
             .set_label_y("y-label")
             .set_labels("x", "y")
             .set_camera(1.0, 10.0)
+            .set_ticks_x(1.5, 0.5, "%.2f")
+            .set_ticks_y(0.5, 0.1, "%g")
+            .set_figure_size_inches(2.0, 2.0)
+            .set_figure_size_points(7227.0, 7227.0)
             .clear_current_figure();
-        let b: &str = "plt.rcParams.update({'figure.figsize':[5,2]})\n\
-                       plt.title(r'my plot')\n\
-                       setEqualAspect()\n\
+        let b: &str = "plt.title(r'my plot')\n\
+                       set_equal_axes()\n\
                        plt.gca().axes.set_aspect('auto')\n\
                        plt.axis('off')\n\
+                       maybeCreateAX3D()\n\
+                       AX3D.set_xlim3d(-1,1)\n\
+                       AX3D.set_ylim3d(-1,1)\n\
+                       AX3D.set_zlim3d(-1,1)\n\
                        plt.axis([-1,1,-1,1])\n\
                        plt.axis([0,1,0,1])\n\
                        plt.axis([0,plt.axis()[1],plt.axis()[2],plt.axis()[3]])\n\
@@ -660,8 +735,31 @@ mod tests {
                        plt.xlabel(r'x')\n\
                        plt.ylabel(r'y')\n\
                        plt.gca().view_init(elev=1,azim=10)\n\
+                       majorLocator = tck.MultipleLocator(1.5)\n\
+                       n_ticks = (plt.gca().axis()[1] - plt.gca().axis()[0]) / 1.5\n\
+                       if n_ticks < majorLocator.MAXTICKS * 0.9:\n\
+                       \x20\x20\x20\x20plt.gca().xaxis.set_major_locator(majorLocator)\n\
+                       minorLocator = tck.MultipleLocator(0.5)\n\
+                       n_ticks = (plt.gca().axis()[1] - plt.gca().axis()[0]) / 0.5\n\
+                       if n_ticks < minorLocator.MAXTICKS * 0.9:\n\
+                       \x20\x20\x20\x20plt.gca().xaxis.set_minor_locator(minorLocator)\n\
+                       majorFormatter = tck.FormatStrFormatter(r'%.2f')\n\
+                       plt.gca().xaxis.set_major_formatter(majorFormatter)\n\
+                       majorLocator = tck.MultipleLocator(0.5)\n\
+                       n_ticks = (plt.gca().axis()[3] - plt.gca().axis()[2]) / 0.5\n\
+                       if n_ticks < majorLocator.MAXTICKS * 0.9:\n\
+                       \x20\x20\x20\x20plt.gca().yaxis.set_major_locator(majorLocator)\n\
+                       minorLocator = tck.MultipleLocator(0.1)\n\
+                       n_ticks = (plt.gca().axis()[3] - plt.gca().axis()[2]) / 0.1\n\
+                       if n_ticks < minorLocator.MAXTICKS * 0.9:\n\
+                       \x20\x20\x20\x20plt.gca().yaxis.set_minor_locator(minorLocator)\n\
+                       majorFormatter = tck.FormatStrFormatter(r'%g')\n\
+                       plt.gca().yaxis.set_major_formatter(majorFormatter)\n\
+                       plt.gcf().set_size_inches(2,2)\n\
+                       plt.gcf().set_size_inches(100,100)\n\
                        plt.clf()\n";
         assert_eq!(plot.buffer, b);
+        assert_eq!(plot.show_errors, true);
     }
 
     #[test]

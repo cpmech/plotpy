@@ -1,4 +1,4 @@
-use plotpy::{Curve, Plot, SlopeIcon};
+use plotpy::{Curve, Plot, SlopeIcon, StrError};
 use russell_lab::Vector;
 use std::fs::File;
 use std::io::{BufRead, BufReader};
@@ -7,7 +7,7 @@ use std::path::Path;
 const OUT_DIR: &str = "/tmp/plotpy/integ_tests";
 
 #[test]
-fn test_slope_icon_below() -> Result<(), &'static str> {
+fn test_slope_icon_below() -> Result<(), StrError> {
     // curves
     let mut curve1 = Curve::new();
     let mut curve2 = Curve::new();
@@ -83,7 +83,7 @@ fn test_slope_icon_below() -> Result<(), &'static str> {
 }
 
 #[test]
-fn test_slope_icon_above() -> Result<(), &'static str> {
+fn test_slope_icon_above() -> Result<(), StrError> {
     // curves
     let mut curve1 = Curve::new();
     let mut curve2 = Curve::new();
@@ -143,7 +143,7 @@ fn test_slope_icon_above() -> Result<(), &'static str> {
 }
 
 #[test]
-fn test_slope_icon_linx_liny() -> Result<(), &'static str> {
+fn test_slope_icon_linx_liny() -> Result<(), StrError> {
     // curves
     let mut curve1 = Curve::new();
     let mut curve2 = Curve::new();
@@ -219,7 +219,7 @@ fn test_slope_icon_linx_liny() -> Result<(), &'static str> {
 }
 
 #[test]
-fn test_slope_icon_logx_liny() -> Result<(), &'static str> {
+fn test_slope_icon_logx_liny() -> Result<(), StrError> {
     // linear models on logx-y
     let (p, slope) = (5.0, 0.5);
     let (x0, y0) = (10.0, 0.0);
@@ -233,7 +233,7 @@ fn test_slope_icon_logx_liny() -> Result<(), &'static str> {
     let mut curve2 = Curve::new();
     curve1.set_marker_style("o");
     curve2.set_marker_style("*");
-    let x = Vector::linspace(x0, xmax, 5);
+    let x = Vector::linspace(x0, xmax, 5)?;
     let y1 = x.get_mapped(f1);
     let y2 = x.get_mapped(f2);
     curve1.draw(&x, &y1);
@@ -284,9 +284,11 @@ fn test_slope_icon_logx_liny() -> Result<(), &'static str> {
         .add(&icon7)
         .add(&icon8);
 
+    // NOTE: cannot set equal_axes when using log-lin axes
+
     // save figure
     let path = Path::new(OUT_DIR).join("integ_slope_icon_logx_liny.svg");
-    plot.set_equal_axes(true).grid_and_labels("x", "y").save(&path)?;
+    plot.grid_and_labels("x", "y").save(&path)?;
 
     // check number of lines
     let file = File::open(path).map_err(|_| "cannot open file")?;
@@ -297,7 +299,7 @@ fn test_slope_icon_logx_liny() -> Result<(), &'static str> {
 }
 
 #[test]
-fn test_slope_icon_linx_logy() -> Result<(), &'static str> {
+fn test_slope_icon_linx_logy() -> Result<(), StrError> {
     // linear models on x-logy
     let (p, slope) = (5.0, 1.5);
     let (x0, y0) = (0.0, 10.0);
@@ -313,7 +315,7 @@ fn test_slope_icon_linx_logy() -> Result<(), &'static str> {
     let mut curve2 = Curve::new();
     curve1.set_marker_style("o");
     curve2.set_marker_style("*");
-    let x = Vector::linspace(x0, xmax, 5);
+    let x = Vector::linspace(x0, xmax, 5)?;
     let y1 = x.get_mapped(f1);
     let y2 = x.get_mapped(f2);
     curve1.draw(&x, &y1);
@@ -363,9 +365,11 @@ fn test_slope_icon_linx_logy() -> Result<(), &'static str> {
         .add(&icon7)
         .add(&icon8);
 
+    // NOTE: cannot set equal_axes when using log-lin axes
+
     // save figure
     let path = Path::new(OUT_DIR).join("integ_slope_icon_linx_logy.svg");
-    plot.set_equal_axes(true).grid_and_labels("x", "y").save(&path)?;
+    plot.grid_and_labels("x", "y").save(&path)?;
 
     // check number of lines
     let file = File::open(path).map_err(|_| "cannot open file")?;
@@ -376,7 +380,7 @@ fn test_slope_icon_linx_logy() -> Result<(), &'static str> {
 }
 
 #[test]
-fn test_slope_icon_logx_logy() -> Result<(), &'static str> {
+fn test_slope_icon_logx_logy() -> Result<(), StrError> {
     // linear models on log-log
     //        y/y0  = (x/x0)^m
     //  log10(y/y0) = m * log10(x/x0)
@@ -393,7 +397,7 @@ fn test_slope_icon_logx_logy() -> Result<(), &'static str> {
     let mut curve2 = Curve::new();
     curve1.set_marker_style("o");
     curve2.set_marker_style("*");
-    let x = Vector::linspace(x0, xmax, 5);
+    let x = Vector::linspace(x0, xmax, 5)?;
     let y1 = x.get_mapped(f1);
     let y2 = x.get_mapped(f2);
     curve1.draw(&x, &y1);
@@ -458,7 +462,7 @@ fn test_slope_icon_logx_logy() -> Result<(), &'static str> {
 }
 
 #[test]
-fn test_slope_icon_example() -> Result<(), &'static str> {
+fn test_slope_icon_example() -> Result<(), StrError> {
     // linear y vs linear x //////////////////////////////////////////
 
     // models
@@ -470,7 +474,7 @@ fn test_slope_icon_example() -> Result<(), &'static str> {
     // curves
     let mut curve1a = Curve::new();
     let mut curve1b = Curve::new();
-    let x1 = Vector::linspace(x1i, x1f, 3);
+    let x1 = Vector::linspace(x1i, x1f, 3)?;
     let y1a = x1.get_mapped(f1a);
     let y1b = x1.get_mapped(f1b);
     curve1a.set_marker_style("o").draw(&x1, &y1a);
@@ -506,7 +510,7 @@ fn test_slope_icon_example() -> Result<(), &'static str> {
     // curves
     let mut curve2a = Curve::new();
     let mut curve2b = Curve::new();
-    let x2 = Vector::linspace(x2i, x2f, 3);
+    let x2 = Vector::linspace(x2i, x2f, 3)?;
     let y2a = x2.get_mapped(f2a);
     let y2b = x2.get_mapped(f2b);
     curve2a.set_marker_style("o").draw(&x2, &y2a);
@@ -519,6 +523,8 @@ fn test_slope_icon_example() -> Result<(), &'static str> {
     icon2b.set_offset_v(0.0);
     icon2a.draw(slope2, 2e1, f2a(2e1));
     icon2b.draw(-slope2, 2e1, f2b(2e1));
+
+    // NOTE: cannot set equal_axes when using log-lin axes
 
     // plot
     plot.set_subplot(2, 2, 2)
@@ -540,7 +546,7 @@ fn test_slope_icon_example() -> Result<(), &'static str> {
     // curves
     let mut curve3a = Curve::new();
     let mut curve3b = Curve::new();
-    let x3 = Vector::linspace(x3i, x3f, 3);
+    let x3 = Vector::linspace(x3i, x3f, 3)?;
     let y3a = x3.get_mapped(f3a);
     let y3b = x3.get_mapped(f3b);
     curve3a.set_marker_style("o").draw(&x3, &y3a);
@@ -553,6 +559,8 @@ fn test_slope_icon_example() -> Result<(), &'static str> {
     icon3b.set_offset_v(0.0);
     icon3a.draw(slope3, 5.0, f3a(5.0));
     icon3b.draw(-slope3, 5.0, f3b(5.0));
+
+    // NOTE: cannot set equal_axes when using log-lin axes
 
     // plot
     plot.set_subplot(2, 2, 3)
@@ -574,7 +582,7 @@ fn test_slope_icon_example() -> Result<(), &'static str> {
     // curves
     let mut curve4a = Curve::new();
     let mut curve4b = Curve::new();
-    let x4 = Vector::linspace(x4i, x4f, 4);
+    let x4 = Vector::linspace(x4i, x4f, 4)?;
     let y4a = x4.get_mapped(f4a);
     let y4b = x4.get_mapped(f4b);
     curve4a.set_marker_style("o").draw(&x4, &y4a);

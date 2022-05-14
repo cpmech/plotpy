@@ -12,6 +12,36 @@ impl Surface {
     /// * `radius` -- the cylinder's radius
     /// * `ndiv_axis` -- number of divisions along the axis (≥ 1)
     /// * `ndiv_perimeter` -- number of divisions along the cross-sectional circle perimeter (≥ 3)
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use plotpy::{Plot, StrError, Surface};
+    /// use std::path::Path;
+    ///
+    /// fn main() -> Result<(), StrError> {
+    ///     // configure and draw surface + wireframe
+    ///     let mut surface = Surface::new();
+    ///     let a = &[0.0, 0.0, 0.0];
+    ///     let b = &[0.0, 0.0, 1.0];
+    ///     surface.set_solid_color("#fcb827")
+    ///            .draw_cylinder(a, b, 0.25, 1, 20)?;
+    ///
+    ///     // add surface to plot
+    ///     let mut plot = Plot::new();
+    ///     plot.add(&surface);
+    ///
+    ///     // save figure
+    ///     plot.set_range_3d(-1.0, 1.0, -1.0, 1.0, 0.0, 1.0)
+    ///         .save("/tmp/plotpy/doc_tests/doc_cylinder.svg")?;
+    ///     Ok(())
+    /// }
+    /// ```
+    ///
+    /// ![doc_cylinder.svg](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/doc_cylinder.svg)
+    ///
+    /// See also integration test in the **tests** directory.
+    ///
     pub fn draw_cylinder(
         &mut self,
         a: &[f64],

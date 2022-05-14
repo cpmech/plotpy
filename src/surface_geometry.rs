@@ -338,6 +338,8 @@ mod tests {
     #[test]
     fn draw_hemisphere_works() -> Result<(), StrError> {
         let mut surf = Surface::new();
+        surf.draw_hemisphere(&[0.0, 0.0, 0.0], 1.0, 0.0, 180.0, 2, 2, true)?;
+        assert!(surf.get_buffer().len() > 0);
         surf.draw_hemisphere(&[0.0, 0.0, 0.0], 1.0, 0.0, 180.0, 2, 2, false)?;
         assert!(surf.get_buffer().len() > 0);
         Ok(())

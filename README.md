@@ -121,4 +121,4 @@ fn main() -> Result<(), StrError> {
 }
 ```
 
-![readme_contour.svg](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/readme_contour.svg)
+![readme_superquadric.svg](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/readme_superquadric.svg)

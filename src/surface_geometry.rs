@@ -267,6 +267,8 @@ impl Surface {
 
 #[cfg(test)]
 mod tests {
+    use crate::{GraphMaker, StrError};
+
     use super::Surface;
 
     #[test]
@@ -289,6 +291,14 @@ mod tests {
     }
 
     #[test]
+    fn draw_cylinder_works() -> Result<(), StrError> {
+        let mut surf = Surface::new();
+        surf.draw_cylinder(&[0.0, 0.0, 0.0], &[1.0, 0.0, 0.0], 1.0, 2, 3)?;
+        assert!(surf.get_buffer().len() > 0);
+        Ok(())
+    }
+
+    #[test]
     fn draw_plane_nzz_fails_on_wrong_input() {
         let mut surf = Surface::new();
         let res = surf.draw_plane_nzz(&[0.0, 0.0], &[1.0, 1.0], 0.0, 1.0, 0.0, 1.0, 2, 2);
@@ -306,6 +316,14 @@ mod tests {
     }
 
     #[test]
+    fn draw_plane_nzz_works() -> Result<(), StrError> {
+        let mut surf = Surface::new();
+        surf.draw_plane_nzz(&[0.0, 0.0, 0.0], &[1.0, 1.0, 1.0], 0.0, 1.0, 0.0, 1.0, 2, 2)?;
+        assert!(surf.get_buffer().len() > 0);
+        Ok(())
+    }
+
+    #[test]
     fn draw_hemisphere_fails_on_wrong_input() {
         let mut surf = Surface::new();
         let res = surf.draw_hemisphere(&[0.0, 0.0], 1.0, 0.0, 180.0, 2, 2, false);
@@ -315,6 +333,14 @@ mod tests {
         assert_eq!(res.err(), Some("n_alpha and n_theta must be ≥ 2"));
         let res = surf.draw_hemisphere(&[0.0, 0.0, 0.0], 1.0, 0.0, 180.0, 2, 1, false);
         assert_eq!(res.err(), Some("n_alpha and n_theta must be ≥ 2"));
+    }
+
+    #[test]
+    fn draw_hemisphere_works() -> Result<(), StrError> {
+        let mut surf = Surface::new();
+        surf.draw_hemisphere(&[0.0, 0.0, 0.0], 1.0, 0.0, 180.0, 2, 2, false)?;
+        assert!(surf.get_buffer().len() > 0);
+        Ok(())
     }
 
     #[test]
@@ -345,14 +371,40 @@ mod tests {
     }
 
     #[test]
+    fn draw_superquadric_works() -> Result<(), StrError> {
+        let mut surf = Surface::new();
+        surf.draw_superquadric(
+            &[0.0, 0.0, 0.0],
+            &[1.0, 1.0, 1.0],
+            &[2.0, 2.0, 2.0],
+            0.0,
+            180.0,
+            0.0,
+            180.0,
+            2,
+            2,
+        )?;
+        assert!(surf.get_buffer().len() > 0);
+        Ok(())
+    }
+
+    #[test]
     fn draw_sphere_fails_on_wrong_input() {
-        let mut sphere = Surface::new();
-        let res = sphere.draw_sphere(&[0.0, 0.0], 1.0, 2, 2);
+        let mut surf = Surface::new();
+        let res = surf.draw_sphere(&[0.0, 0.0], 1.0, 2, 2);
         assert_eq!(res.err(), Some("c.len() must be equal to 3"));
 
-        let res = sphere.draw_sphere(&[0.0, 0.0, 0.0], 1.0, 1, 2);
+        let res = surf.draw_sphere(&[0.0, 0.0, 0.0], 1.0, 1, 2);
         assert_eq!(res.err(), Some("n_alpha and n_theta must be ≥ 2"));
-        let res = sphere.draw_sphere(&[0.0, 0.0, 0.0], 1.0, 2, 1);
+        let res = surf.draw_sphere(&[0.0, 0.0, 0.0], 1.0, 2, 1);
         assert_eq!(res.err(), Some("n_alpha and n_theta must be ≥ 2"));
+    }
+
+    #[test]
+    fn draw_sphere_works() -> Result<(), StrError> {
+        let mut surf = Surface::new();
+        surf.draw_sphere(&[0.0, 0.0, 0.0], 1.0, 2, 2)?;
+        assert!(surf.get_buffer().len() > 0);
+        Ok(())
     }
 }

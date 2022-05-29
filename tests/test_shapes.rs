@@ -93,3 +93,58 @@ fn test_shapes_grid_3d() -> Result<(), StrError> {
     assert!(lines_iter.count() > 1000);
     Ok(())
 }
+
+#[test]
+fn test_shapes_polyline_3d() -> Result<(), StrError> {
+    //           .   .  .   . ,.2|
+    //         ' .           ,,'||
+    //       '   .         ,,'  ||
+    //     '     .       .,'    ||  →
+    //  .  .   . .   .  3'      ||  n
+    //           z     ||   ==========)
+    //  .        |     ||       ||
+    //          ,*---y || .  . ,1
+    //  .      x       ||    ,,'
+    //      ,'       H ||  ,,' W
+    //  . ,'           ||,,'
+    //  . . .   .   .  |0'
+    let mut y = 0.5;
+    const W: f64 = 2.0;
+    const H: f64 = 1.0;
+    #[rustfmt::skip]
+    let points = &[
+        [  W, y, 0.0],
+        [0.0, y, 0.0],
+        [0.0, y,   H],
+        [  W, y,   H],
+    ];
+    let mut shapes = Shapes::new();
+    shapes.draw_polyline(points, false);
+
+    y = 1.5;
+    #[rustfmt::skip]
+    let points = &[
+        [  W, y, 0.0],
+        [0.0, y, 0.0],
+        [0.0, y,   H],
+        [  W, y,   H],
+    ];
+    shapes.draw_polyline(points, true);
+
+    // add shapes to plot
+    let mut plot = Plot::new();
+    plot.add(&shapes);
+
+    // save figure
+    let path = Path::new(OUT_DIR).join("integ_shapes_polyline_3d.svg");
+    plot.set_equal_axes(true).set_show_errors(true);
+    plot.save(&path)?;
+    // plot.save_and_show(&path)?;
+
+    // check number of lines
+    let file = File::open(path).map_err(|_| "cannot open file")?;
+    let buffered = BufReader::new(file);
+    let lines_iter = buffered.lines();
+    assert!(lines_iter.count() > 560);
+    Ok(())
+}

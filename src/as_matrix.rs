@@ -14,10 +14,10 @@ use russell_lab::Matrix;
 ///     U: 'a + Into<f64>,
 /// {
 ///     let mut res = 0.0;
-///     let (m, n) = array.mat_size();
+///     let (m, n) = array.size();
 ///     for i in 0..m {
 ///         for j in 0..n {
-///             res += array.mat_at(i, j).into();
+///             res += array.at(i, j).into();
 ///         }
 ///     }
 ///     res
@@ -58,10 +58,10 @@ use russell_lab::Matrix;
 /// ```
 pub trait AsMatrix<'a, U: 'a> {
     /// Returns the size of the matrix
-    fn mat_size(&self) -> (usize, usize);
+    fn size(&self) -> (usize, usize);
 
     /// Returns the value at index i
-    fn mat_at(&self, i: usize, j: usize) -> U;
+    fn at(&self, i: usize, j: usize) -> U;
 }
 
 /// Defines a heap-allocated 2D array (vector of vectors)
@@ -74,10 +74,10 @@ impl<'a, U: 'a> AsMatrix<'a, U> for Vec<Vec<U>>
 where
     U: 'a + Copy,
 {
-    fn mat_size(&self) -> (usize, usize) {
+    fn size(&self) -> (usize, usize) {
         (self.len(), self[0].len())
     }
-    fn mat_at(&self, i: usize, j: usize) -> U {
+    fn at(&self, i: usize, j: usize) -> U {
         self[i][j]
     }
 }
@@ -92,10 +92,10 @@ impl<'a, U> AsMatrix<'a, U> for &'a [&'a [U]]
 where
     U: 'a + Copy,
 {
-    fn mat_size(&self) -> (usize, usize) {
+    fn size(&self) -> (usize, usize) {
         (self.len(), self[0].len())
     }
-    fn mat_at(&self, i: usize, j: usize) -> U {
+    fn at(&self, i: usize, j: usize) -> U {
         self[i][j]
     }
 }
@@ -105,20 +105,20 @@ impl<'a, U, const M: usize, const N: usize> AsMatrix<'a, U> for [[U; N]; M]
 where
     U: 'a + Copy,
 {
-    fn mat_size(&self) -> (usize, usize) {
+    fn size(&self) -> (usize, usize) {
         (self.len(), self[0].len())
     }
-    fn mat_at(&self, i: usize, j: usize) -> U {
+    fn at(&self, i: usize, j: usize) -> U {
         self[i][j]
     }
 }
 
 /// Handles Matrix
 impl<'a> AsMatrix<'a, f64> for Matrix {
-    fn mat_size(&self) -> (usize, usize) {
+    fn size(&self) -> (usize, usize) {
         self.dims()
     }
-    fn mat_at(&self, i: usize, j: usize) -> f64 {
+    fn at(&self, i: usize, j: usize) -> f64 {
         self.get(i, j)
     }
 }
@@ -137,10 +137,10 @@ mod tests {
         U: 'a + std::fmt::Display,
     {
         let mut buf = String::new();
-        let (m, n) = array.mat_size();
+        let (m, n) = array.size();
         for i in 0..m {
             for j in 0..n {
-                write!(&mut buf, "{},", array.mat_at(i, j)).unwrap();
+                write!(&mut buf, "{},", array.at(i, j)).unwrap();
             }
             write!(&mut buf, "\n").unwrap();
         }

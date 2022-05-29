@@ -1,4 +1,5 @@
 use super::{GraphMaker, StrError};
+use crate::AsMatrix;
 use std::fmt::Write;
 
 /// Draw polygonal shapes
@@ -155,34 +156,105 @@ impl Shapes {
         .unwrap();
     }
 
-    /// Draws polyline (2D only)
-    pub fn draw_polyline<T>(&mut self, points: &Vec<Vec<T>>, closed: bool)
+    /// Draws polyline (2D or 3D)
+    pub fn draw_polyline<'a, T, U>(&mut self, points: &'a T, closed: bool)
     where
-        T: std::fmt::Display,
+        T: AsMatrix<'a, U>,
+        U: 'a + std::fmt::Display,
     {
-        let mut first = true;
-        for p in points {
-            if first {
-                write!(&mut self.buffer, "dat=[[pth.Path.MOVETO,({},{})]", p[0], p[1]).unwrap();
-            } else {
-                write!(&mut self.buffer, ",[pth.Path.LINETO,({},{})]", p[0], p[1]).unwrap();
+        let (npoint, ndim) = points.size();
+        if npoint < 2 {
+            return;
+        }
+        if ndim == 2 {
+            let mut first = true;
+            for i in 0..npoint {
+                if first {
+                    write!(
+                        &mut self.buffer,
+                        "dat=[[pth.Path.MOVETO,({},{})]",
+                        points.at(i, 0),
+                        points.at(i, 1)
+                    )
+                    .unwrap();
+                } else {
+                    write!(
+                        &mut self.buffer,
+                        ",[pth.Path.LINETO,({},{})]",
+                        points.at(i, 0),
+                        points.at(i, 1)
+                    )
+                    .unwrap();
+                }
+                first = false;
             }
-            first = false;
+            if closed {
+                write!(&mut self.buffer, ",[pth.Path.CLOSEPOLY,(None,None)]").unwrap();
+            }
+            let opt = self.options_shared();
+            write!(
+                &mut self.buffer,
+                "]\n\
+                cmd,pts=zip(*dat)\n\
+                h=pth.Path(pts,cmd)\n\
+                p=pat.PathPatch(h{})\n\
+                plt.gca().add_patch(p)\n",
+                &opt
+            )
+            .unwrap();
         }
-        if closed {
-            write!(&mut self.buffer, ",[pth.Path.CLOSEPOLY,(None,None)]").unwrap();
+        if ndim == 3 {
+            write!(&mut self.buffer, "maybeCreateAX3D()\n").unwrap();
+            let opt = self.options_line_3d();
+            let mut xx = format!("xx=[{}", points.at(0, 0));
+            let mut yy = format!("yy=[{}", points.at(0, 1));
+            let mut zz = format!("zz=[{}", points.at(0, 2));
+            for i in 1..npoint {
+                write!(&mut xx, ",{}", points.at(i, 0)).unwrap();
+                write!(&mut yy, ",{}", points.at(i, 1)).unwrap();
+                write!(&mut zz, ",{}", points.at(i, 2)).unwrap();
+            }
+            if closed && npoint > 2 {
+                write!(&mut xx, ",{}", points.at(0, 0)).unwrap();
+                write!(&mut yy, ",{}", points.at(0, 1)).unwrap();
+                write!(&mut zz, ",{}", points.at(0, 2)).unwrap();
+            }
+            write!(&mut self.buffer, "{}]\n", xx).unwrap();
+            write!(&mut self.buffer, "{}]\n", yy).unwrap();
+            write!(&mut self.buffer, "{}]\n", zz).unwrap();
+            write!(&mut self.buffer, "AX3D.plot(xx,yy,zz{})\n", opt).unwrap();
+            /*
+            for i in 0..npoint - 1 {
+                write!(
+                    &mut self.buffer,
+                    "AX3D.plot([{},{}],[{},{}],[{},{}]{})\n",
+                    points.at(i, 0),
+                    points.at(i + 1, 0),
+                    points.at(i, 1),
+                    points.at(i + 1, 1),
+                    points.at(i, 2),
+                    points.at(i + 1, 2),
+                    opt,
+                )
+                .unwrap();
+            }
+            if closed && npoint > 2 {
+                let j = npoint - 1;
+                write!(
+                    &mut self.buffer,
+                    "AX3D.plot([{},{}],[{},{}],[{},{}]{})\n",
+                    points.at(j, 0),
+                    points.at(0, 0),
+                    points.at(j, 1),
+                    points.at(0, 1),
+                    points.at(j, 2),
+                    points.at(0, 2),
+                    opt,
+                )
+                .unwrap();
+            }
+            */
         }
-        let opt = self.options_shared();
-        write!(
-            &mut self.buffer,
-            "]\n\
-             cmd,pts=zip(*dat)\n\
-             h=pth.Path(pts,cmd)\n\
-             p=pat.PathPatch(h{})\n\
-             plt.gca().add_patch(p)\n",
-            &opt
-        )
-        .unwrap();
     }
 
     /// Draws a 2D or 3D grid
@@ -773,7 +845,7 @@ mod tests {
     }
 
     #[test]
-    fn polyline_works() {
+    fn polyline_works_2d() {
         let mut shapes = Shapes::new();
         let points = vec![vec![1.0, 1.0], vec![2.0, 1.0], vec![1.5, 1.866]];
         shapes.draw_polyline(&points, true);
@@ -783,6 +855,54 @@ mod tests {
                        p=pat.PathPatch(h,edgecolor='#427ce5')\n\
                        plt.gca().add_patch(p)\n";
         assert_eq!(shapes.buffer, b);
+    }
+
+    #[test]
+    fn polyline_works_3d() {
+        let mut nothing = Shapes::new();
+        nothing.draw_polyline(&[[0.0, 0.0]], true);
+        assert_eq!(nothing.buffer, "");
+
+        #[rustfmt::skip]
+        let points = &[
+            [2.0, 1.0, 0.0],
+            [0.0, 1.0, 0.0],
+            [0.0, 1.0, 3.0],
+            [2.0, 1.0, 3.0],
+        ];
+
+        let mut open = Shapes::new();
+        open.draw_polyline(points, false);
+        let b: &str = "maybeCreateAX3D()\n\
+            xx=[2,0,0,2]\n\
+            yy=[1,1,1,1]\n\
+            zz=[0,0,3,3]\n\
+            AX3D.plot(xx,yy,zz,color='#427ce5')\n";
+        assert_eq!(open.buffer, b);
+
+        let mut closed = Shapes::new();
+        closed.draw_polyline(points, true);
+        let b: &str = "maybeCreateAX3D()\n\
+            xx=[2,0,0,2,2]\n\
+            yy=[1,1,1,1,1]\n\
+            zz=[0,0,3,3,0]\n\
+            AX3D.plot(xx,yy,zz,color='#427ce5')\n";
+        assert_eq!(closed.buffer, b);
+
+        #[rustfmt::skip]
+        let points = &[
+            [2.0, 1.0, 0.0],
+            [0.0, 1.0, 0.0],
+        ];
+
+        let mut closed_few_points = Shapes::new();
+        closed_few_points.draw_polyline(points, true);
+        let b: &str = "maybeCreateAX3D()\n\
+            xx=[2,0]\n\
+            yy=[1,1]\n\
+            zz=[0,0]\n\
+            AX3D.plot(xx,yy,zz,color='#427ce5')\n";
+        assert_eq!(closed_few_points.buffer, b);
     }
 
     #[test]

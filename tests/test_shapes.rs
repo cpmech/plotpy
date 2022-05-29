@@ -26,10 +26,10 @@ fn test_shapes() -> Result<(), StrError> {
     shapes.set_edge_color("blue");
     let a = 0.2;
     let c = f64::sqrt(3.0) / 2.0;
-    let p = vec![vec![0.1, 0.5], vec![0.1 + a, 0.5], vec![0.1 + a / 2.0, 0.5 + a * c]];
-    let q = vec![vec![0.9, 0.5], vec![0.9 - a, 0.5], vec![0.9 - a / 2.0, 0.5 + a * c]];
-    shapes.draw_polyline(&p, true);
-    shapes.draw_polyline(&q, false);
+    let p = &[[0.1, 0.5], [0.1 + a, 0.5], [0.1 + a / 2.0, 0.5 + a * c]];
+    let q = &[[0.9, 0.5], [0.9 - a, 0.5], [0.9 - a / 2.0, 0.5 + a * c]];
+    shapes.draw_polyline(p, true);
+    shapes.draw_polyline(q, false);
 
     // add shapes to plot
     let mut plot = Plot::new();

@@ -34,10 +34,10 @@ use std::fmt::Write;
 /// shapes.set_line_width(3.0).set_edge_color("blue");
 /// let a = 0.2;
 /// let c = f64::sqrt(3.0) / 2.0;
-/// let p = vec![vec![0.1, 0.5], vec![0.1 + a, 0.5], vec![0.1 + a / 2.0, 0.5 + a * c]];
-/// let q = vec![vec![0.9, 0.5], vec![0.9 - a, 0.5], vec![0.9 - a / 2.0, 0.5 + a * c]];
-/// shapes.draw_polyline(&p, true);
-/// shapes.draw_polyline(&q, false);
+/// let p = &[[0.1, 0.5], [0.1 + a, 0.5], [0.1 + a / 2.0, 0.5 + a * c]];
+/// let q = &[[0.9, 0.5], [0.9 - a, 0.5], [0.9 - a / 2.0, 0.5 + a * c]];
+/// shapes.draw_polyline(p, true);
+/// shapes.draw_polyline(q, false);
 ///
 /// // add shapes to plot
 /// let mut plot = Plot::new();
@@ -816,8 +816,8 @@ mod tests {
     #[test]
     fn polyline_works_2d() {
         let mut shapes = Shapes::new();
-        let points = vec![vec![1.0, 1.0], vec![2.0, 1.0], vec![1.5, 1.866]];
-        shapes.draw_polyline(&points, true);
+        let points = &[[1.0, 1.0], [2.0, 1.0], [1.5, 1.866]];
+        shapes.draw_polyline(points, true);
         let b: &str = "dat=[[pth.Path.MOVETO,(1,1)],[pth.Path.LINETO,(2,1)],[pth.Path.LINETO,(1.5,1.866)],[pth.Path.CLOSEPOLY,(None,None)]]\n\
                        cmd,pts=zip(*dat)\n\
                        h=pth.Path(pts,cmd)\n\

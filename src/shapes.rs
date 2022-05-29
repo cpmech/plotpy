@@ -223,37 +223,6 @@ impl Shapes {
             write!(&mut self.buffer, "{}]\n", yy).unwrap();
             write!(&mut self.buffer, "{}]\n", zz).unwrap();
             write!(&mut self.buffer, "AX3D.plot(xx,yy,zz{})\n", opt).unwrap();
-            /*
-            for i in 0..npoint - 1 {
-                write!(
-                    &mut self.buffer,
-                    "AX3D.plot([{},{}],[{},{}],[{},{}]{})\n",
-                    points.at(i, 0),
-                    points.at(i + 1, 0),
-                    points.at(i, 1),
-                    points.at(i + 1, 1),
-                    points.at(i, 2),
-                    points.at(i + 1, 2),
-                    opt,
-                )
-                .unwrap();
-            }
-            if closed && npoint > 2 {
-                let j = npoint - 1;
-                write!(
-                    &mut self.buffer,
-                    "AX3D.plot([{},{}],[{},{}],[{},{}]{})\n",
-                    points.at(j, 0),
-                    points.at(0, 0),
-                    points.at(j, 1),
-                    points.at(0, 1),
-                    points.at(j, 2),
-                    points.at(0, 2),
-                    opt,
-                )
-                .unwrap();
-            }
-            */
         }
     }
 

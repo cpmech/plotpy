@@ -152,15 +152,14 @@ fn test_shapes_polyline_3d() -> Result<(), StrError> {
 #[test]
 fn test_shapes_polycurve_quadratic() -> Result<(), StrError> {
     // coordinates of control points
-    let x = &[0.0, 1.0, 1.0];
-    let y = &[0.0, 0.0, 1.0];
+    let points = &[[0.0, 0.0], [1.0, 0.0], [1.0, 1.0]];
 
     // codes
     let codes = &[PcCode::Auto, PcCode::Curve3, PcCode::Curve3];
 
     // polycurve
     let mut shapes = Shapes::new();
-    shapes.set_face_color("none").draw_polycurve(x, y, codes, true)?;
+    shapes.set_face_color("none").draw_polycurve(points, codes, true)?;
 
     // point on curve
     let mut curve = Curve::new();
@@ -193,6 +192,7 @@ fn test_shapes_polycurve_cubic() -> Result<(), StrError> {
     // coordinates of control points
     let x = &[1.58, 0.35, -1.75, 0.375, 0.85, 2.2, 3.0, 2.0];
     let y = &[-2.57, -1.1, 2.0, 2.0, 1.15, 3.2, 0.05, -0.5];
+    let points: Vec<_> = x.iter().zip(y).map(|(a, b)| vec![*a, *b]).collect();
 
     // codes
     let codes = &[
@@ -208,7 +208,7 @@ fn test_shapes_polycurve_cubic() -> Result<(), StrError> {
 
     // polycurve
     let mut shapes = Shapes::new();
-    shapes.draw_polycurve(x, y, codes, true)?;
+    shapes.draw_polycurve(&points, codes, true)?;
 
     // control points
     let mut curve = Curve::new();

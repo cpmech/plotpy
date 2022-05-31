@@ -175,32 +175,26 @@ impl Shapes {
     /// Draws polyline with straight segments, quadratic Bezier, or cubic Bezier (2D only)
     ///
     /// **Note:** The first and last commands are ignored.
-    pub fn draw_polycurve<T>(&mut self, points: &[(&[T; 2], PcCode)], closed: bool)
+    pub fn draw_polycurve<T>(&mut self, x: &[T], y: &[T], codes: &[PcCode], closed: bool) -> Result<(), StrError>
     where
         T: std::fmt::Display,
     {
-        if points.len() < 3 {
-            return;
+        let npoint = x.len();
+        if y.len() != npoint || codes.len() != npoint {
+            return Err("x, y, and codes must have the same lengths");
         }
-        write!(
-            &mut self.buffer,
-            "dat=[[pth.Path.MOVETO,({},{})]",
-            points[0].0[0], points[0].0[1]
-        )
-        .unwrap();
-        for i in 1..points.len() {
-            let keyword = match points[i].1 {
+        if npoint < 3 {
+            return Err("npoint must be ≥ 3");
+        }
+        write!(&mut self.buffer, "dat=[[pth.Path.MOVETO,({},{})]", x[0], y[0]).unwrap();
+        for i in 1..npoint {
+            let keyword = match codes[i] {
                 PcCode::Auto => "LINETO",
                 PcCode::LineTo => "LINETO",
                 PcCode::Curve3 => "CURVE3",
                 PcCode::Curve4 => "CURVE4",
             };
-            write!(
-                &mut self.buffer,
-                ",[pth.Path.{},({},{})]",
-                keyword, points[i].0[0], points[i].0[1]
-            )
-            .unwrap();
+            write!(&mut self.buffer, ",[pth.Path.{},({},{})]", keyword, x[i], y[i]).unwrap();
         }
         if closed {
             write!(&mut self.buffer, ",[pth.Path.CLOSEPOLY,(None,None)]").unwrap();
@@ -216,6 +210,7 @@ impl Shapes {
             &opt
         )
         .unwrap();
+        Ok(())
     }
 
     /// Draws polyline (2D or 3D)
@@ -873,20 +868,40 @@ mod tests {
     }
 
     #[test]
-    fn polycurve_works() {
+    fn polycurve_capture_errors() {
         let mut shapes = Shapes::new();
-        let points = [
-            (&[0, 0], PcCode::Auto),
-            (&[1, 0], PcCode::Curve3),
-            (&[1, 1], PcCode::Curve3),
-        ];
-        shapes.draw_polycurve(&points, true);
+        assert_eq!(
+            shapes.draw_polycurve(&[0], &[0, 1], &[PcCode::Auto], true).err(),
+            Some("x, y, and codes must have the same lengths")
+        );
+        assert_eq!(
+            shapes
+                .draw_polycurve(&[0], &[0], &[PcCode::Auto, PcCode::Auto], true)
+                .err(),
+            Some("x, y, and codes must have the same lengths")
+        );
+        assert_eq!(
+            shapes
+                .draw_polycurve(&[0, 0], &[0, 0], &[PcCode::Auto, PcCode::Auto], true)
+                .err(),
+            Some("npoint must be ≥ 3")
+        );
+    }
+
+    #[test]
+    fn polycurve_works() -> Result<(), StrError> {
+        let mut shapes = Shapes::new();
+        let x = &[0, 1, 1];
+        let y = &[0, 0, 1];
+        let codes = &[PcCode::Auto, PcCode::Curve3, PcCode::Curve3];
+        shapes.draw_polycurve(x, y, codes, true)?;
         let b: &str = "dat=[[pth.Path.MOVETO,(0,0)],[pth.Path.CURVE3,(1,0)],[pth.Path.CURVE3,(1,1)],[pth.Path.CLOSEPOLY,(None,None)]]\n\
                        cmd,pts=zip(*dat)\n\
                        h=pth.Path(pts,cmd)\n\
                        p=pat.PathPatch(h,edgecolor='#427ce5')\n\
                        plt.gca().add_patch(p)\n";
         assert_eq!(shapes.buffer, b);
+        Ok(())
     }
 
     #[test]

@@ -2,9 +2,9 @@ use super::{GraphMaker, StrError};
 use crate::AsMatrix;
 use std::fmt::Write;
 
-/// Defines commands to draw poly-curves
+/// Defines the poly-curve code
 #[derive(Clone, Debug)]
-pub enum Command {
+pub enum PcCode {
     /// Segment
     LineTo,
 
@@ -172,7 +172,7 @@ impl Shapes {
     /// Draws polyline with straight segments, quadratic Bezier, or cubic Bezier (2D only)
     ///
     /// **Note:** The first and last commands are ignored.
-    pub fn draw_polycurve<T>(&mut self, points: &[(&[T; 2], Command)], closed: bool)
+    pub fn draw_polycurve<T>(&mut self, points: &[(&[T; 2], PcCode)], closed: bool)
     where
         T: std::fmt::Display,
     {
@@ -187,9 +187,9 @@ impl Shapes {
         .unwrap();
         for i in 1..points.len() {
             let keyword = match points[i].1 {
-                Command::LineTo => "LINETO",
-                Command::Curve3 => "CURVE3",
-                Command::Curve4 => "CURVE4",
+                PcCode::LineTo => "LINETO",
+                PcCode::Curve3 => "CURVE3",
+                PcCode::Curve4 => "CURVE4",
             };
             write!(
                 &mut self.buffer,
@@ -704,7 +704,7 @@ impl GraphMaker for Shapes {
 
 #[cfg(test)]
 mod tests {
-    use crate::Command;
+    use crate::PcCode;
 
     use super::{Shapes, StrError};
 
@@ -872,9 +872,9 @@ mod tests {
     fn polycurve_works() {
         let mut shapes = Shapes::new();
         let points = [
-            (&[0, 0], Command::LineTo),
-            (&[1, 0], Command::Curve3),
-            (&[1, 1], Command::Curve3),
+            (&[0, 0], PcCode::LineTo),
+            (&[1, 0], PcCode::Curve3),
+            (&[1, 1], PcCode::Curve3),
         ];
         shapes.draw_polycurve(&points, true);
         let b: &str = "dat=[[pth.Path.MOVETO,(0,0)],[pth.Path.CURVE3,(1,0)],[pth.Path.CURVE3,(1,1)],[pth.Path.CLOSEPOLY,(None,None)]]\n\

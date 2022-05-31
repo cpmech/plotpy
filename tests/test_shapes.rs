@@ -1,4 +1,4 @@
-use plotpy::{Command, Curve, Plot, Shapes, StrError};
+use plotpy::{Curve, PcCode, Plot, Shapes, StrError};
 use std::fs::File;
 use std::io::{BufRead, BufReader};
 use std::path::Path;
@@ -153,9 +153,9 @@ fn test_shapes_polyline_3d() -> Result<(), StrError> {
 fn test_shapes_polycurve_quadratic() -> Result<(), StrError> {
     // polycurve
     let points = [
-        (&[0, 0], Command::LineTo),
-        (&[1, 0], Command::Curve3),
-        (&[1, 1], Command::Curve3),
+        (&[0, 0], PcCode::LineTo),
+        (&[1, 0], PcCode::Curve3),
+        (&[1, 1], PcCode::Curve3),
     ];
     let mut shapes = Shapes::new();
     shapes.set_face_color("none").draw_polycurve(&points, true);
@@ -193,20 +193,20 @@ fn test_shapes_polycurve_cubic() -> Result<(), StrError> {
     let y = &[-2.57, -1.1, 2.0, 2.0, 1.15, 3.2, 0.05, -0.5];
     let control: Vec<_> = x.iter().zip(y).map(|(u, v)| [*u, *v]).collect();
 
-    // commands
-    let commands = [
-        Command::LineTo,
-        Command::Curve4,
-        Command::Curve4,
-        Command::Curve4,
-        Command::LineTo,
-        Command::Curve4,
-        Command::Curve4,
-        Command::Curve4,
+    // codes
+    let codes = [
+        PcCode::LineTo,
+        PcCode::Curve4,
+        PcCode::Curve4,
+        PcCode::Curve4,
+        PcCode::LineTo,
+        PcCode::Curve4,
+        PcCode::Curve4,
+        PcCode::Curve4,
     ];
 
     // polycurve
-    let points: Vec<_> = control.iter().zip(commands).collect();
+    let points: Vec<_> = control.iter().zip(codes).collect();
     let mut shapes = Shapes::new();
     shapes.draw_polycurve(&points, true);
 

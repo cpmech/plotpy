@@ -5,6 +5,9 @@ use std::fmt::Write;
 /// Defines the poly-curve code
 #[derive(Clone, Debug)]
 pub enum PcCode {
+    /// Automatically selects between MoveTo and LineTo
+    Auto,
+
     /// Segment
     LineTo,
 
@@ -187,6 +190,7 @@ impl Shapes {
         .unwrap();
         for i in 1..points.len() {
             let keyword = match points[i].1 {
+                PcCode::Auto => "LINETO",
                 PcCode::LineTo => "LINETO",
                 PcCode::Curve3 => "CURVE3",
                 PcCode::Curve4 => "CURVE4",
@@ -872,7 +876,7 @@ mod tests {
     fn polycurve_works() {
         let mut shapes = Shapes::new();
         let points = [
-            (&[0, 0], PcCode::LineTo),
+            (&[0, 0], PcCode::Auto),
             (&[1, 0], PcCode::Curve3),
             (&[1, 1], PcCode::Curve3),
         ];

@@ -167,26 +167,21 @@ impl Shapes {
             return;
         }
         if ndim == 2 {
-            let mut first = true;
-            for i in 0..npoint {
-                if first {
-                    write!(
-                        &mut self.buffer,
-                        "dat=[[pth.Path.MOVETO,({},{})]",
-                        points.at(i, 0),
-                        points.at(i, 1)
-                    )
-                    .unwrap();
-                } else {
-                    write!(
-                        &mut self.buffer,
-                        ",[pth.Path.LINETO,({},{})]",
-                        points.at(i, 0),
-                        points.at(i, 1)
-                    )
-                    .unwrap();
-                }
-                first = false;
+            write!(
+                &mut self.buffer,
+                "dat=[[pth.Path.MOVETO,({},{})]",
+                points.at(0, 0),
+                points.at(0, 1)
+            )
+            .unwrap();
+            for i in 1..npoint {
+                write!(
+                    &mut self.buffer,
+                    ",[pth.Path.LINETO,({},{})]",
+                    points.at(i, 0),
+                    points.at(i, 1)
+                )
+                .unwrap();
             }
             if closed {
                 write!(&mut self.buffer, ",[pth.Path.CLOSEPOLY,(None,None)]").unwrap();

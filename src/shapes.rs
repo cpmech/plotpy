@@ -2,6 +2,19 @@ use super::{GraphMaker, StrError};
 use crate::AsMatrix;
 use std::fmt::Write;
 
+/// Defines commands to draw poly-curves
+#[derive(Clone, Debug)]
+pub enum Command {
+    /// Segment
+    LineTo,
+
+    /// Quadratic Bezier
+    Curve3,
+
+    /// Cubic Bezier
+    Curve4,
+}
+
 /// Draw polygonal shapes
 ///
 /// # Example
@@ -152,6 +165,51 @@ impl Shapes {
             "p=pat.Circle(({},{}),{}{})\n\
              plt.gca().add_patch(p)\n",
             xc, yc, r, &opt
+        )
+        .unwrap();
+    }
+
+    /// Draws polyline with straight segments, quadratic Bezier, or cubic Bezier (2D only)
+    ///
+    /// **Note:** The first and last commands are ignored.
+    pub fn draw_polycurve<T>(&mut self, points: &[(&[T; 2], Command)], closed: bool)
+    where
+        T: std::fmt::Display,
+    {
+        if points.len() < 3 {
+            return;
+        }
+        write!(
+            &mut self.buffer,
+            "dat=[[pth.Path.MOVETO,({},{})]",
+            points[0].0[0], points[0].0[1]
+        )
+        .unwrap();
+        for i in 1..points.len() {
+            let keyword = match points[i].1 {
+                Command::LineTo => "LINETO",
+                Command::Curve3 => "CURVE3",
+                Command::Curve4 => "CURVE4",
+            };
+            write!(
+                &mut self.buffer,
+                ",[pth.Path.{},({},{})]",
+                keyword, points[i].0[0], points[i].0[1]
+            )
+            .unwrap();
+        }
+        if closed {
+            write!(&mut self.buffer, ",[pth.Path.CLOSEPOLY,(None,None)]").unwrap();
+        }
+        let opt = self.options_shared();
+        write!(
+            &mut self.buffer,
+            "]\n\
+            cmd,pts=zip(*dat)\n\
+            h=pth.Path(pts,cmd)\n\
+            p=pat.PathPatch(h{})\n\
+            plt.gca().add_patch(p)\n",
+            &opt
         )
         .unwrap();
     }
@@ -646,6 +704,8 @@ impl GraphMaker for Shapes {
 
 #[cfg(test)]
 mod tests {
+    use crate::Command;
+
     use super::{Shapes, StrError};
 
     #[test]
@@ -804,6 +864,23 @@ mod tests {
         let mut shapes = Shapes::new();
         shapes.draw_circle(0.0, 0.0, 1.0);
         let b: &str = "p=pat.Circle((0,0),1,edgecolor='#427ce5')\n\
+                       plt.gca().add_patch(p)\n";
+        assert_eq!(shapes.buffer, b);
+    }
+
+    #[test]
+    fn polycurve_works() {
+        let mut shapes = Shapes::new();
+        let points = [
+            (&[0, 0], Command::LineTo),
+            (&[1, 0], Command::Curve3),
+            (&[1, 1], Command::Curve3),
+        ];
+        shapes.draw_polycurve(&points, true);
+        let b: &str = "dat=[[pth.Path.MOVETO,(0,0)],[pth.Path.CURVE3,(1,0)],[pth.Path.CURVE3,(1,1)],[pth.Path.CLOSEPOLY,(None,None)]]\n\
+                       cmd,pts=zip(*dat)\n\
+                       h=pth.Path(pts,cmd)\n\
+                       p=pat.PathPatch(h,edgecolor='#427ce5')\n\
                        plt.gca().add_patch(p)\n";
         assert_eq!(shapes.buffer, b);
     }

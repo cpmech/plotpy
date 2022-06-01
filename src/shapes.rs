@@ -5,7 +5,7 @@ use std::fmt::Write;
 /// Defines the poly-curve code
 ///
 /// Reference: [matplotlib](https://matplotlib.org/stable/api/path_api.html)
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+#[derive(Clone, Copy, Debug)]
 pub enum PolyCode {
     /// Move to coordinate (first point)
     ///
@@ -799,9 +799,17 @@ impl GraphMaker for Shapes {
 
 #[cfg(test)]
 mod tests {
+    use super::{Shapes, StrError};
     use crate::PolyCode;
 
-    use super::{Shapes, StrError};
+    #[test]
+    fn derive_works() {
+        let code = PolyCode::Curve3;
+        let clone = code.clone();
+        let correct = "Curve3";
+        assert_eq!(format!("{:?}", code), correct);
+        assert_eq!(format!("{:?}", clone), correct);
+    }
 
     #[test]
     fn new_works() {

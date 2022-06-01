@@ -437,6 +437,29 @@ mod tests {
     }
 
     #[test]
+    fn points_methods_work() {
+        let mut curve = Curve::new();
+        curve.points_begin().points_add(1, 2).points_add(3, 4).points_end();
+        let b: &str = "xy=np.array([[1,2],[3,4],])\n\
+                       plt.plot(xy[:,0],xy[:,1])\n";
+        assert_eq!(curve.buffer, b);
+    }
+
+    #[test]
+    fn points_3d_methods_work() {
+        let mut curve = Curve::new();
+        curve
+            .points_3d_begin()
+            .points_3d_add(1, 2, 3)
+            .points_3d_add(4, 5, 6)
+            .points_3d_end();
+        let b: &str = "maybeCreateAX3D()\n\
+                       xyz=np.array([[1,2,3],[4,5,6],])\n\
+                       AX3D.plot(xyz[:,0],xyz[:,1],xyz[:,2])\n";
+        assert_eq!(curve.buffer, b);
+    }
+
+    #[test]
     fn draw_works() {
         let x = &[1.0, 2.0, 3.0, 4.0, 5.0];
         let y = &[1.0, 4.0, 9.0, 16.0, 25.0];

@@ -95,6 +95,61 @@ fn test_canvas_grid_3d() -> Result<(), StrError> {
 }
 
 #[test]
+fn test_canvas_polyline_3d_methods() -> Result<(), StrError> {
+    //           .   .  .   . ,.2|
+    //         ' .           ,,'||
+    //       '   .         ,,'  ||
+    //     '     .       .,'    ||  →
+    //  .  .   . .   .  3'      ||  n
+    //           z     ||   ==========)
+    //  .        |     ||       ||
+    //          ,*---y || .  . ,1
+    //  .      x       ||    ,,'
+    //      ,'       H ||  ,,' W
+    //  . ,'           ||,,'
+    //  . . .   .   .  |0'
+    let mut y = 0.5;
+    const W: f64 = 2.0;
+    const H: f64 = 1.0;
+    let mut canvas = Canvas::new();
+    canvas.set_edge_color("orange");
+    canvas
+        .polyline_3d_begin()
+        .polyline_3d_add(W, y, 0.0)
+        .polyline_3d_add(0.0, y, 0.0)
+        .polyline_3d_add(0.0, y, H)
+        .polyline_3d_add(W, y, H)
+        .polyline_3d_end();
+
+    y = 1.5;
+    canvas
+        .polyline_3d_begin()
+        .polyline_3d_add(W, y, 0.0)
+        .polyline_3d_add(0.0, y, 0.0)
+        .polyline_3d_add(0.0, y, H)
+        .polyline_3d_add(W, y, H)
+        .polyline_3d_add(W, y, 0.0) // close
+        .polyline_3d_end();
+
+    // add canvas to plot
+    let mut plot = Plot::new();
+    plot.add(&canvas);
+
+    // save figure
+    let path = Path::new(OUT_DIR).join("integ_canvas_polyline_3d_methods.svg");
+    plot.set_equal_axes(true).set_show_errors(true);
+    plot.save(&path)?;
+    // plot.save_and_show(&path)?;
+
+    // check number of lines
+    let file = File::open(path).map_err(|_| "cannot open file")?;
+    let buffered = BufReader::new(file);
+    let lines_iter = buffered.lines();
+    assert!(lines_iter.count() > 560);
+    Ok(())
+}
+
+#[test]
 fn test_canvas_polyline_3d() -> Result<(), StrError> {
     //           .   .  .   . ,.2|
     //         ' .           ,,'||

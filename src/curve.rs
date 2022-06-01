@@ -160,7 +160,7 @@ impl Curve {
         self
     }
 
-    /// Ends adding 3D points to the curve (2D only)
+    /// Ends adding 3D points to the curve
     ///
     /// # Warning
     ///

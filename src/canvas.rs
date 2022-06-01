@@ -300,6 +300,43 @@ impl Canvas {
         Ok(())
     }
 
+    /// Begins adding points to a 3D polyline
+    ///
+    /// # Warning
+    ///
+    /// This function must be followed by [Canvas::polyline_3d_add] and [Canvas::polyline_3d_end],
+    /// otherwise Python/Matplotlib will fail
+    pub fn polyline_3d_begin(&mut self) -> &mut Self {
+        write!(&mut self.buffer, "maybeCreateAX3D()\nxyz=np.array([").unwrap();
+        self
+    }
+
+    /// Adds point to a 3D polyline
+    ///
+    /// # Warning
+    ///
+    /// This function must be called after [Canvas::polyline_3d_begin] and must be followed by [Canvas::polyline_3d_end],
+    /// otherwise Python/Matplotlib will fail.
+    pub fn polyline_3d_add<T>(&mut self, x: T, y: T, z: T) -> &mut Self
+    where
+        T: std::fmt::Display,
+    {
+        write!(&mut self.buffer, "[{},{},{}],", x, y, z).unwrap();
+        self
+    }
+
+    /// Ends adding points to a 3D polyline
+    ///
+    /// # Warning
+    ///
+    /// This function must be called after [Canvas::polyline_3d_begin] and [Canvas::polyline_3d_add],
+    /// otherwise Python/Matplotlib will fail.
+    pub fn polyline_3d_end(&mut self) -> &mut Self {
+        let opt = self.options_line_3d();
+        write!(&mut self.buffer, "])\nAX3D.plot(xyz[:,0],xyz[:,1],xyz[:,2]{})\n", &opt).unwrap();
+        self
+    }
+
     /// Draws polyline (2D or 3D)
     pub fn draw_polyline<'a, T, U>(&mut self, points: &'a T, closed: bool)
     where
@@ -343,25 +380,14 @@ impl Canvas {
             .unwrap();
         }
         if ndim == 3 {
-            write!(&mut self.buffer, "maybeCreateAX3D()\n").unwrap();
-            let opt = self.options_line_3d();
-            let mut xx = format!("xx=[{}", points.at(0, 0));
-            let mut yy = format!("yy=[{}", points.at(0, 1));
-            let mut zz = format!("zz=[{}", points.at(0, 2));
-            for i in 1..npoint {
-                write!(&mut xx, ",{}", points.at(i, 0)).unwrap();
-                write!(&mut yy, ",{}", points.at(i, 1)).unwrap();
-                write!(&mut zz, ",{}", points.at(i, 2)).unwrap();
+            self.polyline_3d_begin();
+            for i in 0..npoint {
+                self.polyline_3d_add(points.at(i, 0), points.at(i, 1), points.at(i, 2));
             }
             if closed && npoint > 2 {
-                write!(&mut xx, ",{}", points.at(0, 0)).unwrap();
-                write!(&mut yy, ",{}", points.at(0, 1)).unwrap();
-                write!(&mut zz, ",{}", points.at(0, 2)).unwrap();
+                self.polyline_3d_add(points.at(0, 0), points.at(0, 1), points.at(0, 2));
             }
-            write!(&mut self.buffer, "{}]\n", xx).unwrap();
-            write!(&mut self.buffer, "{}]\n", yy).unwrap();
-            write!(&mut self.buffer, "{}]\n", zz).unwrap();
-            write!(&mut self.buffer, "AX3D.plot(xx,yy,zz{})\n", opt).unwrap();
+            self.polyline_3d_end();
         }
     }
 
@@ -1061,6 +1087,20 @@ mod tests {
     }
 
     #[test]
+    fn polyline_3d_methods_work() {
+        let mut canvas = Canvas::new();
+        canvas
+            .polyline_3d_begin()
+            .polyline_3d_add(1, 2, 3)
+            .polyline_3d_add(4, 5, 6)
+            .polyline_3d_end();
+        let b: &str = "maybeCreateAX3D()\n\
+            xyz=np.array([[1,2,3],[4,5,6],])\n\
+            AX3D.plot(xyz[:,0],xyz[:,1],xyz[:,2],color='#427ce5')\n";
+        assert_eq!(canvas.buffer, b);
+    }
+
+    #[test]
     fn polyline_works_3d() {
         let mut nothing = Canvas::new();
         nothing.draw_polyline(&[[0.0, 0.0]], true);
@@ -1077,19 +1117,15 @@ mod tests {
         let mut open = Canvas::new();
         open.draw_polyline(points, false);
         let b: &str = "maybeCreateAX3D()\n\
-            xx=[2,0,0,2]\n\
-            yy=[1,1,1,1]\n\
-            zz=[0,0,3,3]\n\
-            AX3D.plot(xx,yy,zz,color='#427ce5')\n";
+            xyz=np.array([[2,1,0],[0,1,0],[0,1,3],[2,1,3],])\n\
+            AX3D.plot(xyz[:,0],xyz[:,1],xyz[:,2],color='#427ce5')\n";
         assert_eq!(open.buffer, b);
 
         let mut closed = Canvas::new();
         closed.draw_polyline(points, true);
         let b: &str = "maybeCreateAX3D()\n\
-            xx=[2,0,0,2,2]\n\
-            yy=[1,1,1,1,1]\n\
-            zz=[0,0,3,3,0]\n\
-            AX3D.plot(xx,yy,zz,color='#427ce5')\n";
+            xyz=np.array([[2,1,0],[0,1,0],[0,1,3],[2,1,3],[2,1,0],])\n\
+            AX3D.plot(xyz[:,0],xyz[:,1],xyz[:,2],color='#427ce5')\n";
         assert_eq!(closed.buffer, b);
 
         #[rustfmt::skip]
@@ -1101,10 +1137,8 @@ mod tests {
         let mut closed_few_points = Canvas::new();
         closed_few_points.draw_polyline(points, true);
         let b: &str = "maybeCreateAX3D()\n\
-            xx=[2,0]\n\
-            yy=[1,1]\n\
-            zz=[0,0]\n\
-            AX3D.plot(xx,yy,zz,color='#427ce5')\n";
+            xyz=np.array([[2,1,0],[0,1,0],])\n\
+            AX3D.plot(xyz[:,0],xyz[:,1],xyz[:,2],color='#427ce5')\n";
         assert_eq!(closed_few_points.buffer, b);
     }
 

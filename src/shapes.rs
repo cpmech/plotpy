@@ -3,18 +3,28 @@ use crate::AsMatrix;
 use std::fmt::Write;
 
 /// Defines the poly-curve code
+///
+/// Reference: [matplotlib](https://matplotlib.org/stable/api/path_api.html)
 #[derive(Clone, Debug)]
-pub enum PcCode {
-    /// Automatically selects between MoveTo and LineTo
-    Auto,
+pub enum PolyCode {
+    /// Move to coordinate (first point)
+    ///
+    /// matplotlib: Pick up the pen and move to the given vertex.
+    MoveTo,
 
-    /// Segment
+    /// Segment (next point, need 2 points)
+    ///
+    /// matplotlib: Draw a line from the current position to the given vertex.
     LineTo,
 
-    /// Quadratic Bezier
+    /// Quadratic Bezier (next point, need 3 control points with the first and last points on the curve)
+    ///
+    /// matplotlib: Draw a quadratic Bezier curve from the current position, with the given control point, to the given end point.
     Curve3,
 
-    /// Cubic Bezier
+    /// Cubic Bezier (next point, need 4 control points with the first and last points on the curve)
+    ///
+    /// matplotlib: Draw a cubic Bezier curve from the current position, with the given control points, to the given end point.
     Curve4,
 }
 
@@ -175,7 +185,7 @@ impl Shapes {
     /// Draws polyline with straight segments, quadratic Bezier, or cubic Bezier (2D only)
     ///
     /// **Note:** The first and last commands are ignored.
-    pub fn draw_polycurve<'a, T, U>(&mut self, points: &'a T, codes: &[PcCode], closed: bool) -> Result<(), StrError>
+    pub fn draw_polycurve<'a, T, U>(&mut self, points: &'a T, codes: &[PolyCode], closed: bool) -> Result<(), StrError>
     where
         T: AsMatrix<'a, U>,
         U: 'a + std::fmt::Display,
@@ -199,10 +209,10 @@ impl Shapes {
         .unwrap();
         for i in 1..npoint {
             let keyword = match codes[i] {
-                PcCode::Auto => "LINETO",
-                PcCode::LineTo => "LINETO",
-                PcCode::Curve3 => "CURVE3",
-                PcCode::Curve4 => "CURVE4",
+                PolyCode::MoveTo => "MOVETO",
+                PolyCode::LineTo => "LINETO",
+                PolyCode::Curve3 => "CURVE3",
+                PolyCode::Curve4 => "CURVE4",
             };
             write!(
                 &mut self.buffer,
@@ -720,7 +730,7 @@ impl GraphMaker for Shapes {
 
 #[cfg(test)]
 mod tests {
-    use crate::PcCode;
+    use crate::PolyCode;
 
     use super::{Shapes, StrError};
 
@@ -888,18 +898,22 @@ mod tests {
     fn polycurve_capture_errors() {
         let mut shapes = Shapes::new();
         assert_eq!(
-            shapes.draw_polycurve(&[[0, 0]], &[PcCode::Auto], true).err(),
+            shapes.draw_polycurve(&[[0, 0]], &[PolyCode::MoveTo], true).err(),
             Some("npoint must be ≥ 3")
         );
         assert_eq!(
             shapes
-                .draw_polycurve(&[[0], [0], [0]], &[PcCode::Auto, PcCode::Auto, PcCode::Auto], true)
+                .draw_polycurve(
+                    &[[0], [0], [0]],
+                    &[PolyCode::MoveTo, PolyCode::LineTo, PolyCode::LineTo],
+                    true
+                )
                 .err(),
             Some("ndim must be equal to 2")
         );
         assert_eq!(
             shapes
-                .draw_polycurve(&[[0, 0], [0, 0], [0, 0]], &[PcCode::Auto], true)
+                .draw_polycurve(&[[0, 0], [0, 0], [0, 0]], &[PolyCode::MoveTo], true)
                 .err(),
             Some("codes.len() must be equal to npoint")
         );
@@ -909,7 +923,7 @@ mod tests {
     fn polycurve_works() -> Result<(), StrError> {
         let mut shapes = Shapes::new();
         let points = &[[0, 0], [1, 0], [1, 1]];
-        let codes = &[PcCode::Auto, PcCode::Curve3, PcCode::Curve3];
+        let codes = &[PolyCode::MoveTo, PolyCode::Curve3, PolyCode::Curve3];
         shapes.draw_polycurve(points, codes, true)?;
         let b: &str = "dat=[[pth.Path.MOVETO,(0,0)],[pth.Path.CURVE3,(1,0)],[pth.Path.CURVE3,(1,1)],[pth.Path.CLOSEPOLY,(None,None)]]\n\
                        cmd,pts=zip(*dat)\n\

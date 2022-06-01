@@ -1,4 +1,4 @@
-use plotpy::{Curve, PcCode, Plot, Shapes, StrError};
+use plotpy::{Curve, Plot, PolyCode, Shapes, StrError};
 use std::fs::File;
 use std::io::{BufRead, BufReader};
 use std::path::Path;
@@ -155,7 +155,7 @@ fn test_shapes_polycurve_quadratic() -> Result<(), StrError> {
     let points = &[[0.0, 0.0], [1.0, 0.0], [1.0, 1.0]];
 
     // codes
-    let codes = &[PcCode::Auto, PcCode::Curve3, PcCode::Curve3];
+    let codes = &[PolyCode::MoveTo, PolyCode::Curve3, PolyCode::Curve3];
 
     // polycurve
     let mut shapes = Shapes::new();
@@ -196,14 +196,14 @@ fn test_shapes_polycurve_cubic() -> Result<(), StrError> {
 
     // codes
     let codes = &[
-        PcCode::Auto,
-        PcCode::Curve4,
-        PcCode::Curve4,
-        PcCode::Curve4,
-        PcCode::LineTo,
-        PcCode::Curve4,
-        PcCode::Curve4,
-        PcCode::Curve4,
+        PolyCode::MoveTo,
+        PolyCode::Curve4,
+        PolyCode::Curve4,
+        PolyCode::Curve4,
+        PolyCode::LineTo,
+        PolyCode::Curve4,
+        PolyCode::Curve4,
+        PolyCode::Curve4,
     ];
 
     // polycurve

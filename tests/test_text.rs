@@ -17,7 +17,16 @@ fn test_text() -> Result<(), StrError> {
         .set_bbox(true)
         .set_bbox_facecolor("pink")
         .set_bbox_edgecolor("black")
-        .set_bbox_alpha(0.3);
+        .set_bbox_alpha(0.3)
+        // .set_bbox_style("square,pad=0.3");
+    // .set_bbox_style("circle,pad=0.3");
+    // .set_bbox_style("larrow,pad=0.3");
+    // .set_bbox_style("rarrow,pad=0.3");
+    // .set_bbox_style("darrow,pad=0.3");
+    // .set_bbox_style("round,pad=0.3,rounding_size=0.15");
+    // .set_bbox_style("round4,pad=0.3,rounding_size=0.2");
+    .set_bbox_style("sawtooth,pad=0.3,tooth_size=0.1");
+    // .set_bbox_style("roundtooth,pad=0.3,tooth_size=0.2");
 
     // draw text
     text.draw(0.5, 0.5, "message");
@@ -28,7 +37,7 @@ fn test_text() -> Result<(), StrError> {
 
     // save figure
     let path = Path::new(OUT_DIR).join("integ_text.svg");
-    plot.save(&path)?;
+    plot.set_show_errors(true).save(&path)?;
 
     // check number of lines
     let file = File::open(path).map_err(|_| "cannot open file")?;

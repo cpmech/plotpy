@@ -20,7 +20,8 @@ use std::fmt::Write;
 ///         .set_bbox(true)
 ///         .set_bbox_facecolor("pink")
 ///         .set_bbox_edgecolor("black")
-///         .set_bbox_alpha(0.3);
+///         .set_bbox_alpha(0.3)
+///         .set_bbox_style("roundtooth,pad=0.3,tooth_size=0.2");
 ///
 ///     // draw text
 ///     text.draw_3d(0.5, 0.5, 0.5, "Hello World!");
@@ -49,6 +50,7 @@ pub struct Text {
     bbox_facecolor: String, // Facecolor of bounding box
     bbox_edgecolor: String, // Edgecolor of bounding box
     bbox_alpha: f64,        // Alpha of bounding box
+    bbox_style: String,     // Style of bounding box; example "round,pad=0.2"
 
     // buffer
     buffer: String,
@@ -67,6 +69,7 @@ impl Text {
             bbox_facecolor: String::new(),
             bbox_edgecolor: String::new(),
             bbox_alpha: 1.0,
+            bbox_style: String::new(),
             buffer: String::new(),
         }
     }
@@ -131,27 +134,47 @@ impl Text {
         self
     }
 
-    // Sets use bounding box flag
+    /// Sets use bounding box flag
     pub fn set_bbox(&mut self, flag: bool) -> &mut Self {
         self.bbox = flag;
         self
     }
 
-    // Sets facecolor of bounding box
+    /// Sets facecolor of bounding box
     pub fn set_bbox_facecolor(&mut self, color: &str) -> &mut Self {
         self.bbox_facecolor = String::from(color);
         self
     }
 
-    // Sets edgecolor of bounding box
+    /// Sets edgecolor of bounding box
     pub fn set_bbox_edgecolor(&mut self, color: &str) -> &mut Self {
         self.bbox_edgecolor = String::from(color);
         self
     }
 
-    // Sets alpha of bounding box
+    /// Sets alpha of bounding box
     pub fn set_bbox_alpha(&mut self, value: f64) -> &mut Self {
         self.bbox_alpha = value;
+        self
+    }
+
+    /// Sets style of bounding box; example
+    ///
+    /// Examples:
+    ///
+    /// * "square,pad=0.3"
+    /// * "circle,pad=0.3"
+    /// * "larrow,pad=0.3"
+    /// * "rarrow,pad=0.3"
+    /// * "darrow,pad=0.3"
+    /// * "round,pad=0.3,rounding_size=0.15"
+    /// * "round4,pad=0.3,rounding_size=0.2"
+    /// * "sawtooth,pad=0.3,tooth_size=0.1"
+    /// * "roundtooth,pad=0.3,tooth_size=0.2"
+    ///
+    /// See [matplotlib](https://matplotlib.org/stable/api/_as_gen/matplotlib.patches.BoxStyle.html)
+    pub fn set_bbox_style(&mut self, style: &str) -> &mut Self {
+        self.bbox_style = String::from(style);
         self
     }
 
@@ -186,6 +209,9 @@ impl Text {
             write!(&mut opt, "edgecolor='{}',", self.bbox_edgecolor).unwrap();
         }
         write!(&mut opt, "alpha={},", self.bbox_alpha).unwrap();
+        if self.bbox_style != "" {
+            write!(&mut opt, "boxstyle='{}',", self.bbox_style).unwrap();
+        }
         opt
     }
 }
@@ -238,14 +264,16 @@ mod tests {
         text.set_bbox(true)
             .set_bbox_facecolor("pink")
             .set_bbox_edgecolor("black")
-            .set_bbox_alpha(0.3);
+            .set_bbox_alpha(0.3)
+            .set_bbox_style("round,pad=0.4");
         assert_eq!(text.bbox, true);
         let opt = text.options_bbox();
         assert_eq!(
             opt,
             "facecolor='pink',\
              edgecolor='black',\
-             alpha=0.3,"
+             alpha=0.3,\
+             boxstyle='round,pad=0.4',"
         );
     }
 

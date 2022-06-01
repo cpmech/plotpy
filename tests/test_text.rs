@@ -13,7 +13,11 @@ fn test_text() -> Result<(), StrError> {
         .set_align_horizontal("center")
         .set_align_vertical("center")
         .set_fontsize(50.0)
-        .set_rotation(45.0);
+        .set_rotation(45.0)
+        .set_bbox(true)
+        .set_bbox_facecolor("pink")
+        .set_bbox_edgecolor("black")
+        .set_bbox_alpha(0.3);
 
     // draw text
     text.draw(0.5, 0.5, "message");
@@ -42,7 +46,11 @@ fn test_text_3d() -> Result<(), StrError> {
         .set_align_horizontal("center")
         .set_align_vertical("center")
         .set_fontsize(50.0)
-        .set_rotation(45.0);
+        .set_rotation(45.0)
+        .set_bbox(true)
+        .set_bbox_facecolor("pink")
+        .set_bbox_edgecolor("black")
+        .set_bbox_alpha(0.3);
 
     // draw text
     text.draw_3d(0.5, 0.5, 0.5, "message");

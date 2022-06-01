@@ -57,6 +57,61 @@ fn test_curve() -> Result<(), StrError> {
 }
 
 #[test]
+fn test_curve_points_methods_work() -> Result<(), StrError> {
+    // add points
+    let mut curve = Curve::new();
+    curve
+        .points_begin()
+        .points_add(0.0, 0.0)
+        .points_add(1.0, 1.0)
+        .points_add(2.0, 4.0)
+        .points_end();
+
+    // add curves to plot
+    let mut plot = Plot::new();
+    plot.add(&curve);
+
+    // save figure
+    let path = Path::new(OUT_DIR).join("integ_curve_points_methods.svg");
+    plot.save(&path)?;
+
+    // check number of lines
+    let file = File::open(path).map_err(|_| "cannot open file")?;
+    let buffered = BufReader::new(file);
+    let lines_iter = buffered.lines();
+    assert!(lines_iter.count() > 510);
+    Ok(())
+}
+
+#[test]
+fn test_curve_points_3d_methods_work() -> Result<(), StrError> {
+    // add points
+    let mut curve = Curve::new();
+    curve
+        .points_3d_begin()
+        .points_3d_add(0.0, 0.0, 0.0)
+        .points_3d_add(1.0, 0.0, 0.0)
+        .points_3d_add(1.0, 1.0, 0.0)
+        .points_3d_add(1.0, 1.0, 1.0)
+        .points_3d_end();
+
+    // add curves to plot
+    let mut plot = Plot::new();
+    plot.add(&curve);
+
+    // save figure
+    let path = Path::new(OUT_DIR).join("integ_curve_points_3d_methods.svg");
+    plot.save(&path)?;
+
+    // check number of lines
+    let file = File::open(path).map_err(|_| "cannot open file")?;
+    let buffered = BufReader::new(file);
+    let lines_iter = buffered.lines();
+    assert!(lines_iter.count() > 660);
+    Ok(())
+}
+
+#[test]
 fn test_curve_3d() -> Result<(), StrError> {
     // curve object and options
     let mut curve = Curve::new();

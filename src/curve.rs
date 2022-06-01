@@ -98,6 +98,80 @@ impl Curve {
         }
     }
 
+    /// Begins adding points to the curve (2D only)
+    ///
+    /// # Warning
+    ///
+    /// This function must be followed by [Curve::points_add] and [Curve::points_end],
+    /// otherwise Python/Matplotlib will fail.
+    pub fn points_begin(&mut self) -> &mut Self {
+        write!(&mut self.buffer, "xy=np.array([").unwrap();
+        self
+    }
+
+    /// Adds point to the curve (2D only)
+    ///
+    /// # Warning
+    ///
+    /// This function must be called after [Curve::points_begin] and must be followed by [Curve::points_end],
+    /// otherwise Python/Matplotlib will fail.
+    pub fn points_add<T>(&mut self, x: T, y: T) -> &mut Self
+    where
+        T: std::fmt::Display,
+    {
+        write!(&mut self.buffer, "[{},{}],", x, y).unwrap();
+        self
+    }
+
+    /// Ends adding points to the curve (2D only)
+    ///
+    /// # Warning
+    ///
+    /// This function must be called after [Curve::points_begin] and [Curve::points_add],
+    /// otherwise Python/Matplotlib will fail.
+    pub fn points_end(&mut self) -> &mut Self {
+        let opt = self.options();
+        write!(&mut self.buffer, "])\nplt.plot(xy[:,0],xy[:,1]{})\n", &opt).unwrap();
+        self
+    }
+
+    /// Begins adding 3D points to the curve
+    ///
+    /// # Warning
+    ///
+    /// This function must be followed by [Curve::points_3d_add] and [Curve::points_3d_end],
+    /// otherwise Python/Matplotlib will fail
+    pub fn points_3d_begin(&mut self) -> &mut Self {
+        write!(&mut self.buffer, "maybeCreateAX3D()\nxyz=np.array([").unwrap();
+        self
+    }
+
+    /// Adds 3D point to the curve
+    ///
+    /// # Warning
+    ///
+    /// This function must be called after [Curve::points_3d_begin] and must be followed by [Curve::points_3d_end],
+    /// otherwise Python/Matplotlib will fail.
+    pub fn points_3d_add<T>(&mut self, x: T, y: T, z: T) -> &mut Self
+    where
+        T: std::fmt::Display,
+    {
+        write!(&mut self.buffer, "[{},{},{}],", x, y, z).unwrap();
+        self
+    }
+
+    /// Ends adding 3D points to the curve (2D only)
+    ///
+    /// # Warning
+    ///
+    /// This function must be called after [Curve::points_3d_begin] and [Curve::points_3d_add],
+    /// otherwise Python/Matplotlib will fail.
+    pub fn points_3d_end(&mut self) -> &mut Self {
+        let opt = self.options();
+        write!(&mut self.buffer, "])\nAX3D.plot(xyz[:,0],xyz[:,1],xyz[:,2]{})\n", &opt).unwrap();
+        self
+    }
+
     /// Draws curve
     ///
     /// # Input

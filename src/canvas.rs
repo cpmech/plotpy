@@ -191,7 +191,7 @@ impl Canvas {
     ///
     /// # Warning
     ///
-    /// You must call [polycurve_add] next, followed by [polycurve_end] when finishing adding points.
+    /// You must call [Canvas::polycurve_add] next, followed by [Canvas::polycurve_end] when finishing adding points.
     /// Otherwise, Python/Matplotlib will fail.
     pub fn polycurve_begin(&mut self) -> &mut Self {
         write!(&mut self.buffer, "dat=[",).unwrap();
@@ -202,8 +202,8 @@ impl Canvas {
     ///
     /// # Warning
     ///
-    /// You must call [polycurve_begin] first, otherwise Python/Matplotlib will fail.
-    /// Afterwards, you must call [polycurve_end] when finishing adding points.
+    /// You must call [Canvas::polycurve_begin] first, otherwise Python/Matplotlib will fail.
+    /// Afterwards, you must call [Canvas::polycurve_end] when finishing adding points.
     pub fn polycurve_add<T>(&mut self, x: T, y: T, code: PolyCode) -> &mut Self
     where
         T: std::fmt::Display,
@@ -222,7 +222,7 @@ impl Canvas {
     ///
     /// # Warning
     ///
-    /// This function must be the last one called after [polycurve_begin] and [polycurve_add].
+    /// This function must be the last one called after [Canvas::polycurve_begin] and [Canvas::polycurve_add].
     /// Otherwise, Python/Matplotlib will fail.
     pub fn polycurve_end(&mut self, closed: bool) -> &mut Self {
         if closed {

@@ -158,8 +158,8 @@ fn test_shapes_polycurve_quadratic() -> Result<(), StrError> {
     let codes = &[PolyCode::MoveTo, PolyCode::Curve3, PolyCode::Curve3];
 
     // polycurve
-    let mut shapes = Shapes::new();
-    shapes.set_face_color("none").draw_polycurve(points, codes, true)?;
+    let mut canvas = Shapes::new();
+    canvas.set_face_color("none").draw_polycurve(points, codes, true)?;
 
     // point on curve
     let mut curve = Curve::new();
@@ -170,7 +170,7 @@ fn test_shapes_polycurve_quadratic() -> Result<(), StrError> {
 
     // add shapes to plot
     let mut plot = Plot::new();
-    plot.add(&shapes);
+    plot.add(&canvas);
     plot.add(&curve);
 
     // save figure
@@ -207,8 +207,8 @@ fn test_shapes_polycurve_cubic() -> Result<(), StrError> {
     ];
 
     // polycurve
-    let mut shapes = Shapes::new();
-    shapes.draw_polycurve(&points, codes, true)?;
+    let mut canvas = Shapes::new();
+    canvas.draw_polycurve(&points, codes, true)?;
 
     // control points
     let mut curve = Curve::new();
@@ -220,10 +220,63 @@ fn test_shapes_polycurve_cubic() -> Result<(), StrError> {
 
     // add shapes to plot
     let mut plot = Plot::new();
-    plot.add(&shapes).add(&curve);
+    plot.add(&canvas).add(&curve);
 
     // save figure
     let path = Path::new(OUT_DIR).join("integ_shapes_polycurve_cubic.svg");
+    plot.set_equal_axes(true).set_show_errors(true);
+    plot.save(&path)?;
+    // plot.save_and_show(&path)?;
+
+    // check number of lines
+    let file = File::open(path).map_err(|_| "cannot open file")?;
+    let buffered = BufReader::new(file);
+    let lines_iter = buffered.lines();
+    assert!(lines_iter.count() > 355);
+    Ok(())
+}
+
+#[test]
+fn test_shapes_polycurve_methods() -> Result<(), StrError> {
+    // coordinates of control points
+    let x = &[1.58, 0.35, -1.75, 0.375, 0.85, 2.2, 3.0, 2.0];
+    let y = &[-2.57, -1.1, 2.0, 2.0, 1.15, 3.2, 0.05, -0.5];
+
+    // codes
+    let codes = &[
+        PolyCode::MoveTo,
+        PolyCode::Curve4,
+        PolyCode::Curve4,
+        PolyCode::Curve4,
+        PolyCode::LineTo,
+        PolyCode::Curve4,
+        PolyCode::Curve4,
+        PolyCode::Curve4,
+    ];
+
+    // polycurve
+    let mut canvas = Shapes::new();
+
+    canvas.polycurve_begin();
+    for i in 0..x.len() {
+        canvas.polycurve_add(x[i], y[i], codes[i]);
+    }
+    canvas.polycurve_end(true);
+
+    // control points
+    let mut curve = Curve::new();
+    curve
+        .set_line_color("orange")
+        .set_marker_color("red")
+        .set_marker_style("o")
+        .draw(x, y);
+
+    // add shapes to plot
+    let mut plot = Plot::new();
+    plot.add(&canvas).add(&curve);
+
+    // save figure
+    let path = Path::new(OUT_DIR).join("integ_shapes_polycurve_methods.svg");
     plot.set_equal_axes(true).set_show_errors(true);
     plot.save(&path)?;
     // plot.save_and_show(&path)?;

@@ -5,7 +5,7 @@ use std::fmt::Write;
 /// Defines the poly-curve code
 ///
 /// Reference: [matplotlib](https://matplotlib.org/stable/api/path_api.html)
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum PolyCode {
     /// Move to coordinate (first point)
     ///
@@ -180,6 +180,61 @@ impl Shapes {
             xc, yc, r, &opt
         )
         .unwrap();
+    }
+
+    /// Begins drawing a polycurve (straight segments, quadratic Bezier, and cubic Bezier) (2D only)
+    ///
+    /// # Warning
+    ///
+    /// You must call [polycurve_add] next, followed by [polycurve_end] when finishing adding points.
+    /// Otherwise, Python/Matplotlib will fail.
+    pub fn polycurve_begin(&mut self) -> &mut Self {
+        write!(&mut self.buffer, "dat=[",).unwrap();
+        self
+    }
+
+    /// Adds point to a polycurve (straight segments, quadratic Bezier, and cubic Bezier) (2D only)
+    ///
+    /// # Warning
+    ///
+    /// You must call [polycurve_begin] first, otherwise Python/Matplotlib will fail.
+    /// Afterwards, you must call [polycurve_end] when finishing adding points.
+    pub fn polycurve_add<T>(&mut self, x: T, y: T, code: PolyCode) -> &mut Self
+    where
+        T: std::fmt::Display,
+    {
+        let keyword = match code {
+            PolyCode::MoveTo => "MOVETO",
+            PolyCode::LineTo => "LINETO",
+            PolyCode::Curve3 => "CURVE3",
+            PolyCode::Curve4 => "CURVE4",
+        };
+        write!(&mut self.buffer, "[pth.Path.{},({},{})],", keyword, x, y).unwrap();
+        self
+    }
+
+    /// Ends drawing a polycurve (straight segments, quadratic Bezier, and cubic Bezier) (2D only)
+    ///
+    /// # Warning
+    ///
+    /// This function must be the last one called after [polycurve_begin] and [polycurve_add].
+    /// Otherwise, Python/Matplotlib will fail.
+    pub fn polycurve_end(&mut self, closed: bool) -> &mut Self {
+        if closed {
+            write!(&mut self.buffer, "[pth.Path.CLOSEPOLY,(None,None)]").unwrap();
+        }
+        let opt = self.options_shared();
+        write!(
+            &mut self.buffer,
+            "]\n\
+            cmd,pts=zip(*dat)\n\
+            h=pth.Path(pts,cmd)\n\
+            p=pat.PathPatch(h{})\n\
+            plt.gca().add_patch(p)\n",
+            &opt
+        )
+        .unwrap();
+        self
     }
 
     /// Draws polyline with straight segments, quadratic Bezier, or cubic Bezier (2D only)
@@ -895,14 +950,45 @@ mod tests {
     }
 
     #[test]
-    fn polycurve_capture_errors() {
-        let mut shapes = Shapes::new();
+    fn polycurve_methods_work() {
+        // note the following sequence of codes won't work in Matplotlib because Curve3 and Curve4 are wrong
+        let mut canvas = Shapes::new();
+        canvas.polycurve_begin();
+        assert_eq!(canvas.buffer, "dat=[");
+        canvas.polycurve_add(0, 0, PolyCode::MoveTo);
+        assert_eq!(canvas.buffer, "dat=[[pth.Path.MOVETO,(0,0)],");
+        canvas.polycurve_add(1, 0, PolyCode::LineTo);
+        assert_eq!(canvas.buffer, "dat=[[pth.Path.MOVETO,(0,0)],[pth.Path.LINETO,(1,0)],");
+        canvas.polycurve_add(2, 0, PolyCode::Curve3);
         assert_eq!(
-            shapes.draw_polycurve(&[[0, 0]], &[PolyCode::MoveTo], true).err(),
+            canvas.buffer,
+            "dat=[[pth.Path.MOVETO,(0,0)],[pth.Path.LINETO,(1,0)],[pth.Path.CURVE3,(2,0)],"
+        );
+        canvas.polycurve_add(3, 0, PolyCode::Curve4);
+        assert_eq!(
+            canvas.buffer,
+            "dat=[[pth.Path.MOVETO,(0,0)],[pth.Path.LINETO,(1,0)],[pth.Path.CURVE3,(2,0)],[pth.Path.CURVE4,(3,0)],"
+        );
+        canvas.polycurve_end(true);
+        assert_eq!(
+            canvas.buffer,
+            "dat=[[pth.Path.MOVETO,(0,0)],[pth.Path.LINETO,(1,0)],[pth.Path.CURVE3,(2,0)],[pth.Path.CURVE4,(3,0)],[pth.Path.CLOSEPOLY,(None,None)]]\n\
+            cmd,pts=zip(*dat)\n\
+            h=pth.Path(pts,cmd)\n\
+            p=pat.PathPatch(h,edgecolor='#427ce5')\n\
+            plt.gca().add_patch(p)\n"
+        );
+    }
+
+    #[test]
+    fn polycurve_capture_errors() {
+        let mut canvas = Shapes::new();
+        assert_eq!(
+            canvas.draw_polycurve(&[[0, 0]], &[PolyCode::MoveTo], true).err(),
             Some("npoint must be ≥ 3")
         );
         assert_eq!(
-            shapes
+            canvas
                 .draw_polycurve(
                     &[[0], [0], [0]],
                     &[PolyCode::MoveTo, PolyCode::LineTo, PolyCode::LineTo],
@@ -912,7 +998,7 @@ mod tests {
             Some("ndim must be equal to 2")
         );
         assert_eq!(
-            shapes
+            canvas
                 .draw_polycurve(&[[0, 0], [0, 0], [0, 0]], &[PolyCode::MoveTo], true)
                 .err(),
             Some("codes.len() must be equal to npoint")
@@ -921,16 +1007,16 @@ mod tests {
 
     #[test]
     fn polycurve_works() -> Result<(), StrError> {
-        let mut shapes = Shapes::new();
+        let mut canvas = Shapes::new();
         let points = &[[0, 0], [1, 0], [1, 1]];
         let codes = &[PolyCode::MoveTo, PolyCode::Curve3, PolyCode::Curve3];
-        shapes.draw_polycurve(points, codes, true)?;
+        canvas.draw_polycurve(points, codes, true)?;
         let b: &str = "dat=[[pth.Path.MOVETO,(0,0)],[pth.Path.CURVE3,(1,0)],[pth.Path.CURVE3,(1,1)],[pth.Path.CLOSEPOLY,(None,None)]]\n\
                        cmd,pts=zip(*dat)\n\
                        h=pth.Path(pts,cmd)\n\
                        p=pat.PathPatch(h,edgecolor='#427ce5')\n\
                        plt.gca().add_patch(p)\n";
-        assert_eq!(shapes.buffer, b);
+        assert_eq!(canvas.buffer, b);
         Ok(())
     }
 

@@ -73,6 +73,7 @@ pub struct Curve {
     marker_line_width: f64,    // Edge width of markers
     marker_size: f64,          // Size of markers
     marker_style: String,      // Style of markers, e.g., "`o`", "`+`"
+    stop_clip: bool,           // Stop clipping features within margins
     buffer: String,            // buffer
 }
 
@@ -92,6 +93,7 @@ impl Curve {
             marker_line_width: 0.0,
             marker_size: 0.0,
             marker_style: String::new(),
+            stop_clip: false,
             buffer: String::new(),
         }
     }
@@ -225,6 +227,12 @@ impl Curve {
         self
     }
 
+    /// Sets the flag to stop clipping features within margins
+    pub fn set_stop_clip(&mut self, flag: bool) -> &mut Self {
+        self.stop_clip = flag;
+        self
+    }
+
     /// Returns options for curve
     fn options(&self) -> String {
         // fix color if marker is void
@@ -279,6 +287,11 @@ impl Curve {
             write!(&mut opt, ",marker='{}'", self.marker_style).unwrap();
         }
 
+        // clipping
+        if self.stop_clip {
+            write!(&mut opt, ",clip_on=False").unwrap();
+        }
+
         opt
     }
 }
@@ -329,7 +342,8 @@ mod tests {
             .set_marker_line_color("blue")
             .set_marker_line_width(1.5)
             .set_marker_size(8.0)
-            .set_marker_style("o");
+            .set_marker_style("o")
+            .set_stop_clip(true);
         let options = curve.options();
         assert_eq!(
             options,
@@ -343,7 +357,8 @@ mod tests {
              ,markeredgecolor='blue'\
              ,markeredgewidth=1.5\
              ,markersize=8\
-             ,marker='o'"
+             ,marker='o'\
+             ,clip_on=False"
         );
     }
 

@@ -103,6 +103,9 @@ pub struct Shapes {
     alt_text_fontsize: f64,            // Font size
     alt_text_rotation: f64,            // Text rotation
 
+    // options
+    stop_clip: bool, // Stop clipping features within margins
+
     // buffer
     buffer: String, // buffer
 }
@@ -128,6 +131,8 @@ impl Shapes {
             alt_text_align_vertical: "center".to_string(),
             alt_text_fontsize: 10.0,
             alt_text_rotation: 0.0,
+            // options
+            stop_clip: false,
             // buffer
             buffer: String::new(),
         }
@@ -623,6 +628,12 @@ impl Shapes {
         self
     }
 
+    /// Sets the flag to stop clipping features within margins
+    pub fn set_stop_clip(&mut self, flag: bool) -> &mut Self {
+        self.stop_clip = flag;
+        self
+    }
+
     /// Returns shared options
     fn options_shared(&self) -> String {
         let mut opt = String::new();
@@ -634,6 +645,9 @@ impl Shapes {
         }
         if self.line_width > 0.0 {
             write!(&mut opt, ",linewidth={}", self.line_width).unwrap();
+        }
+        if self.stop_clip {
+            write!(&mut opt, ",clip_on=False").unwrap();
         }
         opt
     }
@@ -808,13 +822,18 @@ mod tests {
     #[test]
     fn options_shared_works() {
         let mut shapes = Shapes::new();
-        shapes.set_edge_color("red").set_face_color("blue").set_line_width(2.5);
+        shapes
+            .set_edge_color("red")
+            .set_face_color("blue")
+            .set_line_width(2.5)
+            .set_stop_clip(true);
         let opt = shapes.options_shared();
         assert_eq!(
             opt,
             ",edgecolor='red'\
              ,facecolor='blue'\
-             ,linewidth=2.5"
+             ,linewidth=2.5\
+             ,clip_on=False"
         );
     }
 

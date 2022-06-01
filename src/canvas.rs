@@ -28,61 +28,61 @@ pub enum PolyCode {
     Curve4,
 }
 
-/// Draw polygonal shapes
+/// Implements functions to draw 2D and 3D features, including poly-lines and Bezier curves
 ///
 /// # Example
 ///
 /// ```
 /// # fn main() -> Result<(), &'static str> {
 /// // import
-/// use plotpy::{Plot, Shapes};
+/// use plotpy::{Canvas, Plot};
 /// use std::path::Path;
 ///
 /// // directory to save figures
 /// const OUT_DIR: &str = "/tmp/plotpy/doc_tests";
 ///
-/// // shapes object and common options
-/// let mut shapes = Shapes::new();
-/// shapes.set_line_width(3.0).set_edge_color("#cd0000").set_face_color("#eeea83");
+/// // canvas object and common options
+/// let mut canvas = Canvas::new();
+/// canvas.set_line_width(3.0).set_edge_color("#cd0000").set_face_color("#eeea83");
 ///
 /// // draw arc
-/// shapes.draw_arc(0.5, 0.5, 0.4, 195.0, -15.0);
+/// canvas.draw_arc(0.5, 0.5, 0.4, 195.0, -15.0);
 ///
 /// // draw arrow
-/// shapes.set_arrow_scale(50.0).set_arrow_style("fancy");
-/// shapes.draw_arrow(0.4, 0.3, 0.6, 0.5);
+/// canvas.set_arrow_scale(50.0).set_arrow_style("fancy");
+/// canvas.draw_arrow(0.4, 0.3, 0.6, 0.5);
 ///
 /// // draw circle
-/// shapes.set_face_color("None").set_edge_color("#1f9c25").set_line_width(6.0);
-/// shapes.draw_circle(0.5, 0.5, 0.5);
+/// canvas.set_face_color("None").set_edge_color("#1f9c25").set_line_width(6.0);
+/// canvas.draw_circle(0.5, 0.5, 0.5);
 ///
 /// // draw polyline
-/// shapes.set_line_width(3.0).set_edge_color("blue");
+/// canvas.set_line_width(3.0).set_edge_color("blue");
 /// let a = 0.2;
 /// let c = f64::sqrt(3.0) / 2.0;
 /// let p = &[[0.1, 0.5], [0.1 + a, 0.5], [0.1 + a / 2.0, 0.5 + a * c]];
 /// let q = &[[0.9, 0.5], [0.9 - a, 0.5], [0.9 - a / 2.0, 0.5 + a * c]];
-/// shapes.draw_polyline(p, true);
-/// shapes.draw_polyline(q, false);
+/// canvas.draw_polyline(p, true);
+/// canvas.draw_polyline(q, false);
 ///
-/// // add shapes to plot
+/// // add canvas to plot
 /// let mut plot = Plot::new();
 /// plot.set_hide_axes(true)
 ///     .set_equal_axes(true)
 ///     .set_range(-0.05, 1.05, -0.05, 1.05)
-///     .add(&shapes);
+///     .add(&canvas);
 ///
 /// // save figure
-/// let path = Path::new(OUT_DIR).join("doc_shapes.svg");
+/// let path = Path::new(OUT_DIR).join("doc_canvas.svg");
 /// plot.save(&path)?;
 /// # Ok(())
 /// # }
 /// ```
 ///
-/// ![doc_shapes.svg](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/doc_shapes.svg)
+/// ![doc_canvas.svg](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/doc_canvas.svg)
 ///
-pub struct Shapes {
-    // shapes
+pub struct Canvas {
+    // features
     edge_color: String,  // Edge color (shared)
     face_color: String,  // Face color (shared)
     line_width: f64,     // Line width of edge (shared)
@@ -110,10 +110,10 @@ pub struct Shapes {
     buffer: String, // buffer
 }
 
-impl Shapes {
+impl Canvas {
     pub fn new() -> Self {
-        Shapes {
-            // shapes
+        Canvas {
+            // features
             edge_color: "#427ce5".to_string(),
             face_color: String::new(),
             line_width: 0.0,
@@ -512,19 +512,19 @@ impl Shapes {
         Ok(())
     }
 
-    /// Sets the edge color (shared among shapes)
+    /// Sets the edge color (shared among features)
     pub fn set_edge_color(&mut self, color: &str) -> &mut Self {
         self.edge_color = String::from(color);
         self
     }
 
-    /// Sets the face color (shared among shapes)
+    /// Sets the face color (shared among features)
     pub fn set_face_color(&mut self, color: &str) -> &mut Self {
         self.face_color = String::from(color);
         self
     }
 
-    /// Sets the line width of edge (shared among shapes)
+    /// Sets the line width of edge (shared among features)
     pub fn set_line_width(&mut self, width: f64) -> &mut Self {
         self.line_width = width;
         self
@@ -789,7 +789,7 @@ impl Shapes {
     }
 }
 
-impl GraphMaker for Shapes {
+impl GraphMaker for Canvas {
     fn get_buffer<'a>(&'a self) -> &'a String {
         &self.buffer
     }
@@ -799,7 +799,7 @@ impl GraphMaker for Shapes {
 
 #[cfg(test)]
 mod tests {
-    use super::{Shapes, StrError};
+    use super::{Canvas, StrError};
     use crate::PolyCode;
 
     #[test]
@@ -813,29 +813,29 @@ mod tests {
 
     #[test]
     fn new_works() {
-        let shapes = Shapes::new();
-        assert_eq!(shapes.edge_color.len(), 7);
-        assert_eq!(shapes.face_color.len(), 0);
-        assert_eq!(shapes.line_width, 0.0);
-        assert_eq!(shapes.arrow_scale, 0.0);
-        assert_eq!(shapes.arrow_style.len(), 0);
-        assert_eq!(shapes.text_color.len(), 7);
-        assert_eq!(shapes.text_align_horizontal.len(), 0);
-        assert_eq!(shapes.text_align_vertical.len(), 0);
-        assert_eq!(shapes.text_fontsize, 8.0);
-        assert_eq!(shapes.text_rotation, 45.0);
-        assert_eq!(shapes.buffer.len(), 0);
+        let canvas = Canvas::new();
+        assert_eq!(canvas.edge_color.len(), 7);
+        assert_eq!(canvas.face_color.len(), 0);
+        assert_eq!(canvas.line_width, 0.0);
+        assert_eq!(canvas.arrow_scale, 0.0);
+        assert_eq!(canvas.arrow_style.len(), 0);
+        assert_eq!(canvas.text_color.len(), 7);
+        assert_eq!(canvas.text_align_horizontal.len(), 0);
+        assert_eq!(canvas.text_align_vertical.len(), 0);
+        assert_eq!(canvas.text_fontsize, 8.0);
+        assert_eq!(canvas.text_rotation, 45.0);
+        assert_eq!(canvas.buffer.len(), 0);
     }
 
     #[test]
     fn options_shared_works() {
-        let mut shapes = Shapes::new();
-        shapes
+        let mut canvas = Canvas::new();
+        canvas
             .set_edge_color("red")
             .set_face_color("blue")
             .set_line_width(2.5)
             .set_stop_clip(true);
-        let opt = shapes.options_shared();
+        let opt = canvas.options_shared();
         assert_eq!(
             opt,
             ",edgecolor='red'\
@@ -847,9 +847,9 @@ mod tests {
 
     #[test]
     fn options_arrow_works() {
-        let mut shapes = Shapes::new();
-        shapes.set_arrow_scale(25.0).set_arrow_style("fancy");
-        let opt = shapes.options_arrow();
+        let mut canvas = Canvas::new();
+        canvas.set_arrow_scale(25.0).set_arrow_style("fancy");
+        let opt = canvas.options_arrow();
         assert_eq!(
             opt,
             ",mutation_scale=25\
@@ -859,14 +859,14 @@ mod tests {
 
     #[test]
     fn options_text_works() {
-        let mut shapes = Shapes::new();
-        shapes
+        let mut canvas = Canvas::new();
+        canvas
             .set_text_color("red")
             .set_text_align_horizontal("center")
             .set_text_align_vertical("center")
             .set_text_fontsize(8.0)
             .set_text_rotation(45.0);
-        let opt = shapes.options_text();
+        let opt = canvas.options_text();
         assert_eq!(
             opt,
             ",color='red'\
@@ -879,14 +879,14 @@ mod tests {
 
     #[test]
     fn options_alt_text_works() {
-        let mut shapes = Shapes::new();
-        shapes
+        let mut canvas = Canvas::new();
+        canvas
             .set_alt_text_color("blue")
             .set_alt_text_align_horizontal("right")
             .set_alt_text_align_vertical("bottom")
             .set_alt_text_fontsize(10.0)
             .set_alt_text_rotation(30.0);
-        let opt = shapes.options_alt_text();
+        let opt = canvas.options_alt_text();
         assert_eq!(
             opt,
             ",color='blue'\
@@ -899,21 +899,21 @@ mod tests {
 
     #[test]
     fn options_line_3d_works() {
-        let mut shapes = Shapes::new();
-        shapes.set_edge_color("red");
-        let opt = shapes.options_line_3d();
+        let mut canvas = Canvas::new();
+        canvas.set_edge_color("red");
+        let opt = canvas.options_line_3d();
         assert_eq!(opt, ",color='red'");
     }
 
     #[test]
     fn line_works() {
-        let mut shapes = Shapes::new();
+        let mut canvas = Canvas::new();
         let a = [0.0; 3];
         let b = [0.0; 3];
-        shapes.line(2, &a, &b);
-        shapes.line(3, &a, &b);
+        canvas.line(2, &a, &b);
+        canvas.line(3, &a, &b);
         assert_eq!(
-            shapes.buffer,
+            canvas.buffer,
             "\x20\x20\x20\x20[pth.Path.MOVETO,(0,0)],[pth.Path.LINETO,(0,0)],\n\
              AX3D.plot([0,0],[0,0],[0,0],color='#427ce5')\n"
         );
@@ -921,12 +921,12 @@ mod tests {
 
     #[test]
     fn text_works() {
-        let mut shapes = Shapes::new();
+        let mut canvas = Canvas::new();
         let a = [0.0; 3];
-        shapes.text(2, &a, "hello", false);
-        shapes.text(3, &a, "hello", true);
+        canvas.text(2, &a, "hello", false);
+        canvas.text(3, &a, "hello", true);
         assert_eq!(
-            shapes.buffer,
+            canvas.buffer,
             "plt.text(0,0,'hello',color='#a81414',fontsize=8,rotation=45)\n\
              AX3D.text(0,0,0,'hello',color='#343434',ha='center',va='center',fontsize=10)\n"
         );
@@ -934,13 +934,13 @@ mod tests {
 
     #[test]
     fn limits_works() {
-        let mut shapes = Shapes::new();
+        let mut canvas = Canvas::new();
         let xmin = [0.0; 3];
         let xmax = [0.0; 3];
-        shapes.limits(2, &xmin, &xmax);
-        shapes.limits(3, &xmin, &xmax);
+        canvas.limits(2, &xmin, &xmax);
+        canvas.limits(3, &xmin, &xmax);
         assert_eq!(
-            shapes.buffer,
+            canvas.buffer,
             "plt.axis([0,0,0,0])\n\
             AX3D.set_xlim3d(0,0)\n\
             AX3D.set_ylim3d(0,0)\n\
@@ -950,36 +950,36 @@ mod tests {
 
     #[test]
     fn arc_works() {
-        let mut shapes = Shapes::new();
-        shapes.draw_arc(0.0, 0.0, 1.0, 30.0, 60.0);
+        let mut canvas = Canvas::new();
+        canvas.draw_arc(0.0, 0.0, 1.0, 30.0, 60.0);
         let b: &str = "p=pat.Arc((0,0),2*1,2*1,theta1=30,theta2=60,angle=0,edgecolor='#427ce5')\n\
                        plt.gca().add_patch(p)\n";
-        assert_eq!(shapes.buffer, b);
+        assert_eq!(canvas.buffer, b);
     }
 
     #[test]
     fn arrow_woks() {
-        let mut shapes = Shapes::new();
-        shapes.draw_arrow(0.0, 0.0, 1.0, 1.0);
+        let mut canvas = Canvas::new();
+        canvas.draw_arrow(0.0, 0.0, 1.0, 1.0);
         let b: &str =
             "p=pat.FancyArrowPatch((0,0),(1,1),shrinkA=0,shrinkB=0,path_effects=[pff.Stroke(joinstyle='miter')],edgecolor='#427ce5')\n\
              plt.gca().add_patch(p)\n";
-        assert_eq!(shapes.buffer, b);
+        assert_eq!(canvas.buffer, b);
     }
 
     #[test]
     fn circle_works() {
-        let mut shapes = Shapes::new();
-        shapes.draw_circle(0.0, 0.0, 1.0);
+        let mut canvas = Canvas::new();
+        canvas.draw_circle(0.0, 0.0, 1.0);
         let b: &str = "p=pat.Circle((0,0),1,edgecolor='#427ce5')\n\
                        plt.gca().add_patch(p)\n";
-        assert_eq!(shapes.buffer, b);
+        assert_eq!(canvas.buffer, b);
     }
 
     #[test]
     fn polycurve_methods_work() {
         // note the following sequence of codes won't work in Matplotlib because Curve3 and Curve4 are wrong
-        let mut canvas = Shapes::new();
+        let mut canvas = Canvas::new();
         canvas.polycurve_begin();
         assert_eq!(canvas.buffer, "dat=[");
         canvas.polycurve_add(0, 0, PolyCode::MoveTo);
@@ -1009,7 +1009,7 @@ mod tests {
 
     #[test]
     fn polycurve_capture_errors() {
-        let mut canvas = Shapes::new();
+        let mut canvas = Canvas::new();
         assert_eq!(
             canvas.draw_polycurve(&[[0, 0]], &[PolyCode::MoveTo], true).err(),
             Some("npoint must be ≥ 3")
@@ -1034,7 +1034,7 @@ mod tests {
 
     #[test]
     fn polycurve_works() -> Result<(), StrError> {
-        let mut canvas = Shapes::new();
+        let mut canvas = Canvas::new();
         let points = &[[0, 0], [1, 0], [1, 1]];
         let codes = &[PolyCode::MoveTo, PolyCode::Curve3, PolyCode::Curve3];
         canvas.draw_polycurve(points, codes, true)?;
@@ -1049,20 +1049,20 @@ mod tests {
 
     #[test]
     fn polyline_works_2d() {
-        let mut shapes = Shapes::new();
+        let mut canvas = Canvas::new();
         let points = &[[1.0, 1.0], [2.0, 1.0], [1.5, 1.866]];
-        shapes.draw_polyline(points, true);
+        canvas.draw_polyline(points, true);
         let b: &str = "dat=[[pth.Path.MOVETO,(1,1)],[pth.Path.LINETO,(2,1)],[pth.Path.LINETO,(1.5,1.866)],[pth.Path.CLOSEPOLY,(None,None)]]\n\
                        cmd,pts=zip(*dat)\n\
                        h=pth.Path(pts,cmd)\n\
                        p=pat.PathPatch(h,edgecolor='#427ce5')\n\
                        plt.gca().add_patch(p)\n";
-        assert_eq!(shapes.buffer, b);
+        assert_eq!(canvas.buffer, b);
     }
 
     #[test]
     fn polyline_works_3d() {
-        let mut nothing = Shapes::new();
+        let mut nothing = Canvas::new();
         nothing.draw_polyline(&[[0.0, 0.0]], true);
         assert_eq!(nothing.buffer, "");
 
@@ -1074,7 +1074,7 @@ mod tests {
             [2.0, 1.0, 3.0],
         ];
 
-        let mut open = Shapes::new();
+        let mut open = Canvas::new();
         open.draw_polyline(points, false);
         let b: &str = "maybeCreateAX3D()\n\
             xx=[2,0,0,2]\n\
@@ -1083,7 +1083,7 @@ mod tests {
             AX3D.plot(xx,yy,zz,color='#427ce5')\n";
         assert_eq!(open.buffer, b);
 
-        let mut closed = Shapes::new();
+        let mut closed = Canvas::new();
         closed.draw_polyline(points, true);
         let b: &str = "maybeCreateAX3D()\n\
             xx=[2,0,0,2,2]\n\
@@ -1098,7 +1098,7 @@ mod tests {
             [0.0, 1.0, 0.0],
         ];
 
-        let mut closed_few_points = Shapes::new();
+        let mut closed_few_points = Canvas::new();
         closed_few_points.draw_polyline(points, true);
         let b: &str = "maybeCreateAX3D()\n\
             xx=[2,0]\n\
@@ -1110,21 +1110,21 @@ mod tests {
 
     #[test]
     fn grid_fails_on_wrong_input() {
-        let mut shapes = Shapes::new();
-        let res = shapes.draw_grid(&[0.0, 0.0], &[1.0, 1.0], &[1], true, false);
+        let mut canvas = Canvas::new();
+        let res = canvas.draw_grid(&[0.0, 0.0], &[1.0, 1.0], &[1], true, false);
         assert_eq!(res, Err("len(ndiv) == ndim must be 2 or 3"));
-        let res = shapes.draw_grid(&[0.0], &[1.0, 1.0], &[1, 1], true, false);
+        let res = canvas.draw_grid(&[0.0], &[1.0, 1.0], &[1, 1], true, false);
         assert_eq!(res, Err("size of xmin must equal ndim == len(ndiv)"));
-        let res = shapes.draw_grid(&[0.0, 0.0], &[1.0], &[1, 1], true, false);
+        let res = canvas.draw_grid(&[0.0, 0.0], &[1.0], &[1, 1], true, false);
         assert_eq!(res, Err("size of xmax must equal ndim == len(ndiv)"));
-        let res = shapes.draw_grid(&[0.0, 0.0], &[0.0, 1.0], &[1, 1], true, false);
+        let res = canvas.draw_grid(&[0.0, 0.0], &[0.0, 1.0], &[1, 1], true, false);
         assert_eq!(res, Err("xmax must be greater than xmin"));
     }
 
     #[test]
     fn grid_no_ids_works() -> Result<(), StrError> {
-        let mut shapes = Shapes::new();
-        shapes.draw_grid(&[0.0, 0.0], &[1.0, 1.0], &[1, 1], false, false)?;
+        let mut canvas = Canvas::new();
+        canvas.draw_grid(&[0.0, 0.0], &[1.0, 1.0], &[1, 1], false, false)?;
         let b: &str = "dat=[\n\
                       \x20\x20\x20\x20[pth.Path.MOVETO,(0,0)],[pth.Path.LINETO,(0,1)],\n\
                       \x20\x20\x20\x20[pth.Path.MOVETO,(1,0)],[pth.Path.LINETO,(1,1)],\n\
@@ -1136,14 +1136,14 @@ mod tests {
                       p=pat.PathPatch(h,edgecolor='#427ce5')\n\
                       plt.gca().add_patch(p)\n\
                       plt.axis([-0.1,1.1,-0.1,1.1])\n";
-        assert_eq!(shapes.buffer, b);
+        assert_eq!(canvas.buffer, b);
         Ok(())
     }
 
     #[test]
     fn grid_2d_works() -> Result<(), StrError> {
-        let mut shapes = Shapes::new();
-        shapes.draw_grid(&[0.0, 0.0], &[1.0, 1.0], &[1, 1], true, true)?;
+        let mut canvas = Canvas::new();
+        canvas.draw_grid(&[0.0, 0.0], &[1.0, 1.0], &[1, 1], true, true)?;
         let b: &str = "dat=[\n\
                       \x20\x20\x20\x20[pth.Path.MOVETO,(0,0)],[pth.Path.LINETO,(0,1)],\n\
                       \x20\x20\x20\x20[pth.Path.MOVETO,(1,0)],[pth.Path.LINETO,(1,1)],\n\
@@ -1160,14 +1160,14 @@ mod tests {
                       plt.text(1,1,'3',color='#a81414',fontsize=8,rotation=45)\n\
                       plt.text(0.5,0.5,'0',color='#343434',ha='center',va='center',fontsize=10)\n\
                       plt.axis([-0.1,1.1,-0.1,1.1])\n";
-        assert_eq!(shapes.buffer, b);
+        assert_eq!(canvas.buffer, b);
         Ok(())
     }
 
     #[test]
     fn grid_3d_works() -> Result<(), StrError> {
-        let mut shapes = Shapes::new();
-        shapes.draw_grid(&[0.0, 0.0, 0.0], &[1.0, 1.0, 1.0], &[1, 1, 1], true, true)?;
+        let mut canvas = Canvas::new();
+        canvas.draw_grid(&[0.0, 0.0, 0.0], &[1.0, 1.0, 1.0], &[1, 1, 1], true, true)?;
         let b: &str = "maybeCreateAX3D()\n\
                        AX3D.plot([0,0],[0,1],[0,0],color='#427ce5')\n\
                        AX3D.plot([1,1],[0,1],[0,0],color='#427ce5')\n\
@@ -1193,7 +1193,7 @@ mod tests {
                        AX3D.set_xlim3d(-0.1,1.1)\n\
                        AX3D.set_ylim3d(-0.1,1.1)\n\
                        AX3D.set_zlim3d(-0.1,1.1)\n";
-        assert_eq!(shapes.buffer, b);
+        assert_eq!(canvas.buffer, b);
         Ok(())
     }
 }

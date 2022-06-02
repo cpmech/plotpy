@@ -199,7 +199,7 @@ fn test_plot_multiple_of_pi() -> Result<(), StrError> {
 
     // save figure
     let path = Path::new(OUT_DIR).join("integ_plot_multiple_of_pi.svg");
-    plot.save(&path)?;
+    plot.set_show_errors(true).save(&path)?;
 
     // check number of lines
     let file = File::open(path).map_err(|_| "cannot open file")?;

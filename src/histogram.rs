@@ -6,51 +6,46 @@ use std::fmt::Write;
 /// # Example
 ///
 /// ```
-/// # fn main() -> Result<(), &'static str> {
-/// // import
-/// use plotpy::{Histogram, Plot};
-/// use std::path::Path;
+/// use plotpy::{Histogram, Plot, StrError};
 ///
-/// // directory to save figures
-/// const OUT_DIR: &str = "/tmp/plotpy/doc_tests";
+/// fn main() -> Result<(), StrError> {
+///     // set values
+///     let values = vec![
+///         vec![1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 4, 5, 6], // first series
+///         vec![-1, -1, 0, 1, 2, 3],                    // second series
+///         vec![5, 6, 7, 8],                            // third series
+///     ];
 ///
-/// // set values
-/// let values = vec![
-///     vec![1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 4, 5, 6], // first series
-///     vec![-1, -1, 0, 1, 2, 3],                    // second series
-///     vec![5, 6, 7, 8],                            // third series
-/// ];
+///     // set labels
+///     let labels = ["first", "second", "third"];
 ///
-/// // set labels
-/// let labels = ["first", "second", "third"];
+///     // configure and draw histogram
+///     let mut histogram = Histogram::new();
+///     histogram.set_colors(&["#9de19a", "#e7eca3", "#98a7f2"])
+///         .set_line_width(10.0)
+///         .set_stacked(true)
+///         .set_style("step");
+///     histogram.draw(&values, &labels);
 ///
-/// // configure and draw histogram
-/// let mut histogram = Histogram::new();
-/// histogram.set_colors(&["#9de19a", "#e7eca3", "#98a7f2"])
-///     .set_line_width(10.0)
-///     .set_stacked(true)
-///     .set_style("step");
-/// histogram.draw(&values, &labels);
+///     // add histogram to plot
+///     let mut plot = Plot::new();
+///     plot.add(&histogram)
+///         .set_frame_border(true, false, true, false)
+///         .grid_labels_legend("values", "count");
 ///
-/// // add histogram to plot
-/// let mut plot = Plot::new();
-/// plot.add(&histogram)
-///     .set_frame_border(true, false, true, false)
-///     .grid_labels_legend("values", "count");
-///
-/// // save figure
-/// let path = Path::new(OUT_DIR).join("doc_histogram.svg");
-/// plot.save(&path)?;
-/// # Ok(())
-/// # }
+///     // save figure
+///     plot.save("/tmp/plotpy/doc_tests/doc_histogram.svg")?;
+///     Ok(())
+/// }
 /// ```
 ///
 /// ![doc_histogram.svg](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/doc_histogram.svg)
 ///
 /// See also integration test in the **tests** directory.
 ///
-/// ![integ_histogram_1.svg](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_histogram_1.svg)
+/// Output from some integration tests:
 ///
+/// ![integ_histogram_1.svg](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_histogram_1.svg)
 pub struct Histogram {
     colors: Vec<String>, // Colors for each bar
     line_width: f64,     // Line width

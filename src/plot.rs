@@ -15,76 +15,71 @@ pub trait GraphMaker {
 /// # Example
 ///
 /// ```
-/// # fn main() -> Result<(), &'static str> {
-/// // import
-/// use plotpy::{Curve, Plot};
+/// use plotpy::{Curve, Plot, StrError};
 /// use russell_lab::Vector;
-/// use std::path::Path;
 ///
-/// // directory to save figures
-/// const OUT_DIR: &str = "/tmp/plotpy/doc_tests";
+/// fn main() -> Result<(), StrError> {
+///     // generate (x,y) points
+///     let n = 11;
+///     let x = Vector::linspace(-1.0, 1.0, n)?;
+///     let y1 = x.clone();
+///     let y2 = x.get_mapped(|v| f64::abs(v));
+///     let y3 = x.get_mapped(|v| f64::exp(1.0 + v) - 1.0);
+///     let y4 = x.get_mapped(|v| f64::sqrt(1.0 + v));
 ///
-/// // generate (x,y) points
-/// let n = 11;
-/// let x = Vector::linspace(-1.0, 1.0, n)?;
-/// let y1 = x.clone();
-/// let y2 = x.get_mapped(|v| f64::abs(v));
-/// let y3 = x.get_mapped(|v| f64::exp(1.0 + v) - 1.0);
-/// let y4 = x.get_mapped(|v| f64::sqrt(1.0 + v));
+///     // configure and draw curves
+///     let mut curve1 = Curve::new();
+///     let mut curve2 = Curve::new();
+///     let mut curve3 = Curve::new();
+///     let mut curve4 = Curve::new();
+///     curve1.set_label("y = x");
+///     curve2.set_label("y = |x|").set_line_color("#cd0000");
+///     curve3.set_label("y = exp(1+x)-1").set_line_color("#e79955");
+///     curve4.set_label("y = sqrt(1+x)").set_line_color("#b566ab");
+///     curve1.draw(&x, &y1);
+///     curve2.draw(&x, &y2);
+///     curve3.draw(&x, &y3);
+///     curve4.draw(&x, &y4);
 ///
-/// // configure and draw curves
-/// let mut curve1 = Curve::new();
-/// let mut curve2 = Curve::new();
-/// let mut curve3 = Curve::new();
-/// let mut curve4 = Curve::new();
-/// curve1.set_label("y = x");
-/// curve2.set_label("y = |x|").set_line_color("#cd0000");
-/// curve3.set_label("y = exp(1+x)-1").set_line_color("#e79955");
-/// curve4.set_label("y = sqrt(1+x)").set_line_color("#b566ab");
-/// curve1.draw(&x, &y1);
-/// curve2.draw(&x, &y2);
-/// curve3.draw(&x, &y3);
-/// curve4.draw(&x, &y4);
+///     // configure plot
+///     let mut plot = Plot::new();
+///     plot.set_super_title("FOUR CURVES").set_gaps(0.35, 0.5);
 ///
-/// // configure plot
-/// let mut plot = Plot::new();
-/// plot.set_super_title("FOUR CURVES").set_gaps(0.35, 0.5);
+///     // add curve to subplot
+///     plot.set_subplot(2, 2, 1)
+///         .set_title("first")
+///         .add(&curve1)
+///         .grid_labels_legend("x", "y")
+///         .set_equal_axes(true);
 ///
-/// // add curve to subplot
-/// plot.set_subplot(2, 2, 1)
-///     .set_title("first")
-///     .add(&curve1)
-///     .grid_labels_legend("x", "y")
-///     .set_equal_axes(true);
+///     // add curve to subplot
+///     plot.set_subplot(2, 2, 2)
+///         .set_title("second")
+///         .add(&curve2)
+///         .grid_labels_legend("x", "y");
 ///
-/// // add curve to subplot
-/// plot.set_subplot(2, 2, 2)
-///     .set_title("second")
-///     .add(&curve2)
-///     .grid_labels_legend("x", "y");
+///     // add curve to subplot
+///     plot.set_subplot(2, 2, 3)
+///         .set_title("third")
+///         .add(&curve3)
+///         .set_range(-1.0, 1.0, 0.0, 6.0)
+///         .grid_labels_legend("x", "y");
 ///
-/// // add curve to subplot
-/// plot.set_subplot(2, 2, 3)
-///     .set_title("third")
-///     .add(&curve3)
-///     .set_range(-1.0, 1.0, 0.0, 6.0)
-///     .grid_labels_legend("x", "y");
+///     // add curve to subplot
+///     plot.set_subplot(2, 2, 4)
+///         .set_title("fourth")
+///         .add(&curve4)
+///         .grid_labels_legend("x", "y");
 ///
-/// // add curve to subplot
-/// plot.set_subplot(2, 2, 4)
-///     .set_title("fourth")
-///     .add(&curve4)
-///     .grid_labels_legend("x", "y");
-///
-/// // save figure
-/// let path = Path::new(OUT_DIR).join("doc_plot.svg");
-/// plot.save(&path)?;
-/// # Ok(())
-/// # }
+///     // save figure
+///     plot.save("/tmp/plotpy/doc_tests/doc_plot.svg")?;
+///     Ok(())
+/// }
 /// ```
 ///
 /// ![doc_plot.svg](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/doc_plot.svg)
 ///
+/// See also integration tests in the [tests directory](https://github.com/cpmech/plotpy/tree/main/tests)
 pub struct Plot {
     show_errors: bool, // show python errors, if any
     buffer: String,    // buffer

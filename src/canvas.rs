@@ -36,7 +36,6 @@ pub enum PolyCode {
 ///
 /// ```
 /// use plotpy::{Canvas, Plot};
-/// use std::path::Path;
 ///
 /// fn main() -> Result<(), &'static str> {
 ///     // canvas object and common options
@@ -124,18 +123,6 @@ pub enum PolyCode {
 /// ![doc_canvas_polycurve.svg](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/doc_canvas_polycurve.svg)
 ///
 /// See also integration tests in the [tests directory](https://github.com/cpmech/plotpy/tree/main/tests)
-///
-/// For example (output of some integration tests):
-///
-/// figures/integ_canvas_grid_2d.svg
-/// figures/integ_canvas_grid_3d.svg
-/// figures/integ_canvas_polycurve_cubic.svg
-/// figures/integ_canvas_polycurve_methods.svg
-/// figures/integ_canvas_polycurve_quadratic.svg
-/// figures/integ_canvas_polyline_3d_methods.svg
-/// figures/integ_canvas_polyline_3d.svg
-/// figures/integ_canvas.svg
-///
 pub struct Canvas {
     // features
     edge_color: String,  // Edge color (shared)

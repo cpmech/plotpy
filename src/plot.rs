@@ -450,7 +450,7 @@ impl Plot {
             &mut self.buffer,
             "def multiple_of_pi_formatter(x, pos):\n\
              \x20\x20\x20\x20den = 2\n\
-             \x20\x20\x20\x20num = np.int(np.rint(den*x/np.pi))\n\
+             \x20\x20\x20\x20num = int(np.rint(den*x/np.pi))\n\
              \x20\x20\x20\x20com = np.gcd(num,den)\n\
              \x20\x20\x20\x20(num,den) = (int(num/com),int(den/com))\n\
              \x20\x20\x20\x20if den==1:\n\
@@ -843,7 +843,7 @@ mod tests {
                        \x20\x20\x20\x20plt.gca().xaxis.set_major_locator(major_locator)\n\
                        def multiple_of_pi_formatter(x, pos):\n\
                        \x20\x20\x20\x20den = 2\n\
-                       \x20\x20\x20\x20num = np.int(np.rint(den*x/np.pi))\n\
+                       \x20\x20\x20\x20num = int(np.rint(den*x/np.pi))\n\
                        \x20\x20\x20\x20com = np.gcd(num,den)\n\
                        \x20\x20\x20\x20(num,den) = (int(num/com),int(den/com))\n\
                        \x20\x20\x20\x20if den==1:\n\
@@ -867,7 +867,7 @@ mod tests {
                        \x20\x20\x20\x20plt.gca().yaxis.set_major_locator(major_locator)\n\
                        def multiple_of_pi_formatter(x, pos):\n\
                        \x20\x20\x20\x20den = 2\n\
-                       \x20\x20\x20\x20num = np.int(np.rint(den*x/np.pi))\n\
+                       \x20\x20\x20\x20num = int(np.rint(den*x/np.pi))\n\
                        \x20\x20\x20\x20com = np.gcd(num,den)\n\
                        \x20\x20\x20\x20(num,den) = (int(num/com),int(den/com))\n\
                        \x20\x20\x20\x20if den==1:\n\
@@ -895,7 +895,7 @@ mod tests {
                        \x20\x20\x20\x20plt.gca().xaxis.set_minor_locator(minor_locator)\n\
                        def multiple_of_pi_formatter(x, pos):\n\
                        \x20\x20\x20\x20den = 2\n\
-                       \x20\x20\x20\x20num = np.int(np.rint(den*x/np.pi))\n\
+                       \x20\x20\x20\x20num = int(np.rint(den*x/np.pi))\n\
                        \x20\x20\x20\x20com = np.gcd(num,den)\n\
                        \x20\x20\x20\x20(num,den) = (int(num/com),int(den/com))\n\
                        \x20\x20\x20\x20if den==1:\n\
@@ -923,7 +923,7 @@ mod tests {
                        \x20\x20\x20\x20plt.gca().yaxis.set_minor_locator(minor_locator)\n\
                        def multiple_of_pi_formatter(x, pos):\n\
                        \x20\x20\x20\x20den = 2\n\
-                       \x20\x20\x20\x20num = np.int(np.rint(den*x/np.pi))\n\
+                       \x20\x20\x20\x20num = int(np.rint(den*x/np.pi))\n\
                        \x20\x20\x20\x20com = np.gcd(num,den)\n\
                        \x20\x20\x20\x20(num,den) = (int(num/com),int(den/com))\n\
                        \x20\x20\x20\x20if den==1:\n\

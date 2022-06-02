@@ -394,10 +394,10 @@ impl Plot {
     ///
     /// # Input
     ///
-    /// * `major_every` -- step for major ticks
-    /// * `minor_every` -- step for major ticks
-    /// * `major_number_format` -- C-style number format for major ticks; e.g. "%.2f"
-    ///                            **Optional:** just pass and empty string ""
+    /// * `major_every` -- step for major ticks. Optional: use 0.0
+    /// * `minor_every` -- step for major ticks. Optional: use 0.0
+    /// * `major_number_format` -- C-style number format for major ticks; e.g. "%.2f".
+    ///                            Optional: just pass and empty string ""
     #[rustfmt::skip]
     pub fn set_ticks_x(&mut self, major_every: f64, minor_every: f64, major_number_format: &str) -> &mut Self {
         if major_every > 0.0 {
@@ -423,10 +423,10 @@ impl Plot {
     ///
     /// # Input
     ///
-    /// * `major_every` -- step for major ticks
-    /// * `minor_every` -- step for major ticks
-    /// * `major_number_format` -- C-style number format for major ticks; e.g. "%.2f"
-    ///                            **Optional:** just pass and empty string ""
+    /// * `major_every` -- step for major ticks. Optional: use 0.0
+    /// * `minor_every` -- step for major ticks. Optional: use 0.0
+    /// * `major_number_format` -- C-style number format for major ticks; e.g. "%.2f".
+    ///                            Optional: just pass and empty string ""
     #[rustfmt::skip]
     pub fn set_ticks_y(&mut self, major_every: f64, minor_every: f64, major_number_format: &str) -> &mut Self {
         if major_every > 0.0 {

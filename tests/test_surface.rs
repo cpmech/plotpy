@@ -43,7 +43,7 @@ fn test_surface() -> Result<(), StrError> {
 }
 
 #[test]
-fn test_wireframe() -> Result<(), StrError> {
+fn test_surface_wireframe() -> Result<(), StrError> {
     let mut surface = Surface::new();
     surface.set_with_surface(false).set_with_wireframe(true);
 
@@ -57,7 +57,7 @@ fn test_wireframe() -> Result<(), StrError> {
     plot.add(&surface);
 
     // save figure
-    let path = Path::new(OUT_DIR).join("integ_wireframe.svg");
+    let path = Path::new(OUT_DIR).join("integ_surface_wireframe.svg");
     plot.save(&path)?;
 
     // check number of lines

@@ -30,56 +30,111 @@ pub enum PolyCode {
 
 /// Implements functions to draw 2D and 3D features, including poly-lines and Bezier curves
 ///
-/// # Example
+/// # Examples
+///
+/// ## Drawing functions with polyline set by an array
 ///
 /// ```
-/// # fn main() -> Result<(), &'static str> {
-/// // import
 /// use plotpy::{Canvas, Plot};
 /// use std::path::Path;
 ///
-/// // directory to save figures
-/// const OUT_DIR: &str = "/tmp/plotpy/doc_tests";
+/// fn main() -> Result<(), &'static str> {
+///     // canvas object and common options
+///     let mut canvas = Canvas::new();
+///     canvas.set_line_width(3.0).set_edge_color("#cd0000").set_face_color("#eeea83");
 ///
-/// // canvas object and common options
-/// let mut canvas = Canvas::new();
-/// canvas.set_line_width(3.0).set_edge_color("#cd0000").set_face_color("#eeea83");
+///     // draw arc
+///     canvas.draw_arc(0.5, 0.5, 0.4, 195.0, -15.0);
 ///
-/// // draw arc
-/// canvas.draw_arc(0.5, 0.5, 0.4, 195.0, -15.0);
+///     // draw arrow
+///     canvas.set_arrow_scale(50.0).set_arrow_style("fancy");
+///     canvas.draw_arrow(0.4, 0.3, 0.6, 0.5);
 ///
-/// // draw arrow
-/// canvas.set_arrow_scale(50.0).set_arrow_style("fancy");
-/// canvas.draw_arrow(0.4, 0.3, 0.6, 0.5);
+///     // draw circle
+///     canvas.set_face_color("None").set_edge_color("#1f9c25").set_line_width(6.0);
+///     canvas.draw_circle(0.5, 0.5, 0.5);
 ///
-/// // draw circle
-/// canvas.set_face_color("None").set_edge_color("#1f9c25").set_line_width(6.0);
-/// canvas.draw_circle(0.5, 0.5, 0.5);
+///     // draw polyline
+///     canvas.set_line_width(3.0).set_edge_color("blue");
+///     let a = 0.2;
+///     let c = f64::sqrt(3.0) / 2.0;
+///     let p = &[[0.1, 0.5], [0.1 + a, 0.5], [0.1 + a / 2.0, 0.5 + a * c]];
+///     let q = &[[0.9, 0.5], [0.9 - a, 0.5], [0.9 - a / 2.0, 0.5 + a * c]];
+///     canvas.draw_polyline(p, true);
+///     canvas.draw_polyline(q, false);
 ///
-/// // draw polyline
-/// canvas.set_line_width(3.0).set_edge_color("blue");
-/// let a = 0.2;
-/// let c = f64::sqrt(3.0) / 2.0;
-/// let p = &[[0.1, 0.5], [0.1 + a, 0.5], [0.1 + a / 2.0, 0.5 + a * c]];
-/// let q = &[[0.9, 0.5], [0.9 - a, 0.5], [0.9 - a / 2.0, 0.5 + a * c]];
-/// canvas.draw_polyline(p, true);
-/// canvas.draw_polyline(q, false);
+///     // add canvas to plot
+///     let mut plot = Plot::new();
+///     plot.set_hide_axes(true)
+///         .set_equal_axes(true)
+///         .set_range(-0.05, 1.05, -0.05, 1.05)
+///         .add(&canvas);
 ///
-/// // add canvas to plot
-/// let mut plot = Plot::new();
-/// plot.set_hide_axes(true)
-///     .set_equal_axes(true)
-///     .set_range(-0.05, 1.05, -0.05, 1.05)
-///     .add(&canvas);
-///
-/// // save figure
-/// let path = Path::new(OUT_DIR).join("doc_canvas.svg");
-/// plot.save(&path)?;
-/// # Ok(())
-/// # }
+///     // save figure
+///     plot.save("/tmp/plotpy/doc_tests/doc_canvas.svg")?;
+///     Ok(())
+/// }
 /// ```
 ///
 /// ![doc_canvas.svg](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/doc_canvas.svg)
+///
+/// ## Cubic Bezier and use of begin/end functions
+///
+/// ```
+/// use plotpy::{Canvas, Plot, PolyCode, StrError};
+///
+/// fn main() -> Result<(), StrError> {
+///     // codes
+///     let data = [
+///         (3.0, 0.0, PolyCode::MoveTo),
+///         (1.0, 1.5, PolyCode::Curve4),
+///         (0.0, 4.0, PolyCode::Curve4),
+///         (2.5, 3.9, PolyCode::Curve4),
+///         (3.0, 3.8, PolyCode::LineTo),
+///         (3.5, 3.9, PolyCode::LineTo),
+///         (6.0, 4.0, PolyCode::Curve4),
+///         (5.0, 1.5, PolyCode::Curve4),
+///         (3.0, 0.0, PolyCode::Curve4),
+///     ];
+///
+///     // polycurve
+///     let mut canvas = Canvas::new();
+///     canvas.set_face_color("#f88989").set_edge_color("red");
+///     canvas.polycurve_begin();
+///     for (x, y, code) in data {
+///         canvas.polycurve_add(x, y, code);
+///     }
+///     canvas.polycurve_end(true);
+///
+///     // add canvas to plot
+///     let mut plot = Plot::new();
+///     plot.add(&canvas);
+///
+///     // save figure
+///     plot.set_range(1.0, 5.0, 0.0, 4.0)
+///         .set_frame_borders(false)
+///         .set_hide_axes(true)
+///         .set_equal_axes(true)
+///         .set_show_errors(true);
+///     plot.save("/tmp/plotpy/doc_tests/doc_canvas_polycurve.svg")?;
+///     Ok(())
+/// }
+/// ```
+///
+/// ![doc_canvas_polycurve.svg](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/doc_canvas_polycurve.svg)
+///
+/// See also integration tests in the [tests directory](https://github.com/cpmech/plotpy/tree/main/tests)
+///
+/// For example (output of some integration tests):
+///
+/// figures/integ_canvas_grid_2d.svg
+/// figures/integ_canvas_grid_3d.svg
+/// figures/integ_canvas_polycurve_cubic.svg
+/// figures/integ_canvas_polycurve_methods.svg
+/// figures/integ_canvas_polycurve_quadratic.svg
+/// figures/integ_canvas_polyline_3d_methods.svg
+/// figures/integ_canvas_polyline_3d.svg
+/// figures/integ_canvas.svg
 ///
 pub struct Canvas {
     // features

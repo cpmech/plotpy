@@ -163,7 +163,7 @@ fn test_plot_log() -> Result<(), StrError> {
 }
 
 #[test]
-fn test_multiple_of_pi() -> Result<(), StrError> {
+fn test_plot_multiple_of_pi() -> Result<(), StrError> {
     // TODO
     Ok(())
 }

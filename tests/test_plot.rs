@@ -44,8 +44,8 @@ fn test_plot() -> Result<(), StrError> {
         .set_frame_borders(false)
         .set_frame_borders(true)
         .set_frame_borders(false)
-        .set_ticks_x(1.5, 0.5, "%.2f")
-        .set_ticks_y(0.5, 0.1, "%g");
+        .set_ticks_x(1.5, 0.5, "%.2f", false)
+        .set_ticks_y(0.5, 0.1, "%g", false);
     plot.grid_and_labels("x", "y");
 
     // add curve to plot
@@ -159,5 +159,11 @@ fn test_plot_log() -> Result<(), StrError> {
     let buffered = BufReader::new(file);
     let lines_iter = buffered.lines();
     assert!(lines_iter.count() > 980);
+    Ok(())
+}
+
+#[test]
+fn test_multiple_of_pi() -> Result<(), StrError> {
+    // TODO
     Ok(())
 }

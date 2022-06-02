@@ -390,16 +390,40 @@ impl Plot {
         self
     }
 
+    /// Writes function multiple_of_pi_formatter to buffer
+    #[inline]
+    fn write_multiple_of_pi_formatter(&mut self) {
+        write!(
+            &mut self.buffer,
+            "def multiple_of_pi_formatter(x, pos):\n\
+             \x20\x20\x20\x20den = 2\n\
+             \x20\x20\x20\x20num = np.int(np.rint(den*x/np.pi))\n\
+             \x20\x20\x20\x20com = np.gcd(num,den)\n\
+             \x20\x20\x20\x20(num,den) = (int(num/com),int(den/com))\n\
+             \x20\x20\x20\x20if den==1:\n\
+             \x20\x20\x20\x20\x20\x20\x20\x20if num==0: return r'$0$'\n\
+             \x20\x20\x20\x20\x20\x20\x20\x20if num==1: return r'$\\pi$'\n\
+             \x20\x20\x20\x20\x20\x20\x20\x20elif num==-1: return r'$-\\pi$'\n\
+             \x20\x20\x20\x20\x20\x20\x20\x20else: return r'$%s\\pi$'%num\n\
+             \x20\x20\x20\x20else:\n\
+             \x20\x20\x20\x20\x20\x20\x20\x20if num==1: return r'$\\frac{{\\pi}}{{%s}}$'%den\n\
+             \x20\x20\x20\x20\x20\x20\x20\x20elif num==-1: return r'$\\frac{{-\\pi}}{{%s}}$'%den\n\
+             \x20\x20\x20\x20\x20\x20\x20\x20else: return r'$\\frac{{%s\\pi}}{{%s}}$'%(num,den)\n"
+        )
+        .unwrap();
+    }
+
     /// Sets the format of x-ticks
     ///
     /// # Input
     ///
     /// * `major_every` -- step for major ticks. Optional: use 0.0
     /// * `minor_every` -- step for major ticks. Optional: use 0.0
-    /// * `major_number_format` -- C-style number format for major ticks; e.g. "%.2f".
-    ///                            Optional: just pass and empty string ""
+    /// * `major_number_format` -- C-style number format for major ticks; e.g. "%.2f". Optional: just pass and empty string ""
+    ///                            See [matplotlib FormatStrFormatter](https://matplotlib.org/stable/api/ticker_api.html#matplotlib.ticker.FormatStrFormatter)
+    /// * `multiple_of_pi` -- Pretty format multiple of pi. Used only if `major_number_format == ""`
     #[rustfmt::skip]
-    pub fn set_ticks_x(&mut self, major_every: f64, minor_every: f64, major_number_format: &str) -> &mut Self {
+    pub fn set_ticks_x(&mut self, major_every: f64, minor_every: f64, major_number_format: &str, multiple_of_pi: bool) -> &mut Self {
         if major_every > 0.0 {
             write!(&mut self.buffer, "majorLocator = tck.MultipleLocator({})\n", major_every).unwrap();
             write!(&mut self.buffer, "n_ticks = (plt.gca().axis()[1] - plt.gca().axis()[0]) / {}\n", major_every).unwrap();
@@ -415,6 +439,10 @@ impl Plot {
         if major_number_format != "" {
             write!(&mut self.buffer, "majorFormatter = tck.FormatStrFormatter(r'{}')\n", major_number_format).unwrap();
             write!(&mut self.buffer, "plt.gca().xaxis.set_major_formatter(majorFormatter)\n").unwrap();
+        } else if multiple_of_pi {
+            self.write_multiple_of_pi_formatter();
+            write!(&mut self.buffer, "majorFormatter = tck.FuncFormatter(multiple_of_pi_formatter)\n").unwrap();
+            write!(&mut self.buffer, "plt.gca().xaxis.set_major_formatter(majorFormatter)\n").unwrap();
         }
         self
     }
@@ -425,10 +453,11 @@ impl Plot {
     ///
     /// * `major_every` -- step for major ticks. Optional: use 0.0
     /// * `minor_every` -- step for major ticks. Optional: use 0.0
-    /// * `major_number_format` -- C-style number format for major ticks; e.g. "%.2f".
-    ///                            Optional: just pass and empty string ""
+    /// * `major_number_format` -- C-style number format for major ticks; e.g. "%.2f". Optional: just pass and empty string ""
+    ///                            See [matplotlib FormatStrFormatter](https://matplotlib.org/stable/api/ticker_api.html#matplotlib.ticker.FormatStrFormatter)
+    /// * `multiple_of_pi` -- Pretty format multiple of pi. Used only if `major_number_format == ""`
     #[rustfmt::skip]
-    pub fn set_ticks_y(&mut self, major_every: f64, minor_every: f64, major_number_format: &str) -> &mut Self {
+    pub fn set_ticks_y(&mut self, major_every: f64, minor_every: f64, major_number_format: &str, multiple_of_pi: bool) -> &mut Self {
         if major_every > 0.0 {
             write!(&mut self.buffer, "majorLocator = tck.MultipleLocator({})\n", major_every).unwrap();
             write!(&mut self.buffer, "n_ticks = (plt.gca().axis()[3] - plt.gca().axis()[2]) / {}\n", major_every).unwrap();
@@ -443,6 +472,10 @@ impl Plot {
         }
         if major_number_format != "" {
             write!(&mut self.buffer, "majorFormatter = tck.FormatStrFormatter(r'{}')\n", major_number_format).unwrap();
+            write!(&mut self.buffer, "plt.gca().yaxis.set_major_formatter(majorFormatter)\n").unwrap();
+        } else if multiple_of_pi {
+            self.write_multiple_of_pi_formatter();
+            write!(&mut self.buffer, "majorFormatter = tck.FuncFormatter(multiple_of_pi_formatter)\n").unwrap();
             write!(&mut self.buffer, "plt.gca().yaxis.set_major_formatter(majorFormatter)\n").unwrap();
         }
         self
@@ -704,8 +737,8 @@ mod tests {
             .set_label_y("y-label")
             .set_labels("x", "y")
             .set_camera(1.0, 10.0)
-            .set_ticks_x(1.5, 0.5, "%.2f")
-            .set_ticks_y(0.5, 0.1, "%g")
+            .set_ticks_x(1.5, 0.5, "%.2f", false)
+            .set_ticks_y(0.5, 0.1, "%g", false)
             .set_figure_size_inches(2.0, 2.0)
             .set_figure_size_points(7227.0, 7227.0)
             .clear_current_figure();

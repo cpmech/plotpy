@@ -8,58 +8,88 @@ use std::fmt::Write;
 /// * This struct corresponds to the **plot** function of Matplotlib.
 /// * You may plot a Scatter plot by setting line_style = "None"
 ///
-/// # Example
+/// # Examples
+///
+/// ## Using methods to set the points
 ///
 /// ```
-/// # fn main() -> Result<(), &'static str> {
-/// // import
-/// use plotpy::{Curve, Plot};
+/// use plotpy::{Curve, Plot, StrError};
+/// use std::f64::consts::PI;
+///
+/// fn main() -> Result<(), StrError> {
+///     // configure curve
+///     let mut curve = Curve::new();
+///     curve.set_line_width(2.0);
+///
+///     // add points
+///     const N: usize = 30;
+///     curve.points_begin();
+///     for i in 0..N {
+///         let x = (i as f64) * 2.0 * PI / ((N - 1) as f64);
+///         let y = f64::sin(x);
+///         curve.points_add(x, y);
+///     }
+///     curve.points_end();
+///
+///     // add curve to plot
+///     let mut plot = Plot::new();
+///     plot.add(&curve).grid_and_labels("x", "y");
+///
+///     // configure multiple-of-pi formatter
+///     plot.set_ticks_x(PI / 2.0, PI / 12.0, "", true);
+///
+///     // save figure
+///     plot.save("/tmp/plotpy/doc_tests/doc_curve_methods.svg")?;
+///     Ok(())
+/// }
+/// ```
+///
+/// ![doc_curve_methods.svg](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/doc_curve_methods.svg)
+///
+/// ## Using Vector with point data
+///
+/// ```
+/// use plotpy::{Curve, Plot, StrError};
 /// use russell_lab::Vector;
-/// use std::path::Path;
 ///
-/// // directory to save figures
-/// const OUT_DIR: &str = "/tmp/plotpy/doc_tests";
+/// fn main() -> Result<(), StrError> {
+///     // generate (x,y) points
+///     let x = Vector::linspace(-1.0, 1.0, 21)?;
+///     let y = x.get_mapped(|v| 1.0 / (1.0 + f64::exp(-5.0 * v)));
 ///
-/// // generate (x,y) points
-/// let x = Vector::linspace(-1.0, 1.0, 21)?;
-/// let y = x.get_mapped(|v| 1.0 / (1.0 + f64::exp(-5.0 * v)));
+///     // configure curve
+///     let mut curve = Curve::new();
+///     curve
+///         .set_label("logistic function")
+///         .set_line_alpha(0.8)
+///         .set_line_color("#5f9cd8")
+///         .set_line_style("-")
+///         .set_line_width(5.0)
+///         .set_marker_color("#eeea83")
+///         .set_marker_every(5)
+///         .set_marker_line_color("#da98d1")
+///         .set_marker_line_width(2.5)
+///         .set_marker_size(20.0)
+///         .set_marker_style("*");
 ///
-/// // configure curve
-/// let mut curve = Curve::new();
-/// curve.set_label("logistic function")
-///     .set_line_alpha(0.8)
-///     .set_line_color("#5f9cd8")
-///     .set_line_style("-")
-///     .set_line_width(5.0)
-///     .set_marker_color("#eeea83")
-///     .set_marker_every(5)
-///     .set_marker_line_color("#da98d1")
-///     .set_marker_line_width(2.5)
-///     .set_marker_size(20.0)
-///     .set_marker_style("*");
+///     // draw curve
+///     curve.draw(&x, &y);
 ///
-/// // draw curve
-/// curve.draw(&x, &y);
+///     // add curve to plot
+///     let mut plot = Plot::new();
+///     plot.add(&curve).set_num_ticks_y(11).grid_labels_legend("x", "y");
 ///
-/// // add curve to plot
-/// let mut plot = Plot::new();
-/// plot.add(&curve)
-///     .set_num_ticks_y(11)
-///     .grid_labels_legend("x", "y");
-///
-/// // save figure
-/// let path = Path::new(OUT_DIR).join("doc_curve.svg");
-/// plot.save(&path)?;
-/// # Ok(())
-/// # }
+///     // save figure
+///     plot.save("/tmp/plotpy/doc_tests/doc_curve.svg")?;
+///     Ok(())
+/// }
 /// ```
 ///
-/// ![doc_curve.svg](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/doc_curve.svg)
+/// ![doc_curve_vector.svg](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/doc_curve_vector.svg)
 ///
-/// See also integration test in the **tests** directory.
+/// See also integration tests in the [tests directory](https://github.com/cpmech/plotpy/tree/main/tests)
 ///
 /// ![integ_curve.svg](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_curve.svg)
-///
 pub struct Curve {
     label: String,             // Name of this curve in the legend
     line_alpha: f64,           // Opacity of lines (0, 1]. A<1e-14 => A=1.0

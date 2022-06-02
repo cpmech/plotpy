@@ -8,58 +8,93 @@ use std::fmt::Write;
 /// * This struct corresponds to the **plot** function of Matplotlib.
 /// * You may plot a Scatter plot by setting line_style = "None"
 ///
-/// # Example
+/// # Examples
+///
+/// ## Using methods to set the points
 ///
 /// ```
-/// # fn main() -> Result<(), &'static str> {
-/// // import
-/// use plotpy::{Curve, Plot};
+/// use plotpy::{Curve, Plot, StrError};
+/// use std::f64::consts::PI;
+///
+/// fn main() -> Result<(), StrError> {
+///     // configure curve
+///     let mut curve = Curve::new();
+///     curve.set_line_width(2.0);
+///
+///     // add points
+///     const N: usize = 30;
+///     curve.points_begin();
+///     for i in 0..N {
+///         let x = (i as f64) * 2.0 * PI / ((N - 1) as f64);
+///         let y = f64::sin(x);
+///         curve.points_add(x, y);
+///     }
+///     curve.points_end();
+///
+///     // add curve to plot
+///     let mut plot = Plot::new();
+///     plot.add(&curve).grid_and_labels("x", "y");
+///
+///     // configure multiple-of-pi formatter
+///     let minor_every = PI / 12.0;
+///     plot.set_ticks_x_multiple_of_pi(minor_every);
+///
+///     // save figure
+///     plot.save("/tmp/plotpy/doc_tests/doc_curve_methods.svg")?;
+///     Ok(())
+/// }
+/// ```
+///
+/// ![doc_curve_methods.svg](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/doc_curve_methods.svg)
+///
+/// ## Using Vector with point data
+///
+/// ```
+/// use plotpy::{Curve, Plot, StrError};
 /// use russell_lab::Vector;
-/// use std::path::Path;
 ///
-/// // directory to save figures
-/// const OUT_DIR: &str = "/tmp/plotpy/doc_tests";
+/// fn main() -> Result<(), StrError> {
+///     // generate (x,y) points
+///     let x = Vector::linspace(-1.0, 1.0, 21)?;
+///     let y = x.get_mapped(|v| 1.0 / (1.0 + f64::exp(-5.0 * v)));
 ///
-/// // generate (x,y) points
-/// let x = Vector::linspace(-1.0, 1.0, 21)?;
-/// let y = x.get_mapped(|v| 1.0 / (1.0 + f64::exp(-5.0 * v)));
+///     // configure curve
+///     let mut curve = Curve::new();
+///     curve
+///         .set_label("logistic function")
+///         .set_line_alpha(0.8)
+///         .set_line_color("#5f9cd8")
+///         .set_line_style("-")
+///         .set_line_width(5.0)
+///         .set_marker_color("#eeea83")
+///         .set_marker_every(5)
+///         .set_marker_line_color("#da98d1")
+///         .set_marker_line_width(2.5)
+///         .set_marker_size(20.0)
+///         .set_marker_style("*");
 ///
-/// // configure curve
-/// let mut curve = Curve::new();
-/// curve.set_label("logistic function")
-///     .set_line_alpha(0.8)
-///     .set_line_color("#5f9cd8")
-///     .set_line_style("-")
-///     .set_line_width(5.0)
-///     .set_marker_color("#eeea83")
-///     .set_marker_every(5)
-///     .set_marker_line_color("#da98d1")
-///     .set_marker_line_width(2.5)
-///     .set_marker_size(20.0)
-///     .set_marker_style("*");
+///     // draw curve
+///     curve.draw(&x, &y);
 ///
-/// // draw curve
-/// curve.draw(&x, &y);
+///     // add curve to plot
+///     let mut plot = Plot::new();
+///     plot.add(&curve).set_num_ticks_y(11).grid_labels_legend("x", "y");
 ///
-/// // add curve to plot
-/// let mut plot = Plot::new();
-/// plot.add(&curve)
-///     .set_num_ticks_y(11)
-///     .grid_labels_legend("x", "y");
-///
-/// // save figure
-/// let path = Path::new(OUT_DIR).join("doc_curve.svg");
-/// plot.save(&path)?;
-/// # Ok(())
-/// # }
+///     // save figure
+///     plot.save("/tmp/plotpy/doc_tests/doc_curve.svg")?;
+///     Ok(())
+/// }
 /// ```
 ///
-/// ![doc_curve.svg](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/doc_curve.svg)
+/// ![doc_curve_vector.svg](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/doc_curve_vector.svg)
 ///
-/// See also integration test in the **tests** directory.
+/// See also integration tests in the [tests directory](https://github.com/cpmech/plotpy/tree/main/tests)
+///
+/// Output from some integration tests:
 ///
 /// ![integ_curve.svg](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_curve.svg)
 ///
+/// ![integ_curve_3d.svg](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_curve_3d.svg)
 pub struct Curve {
     label: String,             // Name of this curve in the legend
     line_alpha: f64,           // Opacity of lines (0, 1]. A<1e-14 => A=1.0
@@ -73,6 +108,7 @@ pub struct Curve {
     marker_line_width: f64,    // Edge width of markers
     marker_size: f64,          // Size of markers
     marker_style: String,      // Style of markers, e.g., "`o`", "`+`"
+    stop_clip: bool,           // Stop clipping features within margins
     buffer: String,            // buffer
 }
 
@@ -92,8 +128,83 @@ impl Curve {
             marker_line_width: 0.0,
             marker_size: 0.0,
             marker_style: String::new(),
+            stop_clip: false,
             buffer: String::new(),
         }
+    }
+
+    /// Begins adding points to the curve (2D only)
+    ///
+    /// # Warning
+    ///
+    /// This function must be followed by [Curve::points_add] and [Curve::points_end],
+    /// otherwise Python/Matplotlib will fail.
+    pub fn points_begin(&mut self) -> &mut Self {
+        write!(&mut self.buffer, "xy=np.array([").unwrap();
+        self
+    }
+
+    /// Adds point to the curve (2D only)
+    ///
+    /// # Warning
+    ///
+    /// This function must be called after [Curve::points_begin] and must be followed by [Curve::points_end],
+    /// otherwise Python/Matplotlib will fail.
+    pub fn points_add<T>(&mut self, x: T, y: T) -> &mut Self
+    where
+        T: std::fmt::Display,
+    {
+        write!(&mut self.buffer, "[{},{}],", x, y).unwrap();
+        self
+    }
+
+    /// Ends adding points to the curve (2D only)
+    ///
+    /// # Warning
+    ///
+    /// This function must be called after [Curve::points_begin] and [Curve::points_add],
+    /// otherwise Python/Matplotlib will fail.
+    pub fn points_end(&mut self) -> &mut Self {
+        let opt = self.options();
+        write!(&mut self.buffer, "])\nplt.plot(xy[:,0],xy[:,1]{})\n", &opt).unwrap();
+        self
+    }
+
+    /// Begins adding 3D points to the curve
+    ///
+    /// # Warning
+    ///
+    /// This function must be followed by [Curve::points_3d_add] and [Curve::points_3d_end],
+    /// otherwise Python/Matplotlib will fail
+    pub fn points_3d_begin(&mut self) -> &mut Self {
+        write!(&mut self.buffer, "maybeCreateAX3D()\nxyz=np.array([").unwrap();
+        self
+    }
+
+    /// Adds 3D point to the curve
+    ///
+    /// # Warning
+    ///
+    /// This function must be called after [Curve::points_3d_begin] and must be followed by [Curve::points_3d_end],
+    /// otherwise Python/Matplotlib will fail.
+    pub fn points_3d_add<T>(&mut self, x: T, y: T, z: T) -> &mut Self
+    where
+        T: std::fmt::Display,
+    {
+        write!(&mut self.buffer, "[{},{},{}],", x, y, z).unwrap();
+        self
+    }
+
+    /// Ends adding 3D points to the curve
+    ///
+    /// # Warning
+    ///
+    /// This function must be called after [Curve::points_3d_begin] and [Curve::points_3d_add],
+    /// otherwise Python/Matplotlib will fail.
+    pub fn points_3d_end(&mut self) -> &mut Self {
+        let opt = self.options();
+        write!(&mut self.buffer, "])\nAX3D.plot(xyz[:,0],xyz[:,1],xyz[:,2]{})\n", &opt).unwrap();
+        self
     }
 
     /// Draws curve
@@ -225,6 +336,12 @@ impl Curve {
         self
     }
 
+    /// Sets the flag to stop clipping features within margins
+    pub fn set_stop_clip(&mut self, flag: bool) -> &mut Self {
+        self.stop_clip = flag;
+        self
+    }
+
     /// Returns options for curve
     fn options(&self) -> String {
         // fix color if marker is void
@@ -279,6 +396,11 @@ impl Curve {
             write!(&mut opt, ",marker='{}'", self.marker_style).unwrap();
         }
 
+        // clipping
+        if self.stop_clip {
+            write!(&mut opt, ",clip_on=False").unwrap();
+        }
+
         opt
     }
 }
@@ -329,7 +451,8 @@ mod tests {
             .set_marker_line_color("blue")
             .set_marker_line_width(1.5)
             .set_marker_size(8.0)
-            .set_marker_style("o");
+            .set_marker_style("o")
+            .set_stop_clip(true);
         let options = curve.options();
         assert_eq!(
             options,
@@ -343,8 +466,32 @@ mod tests {
              ,markeredgecolor='blue'\
              ,markeredgewidth=1.5\
              ,markersize=8\
-             ,marker='o'"
+             ,marker='o'\
+             ,clip_on=False"
         );
+    }
+
+    #[test]
+    fn points_methods_work() {
+        let mut curve = Curve::new();
+        curve.points_begin().points_add(1, 2).points_add(3, 4).points_end();
+        let b: &str = "xy=np.array([[1,2],[3,4],])\n\
+                       plt.plot(xy[:,0],xy[:,1])\n";
+        assert_eq!(curve.buffer, b);
+    }
+
+    #[test]
+    fn points_3d_methods_work() {
+        let mut curve = Curve::new();
+        curve
+            .points_3d_begin()
+            .points_3d_add(1, 2, 3)
+            .points_3d_add(4, 5, 6)
+            .points_3d_end();
+        let b: &str = "maybeCreateAX3D()\n\
+                       xyz=np.array([[1,2,3],[4,5,6],])\n\
+                       AX3D.plot(xyz[:,0],xyz[:,1],xyz[:,2])\n";
+        assert_eq!(curve.buffer, b);
     }
 
     #[test]

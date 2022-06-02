@@ -62,11 +62,11 @@ where
     U: 'a + std::fmt::Display,
 {
     write!(buf, "{}=np.array([", name).unwrap();
-    let (m, n) = matrix.mat_size();
+    let (m, n) = matrix.size();
     for i in 0..m {
         write!(buf, "[").unwrap();
         for j in 0..n {
-            write!(buf, "{},", matrix.mat_at(i, j)).unwrap();
+            write!(buf, "{},", matrix.at(i, j)).unwrap();
         }
         write!(buf, "],").unwrap();
     }

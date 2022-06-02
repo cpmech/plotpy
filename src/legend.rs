@@ -6,71 +6,66 @@ use std::fmt::Write;
 /// # Example
 ///
 /// ```
-/// # fn main() -> Result<(), &'static str> {
-/// // import
-/// use plotpy::{Curve, Legend, Plot};
+/// use plotpy::{Curve, Legend, Plot, StrError};
 /// use russell_lab::Vector;
-/// use std::path::Path;
 ///
-/// // directory to save figures
-/// const OUT_DIR: &str = "/tmp/plotpy/doc_tests";
+/// fn main() -> Result<(), StrError> {
+///     // generate (x,y) points
+///     let x  = Vector::linspace(0.0, 5.0, 6)?;
+///     let y1 = x.get_mapped(|v| 0.5 * v);
+///     let y2 = x.get_mapped(|v| 1.0 * v);
+///     let y3 = x.get_mapped(|v| 1.5 * v);
+///     let y4 = x.get_mapped(|v| 2.0 * v);
 ///
-/// // generate (x,y) points
-/// let x  = Vector::linspace(0.0, 5.0, 6)?;
-/// let y1 = x.get_mapped(|v| 0.5 * v);
-/// let y2 = x.get_mapped(|v| 1.0 * v);
-/// let y3 = x.get_mapped(|v| 1.5 * v);
-/// let y4 = x.get_mapped(|v| 2.0 * v);
+///     // configure and draw curves
+///     let mut curve1 = Curve::new();
+///     let mut curve2 = Curve::new();
+///     let mut curve3 = Curve::new();
+///     let mut curve4 = Curve::new();
+///     curve1.set_label("y = 0.5 x");
+///     curve2.set_label("y = 1.0 x");
+///     curve3.set_label("y = 1.5 x");
+///     curve4.set_label("y = 2.0 x");
+///     curve1.draw(&x, &y1);
+///     curve2.draw(&x, &y2);
+///     curve3.draw(&x, &y3);
+///     curve4.draw(&x, &y4);
 ///
-/// // configure and draw curves
-/// let mut curve1 = Curve::new();
-/// let mut curve2 = Curve::new();
-/// let mut curve3 = Curve::new();
-/// let mut curve4 = Curve::new();
-/// curve1.set_label("y = 0.5 x");
-/// curve2.set_label("y = 1.0 x");
-/// curve3.set_label("y = 1.5 x");
-/// curve4.set_label("y = 2.0 x");
-/// curve1.draw(&x, &y1);
-/// curve2.draw(&x, &y2);
-/// curve3.draw(&x, &y3);
-/// curve4.draw(&x, &y4);
+///     // configure and draw legends
+///     let mut legend1 = Legend::new();
+///     legend1.set_fontsize(14.0)
+///         .set_handle_len(6.0)
+///         .set_num_col(2)
+///         .set_outside(true)
+///         .set_show_frame(false);
+///     legend1.draw();
+///     let mut legend2 = Legend::new();
+///     legend2.draw();
 ///
-/// // configure and draw legends
-/// let mut legend1 = Legend::new();
-/// legend1.set_fontsize(14.0)
-///     .set_handle_len(6.0)
-///     .set_num_col(2)
-///     .set_outside(true)
-///     .set_show_frame(false);
-/// legend1.draw();
-/// let mut legend2 = Legend::new();
-/// legend2.draw();
+///     // add curves and legends to subplots
+///     let mut plot = Plot::new();
+///     plot.set_subplot(2, 1, 1)
+///         .add(&curve1)
+///         .add(&curve2)
+///         .add(&curve3)
+///         .add(&curve4)
+///         .add(&legend1);
+///     plot.set_subplot(2, 1, 2)
+///         .add(&curve1)
+///         .add(&curve2)
+///         .add(&curve3)
+///         .add(&curve4)
+///         .add(&legend2);
 ///
-/// // add curves and legends to subplots
-/// let mut plot = Plot::new();
-/// plot.set_subplot(2, 1, 1)
-///     .add(&curve1)
-///     .add(&curve2)
-///     .add(&curve3)
-///     .add(&curve4)
-///     .add(&legend1);
-/// plot.set_subplot(2, 1, 2)
-///     .add(&curve1)
-///     .add(&curve2)
-///     .add(&curve3)
-///     .add(&curve4)
-///     .add(&legend2);
-///
-/// // save figure
-/// let path = Path::new(OUT_DIR).join("doc_legend.svg");
-/// plot.save(&path)?;
-/// # Ok(())
-/// # }
+///     // save figure
+///     plot.save("/tmp/plotpy/doc_tests/doc_legend.svg")?;
+///     Ok(())
+/// }
 /// ```
 ///
 /// ![doc_legend.svg](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/doc_legend.svg)
 ///
+/// See also integration tests in the [tests directory](https://github.com/cpmech/plotpy/tree/main/tests)
 pub struct Legend {
     fontsize: f64,      // Fontsize
     handle_len: f64,    // Length of legend's indicator line

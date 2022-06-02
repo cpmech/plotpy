@@ -6,49 +6,44 @@ use std::fmt::Write;
 /// # Example
 ///
 /// ```
-/// # fn main() -> Result<(), &'static str> {
-/// // import
 /// use plotpy::{Contour, Plot};
 /// use russell_lab::generate3d;
-/// use std::path::Path;
 ///
-/// // directory to save figures
-/// const OUT_DIR: &str = "/tmp/plotpy/doc_tests";
+/// fn main() -> Result<(), &'static str> {
+///     // generate (x,y,z) matrices
+///     let n = 21;
+///     let (x, y, z) = generate3d(-2.0, 2.0, -2.0, 2.0, n, n, |x, y| x * x - y * y);
 ///
-/// // generate (x,y,z) matrices
-/// let n = 21;
-/// let (x, y, z) = generate3d(-2.0, 2.0, -2.0, 2.0, n, n, |x, y| x * x - y * y);
+///     // configure contour
+///     let mut contour = Contour::new();
+///     contour
+///         .set_colorbar_label("temperature")
+///         .set_colormap_name("terrain")
+///         .set_selected_line_color("#f1eb67")
+///         .set_selected_line_width(12.0)
+///         .set_selected_level(0.0, true);
 ///
-/// // configure contour
-/// let mut contour = Contour::new();
-/// contour
-///     .set_colorbar_label("temperature")
-///     .set_colormap_name("terrain")
-///     .set_selected_line_color("#f1eb67")
-///     .set_selected_line_width(12.0)
-///     .set_selected_level(0.0, true);
+///     // draw contour
+///     contour.draw(&x, &y, &z);
 ///
-/// // draw contour
-/// contour.draw(&x, &y, &z);
+///     // add contour to plot
+///     let mut plot = Plot::new();
+///     plot.add(&contour)
+///         .set_labels("x", "y");
 ///
-/// // add contour to plot
-/// let mut plot = Plot::new();
-/// plot.add(&contour)
-///     .set_labels("x", "y");
-///
-/// // save figure
-/// let path = Path::new(OUT_DIR).join("doc_contour.svg");
-/// plot.save(&path)?;
-/// # Ok(())
-/// # }
+///     // save figure
+///     plot.save("/tmp/plotpy/doc_tests/doc_contour.svg")?;
+///     Ok(())
+/// }
 /// ```
 ///
 /// ![doc_contour.svg](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/doc_contour.svg)
 ///
-/// See also integration test in the **tests** directory.
+/// See also integration tests in the [tests directory](https://github.com/cpmech/plotpy/tree/main/tests)
+///
+/// Output from some integration tests:
 ///
 /// ![integ_contour.svg](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_contour.svg)
-///
 pub struct Contour {
     colors: Vec<String>,         // Colors to be used instead of colormap
     levels: Vec<f64>,            // Pre-defined levels

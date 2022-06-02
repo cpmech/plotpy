@@ -47,7 +47,7 @@ fn test_surface_geometry() -> Result<(), StrError> {
 }
 
 #[test]
-fn test_cylinder() -> Result<(), StrError> {
+fn test_surface_cylinder() -> Result<(), StrError> {
     let mut surface = Surface::new();
     surface.set_with_colormap(false);
     surface.draw_cylinder(&[0.0, 0.0, 0.0], &[5.0, 0.0, 0.0], 0.5, 1, 20)?;
@@ -61,7 +61,7 @@ fn test_cylinder() -> Result<(), StrError> {
     plot.add(&surface);
 
     // save figure
-    let path = Path::new(OUT_DIR).join("integ_cylinder.svg");
+    let path = Path::new(OUT_DIR).join("integ_surface_cylinder.svg");
     plot.set_range_3d(-1.0, 6.0, -1.0, 6.0, -1.0, 6.0).set_equal_axes(true);
     plot.save(&path)?;
     // plot.save_and_show(&path)?;
@@ -75,7 +75,7 @@ fn test_cylinder() -> Result<(), StrError> {
 }
 
 #[test]
-fn test_superquadric() -> Result<(), StrError> {
+fn test_surface_superquadric() -> Result<(), StrError> {
     // star
     let r = &[1.0, 1.0, 1.0];
     let c = &[-1.0, -1.0, -1.0];
@@ -120,7 +120,7 @@ fn test_superquadric() -> Result<(), StrError> {
         .add(&sphere_direct);
 
     // save figure
-    let path = Path::new(OUT_DIR).join("integ_superquadric.svg");
+    let path = Path::new(OUT_DIR).join("integ_surface_superquadric.svg");
     plot.set_equal_axes(true)
         .set_figure_size_points(600.0, 600.0)
         .save(&path)?;

@@ -15,76 +15,71 @@ pub trait GraphMaker {
 /// # Example
 ///
 /// ```
-/// # fn main() -> Result<(), &'static str> {
-/// // import
-/// use plotpy::{Curve, Plot};
+/// use plotpy::{Curve, Plot, StrError};
 /// use russell_lab::Vector;
-/// use std::path::Path;
 ///
-/// // directory to save figures
-/// const OUT_DIR: &str = "/tmp/plotpy/doc_tests";
+/// fn main() -> Result<(), StrError> {
+///     // generate (x,y) points
+///     let n = 11;
+///     let x = Vector::linspace(-1.0, 1.0, n)?;
+///     let y1 = x.clone();
+///     let y2 = x.get_mapped(|v| f64::abs(v));
+///     let y3 = x.get_mapped(|v| f64::exp(1.0 + v) - 1.0);
+///     let y4 = x.get_mapped(|v| f64::sqrt(1.0 + v));
 ///
-/// // generate (x,y) points
-/// let n = 11;
-/// let x = Vector::linspace(-1.0, 1.0, n)?;
-/// let y1 = x.clone();
-/// let y2 = x.get_mapped(|v| f64::abs(v));
-/// let y3 = x.get_mapped(|v| f64::exp(1.0 + v) - 1.0);
-/// let y4 = x.get_mapped(|v| f64::sqrt(1.0 + v));
+///     // configure and draw curves
+///     let mut curve1 = Curve::new();
+///     let mut curve2 = Curve::new();
+///     let mut curve3 = Curve::new();
+///     let mut curve4 = Curve::new();
+///     curve1.set_label("y = x");
+///     curve2.set_label("y = |x|").set_line_color("#cd0000");
+///     curve3.set_label("y = exp(1+x)-1").set_line_color("#e79955");
+///     curve4.set_label("y = sqrt(1+x)").set_line_color("#b566ab");
+///     curve1.draw(&x, &y1);
+///     curve2.draw(&x, &y2);
+///     curve3.draw(&x, &y3);
+///     curve4.draw(&x, &y4);
 ///
-/// // configure and draw curves
-/// let mut curve1 = Curve::new();
-/// let mut curve2 = Curve::new();
-/// let mut curve3 = Curve::new();
-/// let mut curve4 = Curve::new();
-/// curve1.set_label("y = x");
-/// curve2.set_label("y = |x|").set_line_color("#cd0000");
-/// curve3.set_label("y = exp(1+x)-1").set_line_color("#e79955");
-/// curve4.set_label("y = sqrt(1+x)").set_line_color("#b566ab");
-/// curve1.draw(&x, &y1);
-/// curve2.draw(&x, &y2);
-/// curve3.draw(&x, &y3);
-/// curve4.draw(&x, &y4);
+///     // configure plot
+///     let mut plot = Plot::new();
+///     plot.set_super_title("FOUR CURVES").set_gaps(0.35, 0.5);
 ///
-/// // configure plot
-/// let mut plot = Plot::new();
-/// plot.set_super_title("FOUR CURVES").set_gaps(0.35, 0.5);
+///     // add curve to subplot
+///     plot.set_subplot(2, 2, 1)
+///         .set_title("first")
+///         .add(&curve1)
+///         .grid_labels_legend("x", "y")
+///         .set_equal_axes(true);
 ///
-/// // add curve to subplot
-/// plot.set_subplot(2, 2, 1)
-///     .set_title("first")
-///     .add(&curve1)
-///     .grid_labels_legend("x", "y")
-///     .set_equal_axes(true);
+///     // add curve to subplot
+///     plot.set_subplot(2, 2, 2)
+///         .set_title("second")
+///         .add(&curve2)
+///         .grid_labels_legend("x", "y");
 ///
-/// // add curve to subplot
-/// plot.set_subplot(2, 2, 2)
-///     .set_title("second")
-///     .add(&curve2)
-///     .grid_labels_legend("x", "y");
+///     // add curve to subplot
+///     plot.set_subplot(2, 2, 3)
+///         .set_title("third")
+///         .add(&curve3)
+///         .set_range(-1.0, 1.0, 0.0, 6.0)
+///         .grid_labels_legend("x", "y");
 ///
-/// // add curve to subplot
-/// plot.set_subplot(2, 2, 3)
-///     .set_title("third")
-///     .add(&curve3)
-///     .set_range(-1.0, 1.0, 0.0, 6.0)
-///     .grid_labels_legend("x", "y");
+///     // add curve to subplot
+///     plot.set_subplot(2, 2, 4)
+///         .set_title("fourth")
+///         .add(&curve4)
+///         .grid_labels_legend("x", "y");
 ///
-/// // add curve to subplot
-/// plot.set_subplot(2, 2, 4)
-///     .set_title("fourth")
-///     .add(&curve4)
-///     .grid_labels_legend("x", "y");
-///
-/// // save figure
-/// let path = Path::new(OUT_DIR).join("doc_plot.svg");
-/// plot.save(&path)?;
-/// # Ok(())
-/// # }
+///     // save figure
+///     plot.save("/tmp/plotpy/doc_tests/doc_plot.svg")?;
+///     Ok(())
+/// }
 /// ```
 ///
 /// ![doc_plot.svg](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/doc_plot.svg)
 ///
+/// See also integration tests in the [tests directory](https://github.com/cpmech/plotpy/tree/main/tests)
 pub struct Plot {
     show_errors: bool, // show python errors, if any
     buffer: String,    // buffer
@@ -390,45 +385,134 @@ impl Plot {
         self
     }
 
+    /// Sets the number and format of x-ticks
+    ///
+    /// # Input
+    ///
+    /// * `major_every` -- step for major ticks (ignored if ≤ 0.0)
+    /// * `minor_every` -- step for major ticks (ignored if ≤ 0.0)
+    /// * `major_number_format` -- C-style number format for major ticks; e.g. "%.2f" (ignored if empty "")
+    ///    See [matplotlib FormatStrFormatter](https://matplotlib.org/stable/api/ticker_api.html#matplotlib.ticker.FormatStrFormatter)
     #[rustfmt::skip]
-    pub fn set_ticks_x(&mut self, major_every: f64, minor_every: f64, major_format: &str) -> &mut Self {
+    pub fn set_ticks_x(&mut self, major_every: f64, minor_every: f64, major_number_format: &str) -> &mut Self {
         if major_every > 0.0 {
-            write!(&mut self.buffer, "majorLocator = tck.MultipleLocator({})\n", major_every).unwrap();
+            write!(&mut self.buffer, "major_locator = tck.MultipleLocator({})\n", major_every).unwrap();
             write!(&mut self.buffer, "n_ticks = (plt.gca().axis()[1] - plt.gca().axis()[0]) / {}\n", major_every).unwrap();
-            write!(&mut self.buffer, "if n_ticks < majorLocator.MAXTICKS * 0.9:\n").unwrap();
-            write!(&mut self.buffer, "    plt.gca().xaxis.set_major_locator(majorLocator)\n").unwrap();
+            write!(&mut self.buffer, "if n_ticks < major_locator.MAXTICKS * 0.9:\n").unwrap();
+            write!(&mut self.buffer, "    plt.gca().xaxis.set_major_locator(major_locator)\n").unwrap();
         }
         if minor_every > 0.0 {
-            write!(&mut self.buffer, "minorLocator = tck.MultipleLocator({})\n", minor_every).unwrap();
+            write!(&mut self.buffer, "minor_locator = tck.MultipleLocator({})\n", minor_every).unwrap();
             write!(&mut self.buffer, "n_ticks = (plt.gca().axis()[1] - plt.gca().axis()[0]) / {}\n", minor_every).unwrap();
-            write!(&mut self.buffer, "if n_ticks < minorLocator.MAXTICKS * 0.9:\n").unwrap();
-            write!(&mut self.buffer, "    plt.gca().xaxis.set_minor_locator(minorLocator)\n").unwrap();
+            write!(&mut self.buffer, "if n_ticks < minor_locator.MAXTICKS * 0.9:\n").unwrap();
+            write!(&mut self.buffer, "    plt.gca().xaxis.set_minor_locator(minor_locator)\n").unwrap();
         }
-        if major_format != "" {
-            write!(&mut self.buffer, "majorFormatter = tck.FormatStrFormatter(r'{}')\n", major_format).unwrap();
-            write!(&mut self.buffer, "plt.gca().xaxis.set_major_formatter(majorFormatter)\n").unwrap();
+        if major_number_format != "" {
+            write!(&mut self.buffer, "major_formatter = tck.FormatStrFormatter(r'{}')\n", major_number_format).unwrap();
+            write!(&mut self.buffer, "plt.gca().xaxis.set_major_formatter(major_formatter)\n").unwrap();
         }
         self
     }
 
+    /// Sets the number and format of y-ticks
+    ///
+    /// # Input
+    ///
+    /// * `major_every` -- step for major ticks (ignored if ≤ 0.0)
+    /// * `minor_every` -- step for major ticks (ignored if ≤ 0.0)
+    /// * `major_number_format` -- C-style number format for major ticks; e.g. "%.2f" (ignored if empty "")
+    ///    See [matplotlib FormatStrFormatter](https://matplotlib.org/stable/api/ticker_api.html#matplotlib.ticker.FormatStrFormatter)
     #[rustfmt::skip]
-    pub fn set_ticks_y(&mut self, major_every: f64, minor_every: f64, major_format: &str) -> &mut Self {
+    pub fn set_ticks_y(&mut self, major_every: f64, minor_every: f64, major_number_format: &str) -> &mut Self {
         if major_every > 0.0 {
-            write!(&mut self.buffer, "majorLocator = tck.MultipleLocator({})\n", major_every).unwrap();
+            write!(&mut self.buffer, "major_locator = tck.MultipleLocator({})\n", major_every).unwrap();
             write!(&mut self.buffer, "n_ticks = (plt.gca().axis()[3] - plt.gca().axis()[2]) / {}\n", major_every).unwrap();
-            write!(&mut self.buffer, "if n_ticks < majorLocator.MAXTICKS * 0.9:\n").unwrap();
-            write!(&mut self.buffer, "    plt.gca().yaxis.set_major_locator(majorLocator)\n").unwrap();
+            write!(&mut self.buffer, "if n_ticks < major_locator.MAXTICKS * 0.9:\n").unwrap();
+            write!(&mut self.buffer, "    plt.gca().yaxis.set_major_locator(major_locator)\n").unwrap();
         }
         if minor_every > 0.0 {
-            write!(&mut self.buffer, "minorLocator = tck.MultipleLocator({})\n", minor_every).unwrap();
+            write!(&mut self.buffer, "minor_locator = tck.MultipleLocator({})\n", minor_every).unwrap();
             write!(&mut self.buffer, "n_ticks = (plt.gca().axis()[3] - plt.gca().axis()[2]) / {}\n", minor_every).unwrap();
-            write!(&mut self.buffer, "if n_ticks < minorLocator.MAXTICKS * 0.9:\n").unwrap();
-            write!(&mut self.buffer, "    plt.gca().yaxis.set_minor_locator(minorLocator)\n").unwrap();
+            write!(&mut self.buffer, "if n_ticks < minor_locator.MAXTICKS * 0.9:\n").unwrap();
+            write!(&mut self.buffer, "    plt.gca().yaxis.set_minor_locator(minor_locator)\n").unwrap();
         }
-        if major_format != "" {
-            write!(&mut self.buffer, "majorFormatter = tck.FormatStrFormatter(r'{}')\n", major_format).unwrap();
-            write!(&mut self.buffer, "plt.gca().yaxis.set_major_formatter(majorFormatter)\n").unwrap();
+        if major_number_format != "" {
+            write!(&mut self.buffer, "major_formatter = tck.FormatStrFormatter(r'{}')\n", major_number_format).unwrap();
+            write!(&mut self.buffer, "plt.gca().yaxis.set_major_formatter(major_formatter)\n").unwrap();
         }
+        self
+    }
+
+    /// Writes the function multiple_of_pi_formatter to buffer
+    #[inline]
+    fn write_multiple_of_pi_formatter(&mut self) {
+        write!(
+            &mut self.buffer,
+            "def multiple_of_pi_formatter(x, pos):\n\
+             \x20\x20\x20\x20den = 2\n\
+             \x20\x20\x20\x20num = np.int(np.rint(den*x/np.pi))\n\
+             \x20\x20\x20\x20com = np.gcd(num,den)\n\
+             \x20\x20\x20\x20(num,den) = (int(num/com),int(den/com))\n\
+             \x20\x20\x20\x20if den==1:\n\
+             \x20\x20\x20\x20\x20\x20\x20\x20if num==0: return r'$0$'\n\
+             \x20\x20\x20\x20\x20\x20\x20\x20if num==1: return r'$\\pi$'\n\
+             \x20\x20\x20\x20\x20\x20\x20\x20elif num==-1: return r'$-\\pi$'\n\
+             \x20\x20\x20\x20\x20\x20\x20\x20else: return r'$%s\\pi$'%num\n\
+             \x20\x20\x20\x20else:\n\
+             \x20\x20\x20\x20\x20\x20\x20\x20if num==1: return r'$\\frac{{\\pi}}{{%s}}$'%den\n\
+             \x20\x20\x20\x20\x20\x20\x20\x20elif num==-1: return r'$\\frac{{-\\pi}}{{%s}}$'%den\n\
+             \x20\x20\x20\x20\x20\x20\x20\x20else: return r'$\\frac{{%s\\pi}}{{%s}}$'%(num,den)\n"
+        )
+        .unwrap();
+    }
+
+    /// Sets the x-ticks to multiples of pi
+    ///
+    /// # Input
+    ///
+    /// * `minor_every` -- step for major ticks (ignored if ≤ 0.0). Example `PI / 12.0`
+    ///
+    /// **Note:** This function sets the major ticks as `PI / 2.0`.
+    #[rustfmt::skip]
+    pub fn set_ticks_x_multiple_of_pi(&mut self, minor_every: f64) -> &mut Self {
+        write!(&mut self.buffer, "major_locator = tck.MultipleLocator(np.pi/2.0)\n").unwrap();
+        write!(&mut self.buffer, "n_ticks = (plt.gca().axis()[1] - plt.gca().axis()[0]) / (np.pi/2.0)\n").unwrap();
+        write!(&mut self.buffer, "if n_ticks < major_locator.MAXTICKS * 0.9:\n").unwrap();
+        write!(&mut self.buffer, "    plt.gca().xaxis.set_major_locator(major_locator)\n").unwrap();
+        if minor_every > 0.0 {
+            write!(&mut self.buffer, "minor_locator = tck.MultipleLocator({})\n", minor_every).unwrap();
+            write!(&mut self.buffer, "n_ticks = (plt.gca().axis()[1] - plt.gca().axis()[0]) / {}\n", minor_every).unwrap();
+            write!(&mut self.buffer, "if n_ticks < minor_locator.MAXTICKS * 0.9:\n").unwrap();
+            write!(&mut self.buffer, "    plt.gca().xaxis.set_minor_locator(minor_locator)\n").unwrap();
+        }
+        self.write_multiple_of_pi_formatter();
+        write!(&mut self.buffer, "major_formatter = tck.FuncFormatter(multiple_of_pi_formatter)\n").unwrap();
+        write!(&mut self.buffer, "plt.gca().xaxis.set_major_formatter(major_formatter)\n").unwrap();
+        self
+    }
+
+    /// Sets the y-ticks to multiples of pi
+    ///
+    /// # Input
+    ///
+    /// * `minor_every` -- step for major ticks (ignored if ≤ 0.0). Example `PI / 12.0`
+    ///
+    /// **Note:** This function sets the major ticks as `PI / 2.0`.
+    #[rustfmt::skip]
+    pub fn set_ticks_y_multiple_of_pi(&mut self, minor_every: f64) -> &mut Self {
+        write!(&mut self.buffer, "major_locator = tck.MultipleLocator(np.pi/2.0)\n").unwrap();
+        write!(&mut self.buffer, "n_ticks = (plt.gca().axis()[3] - plt.gca().axis()[2]) / (np.pi/2.0)\n").unwrap();
+        write!(&mut self.buffer, "if n_ticks < major_locator.MAXTICKS * 0.9:\n").unwrap();
+        write!(&mut self.buffer, "    plt.gca().yaxis.set_major_locator(major_locator)\n").unwrap();
+        if minor_every > 0.0 {
+            write!(&mut self.buffer, "minor_locator = tck.MultipleLocator({})\n", minor_every).unwrap();
+            write!(&mut self.buffer, "n_ticks = (plt.gca().axis()[3] - plt.gca().axis()[2]) / {}\n", minor_every).unwrap();
+            write!(&mut self.buffer, "if n_ticks < minor_locator.MAXTICKS * 0.9:\n").unwrap();
+            write!(&mut self.buffer, "    plt.gca().yaxis.set_minor_locator(minor_locator)\n").unwrap();
+        }
+        self.write_multiple_of_pi_formatter();
+        write!(&mut self.buffer, "major_formatter = tck.FuncFormatter(multiple_of_pi_formatter)\n").unwrap();
+        write!(&mut self.buffer, "plt.gca().yaxis.set_major_formatter(major_formatter)\n").unwrap();
         self
     }
 
@@ -722,31 +806,138 @@ mod tests {
                        plt.xlabel(r'x')\n\
                        plt.ylabel(r'y')\n\
                        plt.gca().view_init(elev=1,azim=10)\n\
-                       majorLocator = tck.MultipleLocator(1.5)\n\
+                       major_locator = tck.MultipleLocator(1.5)\n\
                        n_ticks = (plt.gca().axis()[1] - plt.gca().axis()[0]) / 1.5\n\
-                       if n_ticks < majorLocator.MAXTICKS * 0.9:\n\
-                       \x20\x20\x20\x20plt.gca().xaxis.set_major_locator(majorLocator)\n\
-                       minorLocator = tck.MultipleLocator(0.5)\n\
+                       if n_ticks < major_locator.MAXTICKS * 0.9:\n\
+                       \x20\x20\x20\x20plt.gca().xaxis.set_major_locator(major_locator)\n\
+                       minor_locator = tck.MultipleLocator(0.5)\n\
                        n_ticks = (plt.gca().axis()[1] - plt.gca().axis()[0]) / 0.5\n\
-                       if n_ticks < minorLocator.MAXTICKS * 0.9:\n\
-                       \x20\x20\x20\x20plt.gca().xaxis.set_minor_locator(minorLocator)\n\
-                       majorFormatter = tck.FormatStrFormatter(r'%.2f')\n\
-                       plt.gca().xaxis.set_major_formatter(majorFormatter)\n\
-                       majorLocator = tck.MultipleLocator(0.5)\n\
+                       if n_ticks < minor_locator.MAXTICKS * 0.9:\n\
+                       \x20\x20\x20\x20plt.gca().xaxis.set_minor_locator(minor_locator)\n\
+                       major_formatter = tck.FormatStrFormatter(r'%.2f')\n\
+                       plt.gca().xaxis.set_major_formatter(major_formatter)\n\
+                       major_locator = tck.MultipleLocator(0.5)\n\
                        n_ticks = (plt.gca().axis()[3] - plt.gca().axis()[2]) / 0.5\n\
-                       if n_ticks < majorLocator.MAXTICKS * 0.9:\n\
-                       \x20\x20\x20\x20plt.gca().yaxis.set_major_locator(majorLocator)\n\
-                       minorLocator = tck.MultipleLocator(0.1)\n\
+                       if n_ticks < major_locator.MAXTICKS * 0.9:\n\
+                       \x20\x20\x20\x20plt.gca().yaxis.set_major_locator(major_locator)\n\
+                       minor_locator = tck.MultipleLocator(0.1)\n\
                        n_ticks = (plt.gca().axis()[3] - plt.gca().axis()[2]) / 0.1\n\
-                       if n_ticks < minorLocator.MAXTICKS * 0.9:\n\
-                       \x20\x20\x20\x20plt.gca().yaxis.set_minor_locator(minorLocator)\n\
-                       majorFormatter = tck.FormatStrFormatter(r'%g')\n\
-                       plt.gca().yaxis.set_major_formatter(majorFormatter)\n\
+                       if n_ticks < minor_locator.MAXTICKS * 0.9:\n\
+                       \x20\x20\x20\x20plt.gca().yaxis.set_minor_locator(minor_locator)\n\
+                       major_formatter = tck.FormatStrFormatter(r'%g')\n\
+                       plt.gca().yaxis.set_major_formatter(major_formatter)\n\
                        plt.gcf().set_size_inches(2,2)\n\
                        plt.gcf().set_size_inches(100,100)\n\
                        plt.clf()\n";
         assert_eq!(plot.buffer, b);
         assert_eq!(plot.show_errors, true);
+    }
+
+    #[test]
+    fn set_functions_work_2() {
+        let mut plot = Plot::new();
+        plot.set_ticks_x_multiple_of_pi(0.0);
+        let b: &str = "major_locator = tck.MultipleLocator(np.pi/2.0)\n\
+                       n_ticks = (plt.gca().axis()[1] - plt.gca().axis()[0]) / (np.pi/2.0)\n\
+                       if n_ticks < major_locator.MAXTICKS * 0.9:\n\
+                       \x20\x20\x20\x20plt.gca().xaxis.set_major_locator(major_locator)\n\
+                       def multiple_of_pi_formatter(x, pos):\n\
+                       \x20\x20\x20\x20den = 2\n\
+                       \x20\x20\x20\x20num = np.int(np.rint(den*x/np.pi))\n\
+                       \x20\x20\x20\x20com = np.gcd(num,den)\n\
+                       \x20\x20\x20\x20(num,den) = (int(num/com),int(den/com))\n\
+                       \x20\x20\x20\x20if den==1:\n\
+                       \x20\x20\x20\x20\x20\x20\x20\x20if num==0: return r'$0$'\n\
+                       \x20\x20\x20\x20\x20\x20\x20\x20if num==1: return r'$\\pi$'\n\
+                       \x20\x20\x20\x20\x20\x20\x20\x20elif num==-1: return r'$-\\pi$'\n\
+                       \x20\x20\x20\x20\x20\x20\x20\x20else: return r'$%s\\pi$'%num\n\
+                       \x20\x20\x20\x20else:\n\
+                       \x20\x20\x20\x20\x20\x20\x20\x20if num==1: return r'$\\frac{\\pi}{%s}$'%den\n\
+                       \x20\x20\x20\x20\x20\x20\x20\x20elif num==-1: return r'$\\frac{-\\pi}{%s}$'%den\n\
+                       \x20\x20\x20\x20\x20\x20\x20\x20else: return r'$\\frac{%s\\pi}{%s}$'%(num,den)\n\
+                       major_formatter = tck.FuncFormatter(multiple_of_pi_formatter)\n\
+                       plt.gca().xaxis.set_major_formatter(major_formatter)\n";
+        assert_eq!(plot.buffer, b);
+
+        let mut plot = Plot::new();
+        plot.set_ticks_y_multiple_of_pi(0.0);
+        let b: &str = "major_locator = tck.MultipleLocator(np.pi/2.0)\n\
+                       n_ticks = (plt.gca().axis()[3] - plt.gca().axis()[2]) / (np.pi/2.0)\n\
+                       if n_ticks < major_locator.MAXTICKS * 0.9:\n\
+                       \x20\x20\x20\x20plt.gca().yaxis.set_major_locator(major_locator)\n\
+                       def multiple_of_pi_formatter(x, pos):\n\
+                       \x20\x20\x20\x20den = 2\n\
+                       \x20\x20\x20\x20num = np.int(np.rint(den*x/np.pi))\n\
+                       \x20\x20\x20\x20com = np.gcd(num,den)\n\
+                       \x20\x20\x20\x20(num,den) = (int(num/com),int(den/com))\n\
+                       \x20\x20\x20\x20if den==1:\n\
+                       \x20\x20\x20\x20\x20\x20\x20\x20if num==0: return r'$0$'\n\
+                       \x20\x20\x20\x20\x20\x20\x20\x20if num==1: return r'$\\pi$'\n\
+                       \x20\x20\x20\x20\x20\x20\x20\x20elif num==-1: return r'$-\\pi$'\n\
+                       \x20\x20\x20\x20\x20\x20\x20\x20else: return r'$%s\\pi$'%num\n\
+                       \x20\x20\x20\x20else:\n\
+                       \x20\x20\x20\x20\x20\x20\x20\x20if num==1: return r'$\\frac{\\pi}{%s}$'%den\n\
+                       \x20\x20\x20\x20\x20\x20\x20\x20elif num==-1: return r'$\\frac{-\\pi}{%s}$'%den\n\
+                       \x20\x20\x20\x20\x20\x20\x20\x20else: return r'$\\frac{%s\\pi}{%s}$'%(num,den)\n\
+                       major_formatter = tck.FuncFormatter(multiple_of_pi_formatter)\n\
+                       plt.gca().yaxis.set_major_formatter(major_formatter)\n";
+        assert_eq!(plot.buffer, b);
+
+        let mut plot = Plot::new();
+        plot.set_ticks_x_multiple_of_pi(1.0);
+        let b: &str = "major_locator = tck.MultipleLocator(np.pi/2.0)\n\
+                       n_ticks = (plt.gca().axis()[1] - plt.gca().axis()[0]) / (np.pi/2.0)\n\
+                       if n_ticks < major_locator.MAXTICKS * 0.9:\n\
+                       \x20\x20\x20\x20plt.gca().xaxis.set_major_locator(major_locator)\n\
+                       minor_locator = tck.MultipleLocator(1)\n\
+                       n_ticks = (plt.gca().axis()[1] - plt.gca().axis()[0]) / 1\n\
+                       if n_ticks < minor_locator.MAXTICKS * 0.9:\n\
+                       \x20\x20\x20\x20plt.gca().xaxis.set_minor_locator(minor_locator)\n\
+                       def multiple_of_pi_formatter(x, pos):\n\
+                       \x20\x20\x20\x20den = 2\n\
+                       \x20\x20\x20\x20num = np.int(np.rint(den*x/np.pi))\n\
+                       \x20\x20\x20\x20com = np.gcd(num,den)\n\
+                       \x20\x20\x20\x20(num,den) = (int(num/com),int(den/com))\n\
+                       \x20\x20\x20\x20if den==1:\n\
+                       \x20\x20\x20\x20\x20\x20\x20\x20if num==0: return r'$0$'\n\
+                       \x20\x20\x20\x20\x20\x20\x20\x20if num==1: return r'$\\pi$'\n\
+                       \x20\x20\x20\x20\x20\x20\x20\x20elif num==-1: return r'$-\\pi$'\n\
+                       \x20\x20\x20\x20\x20\x20\x20\x20else: return r'$%s\\pi$'%num\n\
+                       \x20\x20\x20\x20else:\n\
+                       \x20\x20\x20\x20\x20\x20\x20\x20if num==1: return r'$\\frac{\\pi}{%s}$'%den\n\
+                       \x20\x20\x20\x20\x20\x20\x20\x20elif num==-1: return r'$\\frac{-\\pi}{%s}$'%den\n\
+                       \x20\x20\x20\x20\x20\x20\x20\x20else: return r'$\\frac{%s\\pi}{%s}$'%(num,den)\n\
+                       major_formatter = tck.FuncFormatter(multiple_of_pi_formatter)\n\
+                       plt.gca().xaxis.set_major_formatter(major_formatter)\n";
+        assert_eq!(plot.buffer, b);
+
+        let mut plot = Plot::new();
+        plot.set_ticks_y_multiple_of_pi(1.0);
+        let b: &str = "major_locator = tck.MultipleLocator(np.pi/2.0)\n\
+                       n_ticks = (plt.gca().axis()[3] - plt.gca().axis()[2]) / (np.pi/2.0)\n\
+                       if n_ticks < major_locator.MAXTICKS * 0.9:\n\
+                       \x20\x20\x20\x20plt.gca().yaxis.set_major_locator(major_locator)\n\
+                       minor_locator = tck.MultipleLocator(1)\n\
+                       n_ticks = (plt.gca().axis()[3] - plt.gca().axis()[2]) / 1\n\
+                       if n_ticks < minor_locator.MAXTICKS * 0.9:\n\
+                       \x20\x20\x20\x20plt.gca().yaxis.set_minor_locator(minor_locator)\n\
+                       def multiple_of_pi_formatter(x, pos):\n\
+                       \x20\x20\x20\x20den = 2\n\
+                       \x20\x20\x20\x20num = np.int(np.rint(den*x/np.pi))\n\
+                       \x20\x20\x20\x20com = np.gcd(num,den)\n\
+                       \x20\x20\x20\x20(num,den) = (int(num/com),int(den/com))\n\
+                       \x20\x20\x20\x20if den==1:\n\
+                       \x20\x20\x20\x20\x20\x20\x20\x20if num==0: return r'$0$'\n\
+                       \x20\x20\x20\x20\x20\x20\x20\x20if num==1: return r'$\\pi$'\n\
+                       \x20\x20\x20\x20\x20\x20\x20\x20elif num==-1: return r'$-\\pi$'\n\
+                       \x20\x20\x20\x20\x20\x20\x20\x20else: return r'$%s\\pi$'%num\n\
+                       \x20\x20\x20\x20else:\n\
+                       \x20\x20\x20\x20\x20\x20\x20\x20if num==1: return r'$\\frac{\\pi}{%s}$'%den\n\
+                       \x20\x20\x20\x20\x20\x20\x20\x20elif num==-1: return r'$\\frac{-\\pi}{%s}$'%den\n\
+                       \x20\x20\x20\x20\x20\x20\x20\x20else: return r'$\\frac{%s\\pi}{%s}$'%(num,den)\n\
+                       major_formatter = tck.FuncFormatter(multiple_of_pi_formatter)\n\
+                       plt.gca().yaxis.set_major_formatter(major_formatter)\n";
+        assert_eq!(plot.buffer, b);
     }
 
     #[test]

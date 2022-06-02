@@ -38,10 +38,11 @@ use std::fmt::Write;
 ///
 /// ![doc_surface.svg](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/doc_surface.svg)
 ///
-/// See also integration test in the **tests** directory.
+/// See also integration tests in the [tests directory](https://github.com/cpmech/plotpy/tree/main/tests)
+///
+/// Output from some integration tests:
 ///
 /// ![integ_wireframe.svg](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_wireframe.svg)
-///
 pub struct Surface {
     row_stride: usize,        // Row stride
     col_stride: usize,        // Column stride

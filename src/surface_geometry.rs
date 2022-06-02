@@ -41,8 +41,7 @@ impl Surface {
     ///
     /// ![doc_cylinder.svg](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/doc_cylinder.svg)
     ///
-    /// See also integration test in the **tests** directory.
-    ///
+    /// See also integration tests in the [tests directory](https://github.com/cpmech/plotpy/tree/main/tests)
     pub fn draw_cylinder(
         &mut self,
         a: &[f64],

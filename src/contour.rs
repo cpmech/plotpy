@@ -39,7 +39,7 @@ use std::fmt::Write;
 ///
 /// ![doc_contour.svg](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/doc_contour.svg)
 ///
-/// See also integration test in the **tests** directory.
+/// See also integration tests in the [tests directory](https://github.com/cpmech/plotpy/tree/main/tests)
 ///
 /// Output from some integration tests:
 ///

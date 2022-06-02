@@ -90,7 +90,11 @@ use std::fmt::Write;
 ///
 /// See also integration tests in the [tests directory](https://github.com/cpmech/plotpy/tree/main/tests)
 ///
+/// Output from some integration tests:
+///
 /// ![integ_curve.svg](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_curve.svg)
+///
+/// ![integ_curve_3d.svg](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_curve_3d.svg)
 pub struct Curve {
     label: String,             // Name of this curve in the legend
     line_alpha: f64,           // Opacity of lines (0, 1]. A<1e-14 => A=1.0

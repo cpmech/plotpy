@@ -52,6 +52,7 @@ Some output of integration tests are shown below.
 [test_plot.rs](https://github.com/cpmech/plotpy/tree/main/tests/test_plot.rs)
 
 ![plot](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_plot_log.svg)
+![plot](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_plot_multiple_of_pi.svg)
 ![plot](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_plot_subplots.svg)
 ![plot](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_plot.svg)
 

@@ -1,5 +1,6 @@
 use plotpy::{Curve, Plot, StrError};
 use russell_lab::Vector;
+use std::f64::consts::PI;
 use std::fs::File;
 use std::io::{BufRead, BufReader};
 use std::path::Path;
@@ -164,6 +165,46 @@ fn test_plot_log() -> Result<(), StrError> {
 
 #[test]
 fn test_plot_multiple_of_pi() -> Result<(), StrError> {
-    // TODO
+    // configure curve
+    let mut cos_curve = Curve::new();
+    let mut sin_curve = Curve::new();
+    cos_curve.set_line_width(2.0);
+    sin_curve.set_line_width(2.0).set_line_color("#cd0000");
+
+    // add points
+    const N: usize = 30;
+    cos_curve.points_begin();
+    sin_curve.points_begin();
+    for i in 0..N {
+        let u = (i as f64) * 2.0 * PI / ((N - 1) as f64);
+        cos_curve.points_add(u, f64::cos(u));
+        sin_curve.points_add(f64::sin(u), u);
+    }
+    cos_curve.points_end();
+    sin_curve.points_end();
+
+    // configure plot
+    let mut plot = Plot::new();
+    plot.set_gaps(0.3, 0.0).set_figure_size_points(600.0, 250.0);
+
+    // add cos curve to plot
+    plot.set_subplot(1, 2, 1);
+    plot.add(&cos_curve).grid_and_labels("x", "y=cos(x)");
+    plot.set_ticks_x_multiple_of_pi(0.0);
+
+    // add sin curve to plot
+    plot.set_subplot(1, 2, 2);
+    plot.add(&sin_curve).grid_and_labels("x=sin(y)", "y");
+    plot.set_ticks_y_multiple_of_pi(0.0);
+
+    // save figure
+    let path = Path::new(OUT_DIR).join("integ_plot_multiple_of_pi.svg");
+    plot.save(&path)?;
+
+    // check number of lines
+    let file = File::open(path).map_err(|_| "cannot open file")?;
+    let buffered = BufReader::new(file);
+    let lines_iter = buffered.lines();
+    assert!(lines_iter.count() > 1060);
     Ok(())
 }

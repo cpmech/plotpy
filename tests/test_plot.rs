@@ -44,8 +44,8 @@ fn test_plot() -> Result<(), StrError> {
         .set_frame_borders(false)
         .set_frame_borders(true)
         .set_frame_borders(false)
-        .set_ticks_x(1.5, 0.5, "%.2f", false)
-        .set_ticks_y(0.5, 0.1, "%g", false);
+        .set_ticks_x(1.5, 0.5, "%.2f")
+        .set_ticks_y(0.5, 0.1, "%g");
     plot.grid_and_labels("x", "y");
 
     // add curve to plot

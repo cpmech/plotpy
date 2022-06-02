@@ -36,7 +36,8 @@ use std::fmt::Write;
 ///     plot.add(&curve).grid_and_labels("x", "y");
 ///
 ///     // configure multiple-of-pi formatter
-///     plot.set_ticks_x(PI / 2.0, PI / 12.0, "", true);
+///     let minor_every = PI / 12.0;
+///     plot.set_ticks_x_multiple_of_pi(minor_every);
 ///
 ///     // save figure
 ///     plot.save("/tmp/plotpy/doc_tests/doc_curve_methods.svg")?;

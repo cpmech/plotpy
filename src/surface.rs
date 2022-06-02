@@ -42,7 +42,7 @@ use std::fmt::Write;
 ///
 /// Output from some integration tests:
 ///
-/// ![integ_wireframe.svg](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_wireframe.svg)
+/// ![integ_surface_wireframe.svg](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_surface_wireframe.svg)
 pub struct Surface {
     row_stride: usize,        // Row stride
     col_stride: usize,        // Column stride

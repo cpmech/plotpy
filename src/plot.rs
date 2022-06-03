@@ -200,7 +200,7 @@ impl Plot {
 
     /// Adds a title to all sub-plots
     pub fn set_super_title(&mut self, title: &str) -> &mut Self {
-        write!(&mut self.buffer, "st=plt.suptitle(r'{}')\naddToEA(st)\n", title).unwrap();
+        write!(&mut self.buffer, "st=plt.suptitle(r'{}')\nadd_to_ea(st)\n", title).unwrap();
         self
     }
 
@@ -262,7 +262,7 @@ impl Plot {
     pub fn set_range_3d(&mut self, xmin: f64, xmax: f64, ymin: f64, ymax: f64, zmin: f64, zmax: f64) -> &mut Self {
         write!(
             &mut self.buffer,
-            "maybeCreateAX3D()\n\
+            "maybe_create_ax3d()\n\
              AX3D.set_xlim3d({},{})\n\
              AX3D.set_ylim3d({},{})\n\
              AX3D.set_zlim3d({},{})\n",
@@ -712,7 +712,7 @@ mod tests {
             .set_vertical_gap(0.2)
             .set_gaps(0.3, 0.4);
         let b: &str = "st=plt.suptitle(r'all subplots')\n\
-                       addToEA(st)\n\
+                       add_to_ea(st)\n\
                        \nplt.subplot(2,2,1)\n\
                          plt.subplots_adjust(wspace=0.1)\n\
                          plt.subplots_adjust(hspace=0.2)\n\
@@ -735,11 +735,11 @@ mod tests {
                        h,l=plt.gca().get_legend_handles_labels()\n\
                        if len(h)>0 and len(l)>0:\n\
                        \x20\x20\x20\x20leg=plt.legend(handlelength=3,ncol=1,loc='best')\n\
-                       \x20\x20\x20\x20addToEA(leg)\n\
+                       \x20\x20\x20\x20add_to_ea(leg)\n\
                        h,l=plt.gca().get_legend_handles_labels()\n\
                        if len(h)>0 and len(l)>0:\n\
                        \x20\x20\x20\x20leg=plt.legend(handlelength=3,ncol=1,loc='best')\n\
-                       \x20\x20\x20\x20addToEA(leg)\n";
+                       \x20\x20\x20\x20add_to_ea(leg)\n";
         assert_eq!(plot.buffer, b);
     }
 
@@ -781,7 +781,7 @@ mod tests {
                        set_equal_axes()\n\
                        plt.gca().axes.set_aspect('auto')\n\
                        plt.axis('off')\n\
-                       maybeCreateAX3D()\n\
+                       maybe_create_ax3d()\n\
                        AX3D.set_xlim3d(-1,1)\n\
                        AX3D.set_ylim3d(-1,1)\n\
                        AX3D.set_zlim3d(-1,1)\n\

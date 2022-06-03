@@ -101,7 +101,7 @@ impl Legend {
         write!(&mut self.buffer, "h,l=plt.gca().get_legend_handles_labels()\n").unwrap();
         write!(&mut self.buffer, "if len(h)>0 and len(l)>0:\n").unwrap();
         write!(&mut self.buffer, "    leg=plt.legend({})\n", &opt).unwrap();
-        write!(&mut self.buffer, "    addToEA(leg)\n").unwrap();
+        write!(&mut self.buffer, "    add_to_ea(leg)\n").unwrap();
         if !self.show_frame {
             write!(&mut self.buffer, "    leg.get_frame().set_linewidth(0.0)\n").unwrap();
         }
@@ -228,7 +228,7 @@ mod tests {
         let b: &str = "h,l=plt.gca().get_legend_handles_labels()\n\
                        if len(h)>0 and len(l)>0:\n\
                        \x20\x20\x20\x20leg=plt.legend(handlelength=3,ncol=1,loc='best')\n\
-                       \x20\x20\x20\x20addToEA(leg)\n";
+                       \x20\x20\x20\x20add_to_ea(leg)\n";
         assert_eq!(legend.buffer, b);
     }
 }

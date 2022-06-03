@@ -1,6 +1,7 @@
 # Rust plotting library using Python (Matplotlib)
 
 [![codecov](https://codecov.io/gh/cpmech/plotpy/branch/main/graph/badge.svg?token=SUBRKUN63U)](https://codecov.io/gh/cpmech/plotpy)
+[![Crates.io](https://img.shields.io/crates/v/plotpy.svg)](https://crates.io/crates/plotpy)
 
 This library implements high-level functions to generate plots and drawings.
 Although we use Python/Matplotlib, the goal is to provide a convenient Rust library
@@ -15,6 +16,10 @@ For more information (and examples), check out the [plotpy documentation on docs
 
 See also the [examples directory](https://github.com/cpmech/plotpy/tree/main/examples) with the output
 of the [integration tests](https://github.com/cpmech/plotpy/tree/main/tests).
+
+## Documentation
+
+[plotpy documentation on docs.rs](https://docs.rs/plotpy)
 
 ## Installation
 

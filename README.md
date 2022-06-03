@@ -5,7 +5,7 @@
 This library implements high-level functions to generate plots and drawings.
 Although we use Python/Matplotlib, the goal is to provide a convenient Rust library
 that is **different** than Matplotlib. The difference happens because we want **convenience**
-for the Rust developer.
+for the Rust developer while getting the **fantastic quality of Matplotlib** 😀.
 
 Internally, we use [Matplotlib](https://matplotlib.org/) via a Python 3 script.
 First, we generate a python code in a directory of your choice (e.g., `/tmp/plotpy`),

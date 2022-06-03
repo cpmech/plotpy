@@ -110,7 +110,7 @@ impl Surface {
         matrix_to_array(&mut self.buffer, "x", x);
         matrix_to_array(&mut self.buffer, "y", y);
         matrix_to_array(&mut self.buffer, "z", z);
-        write!(&mut self.buffer, "maybeCreateAX3D()\n").unwrap();
+        write!(&mut self.buffer, "maybe_create_ax3d()\n").unwrap();
         if self.with_surface {
             let opt_surface = self.options_surface();
             write!(&mut self.buffer, "sf=AX3D.plot_surface(x,y,z{})\n", &opt_surface).unwrap();
@@ -256,7 +256,7 @@ impl Surface {
             if self.colormap_name != "" {
                 write!(&mut opt, ",cmap=plt.get_cmap('{}')", self.colormap_name).unwrap();
             } else {
-                write!(&mut opt, ",cmap=getColormap({})", self.colormap_index).unwrap();
+                write!(&mut opt, ",cmap=get_colormap({})", self.colormap_index).unwrap();
             }
         }
         opt
@@ -368,7 +368,7 @@ mod tests {
         let mut surface = Surface::new();
         surface.set_row_stride(3).set_col_stride(4);
         let opt = surface.options_surface();
-        assert_eq!(opt, ",rstride=3,cstride=4,cmap=getColormap(0)");
+        assert_eq!(opt, ",rstride=3,cstride=4,cmap=get_colormap(0)");
 
         surface.set_colormap_name("Pastel1");
         let opt = surface.options_surface();
@@ -376,7 +376,7 @@ mod tests {
 
         surface.set_colormap_index(3);
         let opt = surface.options_surface();
-        assert_eq!(opt, ",rstride=3,cstride=4,cmap=getColormap(3)");
+        assert_eq!(opt, ",rstride=3,cstride=4,cmap=get_colormap(3)");
 
         surface.set_colormap_name("turbo");
         let opt = surface.options_surface();
@@ -427,8 +427,8 @@ mod tests {
         let b: &str = "x=np.array([[-0.5,0,0.5,],[-0.5,0,0.5,],[-0.5,0,0.5,],],dtype=float)\n\
                        y=np.array([[-0.5,-0.5,-0.5,],[0,0,0,],[0.5,0.5,0.5,],],dtype=float)\n\
                        z=np.array([[0.5,0.25,0.5,],[0.25,0,0.25,],[0.5,0.25,0.5,],],dtype=float)\n\
-                       maybeCreateAX3D()\n\
-                       sf=AX3D.plot_surface(x,y,z,cmap=getColormap(0))\n\
+                       maybe_create_ax3d()\n\
+                       sf=AX3D.plot_surface(x,y,z,cmap=get_colormap(0))\n\
                        AX3D.plot_wireframe(x,y,z,color='black')\n\
                        cb=plt.colorbar(sf)\n\
                        cb.ax.set_ylabel(r'temperature')\n";
@@ -445,8 +445,8 @@ mod tests {
         let b: &str = "x=np.array([[-0.5,0,0.5,],[-0.5,0,0.5,],[-0.5,0,0.5,],],dtype=float)\n\
                        y=np.array([[-0.5,-0.5,-0.5,],[0,0,0,],[0.5,0.5,0.5,],],dtype=float)\n\
                        z=np.array([[0.5,0.25,0.5,],[0.25,0,0.25,],[0.5,0.25,0.5,],],dtype=float)\n\
-                       maybeCreateAX3D()\n\
-                       sf=AX3D.plot_surface(x,y,z,cmap=getColormap(0))\n";
+                       maybe_create_ax3d()\n\
+                       sf=AX3D.plot_surface(x,y,z,cmap=get_colormap(0))\n";
         assert_eq!(surface.buffer, b);
     }
 

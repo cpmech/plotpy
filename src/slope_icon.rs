@@ -128,8 +128,8 @@ impl SlopeIcon {
             "slope,cx,cy=float({}),float({}),float({})\n\
              if plt.gca().get_xscale() == 'log': cx=np.log10(cx)\n\
              if plt.gca().get_yscale() == 'log': cy=np.log10(cy)\n\
-             xc,yc=dataToAxis((cx,cy))\n\
-             xa,ya=dataToAxis((cx+1.0,cy+slope))\n\
+             xc,yc=data_to_axis((cx,cy))\n\
+             xa,ya=data_to_axis((cx+1.0,cy+slope))\n\
              m,l=(ya-yc)/(xa-xc),{}\n",
             slope,
             x_center,
@@ -636,8 +636,8 @@ mod tests {
         let b: &str = "slope,cx,cy=float(10),float(0.5),float(0.1)\n\
                        if plt.gca().get_xscale() == 'log': cx=np.log10(cx)\n\
                        if plt.gca().get_yscale() == 'log': cy=np.log10(cy)\n\
-                       xc,yc=dataToAxis((cx,cy))\n\
-                       xa,ya=dataToAxis((cx+1.0,cy+slope))\n\
+                       xc,yc=data_to_axis((cx,cy))\n\
+                       xa,ya=data_to_axis((cx+1.0,cy+slope))\n\
                        m,l=(ya-yc)/(xa-xc),0.1\n\
                        dat=[[pth.Path.MOVETO,(xc-l,yc-m*l)],[pth.Path.LINETO,(xc-l,yc+m*l)],[pth.Path.LINETO,(xc+l,yc+m*l)],[pth.Path.CLOSEPOLY,(None,None)]]\n\
                        tf=tra.offset_copy(plt.gca().transAxes,fig=plt.gcf(),x=0,y=3,units='points')\n\

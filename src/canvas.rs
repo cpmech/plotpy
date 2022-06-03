@@ -349,7 +349,7 @@ impl Canvas {
     /// This function must be followed by [Canvas::polyline_3d_add] and [Canvas::polyline_3d_end],
     /// otherwise Python/Matplotlib will fail
     pub fn polyline_3d_begin(&mut self) -> &mut Self {
-        write!(&mut self.buffer, "maybeCreateAX3D()\nxyz=np.array([").unwrap();
+        write!(&mut self.buffer, "maybe_create_ax3d()\nxyz=np.array([").unwrap();
         self
     }
 
@@ -479,7 +479,7 @@ impl Canvas {
         if ndim == 2 {
             write!(&mut self.buffer, "dat=[\n").unwrap();
         } else {
-            write!(&mut self.buffer, "maybeCreateAX3D()\n").unwrap();
+            write!(&mut self.buffer, "maybe_create_ax3d()\n").unwrap();
         }
         let opt = self.options_shared();
         let mut id_point = 0;
@@ -1136,7 +1136,7 @@ mod tests {
             .polyline_3d_add(1, 2, 3)
             .polyline_3d_add(4, 5, 6)
             .polyline_3d_end();
-        let b: &str = "maybeCreateAX3D()\n\
+        let b: &str = "maybe_create_ax3d()\n\
             xyz=np.array([[1,2,3],[4,5,6],])\n\
             AX3D.plot(xyz[:,0],xyz[:,1],xyz[:,2],color='#427ce5')\n";
         assert_eq!(canvas.buffer, b);
@@ -1158,14 +1158,14 @@ mod tests {
 
         let mut open = Canvas::new();
         open.draw_polyline(points, false);
-        let b: &str = "maybeCreateAX3D()\n\
+        let b: &str = "maybe_create_ax3d()\n\
             xyz=np.array([[2,1,0],[0,1,0],[0,1,3],[2,1,3],])\n\
             AX3D.plot(xyz[:,0],xyz[:,1],xyz[:,2],color='#427ce5')\n";
         assert_eq!(open.buffer, b);
 
         let mut closed = Canvas::new();
         closed.draw_polyline(points, true);
-        let b: &str = "maybeCreateAX3D()\n\
+        let b: &str = "maybe_create_ax3d()\n\
             xyz=np.array([[2,1,0],[0,1,0],[0,1,3],[2,1,3],[2,1,0],])\n\
             AX3D.plot(xyz[:,0],xyz[:,1],xyz[:,2],color='#427ce5')\n";
         assert_eq!(closed.buffer, b);
@@ -1178,7 +1178,7 @@ mod tests {
 
         let mut closed_few_points = Canvas::new();
         closed_few_points.draw_polyline(points, true);
-        let b: &str = "maybeCreateAX3D()\n\
+        let b: &str = "maybe_create_ax3d()\n\
             xyz=np.array([[2,1,0],[0,1,0],])\n\
             AX3D.plot(xyz[:,0],xyz[:,1],xyz[:,2],color='#427ce5')\n";
         assert_eq!(closed_few_points.buffer, b);
@@ -1244,7 +1244,7 @@ mod tests {
     fn grid_3d_works() -> Result<(), StrError> {
         let mut canvas = Canvas::new();
         canvas.draw_grid(&[0.0, 0.0, 0.0], &[1.0, 1.0, 1.0], &[1, 1, 1], true, true)?;
-        let b: &str = "maybeCreateAX3D()\n\
+        let b: &str = "maybe_create_ax3d()\n\
                        AX3D.plot([0,0],[0,1],[0,0],color='#427ce5')\n\
                        AX3D.plot([1,1],[0,1],[0,0],color='#427ce5')\n\
                        AX3D.plot([0,1],[0,0],[0,0],color='#427ce5')\n\

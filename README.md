@@ -2,17 +2,25 @@
 
 [![codecov](https://codecov.io/gh/cpmech/plotpy/branch/main/graph/badge.svg?token=SUBRKUN63U)](https://codecov.io/gh/cpmech/plotpy)
 
-This package implements a plotting library, with its own functions. However, internally, this package generates a Python script with Matplotlib commands. Then, this package runs the script using `process::Command`.
+This library implements high-level functions to generate plots and drawings.
+Although we use Python/Matplotlib, the goal is to provide a convenient Rust library
+that is **different** than Matplotlib. The difference happens because we want **convenience**
+for the Rust developer.
 
-For convenience, we use `Vector` and `Matrix` from [Russell Lab](https://github.com/cpmech/russell).
+Internally, we use [Matplotlib](https://matplotlib.org/) via a Python 3 script.
+First, we generate a python code in a directory of your choice (e.g., `/tmp/plotpy`),
+and then we call **python3** using Rust's `std::process::Command`.
 
-Documentation:
+For more information (and examples), check out the [plotpy documentation on docs.rs](https://docs.rs/plotpy)
 
-- [API reference (docs.rs)](https://docs.rs/plotpy)
+See also the [examples directory](https://github.com/cpmech/plotpy/tree/main/examples) with the output
+of the [integration tests](https://github.com/cpmech/plotpy/tree/main/tests).
 
 ## Installation
 
-Install some libraries:
+For convenience, we use [Russell Lab](https://github.com/cpmech/russell).
+
+Thus, we need the following some libraries (Debian/Ubuntu/Linux):
 
 ```bash
 sudo apt-get install liblapacke-dev libopenblas-dev python3-pip3
@@ -21,11 +29,11 @@ pip3 install matplotlib
 
 **Note** We use pip3 because the version of Matplotlib needs to be at least 3.3.0 and "old" Ubuntu comes with 3.1.2.
 
-Add this to your Cargo.toml:
+Then, add something like this to your Cargo.toml:
 
 ```toml
 [dependencies]
-plotpy = "0.2"
+plotpy = "0.3"
 ```
 
 ## Examples

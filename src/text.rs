@@ -172,7 +172,7 @@ impl Text {
     /// * "sawtooth,pad=0.3,tooth_size=0.1"
     /// * "roundtooth,pad=0.3,tooth_size=0.2"
     ///
-    /// See [matplotlib](https://matplotlib.org/stable/api/_as_gen/matplotlib.patches.BoxStyle.html)
+    /// See [Matplotlib](https://matplotlib.org/stable/api/_as_gen/matplotlib.patches.BoxStyle.html)
     pub fn set_bbox_style(&mut self, style: &str) -> &mut Self {
         self.bbox_style = String::from(style);
         self

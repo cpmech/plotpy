@@ -4,27 +4,27 @@ use std::fmt::Write;
 
 /// Defines the poly-curve code
 ///
-/// Reference: [matplotlib](https://matplotlib.org/stable/api/path_api.html)
+/// Reference: [Matplotlib](https://matplotlib.org/stable/api/path_api.html)
 #[derive(Clone, Copy, Debug)]
 pub enum PolyCode {
     /// Move to coordinate (first point)
     ///
-    /// matplotlib: Pick up the pen and move to the given vertex.
+    /// Matplotlib: Pick up the pen and move to the given vertex.
     MoveTo,
 
     /// Segment (next point, need 2 points)
     ///
-    /// matplotlib: Draw a line from the current position to the given vertex.
+    /// Matplotlib: Draw a line from the current position to the given vertex.
     LineTo,
 
     /// Quadratic Bezier (next point, need 3 control points with the first and last points on the curve)
     ///
-    /// matplotlib: Draw a quadratic Bezier curve from the current position, with the given control point, to the given end point.
+    /// Matplotlib: Draw a quadratic Bezier curve from the current position, with the given control point, to the given end point.
     Curve3,
 
     /// Cubic Bezier (next point, need 4 control points with the first and last points on the curve)
     ///
-    /// matplotlib: Draw a cubic Bezier curve from the current position, with the given control points, to the given end point.
+    /// Matplotlib: Draw a cubic Bezier curve from the current position, with the given control points, to the given end point.
     Curve4,
 }
 

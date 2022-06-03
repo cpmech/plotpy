@@ -15,8 +15,7 @@ use std::process::Command;
 ///
 /// # Note
 ///
-/// The contents of PYTHON_HEADER are added at the beginning of the file.
-///
+/// The contents of [PYTHON_HEADER] are added at the beginning of the file.
 pub(crate) fn call_python3(python_commands: &String, path: &Path) -> Result<String, StrError> {
     // create directory
     if let Some(p) = path.parent() {

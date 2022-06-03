@@ -14,7 +14,7 @@ use std::fmt::Write;
 /// use plotpy::{Curve, Plot, SlopeIcon, StrError};
 /// use russell_lab::Vector;
 ///
-/// # fn main() -> Result<(), StrError> {
+/// fn main() -> Result<(), StrError> {
 ///     // models
 ///     let slope = 2.0;
 ///     let (xi, xf, yi) = (0.0, 10.0, 0.0);

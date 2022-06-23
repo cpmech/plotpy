@@ -454,7 +454,7 @@ impl GraphMaker for Curve {
 
 #[cfg(test)]
 mod tests {
-    use super::Curve;
+    use super::{Curve, RayEndpoint};
     use russell_lab::Vector;
 
     #[test]
@@ -573,5 +573,19 @@ mod tests {
                        maybe_create_ax3d()\n\
                        AX3D.plot(x,y,z,label='the-curve')\n";
         assert_eq!(curve.buffer, b);
+    }
+
+    #[test]
+    fn draw_ray_works() {
+        let mut ray = Curve::new();
+        ray.draw_ray(2.0, 0.0, RayEndpoint::Coords(8.0, 0.5));
+        ray.draw_ray(2.0, 0.0, RayEndpoint::Slope(0.2));
+        ray.draw_ray(2.0, 0.0, RayEndpoint::Horizontal);
+        ray.draw_ray(2.0, 0.0, RayEndpoint::Vertical);
+        let b: &str = "plt.axline((2,0),(8,0.5))\n\
+                       plt.axline((2,0),None,slope=0.2)\n\
+                       plt.axhline(0)\n\
+                       plt.axvline(2)\n";
+        assert_eq!(ray.buffer, b);
     }
 }

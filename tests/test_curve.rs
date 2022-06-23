@@ -1,4 +1,4 @@
-use plotpy::{Curve, Plot, StrError};
+use plotpy::{Curve, Plot, RayEndpoint, StrError};
 use std::fs::File;
 use std::io::{BufRead, BufReader};
 use std::path::Path;
@@ -39,10 +39,28 @@ fn test_curve() -> Result<(), StrError> {
     curve1.draw(x, y);
     curve2.draw(x, y2);
 
+    // draw ray
+    let mut ray1 = Curve::new();
+    let mut ray2 = Curve::new();
+    let mut ray3 = Curve::new();
+    let mut ray4 = Curve::new();
+    ray1.set_line_color("orange");
+    ray2.set_line_color("gold");
+    ray3.set_line_color("yellow");
+    ray4.set_line_color("#9b7014");
+    ray1.draw_ray(2.0, 0.0, RayEndpoint::Coords(8.0, 0.5));
+    ray2.draw_ray(2.0, 0.0, RayEndpoint::Slope(0.2));
+    ray3.draw_ray(2.0, 0.0, RayEndpoint::Horizontal);
+    ray4.draw_ray(2.0, 0.0, RayEndpoint::Vertical);
+
     // add curves to plot
     let mut plot = Plot::new();
-    plot.add(&curve1);
-    plot.add(&curve2);
+    plot.add(&curve1)
+        .add(&curve2)
+        .add(&ray1)
+        .add(&ray2)
+        .add(&ray3)
+        .add(&ray4);
 
     // save figure
     let path = Path::new(OUT_DIR).join("integ_curve.svg");
@@ -52,7 +70,7 @@ fn test_curve() -> Result<(), StrError> {
     let file = File::open(path).map_err(|_| "cannot open file")?;
     let buffered = BufReader::new(file);
     let lines_iter = buffered.lines();
-    assert!(lines_iter.count() > 490);
+    assert!(lines_iter.count() > 530);
     Ok(())
 }
 

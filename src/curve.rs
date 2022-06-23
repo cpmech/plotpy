@@ -1,6 +1,21 @@
 use super::{vector_to_array, AsVector, GraphMaker};
 use std::fmt::Write;
 
+/// Holds either the second point coordinates of a ray or the slope of the ray
+pub enum RayEndpoint {
+    /// Coordinates of the second point
+    Coords(f64, f64),
+
+    /// Slope of the ray
+    Slope(f64),
+
+    /// Indicates a horizontal ray
+    Horizontal,
+
+    /// Indicates a vertical ray
+    Vertical,
+}
+
 /// Generates a curve (aka line-plot) given two arrays (x,y)
 ///
 /// # Notes
@@ -270,6 +285,30 @@ impl Curve {
     pub fn set_line_color(&mut self, color: &str) -> &mut Self {
         self.line_color = String::from(color);
         self
+    }
+
+    /// Draws a ray (an infinite line)
+    ///
+    /// * For horizontal rays, only `ya` is used
+    /// * For vertical rays, only `xa` is used
+    pub fn draw_ray(&mut self, xa: f64, ya: f64, endpoint: RayEndpoint) {
+        let opt = self.options();
+        match endpoint {
+            RayEndpoint::Coords(xb, yb) => write!(
+                &mut self.buffer,
+                "plt.axline(({},{}),({},{}){})\n",
+                xa, ya, xb, yb, &opt
+            )
+            .unwrap(),
+            RayEndpoint::Slope(m) => write!(
+                &mut self.buffer,
+                "plt.axline(({},{}),None,slope={}{})\n",
+                xa, ya, m, &opt
+            )
+            .unwrap(),
+            RayEndpoint::Horizontal => write!(&mut self.buffer, "plt.axhline({}{})\n", ya, &opt).unwrap(),
+            RayEndpoint::Vertical => write!(&mut self.buffer, "plt.axvline({}{})\n", xa, &opt).unwrap(),
+        }
     }
 
     /// Sets the style of lines

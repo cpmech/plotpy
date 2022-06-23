@@ -2,6 +2,7 @@ use super::{vector_to_array, AsVector, GraphMaker};
 use std::fmt::Write;
 
 /// Holds either the second point coordinates of a ray or the slope of the ray
+#[derive(Clone, Debug)]
 pub enum RayEndpoint {
     /// Coordinates of the second point
     Coords(f64, f64),
@@ -573,6 +574,14 @@ mod tests {
                        maybe_create_ax3d()\n\
                        AX3D.plot(x,y,z,label='the-curve')\n";
         assert_eq!(curve.buffer, b);
+    }
+
+    #[test]
+    fn derive_works() {
+        let endpoint = RayEndpoint::Coords(8.0, 0.5);
+        let cloned = endpoint.clone();
+        assert_eq!(format!("{:?}", endpoint), "Coords(8.0, 0.5)");
+        assert_eq!(format!("{:?}", cloned), "Coords(8.0, 0.5)");
     }
 
     #[test]

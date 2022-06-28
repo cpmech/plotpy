@@ -25,14 +25,25 @@ of the [integration tests](https://github.com/cpmech/plotpy/tree/main/tests).
 
 For convenience, we use [Russell Lab](https://github.com/cpmech/russell).
 
-Thus, we need the following some libraries (Debian/Ubuntu/Linux):
+Thus, we need the following some libraries
+
+### Latest Ubuntu dependencies
+
+```bash
+sudo apt-get install liblapacke-dev libopenblas-dev python3-pip
+pip install matplotlib
+```
+
+### Earlier Ubuntu dependencies
 
 ```bash
 sudo apt-get install liblapacke-dev libopenblas-dev python3-pip3
 pip3 install matplotlib
 ```
 
-**Note** We use pip3 because the version of Matplotlib needs to be at least 3.3.0 and "old" Ubuntu comes with 3.1.2.
+**Note** We use pip3 because the version of Matplotlib needs to be at least 3.3.0 and the earlier Ubuntu comes with 3.1.2.
+
+### Cargo.toml
 
 Then, add something like this to your Cargo.toml:
 

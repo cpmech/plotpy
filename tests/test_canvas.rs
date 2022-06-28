@@ -112,7 +112,7 @@ fn test_canvas_polyline_3d_methods() -> Result<(), StrError> {
     const W: f64 = 2.0;
     const H: f64 = 1.0;
     let mut canvas = Canvas::new();
-    canvas.set_edge_color("orange");
+    canvas.set_edge_color("orange").set_line_width(5.0);
     canvas
         .polyline_3d_begin()
         .polyline_3d_add(W, y, 0.0)

@@ -780,6 +780,9 @@ impl Canvas {
         if self.edge_color != "" {
             write!(&mut opt, ",color='{}'", self.edge_color).unwrap();
         }
+        if self.line_width > 0.0 {
+            write!(&mut opt, ",linewidth={}", self.line_width).unwrap();
+        }
         opt
     }
 
@@ -971,6 +974,11 @@ mod tests {
         canvas.set_edge_color("red");
         let opt = canvas.options_line_3d();
         assert_eq!(opt, ",color='red'");
+
+        let mut canvas = Canvas::new();
+        canvas.set_edge_color("red").set_line_width(5.0);
+        let opt = canvas.options_line_3d();
+        assert_eq!(opt, ",color='red',linewidth=5");
     }
 
     #[test]

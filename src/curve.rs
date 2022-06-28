@@ -1,6 +1,22 @@
 use super::{vector_to_array, AsVector, GraphMaker};
 use std::fmt::Write;
 
+/// Holds either the second point coordinates of a ray or the slope of the ray
+#[derive(Clone, Debug)]
+pub enum RayEndpoint {
+    /// Coordinates of the second point
+    Coords(f64, f64),
+
+    /// Slope of the ray
+    Slope(f64),
+
+    /// Indicates a horizontal ray
+    Horizontal,
+
+    /// Indicates a vertical ray
+    Vertical,
+}
+
 /// Generates a curve (aka line-plot) given two arrays (x,y)
 ///
 /// # Notes
@@ -272,6 +288,30 @@ impl Curve {
         self
     }
 
+    /// Draws a ray (an infinite line)
+    ///
+    /// * For horizontal rays, only `ya` is used
+    /// * For vertical rays, only `xa` is used
+    pub fn draw_ray(&mut self, xa: f64, ya: f64, endpoint: RayEndpoint) {
+        let opt = self.options();
+        match endpoint {
+            RayEndpoint::Coords(xb, yb) => write!(
+                &mut self.buffer,
+                "plt.axline(({},{}),({},{}){})\n",
+                xa, ya, xb, yb, &opt
+            )
+            .unwrap(),
+            RayEndpoint::Slope(m) => write!(
+                &mut self.buffer,
+                "plt.axline(({},{}),None,slope={}{})\n",
+                xa, ya, m, &opt
+            )
+            .unwrap(),
+            RayEndpoint::Horizontal => write!(&mut self.buffer, "plt.axhline({}{})\n", ya, &opt).unwrap(),
+            RayEndpoint::Vertical => write!(&mut self.buffer, "plt.axvline({}{})\n", xa, &opt).unwrap(),
+        }
+    }
+
     /// Sets the style of lines
     ///
     /// Options:
@@ -415,7 +455,7 @@ impl GraphMaker for Curve {
 
 #[cfg(test)]
 mod tests {
-    use super::Curve;
+    use super::{Curve, RayEndpoint};
     use russell_lab::Vector;
 
     #[test]
@@ -534,5 +574,27 @@ mod tests {
                        maybe_create_ax3d()\n\
                        AX3D.plot(x,y,z,label='the-curve')\n";
         assert_eq!(curve.buffer, b);
+    }
+
+    #[test]
+    fn derive_works() {
+        let endpoint = RayEndpoint::Coords(8.0, 0.5);
+        let cloned = endpoint.clone();
+        assert_eq!(format!("{:?}", endpoint), "Coords(8.0, 0.5)");
+        assert_eq!(format!("{:?}", cloned), "Coords(8.0, 0.5)");
+    }
+
+    #[test]
+    fn draw_ray_works() {
+        let mut ray = Curve::new();
+        ray.draw_ray(2.0, 0.0, RayEndpoint::Coords(8.0, 0.5));
+        ray.draw_ray(2.0, 0.0, RayEndpoint::Slope(0.2));
+        ray.draw_ray(2.0, 0.0, RayEndpoint::Horizontal);
+        ray.draw_ray(2.0, 0.0, RayEndpoint::Vertical);
+        let b: &str = "plt.axline((2,0),(8,0.5))\n\
+                       plt.axline((2,0),None,slope=0.2)\n\
+                       plt.axhline(0)\n\
+                       plt.axvline(2)\n";
+        assert_eq!(ray.buffer, b);
     }
 }

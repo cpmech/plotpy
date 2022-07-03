@@ -1,7 +1,6 @@
 # Rust plotting library using Python (Matplotlib)
 
 [![codecov](https://codecov.io/gh/cpmech/plotpy/branch/main/graph/badge.svg?token=SUBRKUN63U)](https://codecov.io/gh/cpmech/plotpy)
-[![Crates.io](https://img.shields.io/crates/v/plotpy.svg)](https://crates.io/crates/plotpy)
 
 This library implements high-level functions to generate plots and drawings.
 Although we use Python/Matplotlib, the goal is to provide a convenient Rust library
@@ -19,7 +18,7 @@ of the [integration tests](https://github.com/cpmech/plotpy/tree/main/tests).
 
 ## Documentation
 
-[plotpy documentation on docs.rs](https://docs.rs/plotpy)
+[Plotpy documentation on docs.rs](https://docs.rs/plotpy)
 
 ## Installation
 
@@ -45,11 +44,13 @@ pip3 install matplotlib
 
 ### Cargo.toml
 
-Then, add something like this to your Cargo.toml:
+[![Crates.io](https://img.shields.io/crates/v/plotpy.svg)](https://crates.io/crates/plotpy)
+
+👆 Check the crate version and update your Cargo.toml accordingly:
 
 ```toml
 [dependencies]
-plotpy = "0.3"
+plotpy = "*"
 ```
 
 ## Examples

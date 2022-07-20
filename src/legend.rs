@@ -192,6 +192,9 @@ impl GraphMaker for Legend {
     fn get_buffer<'a>(&'a self) -> &'a String {
         &self.buffer
     }
+    fn clear_buffer(&mut self) {
+        self.buffer.clear();
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -199,6 +202,7 @@ impl GraphMaker for Legend {
 #[cfg(test)]
 mod tests {
     use super::Legend;
+    use crate::GraphMaker;
 
     #[test]
     fn new_works() {
@@ -230,5 +234,7 @@ mod tests {
                        \x20\x20\x20\x20leg=plt.legend(handlelength=3,ncol=1,loc='best')\n\
                        \x20\x20\x20\x20add_to_ea(leg)\n";
         assert_eq!(legend.buffer, b);
+        legend.clear_buffer();
+        assert_eq!(legend.buffer, "");
     }
 }

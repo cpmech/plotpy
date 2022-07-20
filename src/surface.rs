@@ -335,6 +335,9 @@ impl GraphMaker for Surface {
     fn get_buffer<'a>(&'a self) -> &'a String {
         &self.buffer
     }
+    fn clear_buffer(&mut self) {
+        self.buffer.clear();
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -342,6 +345,7 @@ impl GraphMaker for Surface {
 #[cfg(test)]
 mod tests {
     use super::{StrError, Surface};
+    use crate::GraphMaker;
     use russell_chk::assert_vec_approx_eq;
     use russell_lab::Matrix;
 
@@ -433,6 +437,8 @@ mod tests {
                        cb=plt.colorbar(sf)\n\
                        cb.ax.set_ylabel(r'temperature')\n";
         assert_eq!(surface.buffer, b);
+        surface.clear_buffer();
+        assert_eq!(surface.buffer, "");
     }
 
     #[test]

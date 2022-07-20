@@ -864,6 +864,9 @@ impl GraphMaker for Canvas {
     fn get_buffer<'a>(&'a self) -> &'a String {
         &self.buffer
     }
+    fn clear_buffer(&mut self) {
+        self.buffer.clear();
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -871,7 +874,7 @@ impl GraphMaker for Canvas {
 #[cfg(test)]
 mod tests {
     use super::{Canvas, StrError};
-    use crate::PolyCode;
+    use crate::{GraphMaker, PolyCode};
 
     #[test]
     fn derive_works() {
@@ -993,6 +996,8 @@ mod tests {
             "\x20\x20\x20\x20[pth.Path.MOVETO,(0,0)],[pth.Path.LINETO,(0,0)],\n\
              AX3D.plot([0,0],[0,0],[0,0],color='#427ce5')\n"
         );
+        canvas.clear_buffer();
+        assert_eq!(canvas.buffer, "");
     }
 
     #[test]

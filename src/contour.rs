@@ -372,6 +372,9 @@ impl GraphMaker for Contour {
     fn get_buffer<'a>(&'a self) -> &'a String {
         &self.buffer
     }
+    fn clear_buffer(&mut self) {
+        self.buffer.clear();
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -379,6 +382,7 @@ impl GraphMaker for Contour {
 #[cfg(test)]
 mod tests {
     use super::Contour;
+    use crate::GraphMaker;
     use russell_lab::Matrix;
 
     #[test]
@@ -514,6 +518,8 @@ mod tests {
                        cb.ax.set_ylabel(r'temperature')\n\
                        plt.contour(x,y,z,colors=['yellow'],levels=[0],linestyles=['-'],linewidths=[2])\n";
         assert_eq!(contour.buffer, b);
+        contour.clear_buffer();
+        assert_eq!(contour.buffer, "");
     }
 
     #[test]

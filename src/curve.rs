@@ -449,6 +449,9 @@ impl GraphMaker for Curve {
     fn get_buffer<'a>(&'a self) -> &'a String {
         &self.buffer
     }
+    fn clear_buffer(&mut self) {
+        self.buffer.clear();
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -456,6 +459,7 @@ impl GraphMaker for Curve {
 #[cfg(test)]
 mod tests {
     use super::{Curve, RayEndpoint};
+    use crate::GraphMaker;
     use russell_lab::Vector;
 
     #[test]
@@ -545,6 +549,8 @@ mod tests {
                        y=np.array([1,4,9,16,25,],dtype=float)\n\
                        plt.plot(x,y,label='the-curve')\n";
         assert_eq!(curve.buffer, b);
+        curve.clear_buffer();
+        assert_eq!(curve.buffer, "");
     }
 
     #[test]

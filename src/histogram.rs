@@ -169,6 +169,9 @@ impl GraphMaker for Histogram {
     fn get_buffer<'a>(&'a self) -> &'a String {
         &self.buffer
     }
+    fn clear_buffer(&mut self) {
+        self.buffer.clear();
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -176,6 +179,7 @@ impl GraphMaker for Histogram {
 #[cfg(test)]
 mod tests {
     use super::Histogram;
+    use crate::GraphMaker;
 
     #[test]
     fn new_works() {
@@ -223,5 +227,7 @@ mod tests {
                        colors=['red','green',]\n\
                        plt.hist(values,label=labels,color=colors)\n";
         assert_eq!(histogram.buffer, b);
+        histogram.clear_buffer();
+        assert_eq!(histogram.buffer, "");
     }
 }

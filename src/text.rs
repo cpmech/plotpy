@@ -220,6 +220,9 @@ impl GraphMaker for Text {
     fn get_buffer<'a>(&'a self) -> &'a String {
         &self.buffer
     }
+    fn clear_buffer(&mut self) {
+        self.buffer.clear();
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -227,6 +230,7 @@ impl GraphMaker for Text {
 #[cfg(test)]
 mod tests {
     use super::Text;
+    use crate::GraphMaker;
 
     #[test]
     fn new_works() {
@@ -283,6 +287,8 @@ mod tests {
         text.draw(1.2, 3.4, &"message".to_string());
         let b: &str = "t=plt.text(1.2,3.4,'message')\n";
         assert_eq!(text.buffer, b);
+        text.clear_buffer();
+        assert_eq!(text.buffer, "");
     }
 
     #[test]

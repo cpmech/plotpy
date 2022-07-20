@@ -435,6 +435,9 @@ impl GraphMaker for SlopeIcon {
     fn get_buffer<'a>(&'a self) -> &'a String {
         &self.buffer
     }
+    fn clear_buffer(&mut self) {
+        self.buffer.clear();
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -442,6 +445,7 @@ impl GraphMaker for SlopeIcon {
 #[cfg(test)]
 mod tests {
     use super::SlopeIcon;
+    use crate::GraphMaker;
 
     #[test]
     fn new_works() {
@@ -652,5 +656,7 @@ mod tests {
                        plt.text(xc,yp,r'one',ha='center',va='bottom',transform=tfx,color='gold',fontsize=4)\n\
                        plt.text(xm,yc,r'lambda',ha='right',va='center',transform=tfy,color='gold',fontsize=4)\n";
         assert_eq!(icon.buffer, b);
+        icon.clear_buffer();
+        assert_eq!(icon.buffer, "");
     }
 }

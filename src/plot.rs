@@ -7,7 +7,11 @@ use std::path::Path;
 
 /// Defines the trait used by Plot to add graph entities
 pub trait GraphMaker {
+    /// Returns the text buffer with Python3 commands
     fn get_buffer<'a>(&'a self) -> &'a String;
+
+    /// Clear the text buffer with Python commands
+    fn clear_buffer(&mut self);
 }
 
 /// Driver structure that calls Python

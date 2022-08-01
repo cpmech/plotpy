@@ -571,6 +571,18 @@ impl Plot {
         self
     }
 
+    /// Sets inverted x-axis
+    pub fn set_inv_x(&mut self) -> &mut Self {
+        write!(&mut self.buffer, "plt.gca().invert_xaxis()\n").unwrap();
+        self
+    }
+
+    /// Sets inverted y-axis
+    pub fn set_inv_y(&mut self) -> &mut Self {
+        write!(&mut self.buffer, "plt.gca().invert_yaxis()\n").unwrap();
+        self
+    }
+
     /// Sets camera in 3d graph. Sets the elevation and azimuth of the axes.
     ///
     /// # Input
@@ -615,6 +627,12 @@ impl Plot {
     /// Sets visibility of all frame borders
     pub fn set_frame_borders(&mut self, show_all: bool) -> &mut Self {
         self.set_frame_border(show_all, show_all, show_all, show_all)
+    }
+
+    /// Writes extra python commands
+    pub fn extra(&mut self, commands: &str) -> &mut Self {
+        self.buffer.write_str(commands).unwrap();
+        self
     }
 
     /// Run python
@@ -962,6 +980,16 @@ mod tests {
                        plt.gca().spines['right'].set_visible(False)\n\
                        plt.gca().spines['bottom'].set_visible(False)\n\
                        plt.gca().spines['top'].set_visible(False)\n";
+        assert_eq!(plot.buffer, b);
+    }
+
+    #[test]
+    fn additional_features_work() {
+        let mut plot = Plot::new();
+        plot.set_inv_x().set_inv_y().extra("plt.show()\n");
+        let b: &str = "plt.gca().invert_xaxis()\n\
+                       plt.gca().invert_yaxis()\n\
+                       plt.show()\n";
         assert_eq!(plot.buffer, b);
     }
 }

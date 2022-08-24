@@ -57,12 +57,6 @@ pip3 install matplotlib
 export LIBRARY_PATH=$LIBRARY_PATH:$(brew --prefix)/opt/openblas/lib:$(brew --prefix)/opt/lapack/lib
 ```
 
-Alternatively, you may fix your shell configuration file. Here is an example for `zsh` users:
-
-```bash
-echo 'export LIBRARY_PATH=$LIBRARY_PATH:$(brew --prefix)/opt/openblas/lib:$(brew --prefix)/opt/lapack/lib' >> ~/.zshrc
-```
-
 ### Cargo.toml
 
 [![Crates.io](https://img.shields.io/crates/v/plotpy.svg)](https://crates.io/crates/plotpy)

@@ -24,7 +24,7 @@ of the [integration tests](https://github.com/cpmech/plotpy/tree/main/tests).
 
 For convenience, we use [Russell Lab](https://github.com/cpmech/russell).
 
-Thus, we need the following some libraries
+Thus, we need the following libraries:
 
 ### Latest Ubuntu dependencies
 
@@ -42,15 +42,22 @@ pip3 install matplotlib
 
 **Note** We use pip3 because the version of Matplotlib needs to be at least 3.3.0 and the earlier Ubuntu comes with 3.1.2.
 
-### MacOS
+### macOS
+
+In macOS, you may use [Homebrew](https://brew.sh/) (and pip) to install the dependencies:
 
 ```bash
 brew install openblas lapack
-export LIBRARY_PATH=$LIBRARY_PATH:$(brew --prefix)/opt/openblas/lib:$(brew --prefix)/opt/lapack/lib
 pip3 install matplotlib
 ```
 
-**Note** MacOS do not include the lib installed by homebrew, so, everytime you using `plotpy`, you should set the `LIBRARY_PATH`, or you can set it in your shell configure file. Here is an example for `zsh` users:
+**Note** In macOS, we have to set the `LIBRARY_PATH` all the time when using `plotpy`:
+
+```bash
+export LIBRARY_PATH=$LIBRARY_PATH:$(brew --prefix)/opt/openblas/lib:$(brew --prefix)/opt/lapack/lib
+```
+
+Alternatively, you may fix your shell configuration file. Here is an example for `zsh` users:
 
 ```bash
 echo 'export LIBRARY_PATH=$LIBRARY_PATH:$(brew --prefix)/opt/openblas/lib:$(brew --prefix)/opt/lapack/lib' >> ~/.zshrc

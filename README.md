@@ -42,6 +42,20 @@ pip3 install matplotlib
 
 **Note** We use pip3 because the version of Matplotlib needs to be at least 3.3.0 and the earlier Ubuntu comes with 3.1.2.
 
+### MacOS
+
+```bash
+brew install openblas lapack
+export LIBRARY_PATH=$LIBRARY_PATH:$(brew --prefix)/opt/openblas/lib:$(brew --prefix)/opt/lapack/lib
+pip3 install matplotlib
+```
+
+**Note** MacOS do not include the lib installed by homebrew, so, everytime you using `plotpy`, you should set the `LIBRARY_PATH`, or you can set it in your shell configure file. Here is an example for `zsh` users:
+
+```bash
+echo 'export LIBRARY_PATH=$LIBRARY_PATH:$(brew --prefix)/opt/openblas/lib:$(brew --prefix)/opt/lapack/lib' >> ~/.zshrc
+```
+
 ### Cargo.toml
 
 [![Crates.io](https://img.shields.io/crates/v/plotpy.svg)](https://crates.io/crates/plotpy)

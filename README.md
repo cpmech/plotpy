@@ -42,7 +42,7 @@ pip3 install matplotlib
 
 **Note** We use pip3 because the version of Matplotlib needs to be at least 3.3.0 and the earlier Ubuntu comes with 3.1.2.
 
-### macOS
+### macOS dependencies
 
 In macOS, you may use [Homebrew](https://brew.sh/) (and pip) to install the dependencies:
 

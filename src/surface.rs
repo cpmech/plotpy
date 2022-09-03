@@ -344,7 +344,7 @@ impl GraphMaker for Surface {
 
 #[cfg(test)]
 mod tests {
-    use super::{StrError, Surface};
+    use super::Surface;
     use crate::GraphMaker;
     use russell_chk::vec_approx_eq;
     use russell_lab::Matrix;
@@ -463,45 +463,43 @@ mod tests {
     }
 
     #[test]
-    fn aligned_system_works() -> Result<(), StrError> {
-        let (e0, e1, e2) = Surface::aligned_system(&[-1.0, 0.0, 0.0], &[8.0, 0.0, 0.0])?;
+    fn aligned_system_works() {
+        let (e0, e1, e2) = Surface::aligned_system(&[-1.0, 0.0, 0.0], &[8.0, 0.0, 0.0]).unwrap();
         assert_eq!(e0, &[1.0, 0.0, 0.0]);
         assert_eq!(e1, &[0.0, 1.0, 0.0]);
         assert_eq!(e2, &[0.0, 0.0, 1.0]);
 
-        let (e0, e1, e2) = Surface::aligned_system(&[0.0, -3.0, 0.0], &[0.0, 3.0, 0.0])?;
+        let (e0, e1, e2) = Surface::aligned_system(&[0.0, -3.0, 0.0], &[0.0, 3.0, 0.0]).unwrap();
         assert_eq!(e0, &[0.0, 1.0, 0.0]);
         assert_eq!(e1, &[1.0, 0.0, 0.0]);
         assert_eq!(e2, &[0.0, 0.0, -1.0]);
 
-        let (e0, e1, e2) = Surface::aligned_system(&[0.0, 10.0, 0.0], &[0.0, 3.0, 0.0])?;
+        let (e0, e1, e2) = Surface::aligned_system(&[0.0, 10.0, 0.0], &[0.0, 3.0, 0.0]).unwrap();
         assert_eq!(e0, &[0.0, -1.0, 0.0]);
         assert_eq!(e1, &[1.0, 0.0, 0.0]);
         assert_eq!(e2, &[0.0, 0.0, 1.0]);
 
-        let (e0, e1, e2) = Surface::aligned_system(&[0.0, 0.0, 80.0], &[0.0, 0.0, 7770.0])?;
+        let (e0, e1, e2) = Surface::aligned_system(&[0.0, 0.0, 80.0], &[0.0, 0.0, 7770.0]).unwrap();
         assert_eq!(e0, &[0.0, 0.0, 1.0]);
         assert_eq!(e1, &[1.0, 0.0, 0.0]);
         assert_eq!(e2, &[0.0, 1.0, 0.0]);
 
         let (m, n, l) = (3.0, 4.0, 5.0);
-        let (e0, e1, e2) = Surface::aligned_system(&[2.0, -7.0, 5.0], &[2.0 + m, -7.0 + n, 5.0])?;
+        let (e0, e1, e2) = Surface::aligned_system(&[2.0, -7.0, 5.0], &[2.0 + m, -7.0 + n, 5.0]).unwrap();
         vec_approx_eq(&e0, &[m / l, n / l, 0.0], 1e-15);
         vec_approx_eq(&e1, &[n / l, -m / l, 0.0], 1e-15);
         vec_approx_eq(&e2, &[0.0, 0.0, -1.0], 1e-15);
 
         let s = f64::sqrt(2.0) / 2.0;
-        let (e0, e1, e2) = Surface::aligned_system(&[0.0, 0.0, 1.0], &[1.0, 0.0, 2.0])?;
+        let (e0, e1, e2) = Surface::aligned_system(&[0.0, 0.0, 1.0], &[1.0, 0.0, 2.0]).unwrap();
         vec_approx_eq(&e0, &[s, 0.0, s], 1e-15);
         vec_approx_eq(&e1, &[s, 0.0, -s], 1e-15);
         vec_approx_eq(&e2, &[0.0, 1.0, 0.0], 1e-15);
 
         let (c, d, e) = (1.0 / f64::sqrt(3.0), 1.0 / f64::sqrt(6.0), 1.0 / f64::sqrt(2.0));
-        let (e0, e1, e2) = Surface::aligned_system(&[3.0, 4.0, 5.0], &[13.0, 14.0, 15.0])?;
+        let (e0, e1, e2) = Surface::aligned_system(&[3.0, 4.0, 5.0], &[13.0, 14.0, 15.0]).unwrap();
         vec_approx_eq(&e0, &[c, c, c], 1e-15);
         vec_approx_eq(&e1, &[2.0 * d, -d, -d], 1e-15);
         vec_approx_eq(&e2, &[0.0, e, -e], 1e-15);
-
-        Ok(())
     }
 }

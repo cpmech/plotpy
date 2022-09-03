@@ -675,7 +675,7 @@ impl Plot {
 
 #[cfg(test)]
 mod tests {
-    use super::{Plot, StrError};
+    use super::Plot;
     use std::fs::File;
     use std::io::{BufRead, BufReader};
     use std::path::Path;
@@ -689,40 +689,37 @@ mod tests {
     }
 
     #[test]
-    fn save_works() -> Result<(), StrError> {
+    fn save_works() {
         let plot = Plot::new();
         assert_eq!(plot.buffer.len(), 0);
         let path = Path::new(OUT_DIR).join("save_works.svg");
-        plot.save(&path)?;
-        let file = File::open(&path).map_err(|_| "cannot open file")?;
+        plot.save(&path).unwrap();
+        let file = File::open(&path).map_err(|_| "cannot open file").unwrap();
         let buffered = BufReader::new(file);
         let lines_iter = buffered.lines();
         assert!(lines_iter.count() > 20);
-        Ok(())
     }
 
     #[test]
-    fn save_str_works() -> Result<(), StrError> {
+    fn save_str_works() {
         let plot = Plot::new();
         assert_eq!(plot.buffer.len(), 0);
         let path = "/tmp/plotpy/unit_tests/save_str_works.svg";
-        plot.save(&path)?;
-        let file = File::open(&path).map_err(|_| "cannot open file")?;
+        plot.save(&path).unwrap();
+        let file = File::open(&path).map_err(|_| "cannot open file").unwrap();
         let buffered = BufReader::new(file);
         let lines_iter = buffered.lines();
         assert!(lines_iter.count() > 20);
-        Ok(())
     }
 
     #[test]
-    fn show_errors_works() -> Result<(), StrError> {
+    fn show_errors_works() {
         const WRONG: usize = 0;
         let mut plot = Plot::new();
         plot.set_show_errors(true);
         plot.set_subplot(1, 1, WRONG);
         let path = Path::new(OUT_DIR).join("show_errors_works.svg");
         assert_eq!(plot.save(&path).err(), Some("python3 failed; please see the log file"));
-        Ok(())
     }
 
     #[test]

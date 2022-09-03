@@ -873,7 +873,7 @@ impl GraphMaker for Canvas {
 
 #[cfg(test)]
 mod tests {
-    use super::{Canvas, StrError};
+    use super::Canvas;
     use crate::{GraphMaker, PolyCode};
 
     #[test]
@@ -1114,18 +1114,17 @@ mod tests {
     }
 
     #[test]
-    fn polycurve_works() -> Result<(), StrError> {
+    fn polycurve_works() {
         let mut canvas = Canvas::new();
         let points = &[[0, 0], [1, 0], [1, 1]];
         let codes = &[PolyCode::MoveTo, PolyCode::Curve3, PolyCode::Curve3];
-        canvas.draw_polycurve(points, codes, true)?;
+        canvas.draw_polycurve(points, codes, true).unwrap();
         let b: &str = "dat=[[pth.Path.MOVETO,(0,0)],[pth.Path.CURVE3,(1,0)],[pth.Path.CURVE3,(1,1)],[pth.Path.CLOSEPOLY,(None,None)]]\n\
                        cmd,pts=zip(*dat)\n\
                        h=pth.Path(pts,cmd)\n\
                        p=pat.PathPatch(h,edgecolor='#427ce5')\n\
                        plt.gca().add_patch(p)\n";
         assert_eq!(canvas.buffer, b);
-        Ok(())
     }
 
     #[test]
@@ -1211,9 +1210,11 @@ mod tests {
     }
 
     #[test]
-    fn grid_no_ids_works() -> Result<(), StrError> {
+    fn grid_no_ids_works() {
         let mut canvas = Canvas::new();
-        canvas.draw_grid(&[0.0, 0.0], &[1.0, 1.0], &[1, 1], false, false)?;
+        canvas
+            .draw_grid(&[0.0, 0.0], &[1.0, 1.0], &[1, 1], false, false)
+            .unwrap();
         let b: &str = "dat=[\n\
                       \x20\x20\x20\x20[pth.Path.MOVETO,(0,0)],[pth.Path.LINETO,(0,1)],\n\
                       \x20\x20\x20\x20[pth.Path.MOVETO,(1,0)],[pth.Path.LINETO,(1,1)],\n\
@@ -1226,13 +1227,12 @@ mod tests {
                       plt.gca().add_patch(p)\n\
                       plt.axis([-0.1,1.1,-0.1,1.1])\n";
         assert_eq!(canvas.buffer, b);
-        Ok(())
     }
 
     #[test]
-    fn grid_2d_works() -> Result<(), StrError> {
+    fn grid_2d_works() {
         let mut canvas = Canvas::new();
-        canvas.draw_grid(&[0.0, 0.0], &[1.0, 1.0], &[1, 1], true, true)?;
+        canvas.draw_grid(&[0.0, 0.0], &[1.0, 1.0], &[1, 1], true, true).unwrap();
         let b: &str = "dat=[\n\
                       \x20\x20\x20\x20[pth.Path.MOVETO,(0,0)],[pth.Path.LINETO,(0,1)],\n\
                       \x20\x20\x20\x20[pth.Path.MOVETO,(1,0)],[pth.Path.LINETO,(1,1)],\n\
@@ -1250,13 +1250,14 @@ mod tests {
                       plt.text(0.5,0.5,'0',color='#343434',ha='center',va='center',fontsize=10)\n\
                       plt.axis([-0.1,1.1,-0.1,1.1])\n";
         assert_eq!(canvas.buffer, b);
-        Ok(())
     }
 
     #[test]
-    fn grid_3d_works() -> Result<(), StrError> {
+    fn grid_3d_works() {
         let mut canvas = Canvas::new();
-        canvas.draw_grid(&[0.0, 0.0, 0.0], &[1.0, 1.0, 1.0], &[1, 1, 1], true, true)?;
+        canvas
+            .draw_grid(&[0.0, 0.0, 0.0], &[1.0, 1.0, 1.0], &[1, 1, 1], true, true)
+            .unwrap();
         let b: &str = "maybe_create_ax3d()\n\
                        AX3D.plot([0,0],[0,1],[0,0],color='#427ce5')\n\
                        AX3D.plot([1,1],[0,1],[0,0],color='#427ce5')\n\
@@ -1283,6 +1284,5 @@ mod tests {
                        AX3D.set_ylim3d(-0.1,1.1)\n\
                        AX3D.set_zlim3d(-0.1,1.1)\n";
         assert_eq!(canvas.buffer, b);
-        Ok(())
     }
 }

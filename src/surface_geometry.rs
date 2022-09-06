@@ -1,5 +1,6 @@
 use crate::{StrError, Surface};
-use russell_lab::{generate3d, suq_cos, suq_sin, Matrix};
+use russell_lab::math::{suq_cos, suq_sin};
+use russell_lab::{generate3d, Matrix};
 use std::f64::consts::PI;
 
 impl Surface {

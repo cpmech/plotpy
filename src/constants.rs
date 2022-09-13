@@ -10,7 +10,7 @@
 ///
 /// * `add_to_ea` -- Adds an entity to the EXTRA_ARTISTS list to prevent them being ignored
 ///    when Matplotlib decides to calculate the bounding boxes. The Legend is an example of entity that could
-///    be ignored during by the savefig command (this is issue is prevented here).
+///    be ignored by the savefig command (this is issue is prevented here).
 /// * `maybe_create_ax3d` -- If AX3D is None, allocates a new mplot3d (Matplotlib's 3D plotting capability)
 /// * `data_to_axis` -- Transforms data limits to axis limits
 /// * `axis_to_data` -- Transforms axis limits to data limits

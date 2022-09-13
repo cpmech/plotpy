@@ -647,7 +647,7 @@ impl Plot {
         } else {
             "plt.savefig(fn,bbox_inches='tight',bbox_extra_artists=EXTRA_ARTISTS)\n"
         };
-        let commands = format!("{}\nfn='{}'\n{}", self.buffer, fig_path.to_string_lossy(), txt);
+        let commands = format!("{}\nfn=r'{}'\n{}", self.buffer, fig_path.to_string_lossy(), txt);
 
         // call python
         let mut path = Path::new(figure_path).to_path_buf();

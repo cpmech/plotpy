@@ -80,9 +80,9 @@ impl Surface {
                 for k in 0..3 {
                     p[k] = a[k] + u * e0[k] + radius * f64::sin(v) * e1[k] + radius * f64::cos(v) * e2[k];
                 }
-                x[i][j] = p[0];
-                y[i][j] = p[1];
-                z[i][j] = p[2];
+                x.set(i, j, p[0]);
+                y.set(i, j, p[1]);
+                z.set(i, j, p[2]);
             }
         }
         self.draw(&x, &y, &z);
@@ -243,13 +243,13 @@ impl Surface {
             for j in 0..n_theta + 1 {
                 let theta = (j as f64) * d_theta;
                 if cup {
-                    x[i][j] = c[0] + r * f64::cos(alpha) * f64::sin(theta);
-                    y[i][j] = c[1] + r * f64::sin(alpha) * f64::sin(theta);
-                    z[i][j] = c[2] - r * f64::cos(theta);
+                    x.set(i, j, c[0] + r * f64::cos(alpha) * f64::sin(theta));
+                    y.set(i, j, c[1] + r * f64::sin(alpha) * f64::sin(theta));
+                    z.set(i, j, c[2] - r * f64::cos(theta));
                 } else {
-                    x[i][j] = c[0] + r * f64::cos(alpha) * f64::sin(theta);
-                    y[i][j] = c[1] + r * f64::sin(alpha) * f64::sin(theta);
-                    z[i][j] = c[2] + r * f64::cos(theta);
+                    x.set(i, j, c[0] + r * f64::cos(alpha) * f64::sin(theta));
+                    y.set(i, j, c[1] + r * f64::sin(alpha) * f64::sin(theta));
+                    z.set(i, j, c[2] + r * f64::cos(theta));
                 }
             }
         }
@@ -342,9 +342,9 @@ impl Surface {
             let alpha = a_min + (i as f64) * d_alpha;
             for j in 0..n_theta + 1 {
                 let theta = t_min + (j as f64) * d_theta;
-                x[i][j] = c[0] + r[0] * suq_cos(theta, aa) * suq_cos(alpha, aa);
-                y[i][j] = c[1] + r[1] * suq_cos(theta, bb) * suq_sin(alpha, bb);
-                z[i][j] = c[2] + r[2] * suq_sin(theta, cc);
+                x.set(i, j, c[0] + r[0] * suq_cos(theta, aa) * suq_cos(alpha, aa));
+                y.set(i, j, c[1] + r[1] * suq_cos(theta, bb) * suq_sin(alpha, bb));
+                z.set(i, j, c[2] + r[2] * suq_sin(theta, cc));
             }
         }
         self.draw(&x, &y, &z);

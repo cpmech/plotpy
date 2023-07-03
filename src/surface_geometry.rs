@@ -1,5 +1,6 @@
 use crate::{StrError, Surface};
-use russell_lab::{generate3d, suq_cos, suq_sin, Matrix};
+use russell_lab::math::{suq_cos, suq_sin};
+use russell_lab::{generate3d, Matrix};
 use std::f64::consts::PI;
 
 impl Surface {
@@ -79,9 +80,9 @@ impl Surface {
                 for k in 0..3 {
                     p[k] = a[k] + u * e0[k] + radius * f64::sin(v) * e1[k] + radius * f64::cos(v) * e2[k];
                 }
-                x[i][j] = p[0];
-                y[i][j] = p[1];
-                z[i][j] = p[2];
+                x.set(i, j, p[0]);
+                y.set(i, j, p[1]);
+                z.set(i, j, p[2]);
             }
         }
         self.draw(&x, &y, &z);
@@ -242,13 +243,13 @@ impl Surface {
             for j in 0..n_theta + 1 {
                 let theta = (j as f64) * d_theta;
                 if cup {
-                    x[i][j] = c[0] + r * f64::cos(alpha) * f64::sin(theta);
-                    y[i][j] = c[1] + r * f64::sin(alpha) * f64::sin(theta);
-                    z[i][j] = c[2] - r * f64::cos(theta);
+                    x.set(i, j, c[0] + r * f64::cos(alpha) * f64::sin(theta));
+                    y.set(i, j, c[1] + r * f64::sin(alpha) * f64::sin(theta));
+                    z.set(i, j, c[2] - r * f64::cos(theta));
                 } else {
-                    x[i][j] = c[0] + r * f64::cos(alpha) * f64::sin(theta);
-                    y[i][j] = c[1] + r * f64::sin(alpha) * f64::sin(theta);
-                    z[i][j] = c[2] + r * f64::cos(theta);
+                    x.set(i, j, c[0] + r * f64::cos(alpha) * f64::sin(theta));
+                    y.set(i, j, c[1] + r * f64::sin(alpha) * f64::sin(theta));
+                    z.set(i, j, c[2] + r * f64::cos(theta));
                 }
             }
         }
@@ -341,9 +342,9 @@ impl Surface {
             let alpha = a_min + (i as f64) * d_alpha;
             for j in 0..n_theta + 1 {
                 let theta = t_min + (j as f64) * d_theta;
-                x[i][j] = c[0] + r[0] * suq_cos(theta, aa) * suq_cos(alpha, aa);
-                y[i][j] = c[1] + r[1] * suq_cos(theta, bb) * suq_sin(alpha, bb);
-                z[i][j] = c[2] + r[2] * suq_sin(theta, cc);
+                x.set(i, j, c[0] + r[0] * suq_cos(theta, aa) * suq_cos(alpha, aa));
+                y.set(i, j, c[1] + r[1] * suq_cos(theta, bb) * suq_sin(alpha, bb));
+                z.set(i, j, c[2] + r[2] * suq_sin(theta, cc));
             }
         }
         self.draw(&x, &y, &z);
@@ -425,7 +426,7 @@ impl Surface {
 #[cfg(test)]
 mod tests {
     use super::Surface;
-    use crate::{GraphMaker, StrError};
+    use crate::GraphMaker;
 
     #[test]
     fn draw_cylinder_fails_on_wrong_input() {
@@ -447,11 +448,11 @@ mod tests {
     }
 
     #[test]
-    fn draw_cylinder_works() -> Result<(), StrError> {
+    fn draw_cylinder_works() {
         let mut surf = Surface::new();
-        surf.draw_cylinder(&[0.0, 0.0, 0.0], &[1.0, 0.0, 0.0], 1.0, 2, 3)?;
+        surf.draw_cylinder(&[0.0, 0.0, 0.0], &[1.0, 0.0, 0.0], 1.0, 2, 3)
+            .unwrap();
         assert!(surf.get_buffer().len() > 0);
-        Ok(())
     }
 
     #[test]
@@ -472,11 +473,11 @@ mod tests {
     }
 
     #[test]
-    fn draw_plane_nzz_works() -> Result<(), StrError> {
+    fn draw_plane_nzz_works() {
         let mut surf = Surface::new();
-        surf.draw_plane_nzz(&[0.0, 0.0, 0.0], &[1.0, 1.0, 1.0], 0.0, 1.0, 0.0, 1.0, 2, 2)?;
+        surf.draw_plane_nzz(&[0.0, 0.0, 0.0], &[1.0, 1.0, 1.0], 0.0, 1.0, 0.0, 1.0, 2, 2)
+            .unwrap();
         assert!(surf.get_buffer().len() > 0);
-        Ok(())
     }
 
     #[test]
@@ -492,13 +493,14 @@ mod tests {
     }
 
     #[test]
-    fn draw_hemisphere_works() -> Result<(), StrError> {
+    fn draw_hemisphere_works() {
         let mut surf = Surface::new();
-        surf.draw_hemisphere(&[0.0, 0.0, 0.0], 1.0, 0.0, 180.0, 2, 2, true)?;
+        surf.draw_hemisphere(&[0.0, 0.0, 0.0], 1.0, 0.0, 180.0, 2, 2, true)
+            .unwrap();
         assert!(surf.get_buffer().len() > 0);
-        surf.draw_hemisphere(&[0.0, 0.0, 0.0], 1.0, 0.0, 180.0, 2, 2, false)?;
+        surf.draw_hemisphere(&[0.0, 0.0, 0.0], 1.0, 0.0, 180.0, 2, 2, false)
+            .unwrap();
         assert!(surf.get_buffer().len() > 0);
-        Ok(())
     }
 
     #[test]
@@ -529,7 +531,7 @@ mod tests {
     }
 
     #[test]
-    fn draw_superquadric_works() -> Result<(), StrError> {
+    fn draw_superquadric_works() {
         let mut surf = Surface::new();
         surf.draw_superquadric(
             &[0.0, 0.0, 0.0],
@@ -541,9 +543,9 @@ mod tests {
             180.0,
             2,
             2,
-        )?;
+        )
+        .unwrap();
         assert!(surf.get_buffer().len() > 0);
-        Ok(())
     }
 
     #[test]
@@ -559,10 +561,9 @@ mod tests {
     }
 
     #[test]
-    fn draw_sphere_works() -> Result<(), StrError> {
+    fn draw_sphere_works() {
         let mut surf = Surface::new();
-        surf.draw_sphere(&[0.0, 0.0, 0.0], 1.0, 2, 2)?;
+        surf.draw_sphere(&[0.0, 0.0, 0.0], 1.0, 2, 2).unwrap();
         assert!(surf.get_buffer().len() > 0);
-        Ok(())
     }
 }

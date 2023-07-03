@@ -59,57 +59,54 @@ pub(crate) fn call_python3(python_commands: &String, path: &Path) -> Result<Stri
 
 #[cfg(test)]
 mod tests {
-    use super::{call_python3, StrError, PYTHON_HEADER};
+    use super::{call_python3, PYTHON_HEADER};
     use std::fs;
     use std::path::Path;
 
     const OUT_DIR: &str = "/tmp/plotpy/unit_tests";
 
     #[test]
-    fn call_python3_works() -> Result<(), StrError> {
+    fn call_python3_works() {
         let commands = "print(\"Python says: Hello World!\")".to_string();
         let path = Path::new("call_python3_works.py");
-        let output = call_python3(&commands, &path)?;
-        let data = fs::read_to_string(&path).map_err(|_| "cannot read test file")?;
+        let output = call_python3(&commands, &path).unwrap();
+        let data = fs::read_to_string(&path).map_err(|_| "cannot read test file").unwrap();
         let mut correct = String::from(PYTHON_HEADER);
         correct.push_str(&commands);
         assert_eq!(data, correct);
         assert_eq!(output, "Python says: Hello World!\n");
-        Ok(())
     }
 
     #[test]
-    fn call_python3_create_dir_works() -> Result<(), StrError> {
+    fn call_python3_create_dir_works() {
         let commands = "print(\"Python says: Hello World!\")".to_string();
         let path = Path::new(OUT_DIR).join("call_python3_works.py");
-        let output = call_python3(&commands, &path)?;
-        let data = fs::read_to_string(&path).map_err(|_| "cannot read test file")?;
+        let output = call_python3(&commands, &path).unwrap();
+        let data = fs::read_to_string(&path).map_err(|_| "cannot read test file").unwrap();
         let mut correct = String::from(PYTHON_HEADER);
         correct.push_str(&commands);
         assert_eq!(data, correct);
         assert_eq!(output, "Python says: Hello World!\n");
-        Ok(())
     }
 
     #[test]
-    fn call_python3_twice_works() -> Result<(), StrError> {
+    fn call_python3_twice_works() {
         let path = Path::new(OUT_DIR).join("call_python3_twice_works.py");
         // first
         let commands_first = "print(\"Python says: Hello World!\")".to_string();
-        let output_first = call_python3(&commands_first, &path)?;
-        let data_first = fs::read_to_string(&path).map_err(|_| "cannot read test file")?;
+        let output_first = call_python3(&commands_first, &path).unwrap();
+        let data_first = fs::read_to_string(&path).map_err(|_| "cannot read test file").unwrap();
         let mut correct_first = String::from(PYTHON_HEADER);
         correct_first.push_str(&commands_first);
         assert_eq!(data_first, correct_first);
         assert_eq!(output_first, "Python says: Hello World!\n");
         // second
         let commands_second = "print(\"Python says: Hello World! again\")".to_string();
-        let output_second = call_python3(&commands_second, &path)?;
-        let data_second = fs::read_to_string(&path).map_err(|_| "cannot read test file")?;
+        let output_second = call_python3(&commands_second, &path).unwrap();
+        let data_second = fs::read_to_string(&path).map_err(|_| "cannot read test file").unwrap();
         let mut correct_second = String::from(PYTHON_HEADER);
         correct_second.push_str(&commands_second);
         assert_eq!(data_second, correct_second);
         assert_eq!(output_second, "Python says: Hello World! again\n");
-        Ok(())
     }
 }

@@ -191,14 +191,79 @@ impl Plot {
 
     /// Configures subplots
     ///
-    /// # Arguments
+    /// # Input
     ///
-    /// * `row` - number of rows in the subplot grid
-    /// * `col` - number of columns in the subplot grid
-    /// * `index` - activate current subplot; **indices start at one** (1-based)
-    ///
+    /// * `row` -- number of rows in the subplot grid
+    /// * `col` -- number of columns in the subplot grid
+    /// * `index` -- activate current subplot; **indices start at one** (1-based)
     pub fn set_subplot(&mut self, row: usize, col: usize, index: usize) -> &mut Self {
         write!(&mut self.buffer, "\nplt.subplot({},{},{})\n", row, col, index).unwrap();
+        self
+    }
+
+    /// Configures subplots using GridSpec
+    ///
+    /// # Input
+    ///
+    /// * `grid_handle` -- an identifier for GridSpec to be used later with [Plot::set_grid]
+    /// * `row` -- number of rows in the grid
+    /// * `col` -- number of columns in the grid
+    /// * `options` -- (may be empty) Comma separated options. Example `"wspace=0,hspace=0.35"`.
+    ///    See <https://matplotlib.org/stable/api/_as_gen/matplotlib.gridspec.GridSpec.html>
+    pub fn set_gridspec(&mut self, grid_handle: &str, row: usize, col: usize, options: &str) -> &mut Self {
+        write!(
+            &mut self.buffer,
+            "grid_{}=plt.GridSpec({},{},{})\n",
+            grid_handle, row, col, options
+        )
+        .unwrap();
+        self
+    }
+
+    /// Sets a subplot configured via GridSpec
+    ///
+    /// See function [Plot::set_gridspec]
+    ///
+    /// # Input
+    ///
+    /// * `grid_handle` -- an identifier for GridSpec defined by [Plot::set_gridspec]
+    /// * `i_range` -- the **zero-based** row index or range such as "0" or "0:2"
+    /// * `j_range` -- the **zero-based** column index or range such as "0" or "0:2"
+    pub fn set_subplot_grid(&mut self, grid_handle: &str, i_range: &str, j_range: &str) -> &mut Self {
+        write!(
+            &mut self.buffer,
+            "\nplt.subplot(grid_{}[{},{}])\n",
+            grid_handle, i_range, j_range
+        )
+        .unwrap();
+        self
+    }
+
+    /// Sets the rotation of ticks along the x-axis
+    pub fn set_rotation_ticks_x(&mut self, rotation: f64) -> &mut Self {
+        write!(
+            &mut self.buffer,
+            "plt.gca().tick_params(axis='x',rotation={})\n",
+            rotation
+        )
+        .unwrap();
+        self
+    }
+
+    /// Sets the rotation of ticks along the y-axis
+    pub fn set_rotation_ticks_y(&mut self, rotation: f64) -> &mut Self {
+        write!(
+            &mut self.buffer,
+            "plt.gca().tick_params(axis='y',rotation={})\n",
+            rotation
+        )
+        .unwrap();
+        self
+    }
+
+    /// Aligns the labels when using subplots
+    pub fn set_align_labels(&mut self) -> &mut Self {
+        write!(&mut self.buffer, "plt.gcf().align_labels()\n").unwrap();
         self
     }
 
@@ -993,6 +1058,22 @@ mod tests {
         let b: &str = "plt.gca().invert_xaxis()\n\
                        plt.gca().invert_yaxis()\n\
                        plt.show()\n";
+        assert_eq!(plot.buffer, b);
+    }
+
+    #[test]
+    fn gridspec_functions_work() {
+        let mut plot = Plot::new();
+        plot.set_gridspec("the_grid", 2, 2, "wspace=0.1,hspace=0.2")
+            .set_subplot_grid("the_grid", "0:2", "0")
+            .set_rotation_ticks_x(55.0)
+            .set_rotation_ticks_y(45.0)
+            .set_align_labels();
+        let b: &str = "grid_the_grid=plt.GridSpec(2,2,wspace=0.1,hspace=0.2)\n\
+                       \nplt.subplot(grid_the_grid[0:2,0])\n\
+                       plt.gca().tick_params(axis='x',rotation=55)\n\
+                       plt.gca().tick_params(axis='y',rotation=45)\n\
+                       plt.gcf().align_labels()\n";
         assert_eq!(plot.buffer, b);
     }
 }

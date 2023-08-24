@@ -136,6 +136,12 @@ impl Plot {
         self.run(figure_path, true)
     }
 
+    /// Clears current axis
+    pub fn clear_current_axis(&mut self) -> &mut Self {
+        self.buffer.push_str("plt.gca().cla()\n");
+        self
+    }
+
     /// Clears current figure
     pub fn clear_current_figure(&mut self) -> &mut Self {
         self.buffer.push_str("plt.clf()\n");

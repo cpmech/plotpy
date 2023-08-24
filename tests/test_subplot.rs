@@ -33,7 +33,7 @@ fn test_subplot() -> Result<(), StrError> {
     assert!(n > 600);
     assert!(n < 650);
 
-    // clear current axis
+    // clear the current axes
     plot.set_subplot(1, 2, 1).clear_current_axes();
 
     // save figure again

@@ -56,6 +56,14 @@ Some output of integration tests are shown below.
 ![plot](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_plot_subplots.svg)
 ![plot](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_plot.svg)
 
+## Subplot and GridSpec
+
+[test_subplot.rs](https://github.com/cpmech/plotpy/tree/main/tests/test_subplot.rs)
+
+![gridspec](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_gridspec_1.svg)
+![gridspec](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_gridspec_2.svg)
+
+
 ## Slope icon
 
 [test_slope_icon.rs](https://github.com/cpmech/plotpy/tree/main/tests/test_slope_icon.rs)

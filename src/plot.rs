@@ -866,6 +866,7 @@ mod tests {
             .set_ticks_y(0.5, 0.1, "%g")
             .set_figure_size_inches(2.0, 2.0)
             .set_figure_size_points(7227.0, 7227.0)
+            .clear_current_axes()
             .clear_current_figure();
         let b: &str = "plt.title(r'my plot')\n\
                        set_equal_axes()\n\
@@ -918,6 +919,7 @@ mod tests {
                        plt.gca().yaxis.set_major_formatter(major_formatter)\n\
                        plt.gcf().set_size_inches(2,2)\n\
                        plt.gcf().set_size_inches(100,100)\n\
+                       plt.gca().cla()\n\
                        plt.clf()\n";
         assert_eq!(plot.buffer, b);
         assert_eq!(plot.show_errors, true);

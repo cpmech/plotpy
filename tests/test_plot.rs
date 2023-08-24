@@ -39,7 +39,8 @@ fn test_plot() -> Result<(), StrError> {
         .set_num_ticks_y(5)
         .set_label_x("x-label")
         .set_label_y("y-label")
-        .set_labels("x", "y");
+        .set_labels("x", "y")
+        .clear_current_axes();
     plot.clear_current_figure();
     plot.set_title("my plot")
         .set_frame_borders(false)

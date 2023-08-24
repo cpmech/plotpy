@@ -34,7 +34,7 @@ fn test_subplot() -> Result<(), StrError> {
     assert!(n < 650);
 
     // clear current axis
-    plot.set_subplot(1, 2, 1).clear_current_axis();
+    plot.set_subplot(1, 2, 1).clear_current_axes();
 
     // save figure again
     let path = Path::new(OUT_DIR).join("integ_subplot_after.svg");

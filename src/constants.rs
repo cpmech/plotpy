@@ -70,6 +70,37 @@ def set_equal_axes():
         print('ERROR: set_box_aspect is missing in this version of Matplotlib')
 ";
 
+const PY_NUM_MARKERS: [&str; 12] = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11"];
+
+/// Quotes or not the marker style
+///
+/// This is needed because the following markers are python numbers,
+/// and not strings (so, they must not be quoted):
+///
+/// ```text
+/// 0 (TICKLEFT)
+/// 1 (TICKRIGHT)
+/// 2 (TICKUP)
+/// 3 (TICKDOWN)
+/// 4 (CARETLEFT)
+/// 5 (CARETRIGHT)
+/// 6 (CARETUP)
+/// 7 (CARETDOWN)
+/// 8 (CARETLEFTBASE)
+/// 9 (CARETRIGHTBASE)
+/// 10 (CARETUPBASE)
+/// 11 (CARETDOWNBASE)
+/// ```
+///
+/// See: <https://matplotlib.org/stable/api/markers_api.html>
+pub(crate) fn quote_marker(maker_style: &str) -> String {
+    if PY_NUM_MARKERS.contains(&maker_style) {
+        String::from(maker_style)
+    } else {
+        format!("'{}'", maker_style)
+    }
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #[cfg(test)]

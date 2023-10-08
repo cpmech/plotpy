@@ -2,47 +2,52 @@
 
 [![codecov](https://codecov.io/gh/cpmech/plotpy/branch/main/graph/badge.svg?token=SUBRKUN63U)](https://codecov.io/gh/cpmech/plotpy)
 
-This library implements high-level functions to generate plots and drawings.
-Although we use Python/Matplotlib, the goal is to provide a convenient Rust library
-that is **different** than Matplotlib. The difference happens because we want **convenience**
-for the Rust developer while getting the **fantastic quality of Matplotlib** 😀.
+## Contents
 
-Internally, we use [Matplotlib](https://matplotlib.org/) via a Python 3 script.
-First, we generate a python code in a directory of your choice (e.g., `/tmp/plotpy`),
-and then we call **python3** using Rust's `std::process::Command`.
+* [Introduction](#introduction)
+* [Installation on Debian/Ubuntu/Linux](#installation)
+* [Installation on macOS](#macos)
+* [Setting Cargo.toml](#cargo)
+* [Examples](#examples)
 
-For more information (and examples), check out the [plotpy documentation on docs.rs](https://docs.rs/plotpy)
+## <a name="introduction"></a> Introduction
 
-See also the [examples directory](https://github.com/cpmech/plotpy/tree/main/examples) with the output
-of the [integration tests](https://github.com/cpmech/plotpy/tree/main/tests).
+This crate implements high-level functions to generate plots and drawings.  Although we use Python/Matplotlib, the goal is to provide a convenient Rust library that is **different** than Matplotlib. The difference happens because we want **convenience** for the Rust developer while getting the **fantastic quality of Matplotlib** 😀.
 
-## Documentation
+Internally, we use [Matplotlib](https://matplotlib.org/) via a Python 3 script.  First, we generate a python code in a directory of your choice (e.g., `/tmp/plotpy`), and then we call **python3** using Rust's `std::process::Command`.
 
-[Plotpy documentation on docs.rs](https://docs.rs/plotpy)
+For more information (and examples), check out the [plotpy documentation on docs.rs](https://docs.rs/plotpy).
 
-## Installation
+See also the [examples directory](https://github.com/cpmech/plotpy/tree/main/examples) with the output of the [integration tests](https://github.com/cpmech/plotpy/tree/main/tests).
 
-For convenience, we use [Russell Lab](https://github.com/cpmech/russell).
+## <a name="installation"></a> Installation on Debian/Ubuntu/Linux
 
-Thus, we need the following libraries:
+This crate depends on `russell_lab`, which, in turn, depends on an efficient BLAS library such as [OpenBLAS](https://github.com/OpenMathLib/OpenBLAS) and [Intel MKL](https://www.intel.com/content/www/us/en/docs/onemkl/developer-reference-c/2023-2/overview.html). Thus, we have two options:
 
-### Latest Ubuntu dependencies
+1. Use the standard Debian packages based on OpenBLAS (default)
+2. **(XOR)** Install Intel MKL, which includes LAPACK
 
-```bash
-sudo apt-get install liblapacke-dev libopenblas-dev python3-pip
-pip install matplotlib
-```
-
-### Earlier Ubuntu dependencies
+Option 2 requires the following environment variable:
 
 ```bash
-sudo apt-get install liblapacke-dev libopenblas-dev python3-pip3
-pip3 install matplotlib
+export RUSSELL_LAB_USE_INTEL_MKL=1
 ```
 
-**Note** We use pip3 because the version of Matplotlib needs to be at least 3.3.0 and the earlier Ubuntu comes with 3.1.2.
+For convenience, you may use the scripts in the [zscripts](https://github.com/cpmech/plotpy/tree/main/zscripts) directory.
 
-### macOS dependencies
+**1.** Use the standard Debian packages based on OpenBLAS:
+
+```bash
+bash zscripts/01-ubuntu-openblas.bash
+```
+
+**2.** Install Intel MKL:
+
+```bash
+bash zscripts/02-ubuntu-intel-mkl.bash
+```
+
+### <a name="macos"></a> Installation on macOS
 
 In macOS, you may use [Homebrew](https://brew.sh/) (and pip) to install the dependencies:
 
@@ -57,7 +62,7 @@ pip3 install matplotlib
 export LIBRARY_PATH=$LIBRARY_PATH:$(brew --prefix)/opt/openblas/lib:$(brew --prefix)/opt/lapack/lib
 ```
 
-### Cargo.toml
+## <a name="cargo"></a> Setting Cargo.toml
 
 [![Crates.io](https://img.shields.io/crates/v/plotpy.svg)](https://crates.io/crates/plotpy)
 
@@ -68,7 +73,7 @@ export LIBRARY_PATH=$LIBRARY_PATH:$(brew --prefix)/opt/openblas/lib:$(brew --pre
 plotpy = "*"
 ```
 
-## Examples
+## <a name="examples"></a> Examples
 
 ### Contour
 

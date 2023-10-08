@@ -16,7 +16,4 @@ sudo apt-get install -y --no-install-recommends \
     gfortran \
     liblapacke-dev \
     libopenblas-dev \
-    python3-pip
-
-# insatll matplotlib
-pip install matplotlib
+    python3-matplotlib

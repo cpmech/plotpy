@@ -22,7 +22,7 @@ See also the [examples directory](https://github.com/cpmech/plotpy/tree/main/exa
 
 ## <a name="installation"></a> Installation on Debian/Ubuntu/Linux
 
-This crate depends on `russell_lab`, which, in turn, depends on an efficient BLAS library such as [OpenBLAS](https://github.com/OpenMathLib/OpenBLAS) and [Intel MKL](https://www.intel.com/content/www/us/en/docs/onemkl/developer-reference-c/2023-2/overview.html). Thus, we have two options:
+In addition to Matplotlib (version >= 3.3.0), this crate depends on `russell_lab`, which, in turn, depends on an efficient BLAS library such as [OpenBLAS](https://github.com/OpenMathLib/OpenBLAS) and [Intel MKL](https://www.intel.com/content/www/us/en/docs/onemkl/developer-reference-c/2023-2/overview.html). Thus, we have two options:
 
 1. Use the standard Debian packages based on OpenBLAS (default)
 2. **(XOR)** Install Intel MKL, which includes LAPACK
@@ -35,16 +35,16 @@ export RUSSELL_LAB_USE_INTEL_MKL=1
 
 For convenience, you may use the scripts in the [zscripts](https://github.com/cpmech/plotpy/tree/main/zscripts) directory.
 
-**1.** Use the standard Debian packages based on OpenBLAS:
+**1.** Install Matplotlib and use the standard Debian packages based on OpenBLAS:
 
 ```bash
-bash zscripts/01-ubuntu-openblas.bash
+bash zscripts/01-ubuntu-matplotlib-and-openblas.bash
 ```
 
-**2.** Install Intel MKL:
+**2.** Install Matplotlib and install Intel MKL:
 
 ```bash
-bash zscripts/02-ubuntu-intel-mkl.bash
+bash zscripts/02-ubuntu-matplotlib-and-intel-mkl.bash
 ```
 
 ### <a name="macos"></a> Installation on macOS

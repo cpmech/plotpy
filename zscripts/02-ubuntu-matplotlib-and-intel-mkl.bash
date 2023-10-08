@@ -16,10 +16,7 @@ sudo apt-get install -y --no-install-recommends \
     git \
     libmetis-dev \
     make \
-    python3-pip
-
-# insatll matplotlib
-pip install matplotlib
+    python3-matplotlib
 
 # install Intel MKL
 bash zscripts/install-intel-mkl-linux.bash

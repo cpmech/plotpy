@@ -13,4 +13,3 @@ keywords = ["plot", "2D", "3D", "python", "matplotlib"]
 
 [dependencies]
 russell_lab = { path = "../russell/russell_lab", version = "0.5" }
-russell_chk = { path = "../russell/russell_chk", version = "0.5" }

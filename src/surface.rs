@@ -346,8 +346,7 @@ impl GraphMaker for Surface {
 mod tests {
     use super::Surface;
     use crate::GraphMaker;
-    use russell_chk::vec_approx_eq;
-    use russell_lab::Matrix;
+    use russell_lab::{vec_approx_eq, Matrix};
 
     #[test]
     fn new_works() {

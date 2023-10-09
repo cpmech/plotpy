@@ -452,6 +452,12 @@ mod tests {
     }
 
     #[test]
+    #[should_panic(expected = "numbers are not approximately equal. diff = 1.0")]
+    fn approx_eq_captures_errors() {
+        approx_eq(1.0, 2.0, 1e-15);
+    }
+
+    #[test]
     fn aligned_system_works() {
         let (e0, e1, e2) = Surface::aligned_system(&[-1.0, 0.0, 0.0], &[8.0, 0.0, 0.0]).unwrap();
         assert_eq!(e0, &[1.0, 0.0, 0.0]);

@@ -174,6 +174,12 @@ mod tests {
     }
 
     #[test]
+    #[should_panic(expected = "numbers are not approximately equal. diff = 1.0")]
+    fn approx_eq_captures_errors() {
+        approx_eq(1.0, 2.0, 1e-15);
+    }
+
+    #[test]
     fn sign_works() {
         let xx = [-2.0, -1.6, -1.2, -0.8, -0.4, 0.0, 0.4, 0.8, 1.2, 1.6, 2.0];
         for x in xx {

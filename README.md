@@ -5,8 +5,7 @@
 ## Contents
 
 * [Introduction](#introduction)
-* [Installation on Debian/Ubuntu/Linux](#installation)
-* [Installation on macOS](#macos)
+* [Installation](#installation)
 * [Setting Cargo.toml](#cargo)
 * [Examples](#examples)
 
@@ -22,44 +21,12 @@ See also the [examples directory](https://github.com/cpmech/plotpy/tree/main/exa
 
 ## <a name="installation"></a> Installation on Debian/Ubuntu/Linux
 
-In addition to Matplotlib (version >= 3.3.0), this crate depends on `russell_lab`, which, in turn, depends on an efficient BLAS library such as [OpenBLAS](https://github.com/OpenMathLib/OpenBLAS) and [Intel MKL](https://www.intel.com/content/www/us/en/docs/onemkl/developer-reference-c/2023-2/overview.html). Thus, we have two options:
+This crate needs Python3 and Matplotlib, of course.
 
-1. Use the standard Debian packages based on OpenBLAS (default)
-2. **(XOR)** Install Intel MKL, which includes LAPACK
-
-Option 2 requires the following environment variable:
+On Debian/Ubuntu/Linux, run:
 
 ```bash
-export RUSSELL_LAB_USE_INTEL_MKL=1
-```
-
-For convenience, you may use the scripts in the [zscripts](https://github.com/cpmech/plotpy/tree/main/zscripts) directory.
-
-**1.** Install Matplotlib and use the standard Debian packages based on OpenBLAS:
-
-```bash
-bash zscripts/01-ubuntu-matplotlib-and-openblas.bash
-```
-
-**2.** Install Matplotlib and install Intel MKL:
-
-```bash
-bash zscripts/02-ubuntu-matplotlib-and-intel-mkl.bash
-```
-
-### <a name="macos"></a> Installation on macOS
-
-In macOS, you may use [Homebrew](https://brew.sh/) (and pip) to install the dependencies:
-
-```bash
-brew install openblas lapack
-pip3 install matplotlib
-```
-
-**Note** In macOS, we have to set the `LIBRARY_PATH` all the time when using `plotpy`:
-
-```bash
-export LIBRARY_PATH=$LIBRARY_PATH:$(brew --prefix)/opt/openblas/lib:$(brew --prefix)/opt/lapack/lib
+sudo apt install python3-matplotlib
 ```
 
 ## <a name="cargo"></a> Setting Cargo.toml
@@ -78,8 +45,7 @@ plotpy = "*"
 ### Contour
 
 ```rust
-use plotpy::{Contour, Plot, StrError};
-use russell_lab::generate3d;
+use plotpy::{generate3d, Contour, Plot, StrError};
 
 fn main() -> Result<(), StrError> {
     // generate (x,y,z) matrices

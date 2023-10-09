@@ -1,5 +1,4 @@
-use plotpy::{Curve, Plot, SlopeIcon, StrError};
-use russell_lab::Vector;
+use plotpy::{linspace, Curve, Plot, SlopeIcon, StrError};
 use std::fs::File;
 use std::io::{BufRead, BufReader};
 use std::path::Path;
@@ -233,9 +232,9 @@ fn test_slope_icon_logx_liny() -> Result<(), StrError> {
     let mut curve2 = Curve::new();
     curve1.set_marker_style("o");
     curve2.set_marker_style("*");
-    let x = Vector::linspace(x0, xmax, 5)?;
-    let y1 = x.get_mapped(f1);
-    let y2 = x.get_mapped(f2);
+    let x = linspace(x0, xmax, 5);
+    let y1: Vec<_> = x.iter().map(|x| f1(*x)).collect();
+    let y2: Vec<_> = x.iter().map(|x| f2(*x)).collect();
     curve1.draw(&x, &y1);
     curve2.draw(&x, &y2);
 
@@ -315,9 +314,9 @@ fn test_slope_icon_linx_logy() -> Result<(), StrError> {
     let mut curve2 = Curve::new();
     curve1.set_marker_style("o");
     curve2.set_marker_style("*");
-    let x = Vector::linspace(x0, xmax, 5)?;
-    let y1 = x.get_mapped(f1);
-    let y2 = x.get_mapped(f2);
+    let x = linspace(x0, xmax, 5);
+    let y1: Vec<_> = x.iter().map(|x| f1(*x)).collect();
+    let y2: Vec<_> = x.iter().map(|x| f2(*x)).collect();
     curve1.draw(&x, &y1);
     curve2.draw(&x, &y2);
 
@@ -397,9 +396,9 @@ fn test_slope_icon_logx_logy() -> Result<(), StrError> {
     let mut curve2 = Curve::new();
     curve1.set_marker_style("o");
     curve2.set_marker_style("*");
-    let x = Vector::linspace(x0, xmax, 5)?;
-    let y1 = x.get_mapped(f1);
-    let y2 = x.get_mapped(f2);
+    let x = linspace(x0, xmax, 5);
+    let y1: Vec<_> = x.iter().map(|x| f1(*x)).collect();
+    let y2: Vec<_> = x.iter().map(|x| f2(*x)).collect();
     curve1.draw(&x, &y1);
     curve2.draw(&x, &y2);
 
@@ -474,9 +473,9 @@ fn test_slope_icon_example() -> Result<(), StrError> {
     // curves
     let mut curve1a = Curve::new();
     let mut curve1b = Curve::new();
-    let x1 = Vector::linspace(x1i, x1f, 3)?;
-    let y1a = x1.get_mapped(f1a);
-    let y1b = x1.get_mapped(f1b);
+    let x1 = linspace(x1i, x1f, 3);
+    let y1a: Vec<_> = x1.iter().map(|x| f1a(*x)).collect();
+    let y1b: Vec<_> = x1.iter().map(|x| f1b(*x)).collect();
     curve1a.set_marker_style("o").draw(&x1, &y1a);
     curve1b.set_marker_style("*").draw(&x1, &y1b);
 
@@ -510,9 +509,9 @@ fn test_slope_icon_example() -> Result<(), StrError> {
     // curves
     let mut curve2a = Curve::new();
     let mut curve2b = Curve::new();
-    let x2 = Vector::linspace(x2i, x2f, 3)?;
-    let y2a = x2.get_mapped(f2a);
-    let y2b = x2.get_mapped(f2b);
+    let x2 = linspace(x2i, x2f, 3);
+    let y2a: Vec<_> = x2.iter().map(|x| f2a(*x)).collect();
+    let y2b: Vec<_> = x2.iter().map(|x| f2b(*x)).collect();
     curve2a.set_marker_style("o").draw(&x2, &y2a);
     curve2b.set_marker_style("*").draw(&x2, &y2b);
 
@@ -546,9 +545,9 @@ fn test_slope_icon_example() -> Result<(), StrError> {
     // curves
     let mut curve3a = Curve::new();
     let mut curve3b = Curve::new();
-    let x3 = Vector::linspace(x3i, x3f, 3)?;
-    let y3a = x3.get_mapped(f3a);
-    let y3b = x3.get_mapped(f3b);
+    let x3 = linspace(x3i, x3f, 3);
+    let y3a: Vec<_> = x3.iter().map(|x| f3a(*x)).collect();
+    let y3b: Vec<_> = x3.iter().map(|x| f3b(*x)).collect();
     curve3a.set_marker_style("o").draw(&x3, &y3a);
     curve3b.set_marker_style("*").draw(&x3, &y3b);
 
@@ -582,9 +581,9 @@ fn test_slope_icon_example() -> Result<(), StrError> {
     // curves
     let mut curve4a = Curve::new();
     let mut curve4b = Curve::new();
-    let x4 = Vector::linspace(x4i, x4f, 4)?;
-    let y4a = x4.get_mapped(f4a);
-    let y4b = x4.get_mapped(f4b);
+    let x4 = linspace(x4i, x4f, 4);
+    let y4a: Vec<_> = x4.iter().map(|x| f4a(*x)).collect();
+    let y4b: Vec<_> = x4.iter().map(|x| f4b(*x)).collect();
     curve4a.set_marker_style("o").draw(&x4, &y4a);
     curve4b.set_marker_style("*").draw(&x4, &y4b);
 

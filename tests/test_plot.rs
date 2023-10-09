@@ -1,5 +1,4 @@
-use plotpy::{Curve, Plot, StrError};
-use russell_lab::Vector;
+use plotpy::{linspace, Curve, Plot, StrError};
 use std::f64::consts::PI;
 use std::fs::File;
 use std::io::{BufRead, BufReader};
@@ -121,8 +120,8 @@ fn test_plot_log() -> Result<(), StrError> {
     let mut curve4 = Curve::new();
 
     // draw curve
-    let x = Vector::linspace(1.0, 11.0, 11)?;
-    let y = x.get_mapped(|v| f64::exp(v));
+    let x = linspace(1.0, 11.0, 11);
+    let y: Vec<_> = x.iter().map(|v| f64::exp(*v)).collect();
     curve1.draw(&x, &x);
     curve2.draw(&x, &y);
     curve3.draw(&y, &x);

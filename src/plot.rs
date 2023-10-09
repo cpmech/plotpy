@@ -19,17 +19,16 @@ pub trait GraphMaker {
 /// # Example
 ///
 /// ```
-/// use plotpy::{Curve, Plot, StrError};
-/// use russell_lab::Vector;
+/// use plotpy::{linspace, Curve, Plot, StrError};
 ///
 /// fn main() -> Result<(), StrError> {
 ///     // generate (x,y) points
 ///     let n = 11;
-///     let x = Vector::linspace(-1.0, 1.0, n)?;
+///     let x = linspace(-1.0, 1.0, n);
 ///     let y1 = x.clone();
-///     let y2 = x.get_mapped(|v| f64::abs(v));
-///     let y3 = x.get_mapped(|v| f64::exp(1.0 + v) - 1.0);
-///     let y4 = x.get_mapped(|v| f64::sqrt(1.0 + v));
+///     let y2: Vec<_> = x.iter().map(|v| f64::abs(*v)).collect();
+///     let y3: Vec<_> = x.iter().map(|v| f64::exp(1.0 + *v) - 1.0).collect();
+///     let y4: Vec<_> = x.iter().map(|v| f64::sqrt(1.0 + *v)).collect();
 ///
 ///     // configure and draw curves
 ///     let mut curve1 = Curve::new();

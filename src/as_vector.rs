@@ -1,12 +1,9 @@
-use russell_lab::Vector;
-
 /// Defines a trait to handle Vector-like data
 ///
 /// # Example
 ///
 /// ```
 /// use plotpy::AsVector;
-/// use russell_lab::Vector;
 ///
 /// fn sum<'a, T, U>(array: &'a T) -> f64
 /// where
@@ -32,10 +29,6 @@ use russell_lab::Vector;
 /// // stack-allocated (fixed-size) 2D array
 /// let z = [100.0, 200.0, 300.0];
 /// assert_eq!(sum(&z), 600.0);
-///
-/// // using Vector
-/// let w = Vector::from(&[5.0, 5.0, 5.0]);
-/// assert_eq!(sum(&w), 15.0);
 /// ```
 pub trait AsVector<'a, U: 'a> {
     /// Returns the size of the vector
@@ -84,22 +77,11 @@ where
     }
 }
 
-/// Handles Vector
-impl<'a> AsVector<'a, f64> for Vector {
-    fn vec_size(&self) -> usize {
-        self.dim()
-    }
-    fn vec_at(&self, i: usize) -> f64 {
-        self.get(i)
-    }
-}
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #[cfg(test)]
 mod tests {
     use super::AsVector;
-    use russell_lab::Vector;
     use std::fmt::Write;
 
     fn vector_str<'a, T, U>(array: &'a T) -> String
@@ -129,9 +111,5 @@ mod tests {
         // stack-allocated (fixed-size) 2D array
         let z = [100.0, 200.0, 300.0];
         assert_eq!(vector_str(&z), "100,200,300,\n");
-
-        // vector
-        let w = Vector::from(&[10.0, 10.0, 10.0]);
-        assert_eq!(vector_str(&w), "10,10,10,\n");
     }
 }

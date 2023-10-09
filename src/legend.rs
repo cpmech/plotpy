@@ -6,16 +6,15 @@ use std::fmt::Write;
 /// # Example
 ///
 /// ```
-/// use plotpy::{Curve, Legend, Plot, StrError};
-/// use russell_lab::Vector;
+/// use plotpy::{linspace, Curve, Legend, Plot, StrError};
 ///
 /// fn main() -> Result<(), StrError> {
 ///     // generate (x,y) points
-///     let x  = Vector::linspace(0.0, 5.0, 6)?;
-///     let y1 = x.get_mapped(|v| 0.5 * v);
-///     let y2 = x.get_mapped(|v| 1.0 * v);
-///     let y3 = x.get_mapped(|v| 1.5 * v);
-///     let y4 = x.get_mapped(|v| 2.0 * v);
+///     let x  = linspace(0.0, 5.0, 6);
+///     let y1: Vec<_> = x.iter().map(|v| 0.5 * *v).collect();
+///     let y2: Vec<_> = x.iter().map(|v| 1.0 * *v).collect();
+///     let y3: Vec<_> = x.iter().map(|v| 1.5 * *v).collect();
+///     let y4: Vec<_> = x.iter().map(|v| 2.0 * *v).collect();
 ///
 ///     // configure and draw curves
 ///     let mut curve1 = Curve::new();

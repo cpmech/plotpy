@@ -1,6 +1,4 @@
-use crate::{StrError, Surface};
-use russell_lab::math::{suq_cos, suq_sin};
-use russell_lab::{generate3d, Matrix};
+use crate::{generate3d, suq_cos, suq_sin, StrError, Surface};
 use std::f64::consts::PI;
 
 impl Surface {
@@ -67,9 +65,9 @@ impl Surface {
         let cylinder_height =
             f64::sqrt((b[0] - a[0]) * (b[0] - a[0]) + (b[1] - a[1]) * (b[1] - a[1]) + (b[2] - a[2]) * (b[2] - a[2]));
         let (n_height, n_alpha) = (ndiv_axis + 1, ndiv_perimeter + 1);
-        let mut x = Matrix::new(n_alpha, n_height);
-        let mut y = Matrix::new(n_alpha, n_height);
-        let mut z = Matrix::new(n_alpha, n_height);
+        let mut x = vec![vec![0.0; n_height]; n_alpha];
+        let mut y = vec![vec![0.0; n_height]; n_alpha];
+        let mut z = vec![vec![0.0; n_height]; n_alpha];
         let delta_height = cylinder_height / ((n_height - 1) as f64);
         let delta_alpha = 2.0 * std::f64::consts::PI / ((n_alpha - 1) as f64);
         let mut p = vec![0.0; 3];
@@ -80,9 +78,9 @@ impl Surface {
                 for k in 0..3 {
                     p[k] = a[k] + u * e0[k] + radius * f64::sin(v) * e1[k] + radius * f64::cos(v) * e2[k];
                 }
-                x.set(i, j, p[0]);
-                y.set(i, j, p[1]);
-                z.set(i, j, p[2]);
+                x[i][j] = p[0];
+                y[i][j] = p[1];
+                z[i][j] = p[2];
             }
         }
         self.draw(&x, &y, &z);
@@ -146,7 +144,7 @@ impl Surface {
         ymax: f64,
         nx: usize,
         ny: usize,
-    ) -> Result<(Matrix, Matrix, Matrix), StrError> {
+    ) -> Result<(Vec<Vec<f64>>, Vec<Vec<f64>>, Vec<Vec<f64>>), StrError> {
         if p.len() != 3 || n.len() != 3 {
             return Err("p.len() and n.len() must be equal to 3");
         }
@@ -224,7 +222,7 @@ impl Surface {
         n_alpha: usize,
         n_theta: usize,
         cup: bool,
-    ) -> Result<(Matrix, Matrix, Matrix), StrError> {
+    ) -> Result<(Vec<Vec<f64>>, Vec<Vec<f64>>, Vec<Vec<f64>>), StrError> {
         if c.len() != 3 {
             return Err("c.len() must be equal to 3");
         }
@@ -235,21 +233,21 @@ impl Surface {
         let a_max = alpha_max * PI / 180.0;
         let d_alpha = (a_max - a_min) / (n_alpha as f64);
         let d_theta = (PI / 2.0) / (n_theta as f64);
-        let mut x = Matrix::new(n_alpha + 1, n_theta + 1);
-        let mut y = Matrix::new(n_alpha + 1, n_theta + 1);
-        let mut z = Matrix::new(n_alpha + 1, n_theta + 1);
+        let mut x = vec![vec![0.0; n_theta + 1]; n_alpha + 1];
+        let mut y = vec![vec![0.0; n_theta + 1]; n_alpha + 1];
+        let mut z = vec![vec![0.0; n_theta + 1]; n_alpha + 1];
         for i in 0..n_alpha + 1 {
             let alpha = a_min + (i as f64) * d_alpha;
             for j in 0..n_theta + 1 {
                 let theta = (j as f64) * d_theta;
                 if cup {
-                    x.set(i, j, c[0] + r * f64::cos(alpha) * f64::sin(theta));
-                    y.set(i, j, c[1] + r * f64::sin(alpha) * f64::sin(theta));
-                    z.set(i, j, c[2] - r * f64::cos(theta));
+                    x[i][j] = c[0] + r * f64::cos(alpha) * f64::sin(theta);
+                    y[i][j] = c[1] + r * f64::sin(alpha) * f64::sin(theta);
+                    z[i][j] = c[2] - r * f64::cos(theta);
                 } else {
-                    x.set(i, j, c[0] + r * f64::cos(alpha) * f64::sin(theta));
-                    y.set(i, j, c[1] + r * f64::sin(alpha) * f64::sin(theta));
-                    z.set(i, j, c[2] + r * f64::cos(theta));
+                    x[i][j] = c[0] + r * f64::cos(alpha) * f64::sin(theta);
+                    y[i][j] = c[1] + r * f64::sin(alpha) * f64::sin(theta);
+                    z[i][j] = c[2] + r * f64::cos(theta);
                 }
             }
         }
@@ -318,7 +316,7 @@ impl Surface {
         theta_max: f64,
         n_alpha: usize,
         n_theta: usize,
-    ) -> Result<(Matrix, Matrix, Matrix), StrError> {
+    ) -> Result<(Vec<Vec<f64>>, Vec<Vec<f64>>, Vec<Vec<f64>>), StrError> {
         if c.len() != 3 || r.len() != 3 || k.len() != 3 {
             return Err("c.len(), r.len(), and k.len() must be equal to 3");
         }
@@ -335,16 +333,16 @@ impl Surface {
         let t_max = theta_max * PI / 180.0;
         let d_alpha = (a_max - a_min) / (n_alpha as f64);
         let d_theta = (t_max - t_min) / (n_theta as f64);
-        let mut x = Matrix::new(n_alpha + 1, n_theta + 1);
-        let mut y = Matrix::new(n_alpha + 1, n_theta + 1);
-        let mut z = Matrix::new(n_alpha + 1, n_theta + 1);
+        let mut x = vec![vec![0.0; n_theta + 1]; n_alpha + 1];
+        let mut y = vec![vec![0.0; n_theta + 1]; n_alpha + 1];
+        let mut z = vec![vec![0.0; n_theta + 1]; n_alpha + 1];
         for i in 0..n_alpha + 1 {
             let alpha = a_min + (i as f64) * d_alpha;
             for j in 0..n_theta + 1 {
                 let theta = t_min + (j as f64) * d_theta;
-                x.set(i, j, c[0] + r[0] * suq_cos(theta, aa) * suq_cos(alpha, aa));
-                y.set(i, j, c[1] + r[1] * suq_cos(theta, bb) * suq_sin(alpha, bb));
-                z.set(i, j, c[2] + r[2] * suq_sin(theta, cc));
+                x[i][j] = c[0] + r[0] * suq_cos(theta, aa) * suq_cos(alpha, aa);
+                y[i][j] = c[1] + r[1] * suq_cos(theta, bb) * suq_sin(alpha, bb);
+                z[i][j] = c[2] + r[2] * suq_sin(theta, cc);
             }
         }
         self.draw(&x, &y, &z);
@@ -398,7 +396,7 @@ impl Surface {
         r: f64,
         n_alpha: usize,
         n_theta: usize,
-    ) -> Result<(Matrix, Matrix, Matrix), StrError> {
+    ) -> Result<(Vec<Vec<f64>>, Vec<Vec<f64>>, Vec<Vec<f64>>), StrError> {
         if c.len() != 3 {
             return Err("c.len() must be equal to 3");
         }

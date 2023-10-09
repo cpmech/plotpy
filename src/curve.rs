@@ -67,13 +67,12 @@ pub enum RayEndpoint {
 /// ## Using Vector with point data
 ///
 /// ```
-/// use plotpy::{Curve, Plot, StrError};
-/// use russell_lab::Vector;
+/// use plotpy::{linspace, Curve, Plot, StrError};
 ///
 /// fn main() -> Result<(), StrError> {
 ///     // generate (x,y) points
-///     let x = Vector::linspace(-1.0, 1.0, 21)?;
-///     let y = x.get_mapped(|v| 1.0 / (1.0 + f64::exp(-5.0 * v)));
+///     let x = linspace(-1.0, 1.0, 21);
+///     let y: Vec<_> = x.iter().map(|v| 1.0 / (1.0 + f64::exp(-5.0 * *v))).collect();
 ///
 ///     // configure curve
 ///     let mut curve = Curve::new();
@@ -461,7 +460,6 @@ impl GraphMaker for Curve {
 mod tests {
     use super::{Curve, RayEndpoint};
     use crate::GraphMaker;
-    use russell_lab::Vector;
 
     #[test]
     fn new_works() {
@@ -558,19 +556,6 @@ mod tests {
         assert_eq!(curve.buffer, b);
         curve.clear_buffer();
         assert_eq!(curve.buffer, "");
-    }
-
-    #[test]
-    fn draw_with_vector_works() {
-        let x = Vector::from(&[1.0, 2.0, 3.0, 4.0, 5.0]);
-        let y = Vector::from(&[1.0, 4.0, 9.0, 16.0, 25.0]);
-        let mut curve = Curve::new();
-        curve.set_label("the-curve");
-        curve.draw(&x, &y);
-        let b: &str = "x=np.array([1,2,3,4,5,],dtype=float)\n\
-                       y=np.array([1,4,9,16,25,],dtype=float)\n\
-                       plt.plot(x,y,label='the-curve')\n";
-        assert_eq!(curve.buffer, b);
     }
 
     #[test]

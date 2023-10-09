@@ -205,7 +205,7 @@ impl Plot {
     ///
     /// # Input
     ///
-    /// * `grid_handle` -- an identifier for GridSpec to be used later with [Plot::set_grid]
+    /// * `grid_handle` -- an identifier for GridSpec to be used later with [Plot::set_subplot_grid]
     /// * `row` -- number of rows in the grid
     /// * `col` -- number of columns in the grid
     /// * `options` -- (may be empty) Comma separated options. Example `"wspace=0,hspace=0.35"`.

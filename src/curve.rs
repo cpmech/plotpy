@@ -1,4 +1,5 @@
 use super::{vector_to_array, AsVector, GraphMaker};
+use crate::quote_marker;
 use std::fmt::Write;
 
 /// Holds either the second point coordinates of a ray or the slope of the ray
@@ -433,7 +434,7 @@ impl Curve {
             write!(&mut opt, ",markersize={}", self.marker_size).unwrap();
         }
         if self.marker_style != "" {
-            write!(&mut opt, ",marker='{}'", self.marker_style).unwrap();
+            write!(&mut opt, ",marker={}", quote_marker(&self.marker_style)).unwrap();
         }
 
         // clipping
@@ -513,6 +514,12 @@ mod tests {
              ,marker='o'\
              ,clip_on=False"
         );
+        let mut curve = Curve::new();
+        for i in 5..12 {
+            curve.set_marker_style(&format!("{}", i));
+            let options = curve.options();
+            assert_eq!(options, format!(",marker={}", i));
+        }
     }
 
     #[test]

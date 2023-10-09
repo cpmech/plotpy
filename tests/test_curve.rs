@@ -27,7 +27,7 @@ fn test_curve() -> Result<(), StrError> {
     curve2
         .set_line_style("None")
         .set_marker_line_color("#1862ab")
-        .set_marker_style("s")
+        .set_marker_style("8")
         .set_marker_void(true);
 
     // draw curves

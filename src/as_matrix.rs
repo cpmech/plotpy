@@ -1,12 +1,9 @@
-use russell_lab::Matrix;
-
 /// Defines a trait to handle Matrix-like data
 ///
 /// # Example
 ///
 /// ```
 /// use plotpy::AsMatrix;
-/// use russell_lab::Matrix;
 ///
 /// fn sum<'a, T, U>(array: &'a T) -> f64
 /// where
@@ -47,14 +44,6 @@ use russell_lab::Matrix;
 ///     [500.0, 600.0],
 /// ];
 /// assert_eq!(sum(&c), 2100.0);
-///
-/// // using Matrix
-/// let d = Matrix::from(&[
-///     [0.1, 0.2],
-///     [0.3, 0.4],
-///     [0.5, 0.6],
-/// ]);
-/// assert_eq!(sum(&d), 2.1);
 /// ```
 pub trait AsMatrix<'a, U: 'a> {
     /// Returns the size of the matrix
@@ -113,22 +102,11 @@ where
     }
 }
 
-/// Handles Matrix
-impl<'a> AsMatrix<'a, f64> for Matrix {
-    fn size(&self) -> (usize, usize) {
-        self.dims()
-    }
-    fn at(&self, i: usize, j: usize) -> f64 {
-        self.get(i, j)
-    }
-}
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #[cfg(test)]
 mod tests {
     use super::AsMatrix;
-    use russell_lab::Matrix;
     use std::fmt::Write;
 
     fn matrix_str<'a, T, U>(array: &'a T) -> String
@@ -179,15 +157,6 @@ mod tests {
             "100,200,\n\
              300,400,\n\
              500,600,\n"
-        );
-
-        // matrix
-        let d = Matrix::from(&[[0.1, 0.2], [0.3, 0.4], [0.5, 0.6]]);
-        assert_eq!(
-            matrix_str(&d),
-            "0.1,0.2,\n\
-             0.3,0.4,\n\
-             0.5,0.6,\n"
         );
     }
 }

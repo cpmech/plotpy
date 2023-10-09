@@ -1,5 +1,4 @@
-use plotpy::{Contour, Plot, StrError};
-use russell_lab::generate3d;
+use plotpy::{generate3d, Contour, Plot, StrError};
 use std::fs::File;
 use std::io::{BufRead, BufReader};
 use std::path::Path;

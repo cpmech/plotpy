@@ -6,8 +6,7 @@ use std::fmt::Write;
 /// # Example
 ///
 /// ```
-/// use plotpy::{Contour, Plot};
-/// use russell_lab::generate3d;
+/// use plotpy::{Contour, Plot, generate3d};
 ///
 /// fn main() -> Result<(), &'static str> {
 ///     // generate (x,y,z) matrices
@@ -383,7 +382,6 @@ impl GraphMaker for Contour {
 mod tests {
     use super::Contour;
     use crate::GraphMaker;
-    use russell_lab::Matrix;
 
     #[test]
     fn new_works() {
@@ -520,22 +518,5 @@ mod tests {
         assert_eq!(contour.buffer, b);
         contour.clear_buffer();
         assert_eq!(contour.buffer, "");
-    }
-
-    #[test]
-    fn draw_with_matrix_works() {
-        let mut contour = Contour::new();
-        let x = Matrix::from(&[[-0.5, 0.0, 0.5], [-0.5, 0.0, 0.5], [-0.5, 0.0, 0.5]]);
-        let y = Matrix::from(&[[-0.5, -0.5, -0.5], [0.0, 0.0, 0.0], [0.5, 0.5, 0.5]]);
-        let z = Matrix::from(&[[0.5, 0.25, 0.5], [0.25, 0.0, 0.25], [0.5, 0.25, 0.5]]);
-        contour.draw(&x, &y, &z);
-        let b: &str = "x=np.array([[-0.5,0,0.5,],[-0.5,0,0.5,],[-0.5,0,0.5,],],dtype=float)\n\
-                       y=np.array([[-0.5,-0.5,-0.5,],[0,0,0,],[0.5,0.5,0.5,],],dtype=float)\n\
-                       z=np.array([[0.5,0.25,0.5,],[0.25,0,0.25,],[0.5,0.25,0.5,],],dtype=float)\n\
-                       cf=plt.contourf(x,y,z,cmap=get_colormap(0))\n\
-                       cl=plt.contour(x,y,z,colors=['black'])\n\
-                       plt.clabel(cl,inline=True)\n\
-                       cb=plt.colorbar(cf)\n";
-        assert_eq!(contour.buffer, b);
     }
 }

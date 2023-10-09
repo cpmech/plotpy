@@ -6,8 +6,7 @@ use std::fmt::Write;
 /// # Example
 ///
 /// ```
-/// use plotpy::{Plot, StrError, Surface};
-/// use russell_lab::generate3d;
+/// use plotpy::{generate3d, Plot, StrError, Surface};
 ///
 /// fn main() -> Result<(), StrError> {
 ///     // generate (x,y,z) matrices
@@ -346,7 +345,6 @@ impl GraphMaker for Surface {
 mod tests {
     use super::Surface;
     use crate::GraphMaker;
-    use russell_lab::{vec_approx_eq, Matrix};
 
     #[test]
     fn new_works() {
@@ -441,24 +439,16 @@ mod tests {
     }
 
     #[test]
-    fn draw_with_matrix_works() {
-        let mut surface = Surface::new();
-        let x = Matrix::from(&[[-0.5, 0.0, 0.5], [-0.5, 0.0, 0.5], [-0.5, 0.0, 0.5]]);
-        let y = Matrix::from(&[[-0.5, -0.5, -0.5], [0.0, 0.0, 0.0], [0.5, 0.5, 0.5]]);
-        let z = Matrix::from(&[[0.50, 0.25, 0.50], [0.25, 0.00, 0.25], [0.50, 0.25, 0.50]]);
-        surface.draw(&x, &y, &z);
-        let b: &str = "x=np.array([[-0.5,0,0.5,],[-0.5,0,0.5,],[-0.5,0,0.5,],],dtype=float)\n\
-                       y=np.array([[-0.5,-0.5,-0.5,],[0,0,0,],[0.5,0.5,0.5,],],dtype=float)\n\
-                       z=np.array([[0.5,0.25,0.5,],[0.25,0,0.25,],[0.5,0.25,0.5,],],dtype=float)\n\
-                       maybe_create_ax3d()\n\
-                       sf=AX3D.plot_surface(x,y,z,cmap=get_colormap(0))\n";
-        assert_eq!(surface.buffer, b);
-    }
-
-    #[test]
     fn aligned_system_fails_on_wrong_input() {
         let res = Surface::aligned_system(&[0.0, 0.0, 0.0], &[0.0, 0.0, 0.0]);
         assert_eq!(res.err(), Some("a-to-b segment is too short"));
+    }
+
+    fn approx_eq(a: f64, b: f64, tol: f64) {
+        let diff = f64::abs(a - b);
+        if diff > tol {
+            panic!("numbers are not approximately equal. diff = {:?}", diff);
+        }
     }
 
     #[test]
@@ -485,20 +475,35 @@ mod tests {
 
         let (m, n, l) = (3.0, 4.0, 5.0);
         let (e0, e1, e2) = Surface::aligned_system(&[2.0, -7.0, 5.0], &[2.0 + m, -7.0 + n, 5.0]).unwrap();
-        vec_approx_eq(&e0, &[m / l, n / l, 0.0], 1e-15);
-        vec_approx_eq(&e1, &[n / l, -m / l, 0.0], 1e-15);
-        vec_approx_eq(&e2, &[0.0, 0.0, -1.0], 1e-15);
+        let correct0 = &[m / l, n / l, 0.0];
+        let correct1 = &[n / l, -m / l, 0.0];
+        let correct2 = &[0.0, 0.0, -1.0];
+        for i in 0..3 {
+            approx_eq(e0[i], correct0[i], 1e-15);
+            approx_eq(e1[i], correct1[i], 1e-15);
+            approx_eq(e2[i], correct2[i], 1e-15);
+        }
 
         let s = f64::sqrt(2.0) / 2.0;
         let (e0, e1, e2) = Surface::aligned_system(&[0.0, 0.0, 1.0], &[1.0, 0.0, 2.0]).unwrap();
-        vec_approx_eq(&e0, &[s, 0.0, s], 1e-15);
-        vec_approx_eq(&e1, &[s, 0.0, -s], 1e-15);
-        vec_approx_eq(&e2, &[0.0, 1.0, 0.0], 1e-15);
+        let correct0 = &[s, 0.0, s];
+        let correct1 = &[s, 0.0, -s];
+        let correct2 = &[0.0, 1.0, 0.0];
+        for i in 0..3 {
+            approx_eq(e0[i], correct0[i], 1e-15);
+            approx_eq(e1[i], correct1[i], 1e-15);
+            approx_eq(e2[i], correct2[i], 1e-15);
+        }
 
         let (c, d, e) = (1.0 / f64::sqrt(3.0), 1.0 / f64::sqrt(6.0), 1.0 / f64::sqrt(2.0));
         let (e0, e1, e2) = Surface::aligned_system(&[3.0, 4.0, 5.0], &[13.0, 14.0, 15.0]).unwrap();
-        vec_approx_eq(&e0, &[c, c, c], 1e-15);
-        vec_approx_eq(&e1, &[2.0 * d, -d, -d], 1e-15);
-        vec_approx_eq(&e2, &[0.0, e, -e], 1e-15);
+        let correct0 = &[c, c, c];
+        let correct1 = &[2.0 * d, -d, -d];
+        let correct2 = &[0.0, e, -e];
+        for i in 0..3 {
+            approx_eq(e0[i], correct0[i], 1e-15);
+            approx_eq(e1[i], correct1[i], 1e-15);
+            approx_eq(e2[i], correct2[i], 1e-15);
+        }
     }
 }

@@ -11,8 +11,7 @@ use std::fmt::Write;
 /// # Example
 ///
 /// ```
-/// use plotpy::{Curve, Plot, SlopeIcon, StrError};
-/// use russell_lab::Vector;
+/// use plotpy::{linspace, Curve, Plot, SlopeIcon, StrError};
 ///
 /// fn main() -> Result<(), StrError> {
 ///     // models
@@ -24,9 +23,9 @@ use std::fmt::Write;
 ///     // curves
 ///     let mut curve1 = Curve::new();
 ///     let mut curve2 = Curve::new();
-///     let x = Vector::linspace(xi, xf, 3)?;
-///     let y1 = x.get_mapped(f);
-///     let y2 = x.get_mapped(g);
+///     let x = linspace(xi, xf, 3);
+///     let y1: Vec<_> = x.iter().map(|x| f(*x)).collect();
+///     let y2: Vec<_> = x.iter().map(|x| g(*x)).collect();
 ///     curve1.set_marker_style("o").draw(&x, &y1);
 ///     curve2.set_marker_style("*").draw(&x, &y2);
 ///

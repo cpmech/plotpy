@@ -36,8 +36,7 @@
 //! # Example
 //!
 //! ```
-//! use plotpy::{Plot, StrError, Surface};
-//! use russell_lab::generate3d;
+//! use plotpy::{generate3d, Plot, StrError, Surface};
 //!
 //! fn main() -> Result<(), StrError> {
 //!     let mut surface = Surface::new();
@@ -73,6 +72,7 @@ pub type StrError = &'static str;
 // modules ////////////////////////////////////////
 mod as_matrix;
 mod as_vector;
+mod auxiliary;
 mod canvas;
 mod constants;
 mod contour;
@@ -88,6 +88,7 @@ mod surface_geometry;
 mod text;
 pub use crate::as_matrix::*;
 pub use crate::as_vector::*;
+pub use crate::auxiliary::*;
 pub use crate::canvas::*;
 pub use crate::constants::*;
 pub use crate::contour::*;

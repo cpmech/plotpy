@@ -1,5 +1,4 @@
-use plotpy::{Plot, StrError, Surface};
-use russell_lab::generate3d;
+use plotpy::{generate3d, Plot, StrError, Surface};
 use std::fs::File;
 use std::io::{BufRead, BufReader};
 use std::path::Path;

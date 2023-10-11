@@ -1,4 +1,4 @@
-use super::{call_python3, Legend, StrError};
+use super::{call_python3, Legend, StrError, SuperTitleParams};
 use std::ffi::OsStr;
 use std::fmt::Write;
 use std::fs::File;
@@ -46,7 +46,7 @@ pub trait GraphMaker {
 ///
 ///     // configure plot
 ///     let mut plot = Plot::new();
-///     plot.set_super_title("FOUR CURVES").set_gaps(0.35, 0.5);
+///     plot.set_super_title("FOUR CURVES", None).set_gaps(0.35, 0.5);
 ///
 ///     // add curve to subplot
 ///     plot.set_subplot(2, 2, 1)
@@ -273,8 +273,12 @@ impl Plot {
     }
 
     /// Adds a title to all sub-plots
-    pub fn set_super_title(&mut self, title: &str) -> &mut Self {
-        write!(&mut self.buffer, "st=plt.suptitle(r'{}')\nadd_to_ea(st)\n", title).unwrap();
+    pub fn set_super_title(&mut self, title: &str, params: Option<SuperTitleParams>) -> &mut Self {
+        match params {
+            Some(p) => write!(&mut self.buffer, "st=plt.suptitle('{}'{})\n", title, p.options()).unwrap(),
+            None => write!(&mut self.buffer, "st=plt.suptitle('{}')\n", title).unwrap(),
+        }
+        write!(&mut self.buffer, "add_to_ea(st)\n").unwrap();
         self
     }
 
@@ -745,6 +749,8 @@ impl Plot {
 
 #[cfg(test)]
 mod tests {
+    use crate::SuperTitleParams;
+
     use super::Plot;
     use std::fs::File;
     use std::io::{BufRead, BufReader};
@@ -795,17 +801,35 @@ mod tests {
     #[test]
     fn subplot_functions_work() {
         let mut plot = Plot::new();
-        plot.set_super_title("all subplots")
+        plot.set_super_title("all subplots", None)
             .set_subplot(2, 2, 1)
             .set_horizontal_gap(0.1)
             .set_vertical_gap(0.2)
             .set_gaps(0.3, 0.4);
-        let b: &str = "st=plt.suptitle(r'all subplots')\n\
+        let b: &str = "st=plt.suptitle('all subplots')\n\
                        add_to_ea(st)\n\
                        \nplt.subplot(2,2,1)\n\
                          plt.subplots_adjust(wspace=0.1)\n\
                          plt.subplots_adjust(hspace=0.2)\n\
                          plt.subplots_adjust(wspace=0.3,hspace=0.4)\n";
+        assert_eq!(plot.buffer, b);
+    }
+
+    #[test]
+    fn super_title_works() {
+        let mut params = SuperTitleParams::new();
+        params
+            .set_x(123.3)
+            .set_y(456.7)
+            .set_align_horizontal("left")
+            .set_align_vertical("bottom")
+            .set_fontsize(12.0)
+            .set_fontweight(10.0);
+        let mut plot = Plot::new();
+        plot.set_super_title("all subplots", Some(params));
+        let b: &str =
+            "st=plt.suptitle('all subplots',x=123.3,y=456.7,ha='left',va='bottom',fontsize=12,fontweight=10)\n\
+                       add_to_ea(st)\n";
         assert_eq!(plot.buffer, b);
     }
 

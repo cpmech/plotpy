@@ -1,4 +1,4 @@
-use plotpy::{linspace, Curve, Plot, StrError};
+use plotpy::{linspace, Curve, Plot, StrError, SuperTitleParams};
 use std::f64::consts::PI;
 use std::fs::File;
 use std::io::{BufRead, BufReader};
@@ -82,9 +82,13 @@ fn test_plot_subplots() -> Result<(), StrError> {
     let y = &[1.0, 4.0, 9.0, 16.0, 25.0, 36.0, 49.0, 64.0];
     curve.draw(x, y);
 
+    // params for super title
+    let mut params = SuperTitleParams::new();
+    params.set_align_vertical("bottom");
+
     // configure plot
     let mut plot = Plot::new();
-    plot.set_super_title("all subplots")
+    plot.set_super_title("This is the \"super title\", \\n followed by a very long text to see \\n if this whole thing will be wrapped or not \\n we hope that it gets wrapped and beautifully formatted.", Some(params))
         .set_horizontal_gap(0.5)
         .set_vertical_gap(0.5)
         .set_gaps(0.3, 0.2);
@@ -107,7 +111,7 @@ fn test_plot_subplots() -> Result<(), StrError> {
     let file = File::open(path).map_err(|_| "cannot open file")?;
     let buffered = BufReader::new(file);
     let lines_iter = buffered.lines();
-    assert!(lines_iter.count() > 980);
+    assert!(lines_iter.count() > 1450);
     Ok(())
 }
 

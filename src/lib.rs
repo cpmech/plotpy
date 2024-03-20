@@ -102,7 +102,6 @@ pub use crate::plot::*;
 pub use crate::slope_icon::*;
 pub use crate::super_title_params::*;
 pub use crate::surface::*;
-pub use crate::surface_geometry::*;
 pub use crate::text::*;
 
 // run code from README file

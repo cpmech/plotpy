@@ -24,7 +24,7 @@ fn test_surface_geometry() -> Result<(), StrError> {
     let mut cap = Surface::new();
     let mut cup = Surface::new();
     let (x, y, z, r) = (-1.0, -1.0, -1.0, 0.5);
-    cap.set_line_color("red")
+    cap.set_wire_line_color("red")
         .set_with_surface(false)
         .set_with_wireframe(true)
         .draw_hemisphere(&[x, y, z], r, -180.0, 180.0, 10, 10, false)?;
@@ -49,11 +49,15 @@ fn test_surface_geometry() -> Result<(), StrError> {
 #[test]
 fn test_surface_cylinder() -> Result<(), StrError> {
     let mut surface = Surface::new();
-    surface.set_with_colormap(false);
+    surface.set_surf_color("red");
     surface.draw_cylinder(&[0.0, 0.0, 0.0], &[5.0, 0.0, 0.0], 0.5, 1, 20)?;
+    surface.set_surf_color("green");
     surface.draw_cylinder(&[0.0, 0.0, 0.0], &[0.0, 5.0, 0.0], 0.5, 1, 20)?;
+    surface.set_surf_color("blue");
     surface.draw_cylinder(&[0.0, 0.0, 0.0], &[0.0, 0.0, 5.0], 0.5, 1, 20)?;
+    surface.set_surf_color("gold");
     surface.draw_cylinder(&[0.0, 0.0, 0.0], &[5.0, 5.0, 5.0], 0.5, 1, 20)?;
+    surface.set_surf_color("magenta");
     surface.draw_cylinder(&[5.0, 5.0, 0.0], &[5.0, 5.0, 5.0], 0.5, 1, 20)?;
 
     // add surface to plot
@@ -96,7 +100,7 @@ fn test_surface_superquadric() -> Result<(), StrError> {
     let c = &[-1.0, 1.0, 1.0];
     let k = &[4.0, 4.0, 4.0];
     let mut cube = Surface::new();
-    cube.set_solid_color("#ee29f2")
+    cube.set_surf_color("#ee29f2")
         .draw_superquadric(c, r, k, -180.0, 180.0, -90.0, 90.0, 40, 20)?;
 
     // sphere

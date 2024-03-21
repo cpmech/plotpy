@@ -119,7 +119,7 @@ pub struct Curve {
     line_width: f64,           // Width of lines
     marker_color: String,      // Color of markers
     marker_every: usize,       // Increment of data points to use when drawing markers
-    marker_void: bool,         // Draw a void marker (draw edge only)
+    marker_void: bool,         // Draws a void marker (edge only)
     marker_line_color: String, // Edge color of markers
     marker_line_width: f64,    // Edge width of markers
     marker_size: f64,          // Size of markers

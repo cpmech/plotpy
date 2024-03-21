@@ -33,8 +33,6 @@ NaN = np.NaN
 EXTRA_ARTISTS = []
 def add_to_ea(obj):
     if obj!=None: EXTRA_ARTISTS.append(obj)
-COLORMAPS = [plt.cm.bwr, plt.cm.RdBu, plt.cm.hsv, plt.cm.jet, plt.cm.terrain, plt.cm.pink, plt.cm.Greys]
-def get_colormap(idx): return COLORMAPS[idx % len(COLORMAPS)]
 AX3D = None
 def maybe_create_ax3d():
     global AX3D
@@ -109,6 +107,6 @@ mod tests {
 
     #[test]
     fn constants_are_correct() {
-        assert_eq!(PYTHON_HEADER.len(), 1768);
+        assert_eq!(PYTHON_HEADER.len(), 1601);
     }
 }

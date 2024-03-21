@@ -45,9 +45,9 @@
 //!         .set_colormap_name("Pastel1")
 //!         .set_with_colorbar(true)
 //!         .set_colorbar_label("temperature")
-//!         .set_line_color("#1862ab")
-//!         .set_line_style(":")
-//!         .set_line_width(0.75);
+//!         .set_wire_line_color("#1862ab")
+//!         .set_wire_line_style(":")
+//!         .set_wire_line_width(0.75);
 //!
 //!     // draw surface
 //!     let n = 9;

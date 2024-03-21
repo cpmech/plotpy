@@ -499,6 +499,44 @@ mod tests {
     }
 
     #[test]
+    fn options_points_works() {
+        let mut surface = Surface::new();
+        surface.set_row_stride(3).set_col_stride(4);
+        let opt = surface.options_points();
+        assert_eq!(opt, ",rstride=3,cstride=4,c=z,cmap=plt.get_cmap('bwr')");
+
+        surface.set_colormap_name("Pastel1");
+        let opt = surface.options_points();
+        assert_eq!(opt, ",rstride=3,cstride=4,c=z,cmap=plt.get_cmap('Pastel1')");
+
+        surface.set_colormap_index(3);
+        let opt = surface.options_points();
+        assert_eq!(opt, ",rstride=3,cstride=4,c=z,cmap=plt.get_cmap('jet')");
+
+        surface.set_colormap_name("turbo");
+        let opt = surface.options_points();
+        assert_eq!(opt, ",rstride=3,cstride=4,c=z,cmap=plt.get_cmap('turbo')");
+
+        let mut surface = Surface::new();
+        surface
+            .set_point_color("blue")
+            .set_point_line_color("red")
+            .set_point_size(100.0)
+            .set_point_style("*")
+            .set_point_line_width(3.0);
+        let opt = surface.options_points();
+        assert_eq!(opt, ",linewidths=3,s=100,marker='*',color='blue',edgecolor='red'");
+
+        surface.set_point_void(true);
+        let opt = surface.options_points();
+        assert_eq!(opt, ",linewidths=3,s=100,marker='*',color='none',edgecolor='red'");
+
+        surface.set_point_void(true).set_point_line_color("");
+        let opt = surface.options_points();
+        assert_eq!(opt, ",linewidths=3,s=100,marker='*',color='none',edgecolor='black'");
+    }
+
+    #[test]
     fn options_colorbar_works() {
         let mut surface = Surface::new();
         surface.set_number_format_cb("%.3f");

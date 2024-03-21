@@ -87,7 +87,14 @@ Some output of integration tests are shown below.
 [test_surface.rs](https://github.com/cpmech/plotpy/tree/main/tests/test_surface.rs)
 
 ![surface](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_surface.svg)
-![surface](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_surface_wireframe.svg)
+![wireframe](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_surface_wireframe.svg)
+![points](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_surface_points.svg)
+![points_color](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_surface_points_color.svg)
+![points_void](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_surface_points_void.svg)
+
+[test_subplot3d.rs](https://github.com/cpmech/plotpy/tree/main/tests/test_subplot3d.rs)
+
+![subplot3d](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_subplot3d.svg)
 
 ## Text
 

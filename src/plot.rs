@@ -84,8 +84,11 @@ pub trait GraphMaker {
 ///
 /// See also integration tests in the [tests directory](https://github.com/cpmech/plotpy/tree/main/tests)
 pub struct Plot {
-    show_errors: bool, // show python errors, if any
-    buffer: String,    // buffer
+    show_errors: bool,              // show python errors, if any
+    buffer: String,                 // buffer
+    save_tight: bool,               // option for savefig: enable bbox_inches='tight'
+    save_pad_inches: Option<f64>,   // option for savefig: add some padding when save_tight==true
+    save_transparent: Option<bool>, // option for savefig: make it transparent
 }
 
 impl Plot {
@@ -94,12 +97,36 @@ impl Plot {
         Plot {
             show_errors: false,
             buffer: String::new(),
+            save_tight: true,
+            save_pad_inches: None,
+            save_transparent: None,
         }
     }
 
     /// Adds new graph entity
     pub fn add(&mut self, graph: &dyn GraphMaker) -> &mut Self {
         self.buffer.push_str(graph.get_buffer());
+        self
+    }
+
+    /// Tells matplotlib to try to figure out the tight bounding box of the figure (default = true)
+    pub fn set_save_tight(&mut self, tight: bool) -> &mut Self {
+        self.save_tight = tight;
+        self
+    }
+
+    /// Sets the padding around the figure when the 'tight' layout is enabled during saving
+    ///
+    /// This option may circumvent *rare* problems when matplotlib fails to compute the best bounding box
+    /// (e.g., when the labels of 3D plots are ignored)
+    pub fn set_save_pad_inches(&mut self, pad_inches: f64) -> &mut Self {
+        self.save_pad_inches = Some(pad_inches);
+        self
+    }
+
+    /// Sets the transparency during saving
+    pub fn set_save_transparent(&mut self, transparent: bool) -> &mut Self {
+        self.save_transparent = Some(transparent);
         self
     }
 
@@ -666,7 +693,7 @@ impl Plot {
     pub fn set_labels_3d(&mut self, xlabel: &str, ylabel: &str, zlabel: &str) -> &mut Self {
         write!(
             &mut self.buffer,
-            "set_axis_label(1,r'{}')\nset_axis_label(2,r'{}')\nset_axis_label(2,r'{}')\n",
+            "set_axis_label(1,r'{}')\nset_axis_label(2,r'{}')\nset_axis_label(3,r'{}')\n",
             xlabel, ylabel, zlabel
         )
         .unwrap();
@@ -744,10 +771,21 @@ impl Plot {
     {
         // update commands
         let fig_path = Path::new(figure_path);
-        let txt = if show {
-            "plt.savefig(fn,bbox_inches='tight',bbox_extra_artists=EXTRA_ARTISTS)\nplt.show()\n"
-        } else {
-            "plt.savefig(fn,bbox_inches='tight',bbox_extra_artists=EXTRA_ARTISTS)\n"
+        let mut txt = "plt.savefig(fn".to_string();
+        if self.save_tight {
+            txt.push_str(",bbox_inches='tight',bbox_extra_artists=EXTRA_ARTISTS");
+        }
+        if let Some(pad) = self.save_pad_inches {
+            txt.push_str(format!(",pad_inches={}", pad).as_str());
+        }
+        if let Some(transparent) = self.save_transparent {
+            if transparent {
+                txt.push_str(",transparent=True");
+            }
+        }
+        txt.push_str(")\n");
+        if show {
+            txt.push_str("\nplt.show()\n");
         };
         let commands = format!("{}\nfn=r'{}'\n{}", self.buffer, fig_path.to_string_lossy(), txt);
 
@@ -1144,7 +1182,7 @@ mod tests {
         let b: &str = "set_axis_label(3,r'Z')\n\
                        set_axis_label(1,r'X')\n\
                        set_axis_label(2,r'Y')\n\
-                       set_axis_label(2,r'Z')\n";
+                       set_axis_label(3,r'Z')\n";
         assert_eq!(plot.buffer, b);
     }
 }

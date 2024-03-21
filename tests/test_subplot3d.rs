@@ -40,14 +40,10 @@ fn test_subplot3d() -> Result<(), StrError> {
         .set_label_z("Z AXIS IS BEAUTIFUL")
         .add(&surf1);
     plot.set_subplot3d(2, 2, 2)
-        .set_label_x("X AXIS IS BEAUTIFUL")
-        .set_label_y("Y AXIS IS BEAUTIFUL")
-        .set_label_z("Z AXIS")
+        .set_labels_3d("X AXIS IS BEAUTIFUL", "Y AXIS IS BEAUTIFUL", "Z AXIS IS BEAUTIFUL")
         .add(&surf2);
     plot.set_subplot3d(2, 2, 3)
-        .set_label_x("X AXIS IS BEAUTIFUL")
-        .set_label_y("Y AXIS IS BEAUTIFUL")
-        .set_label_z("Z AXIS")
+        .set_labels_3d("X AXIS IS BEAUTIFUL", "Y AXIS IS BEAUTIFUL", "Z AXIS IS BEAUTIFUL")
         .add(&surf3);
     plot.set_subplot3d(2, 2, 4)
         .set_labels_3d("X AXIS IS BEAUTIFUL", "Y AXIS IS BEAUTIFUL", "Z AXIS IS BEAUTIFUL")
@@ -55,7 +51,9 @@ fn test_subplot3d() -> Result<(), StrError> {
 
     // save figure
     let path = Path::new(OUT_DIR).join("integ_subplot3d.svg");
-    plot.set_figure_size_points(600.0, 600.0).save(&path)?;
+    plot.set_figure_size_points(600.0, 600.0)
+        .set_save_pad_inches(0.4)
+        .save(&path)?;
 
     // check number of lines
     let file = File::open(path).map_err(|_| "cannot open file")?;

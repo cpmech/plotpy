@@ -188,6 +188,18 @@ impl Plot {
         self
     }
 
+    /// Configures 3D subplots
+    ///
+    /// # Input
+    ///
+    /// * `row` -- number of rows in the subplot3d grid
+    /// * `col` -- number of columns in the subplot3d grid
+    /// * `index` -- activate current subplot3d; **indices start at one** (1-based)
+    pub fn set_subplot3d(&mut self, row: usize, col: usize, index: usize) -> &mut Self {
+        write!(&mut self.buffer, "\nsubplot3d({},{},{})\n", row, col, index).unwrap();
+        self
+    }
+
     /// Configures subplots
     ///
     /// # Input
@@ -795,6 +807,14 @@ mod tests {
         plot.set_subplot(1, 1, WRONG);
         let path = Path::new(OUT_DIR).join("show_errors_works.svg");
         assert_eq!(plot.save(&path).err(), Some("python3 failed; please see the log file"));
+    }
+
+    #[test]
+    fn subplot3d_works() {
+        let mut plot = Plot::new();
+        plot.set_subplot3d(3, 2, 1);
+        let b: &str = "\nsubplot3d(3,2,1)\n";
+        assert_eq!(plot.buffer, b);
     }
 
     #[test]

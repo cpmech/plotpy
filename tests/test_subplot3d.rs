@@ -1,0 +1,53 @@
+use plotpy::{generate3d, Plot, StrError, Surface};
+use std::fs::File;
+use std::io::{BufRead, BufReader};
+use std::path::Path;
+
+const OUT_DIR: &str = "/tmp/plotpy/integ_tests";
+
+#[test]
+fn test_subplot3d() -> Result<(), StrError> {
+    // data
+    let n = 9;
+    let (x, y, z) = generate3d(-2.0, 2.0, -2.0, 2.0, n, n, |x, y| x * x + y * y);
+
+    // plot
+    let mut plot = Plot::new();
+
+    // surfaces
+    let mut surf1 = Surface::new();
+    let mut surf2 = Surface::new();
+    let mut surf3 = Surface::new();
+    let mut surf4 = Surface::new();
+    surf1.set_colormap_name("terrain").draw(&x, &y, &z);
+    surf2.set_with_surface(false).set_with_wireframe(true).draw(&x, &y, &z);
+    surf3.set_surf_color("gold").draw(&x, &y, &z);
+    surf4
+        .set_with_surface(false)
+        .set_with_wireframe(true)
+        .set_with_points(true)
+        .set_wire_line_color("lime")
+        .set_wire_line_width(1.5)
+        .set_point_color("black")
+        .set_point_void(true)
+        .set_point_size(30.0)
+        .draw(&x, &y, &z);
+
+    // add surfaces to plot
+    plot.set_subplot3d(2, 2, 1).add(&surf1);
+    plot.set_subplot3d(2, 2, 2).add(&surf2);
+    plot.set_subplot3d(2, 2, 3).add(&surf3);
+    plot.set_subplot3d(2, 2, 4).add(&surf4);
+
+    // save figure
+    let path = Path::new(OUT_DIR).join("integ_subplot3d.svg");
+    plot.set_figure_size_points(600.0, 600.0).save(&path)?;
+
+    // check number of lines
+    let file = File::open(path).map_err(|_| "cannot open file")?;
+    let buffered = BufReader::new(file);
+    let lines_iter = buffered.lines();
+    let n = lines_iter.count();
+    assert!(n > 2900 && n < 3100);
+    Ok(())
+}

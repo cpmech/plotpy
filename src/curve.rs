@@ -193,7 +193,7 @@ impl Curve {
     /// This function must be followed by [Curve::points_3d_add] and [Curve::points_3d_end],
     /// otherwise Python/Matplotlib will fail
     pub fn points_3d_begin(&mut self) -> &mut Self {
-        write!(&mut self.buffer, "maybe_create_ax3d()\nxyz=np.array([").unwrap();
+        write!(&mut self.buffer, "xyz=np.array([").unwrap();
         self
     }
 
@@ -219,7 +219,12 @@ impl Curve {
     /// otherwise Python/Matplotlib will fail.
     pub fn points_3d_end(&mut self) -> &mut Self {
         let opt = self.options();
-        write!(&mut self.buffer, "])\nAX3D.plot(xyz[:,0],xyz[:,1],xyz[:,2]{})\n", &opt).unwrap();
+        write!(
+            &mut self.buffer,
+            "])\nax3d().plot(xyz[:,0],xyz[:,1],xyz[:,2]{})\n",
+            &opt
+        )
+        .unwrap();
         self
     }
 
@@ -266,8 +271,7 @@ impl Curve {
         vector_to_array(&mut self.buffer, "y", y);
         vector_to_array(&mut self.buffer, "z", z);
         let opt = self.options();
-        write!(&mut self.buffer, "maybe_create_ax3d()\n").unwrap();
-        write!(&mut self.buffer, "AX3D.plot(x,y,z{})\n", &opt).unwrap();
+        write!(&mut self.buffer, "ax3d().plot(x,y,z{})\n", &opt).unwrap();
     }
 
     /// Sets the name of this curve in the legend
@@ -537,9 +541,9 @@ mod tests {
             .points_3d_add(1, 2, 3)
             .points_3d_add(4, 5, 6)
             .points_3d_end();
-        let b: &str = "maybe_create_ax3d()\n\
+        let b: &str = "\
                        xyz=np.array([[1,2,3],[4,5,6],])\n\
-                       AX3D.plot(xyz[:,0],xyz[:,1],xyz[:,2])\n";
+                       ax3d().plot(xyz[:,0],xyz[:,1],xyz[:,2])\n";
         assert_eq!(curve.buffer, b);
     }
 
@@ -569,8 +573,7 @@ mod tests {
         let b: &str = "x=np.array([1,2,3,4,5,],dtype=float)\n\
                        y=np.array([1,4,9,16,25,],dtype=float)\n\
                        z=np.array([0,0,0,1,1,],dtype=float)\n\
-                       maybe_create_ax3d()\n\
-                       AX3D.plot(x,y,z,label='the-curve')\n";
+                       ax3d().plot(x,y,z,label='the-curve')\n";
         assert_eq!(curve.buffer, b);
     }
 

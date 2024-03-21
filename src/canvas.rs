@@ -349,7 +349,7 @@ impl Canvas {
     /// This function must be followed by [Canvas::polyline_3d_add] and [Canvas::polyline_3d_end],
     /// otherwise Python/Matplotlib will fail
     pub fn polyline_3d_begin(&mut self) -> &mut Self {
-        write!(&mut self.buffer, "maybe_create_ax3d()\nxyz=np.array([").unwrap();
+        write!(&mut self.buffer, "xyz=np.array([").unwrap();
         self
     }
 
@@ -375,7 +375,12 @@ impl Canvas {
     /// otherwise Python/Matplotlib will fail.
     pub fn polyline_3d_end(&mut self) -> &mut Self {
         let opt = self.options_line_3d();
-        write!(&mut self.buffer, "])\nAX3D.plot(xyz[:,0],xyz[:,1],xyz[:,2]{})\n", &opt).unwrap();
+        write!(
+            &mut self.buffer,
+            "])\nax3d().plot(xyz[:,0],xyz[:,1],xyz[:,2]{})\n",
+            &opt
+        )
+        .unwrap();
         self
     }
 
@@ -478,8 +483,6 @@ impl Canvas {
         // loop over lines
         if ndim == 2 {
             write!(&mut self.buffer, "dat=[\n").unwrap();
-        } else {
-            write!(&mut self.buffer, "maybe_create_ax3d()\n").unwrap();
         }
         let opt = self.options_shared();
         let mut id_point = 0;
@@ -799,7 +802,7 @@ impl Canvas {
             let opt = self.options_line_3d();
             write!(
                 &mut self.buffer,
-                "AX3D.plot([{},{}],[{},{}],[{},{}]{})\n",
+                "ax3d().plot([{},{}],[{},{}],[{},{}]{})\n",
                 a[0], b[0], a[1], b[1], a[2], b[2], opt,
             )
             .unwrap();
@@ -818,7 +821,7 @@ impl Canvas {
         } else {
             write!(
                 &mut self.buffer,
-                "AX3D.text({},{},{},'{}'{})\n",
+                "ax3d().text({},{},{},'{}'{})\n",
                 a[0], a[1], a[2], txt, &opt
             )
             .unwrap();
@@ -845,9 +848,9 @@ impl Canvas {
         } else {
             write!(
                 &mut self.buffer,
-                "AX3D.set_xlim3d({},{})\n\
-                 AX3D.set_ylim3d({},{})\n\
-                 AX3D.set_zlim3d({},{})\n",
+                "ax3d().set_xlim3d({},{})\n\
+                 ax3d().set_ylim3d({},{})\n\
+                 ax3d().set_zlim3d({},{})\n",
                 xmin[0] - gap[0],
                 xmax[0] + gap[0],
                 xmin[1] - gap[1],
@@ -994,7 +997,7 @@ mod tests {
         assert_eq!(
             canvas.buffer,
             "\x20\x20\x20\x20[pth.Path.MOVETO,(0,0)],[pth.Path.LINETO,(0,0)],\n\
-             AX3D.plot([0,0],[0,0],[0,0],color='#427ce5')\n"
+             ax3d().plot([0,0],[0,0],[0,0],color='#427ce5')\n"
         );
         canvas.clear_buffer();
         assert_eq!(canvas.buffer, "");
@@ -1009,7 +1012,7 @@ mod tests {
         assert_eq!(
             canvas.buffer,
             "plt.text(0,0,'hello',color='#a81414',fontsize=8,rotation=45)\n\
-             AX3D.text(0,0,0,'hello',color='#343434',ha='center',va='center',fontsize=10)\n"
+             ax3d().text(0,0,0,'hello',color='#343434',ha='center',va='center',fontsize=10)\n"
         );
     }
 
@@ -1023,9 +1026,9 @@ mod tests {
         assert_eq!(
             canvas.buffer,
             "plt.axis([0,0,0,0])\n\
-            AX3D.set_xlim3d(0,0)\n\
-            AX3D.set_ylim3d(0,0)\n\
-            AX3D.set_zlim3d(0,0)\n"
+            ax3d().set_xlim3d(0,0)\n\
+            ax3d().set_ylim3d(0,0)\n\
+            ax3d().set_zlim3d(0,0)\n"
         );
     }
 
@@ -1148,9 +1151,9 @@ mod tests {
             .polyline_3d_add(1, 2, 3)
             .polyline_3d_add(4, 5, 6)
             .polyline_3d_end();
-        let b: &str = "maybe_create_ax3d()\n\
+        let b: &str = "\
             xyz=np.array([[1,2,3],[4,5,6],])\n\
-            AX3D.plot(xyz[:,0],xyz[:,1],xyz[:,2],color='#427ce5')\n";
+            ax3d().plot(xyz[:,0],xyz[:,1],xyz[:,2],color='#427ce5')\n";
         assert_eq!(canvas.buffer, b);
     }
 
@@ -1170,16 +1173,16 @@ mod tests {
 
         let mut open = Canvas::new();
         open.draw_polyline(points, false);
-        let b: &str = "maybe_create_ax3d()\n\
+        let b: &str = "\
             xyz=np.array([[2,1,0],[0,1,0],[0,1,3],[2,1,3],])\n\
-            AX3D.plot(xyz[:,0],xyz[:,1],xyz[:,2],color='#427ce5')\n";
+            ax3d().plot(xyz[:,0],xyz[:,1],xyz[:,2],color='#427ce5')\n";
         assert_eq!(open.buffer, b);
 
         let mut closed = Canvas::new();
         closed.draw_polyline(points, true);
-        let b: &str = "maybe_create_ax3d()\n\
+        let b: &str = "\
             xyz=np.array([[2,1,0],[0,1,0],[0,1,3],[2,1,3],[2,1,0],])\n\
-            AX3D.plot(xyz[:,0],xyz[:,1],xyz[:,2],color='#427ce5')\n";
+            ax3d().plot(xyz[:,0],xyz[:,1],xyz[:,2],color='#427ce5')\n";
         assert_eq!(closed.buffer, b);
 
         #[rustfmt::skip]
@@ -1190,9 +1193,9 @@ mod tests {
 
         let mut closed_few_points = Canvas::new();
         closed_few_points.draw_polyline(points, true);
-        let b: &str = "maybe_create_ax3d()\n\
+        let b: &str = "\
             xyz=np.array([[2,1,0],[0,1,0],])\n\
-            AX3D.plot(xyz[:,0],xyz[:,1],xyz[:,2],color='#427ce5')\n";
+            ax3d().plot(xyz[:,0],xyz[:,1],xyz[:,2],color='#427ce5')\n";
         assert_eq!(closed_few_points.buffer, b);
     }
 
@@ -1258,31 +1261,31 @@ mod tests {
         canvas
             .draw_grid(&[0.0, 0.0, 0.0], &[1.0, 1.0, 1.0], &[1, 1, 1], true, true)
             .unwrap();
-        let b: &str = "maybe_create_ax3d()\n\
-                       AX3D.plot([0,0],[0,1],[0,0],color='#427ce5')\n\
-                       AX3D.plot([1,1],[0,1],[0,0],color='#427ce5')\n\
-                       AX3D.plot([0,1],[0,0],[0,0],color='#427ce5')\n\
-                       AX3D.plot([0,1],[1,1],[0,0],color='#427ce5')\n\
-                       AX3D.text(0,0,0,'0',color='#a81414',fontsize=8,rotation=45)\n\
-                       AX3D.text(1,0,0,'1',color='#a81414',fontsize=8,rotation=45)\n\
-                       AX3D.text(0,1,0,'2',color='#a81414',fontsize=8,rotation=45)\n\
-                       AX3D.text(1,1,0,'3',color='#a81414',fontsize=8,rotation=45)\n\
-                       AX3D.plot([0,0],[0,1],[1,1],color='#427ce5')\n\
-                       AX3D.plot([1,1],[0,1],[1,1],color='#427ce5')\n\
-                       AX3D.plot([0,1],[0,0],[1,1],color='#427ce5')\n\
-                       AX3D.plot([0,1],[1,1],[1,1],color='#427ce5')\n\
-                       AX3D.text(0,0,1,'4',color='#a81414',fontsize=8,rotation=45)\n\
-                       AX3D.text(1,0,1,'5',color='#a81414',fontsize=8,rotation=45)\n\
-                       AX3D.text(0,1,1,'6',color='#a81414',fontsize=8,rotation=45)\n\
-                       AX3D.text(1,1,1,'7',color='#a81414',fontsize=8,rotation=45)\n\
-                       AX3D.text(0.5,0.5,0.5,'0',color='#343434',ha='center',va='center',fontsize=10)\n\
-                       AX3D.plot([0,0],[0,0],[0,1],color='#427ce5')\n\
-                       AX3D.plot([1,1],[0,0],[0,1],color='#427ce5')\n\
-                       AX3D.plot([0,0],[1,1],[0,1],color='#427ce5')\n\
-                       AX3D.plot([1,1],[1,1],[0,1],color='#427ce5')\n\
-                       AX3D.set_xlim3d(-0.1,1.1)\n\
-                       AX3D.set_ylim3d(-0.1,1.1)\n\
-                       AX3D.set_zlim3d(-0.1,1.1)\n";
+        let b: &str = "\
+                       ax3d().plot([0,0],[0,1],[0,0],color='#427ce5')\n\
+                       ax3d().plot([1,1],[0,1],[0,0],color='#427ce5')\n\
+                       ax3d().plot([0,1],[0,0],[0,0],color='#427ce5')\n\
+                       ax3d().plot([0,1],[1,1],[0,0],color='#427ce5')\n\
+                       ax3d().text(0,0,0,'0',color='#a81414',fontsize=8,rotation=45)\n\
+                       ax3d().text(1,0,0,'1',color='#a81414',fontsize=8,rotation=45)\n\
+                       ax3d().text(0,1,0,'2',color='#a81414',fontsize=8,rotation=45)\n\
+                       ax3d().text(1,1,0,'3',color='#a81414',fontsize=8,rotation=45)\n\
+                       ax3d().plot([0,0],[0,1],[1,1],color='#427ce5')\n\
+                       ax3d().plot([1,1],[0,1],[1,1],color='#427ce5')\n\
+                       ax3d().plot([0,1],[0,0],[1,1],color='#427ce5')\n\
+                       ax3d().plot([0,1],[1,1],[1,1],color='#427ce5')\n\
+                       ax3d().text(0,0,1,'4',color='#a81414',fontsize=8,rotation=45)\n\
+                       ax3d().text(1,0,1,'5',color='#a81414',fontsize=8,rotation=45)\n\
+                       ax3d().text(0,1,1,'6',color='#a81414',fontsize=8,rotation=45)\n\
+                       ax3d().text(1,1,1,'7',color='#a81414',fontsize=8,rotation=45)\n\
+                       ax3d().text(0.5,0.5,0.5,'0',color='#343434',ha='center',va='center',fontsize=10)\n\
+                       ax3d().plot([0,0],[0,0],[0,1],color='#427ce5')\n\
+                       ax3d().plot([1,1],[0,0],[0,1],color='#427ce5')\n\
+                       ax3d().plot([0,0],[1,1],[0,1],color='#427ce5')\n\
+                       ax3d().plot([1,1],[1,1],[0,1],color='#427ce5')\n\
+                       ax3d().set_xlim3d(-0.1,1.1)\n\
+                       ax3d().set_ylim3d(-0.1,1.1)\n\
+                       ax3d().set_zlim3d(-0.1,1.1)\n";
         assert_eq!(canvas.buffer, b);
     }
 }

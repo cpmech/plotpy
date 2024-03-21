@@ -340,10 +340,9 @@ impl Plot {
     pub fn set_range_3d(&mut self, xmin: f64, xmax: f64, ymin: f64, ymax: f64, zmin: f64, zmax: f64) -> &mut Self {
         write!(
             &mut self.buffer,
-            "maybe_create_ax3d()\n\
-             AX3D.set_xlim3d({},{})\n\
-             AX3D.set_ylim3d({},{})\n\
-             AX3D.set_zlim3d({},{})\n",
+            "ax3d().set_xlim3d({},{})\n\
+             ax3d().set_ylim3d({},{})\n\
+             ax3d().set_zlim3d({},{})\n",
             xmin, xmax, ymin, ymax, zmin, zmax,
         )
         .unwrap();
@@ -895,10 +894,9 @@ mod tests {
                        set_equal_axes()\n\
                        plt.gca().axes.set_aspect('auto')\n\
                        plt.axis('off')\n\
-                       maybe_create_ax3d()\n\
-                       AX3D.set_xlim3d(-1,1)\n\
-                       AX3D.set_ylim3d(-1,1)\n\
-                       AX3D.set_zlim3d(-1,1)\n\
+                       ax3d().set_xlim3d(-1,1)\n\
+                       ax3d().set_ylim3d(-1,1)\n\
+                       ax3d().set_zlim3d(-1,1)\n\
                        plt.axis([-1,1,-1,1])\n\
                        plt.axis([0,1,0,1])\n\
                        plt.axis([0,plt.axis()[1],plt.axis()[2],plt.axis()[3]])\n\

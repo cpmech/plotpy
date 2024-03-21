@@ -120,18 +120,17 @@ impl Surface {
         matrix_to_array(&mut self.buffer, "x", x);
         matrix_to_array(&mut self.buffer, "y", y);
         matrix_to_array(&mut self.buffer, "z", z);
-        write!(&mut self.buffer, "maybe_create_ax3d()\n").unwrap();
         if self.with_surface {
             let opt_surface = self.options_surface();
-            write!(&mut self.buffer, "sf=AX3D.plot_surface(x,y,z{})\n", &opt_surface).unwrap();
+            write!(&mut self.buffer, "sf=ax3d().plot_surface(x,y,z{})\n", &opt_surface).unwrap();
         }
         if self.with_wireframe {
             let opt_wireframe = self.options_wireframe();
-            write!(&mut self.buffer, "AX3D.plot_wireframe(x,y,z{})\n", &opt_wireframe).unwrap();
+            write!(&mut self.buffer, "ax3d().plot_wireframe(x,y,z{})\n", &opt_wireframe).unwrap();
         }
         if self.with_points {
             let opt_points = self.options_points();
-            write!(&mut self.buffer, "AX3D.scatter(x,y,z{})\n", &opt_points).unwrap();
+            write!(&mut self.buffer, "ax3d().scatter(x,y,z{})\n", &opt_points).unwrap();
         }
         if self.with_colorbar {
             let opt_colorbar = self.options_colorbar();
@@ -558,9 +557,8 @@ mod tests {
         let b: &str = "x=np.array([[-0.5,0,0.5,],[-0.5,0,0.5,],[-0.5,0,0.5,],],dtype=float)\n\
                        y=np.array([[-0.5,-0.5,-0.5,],[0,0,0,],[0.5,0.5,0.5,],],dtype=float)\n\
                        z=np.array([[0.5,0.25,0.5,],[0.25,0,0.25,],[0.5,0.25,0.5,],],dtype=float)\n\
-                       maybe_create_ax3d()\n\
-                       sf=AX3D.plot_surface(x,y,z,cmap=plt.get_cmap('bwr'))\n\
-                       AX3D.plot_wireframe(x,y,z,color='black')\n\
+                       sf=ax3d().plot_surface(x,y,z,cmap=plt.get_cmap('bwr'))\n\
+                       ax3d().plot_wireframe(x,y,z,color='black')\n\
                        cb=plt.colorbar(sf)\n\
                        cb.ax.set_ylabel(r'temperature')\n";
         assert_eq!(surface.buffer, b);

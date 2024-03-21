@@ -160,8 +160,8 @@ impl Plot {
             &mut self.buffer,
             "plt.gca().set_axisbelow(True)\n\
              plt.grid(linestyle='--',color='grey',zorder=-1000)\n\
-             plt.xlabel(r'{}')\n\
-             plt.ylabel(r'{}')\n",
+             set_axis_label(1,r'{}')\n\
+             set_axis_label(2,r'{}')\n",
             xlabel, ylabel
         )
         .unwrap();
@@ -174,8 +174,8 @@ impl Plot {
             &mut self.buffer,
             "plt.gca().set_axisbelow(True)\n\
              plt.grid(linestyle='--',color='grey',zorder=-1000)\n\
-             plt.xlabel(r'{}')\n\
-             plt.ylabel(r'{}')\n",
+             set_axis_label(1,r'{}')\n\
+             set_axis_label(2,r'{}')\n",
             xlabel, ylabel
         )
         .unwrap();
@@ -635,22 +635,39 @@ impl Plot {
 
     /// Sets the label for the x-axis
     pub fn set_label_x(&mut self, label: &str) -> &mut Self {
-        write!(&mut self.buffer, "plt.xlabel(r'{}')\n", label).unwrap();
+        write!(&mut self.buffer, "set_axis_label(1,r'{}')\n", label).unwrap();
         self
     }
 
     /// Sets the label for the y-axis
     pub fn set_label_y(&mut self, label: &str) -> &mut Self {
-        write!(&mut self.buffer, "plt.ylabel(r'{}')\n", label).unwrap();
+        write!(&mut self.buffer, "set_axis_label(2,r'{}')\n", label).unwrap();
         self
     }
 
-    /// Sets the labels of x and y axis
+    /// Sets the label for the z-axis
+    pub fn set_label_z(&mut self, label: &str) -> &mut Self {
+        write!(&mut self.buffer, "set_axis_label(3,r'{}')\n", label).unwrap();
+        self
+    }
+
+    /// Sets the labels for the x and y axes
     pub fn set_labels(&mut self, xlabel: &str, ylabel: &str) -> &mut Self {
         write!(
             &mut self.buffer,
-            "plt.xlabel(r'{}')\nplt.ylabel(r'{}')\n",
+            "set_axis_label(1,r'{}')\nset_axis_label(2,r'{}')\n",
             xlabel, ylabel
+        )
+        .unwrap();
+        self
+    }
+
+    /// Sets the labels for the x, y, and z axes
+    pub fn set_labels_3d(&mut self, xlabel: &str, ylabel: &str, zlabel: &str) -> &mut Self {
+        write!(
+            &mut self.buffer,
+            "set_axis_label(1,r'{}')\nset_axis_label(2,r'{}')\nset_axis_label(2,r'{}')\n",
+            xlabel, ylabel, zlabel
         )
         .unwrap();
         self
@@ -858,12 +875,12 @@ mod tests {
         plot.grid_and_labels("xx", "yy").grid_labels_legend("xx", "yy").legend();
         let b: &str = "plt.gca().set_axisbelow(True)\n\
                        plt.grid(linestyle='--',color='grey',zorder=-1000)\n\
-                       plt.xlabel(r'xx')\n\
-                       plt.ylabel(r'yy')\n\
+                       set_axis_label(1,r'xx')\n\
+                       set_axis_label(2,r'yy')\n\
                        plt.gca().set_axisbelow(True)\n\
                        plt.grid(linestyle='--',color='grey',zorder=-1000)\n\
-                       plt.xlabel(r'xx')\n\
-                       plt.ylabel(r'yy')\n\
+                       set_axis_label(1,r'xx')\n\
+                       set_axis_label(2,r'yy')\n\
                        h,l=plt.gca().get_legend_handles_labels()\n\
                        if len(h)>0 and len(l)>0:\n\
                        \x20\x20\x20\x20leg=plt.legend(handlelength=3,ncol=1,loc='best')\n\
@@ -933,10 +950,10 @@ mod tests {
                        plt.gca().set_yscale('log')\n\
                        plt.gca().set_xscale('linear')\n\
                        plt.gca().set_yscale('linear')\n\
-                       plt.xlabel(r'x-label')\n\
-                       plt.ylabel(r'y-label')\n\
-                       plt.xlabel(r'x')\n\
-                       plt.ylabel(r'y')\n\
+                       set_axis_label(1,r'x-label')\n\
+                       set_axis_label(2,r'y-label')\n\
+                       set_axis_label(1,r'x')\n\
+                       set_axis_label(2,r'y')\n\
                        plt.gca().view_init(elev=1,azim=10)\n\
                        major_locator = tck.MultipleLocator(1.5)\n\
                        n_ticks = (plt.gca().axis()[1] - plt.gca().axis()[0]) / 1.5\n\
@@ -1117,6 +1134,17 @@ mod tests {
                        plt.gca().tick_params(axis='x',rotation=55)\n\
                        plt.gca().tick_params(axis='y',rotation=45)\n\
                        plt.gcf().align_labels()\n";
+        assert_eq!(plot.buffer, b);
+    }
+
+    #[test]
+    fn set_labels_3d_works() {
+        let mut plot = Plot::new();
+        plot.set_label_z("Z").set_labels_3d("X", "Y", "Z");
+        let b: &str = "set_axis_label(3,r'Z')\n\
+                       set_axis_label(1,r'X')\n\
+                       set_axis_label(2,r'Y')\n\
+                       set_axis_label(2,r'Z')\n";
         assert_eq!(plot.buffer, b);
     }
 }

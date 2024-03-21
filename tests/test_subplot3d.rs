@@ -34,10 +34,24 @@ fn test_subplot3d() -> Result<(), StrError> {
         .draw(&x, &y, &z);
 
     // add surfaces to plot
-    plot.set_subplot3d(2, 2, 1).add(&surf1);
-    plot.set_subplot3d(2, 2, 2).add(&surf2);
-    plot.set_subplot3d(2, 2, 3).add(&surf3);
-    plot.set_subplot3d(2, 2, 4).add(&surf4);
+    plot.set_subplot3d(2, 2, 1)
+        .set_label_x("X AXIS IS BEAUTIFUL")
+        .set_label_y("Y AXIS IS BEAUTIFUL")
+        .set_label_z("Z AXIS IS BEAUTIFUL")
+        .add(&surf1);
+    plot.set_subplot3d(2, 2, 2)
+        .set_label_x("X AXIS IS BEAUTIFUL")
+        .set_label_y("Y AXIS IS BEAUTIFUL")
+        .set_label_z("Z AXIS")
+        .add(&surf2);
+    plot.set_subplot3d(2, 2, 3)
+        .set_label_x("X AXIS IS BEAUTIFUL")
+        .set_label_y("Y AXIS IS BEAUTIFUL")
+        .set_label_z("Z AXIS")
+        .add(&surf3);
+    plot.set_subplot3d(2, 2, 4)
+        .set_labels_3d("X AXIS IS BEAUTIFUL", "Y AXIS IS BEAUTIFUL", "Z AXIS IS BEAUTIFUL")
+        .add(&surf4);
 
     // save figure
     let path = Path::new(OUT_DIR).join("integ_subplot3d.svg");
@@ -47,7 +61,7 @@ fn test_subplot3d() -> Result<(), StrError> {
     let file = File::open(path).map_err(|_| "cannot open file")?;
     let buffered = BufReader::new(file);
     let lines_iter = buffered.lines();
-    let n = lines_iter.count();
-    assert!(n > 2900 && n < 3100);
+    let n_lines = lines_iter.count();
+    assert!(n_lines > 3300 && n < 3400);
     Ok(())
 }

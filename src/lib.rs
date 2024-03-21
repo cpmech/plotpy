@@ -45,9 +45,9 @@
 //!         .set_colormap_name("Pastel1")
 //!         .set_with_colorbar(true)
 //!         .set_colorbar_label("temperature")
-//!         .set_line_color("#1862ab")
-//!         .set_line_style(":")
-//!         .set_line_width(0.75);
+//!         .set_wire_line_color("#1862ab")
+//!         .set_wire_line_style(":")
+//!         .set_wire_line_width(0.75);
 //!
 //!     // draw surface
 //!     let n = 9;
@@ -102,7 +102,6 @@ pub use crate::plot::*;
 pub use crate::slope_icon::*;
 pub use crate::super_title_params::*;
 pub use crate::surface::*;
-pub use crate::surface_geometry::*;
 pub use crate::text::*;
 
 // run code from README file

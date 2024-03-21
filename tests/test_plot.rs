@@ -36,6 +36,7 @@ fn test_plot() -> Result<(), StrError> {
         .set_num_ticks_x(8)
         .set_num_ticks_y(0)
         .set_num_ticks_y(5)
+        .set_save_transparent(true)
         .set_label_x("x-label")
         .set_label_y("y-label")
         .set_labels("x", "y")

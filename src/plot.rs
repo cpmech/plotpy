@@ -84,8 +84,11 @@ pub trait GraphMaker {
 ///
 /// See also integration tests in the [tests directory](https://github.com/cpmech/plotpy/tree/main/tests)
 pub struct Plot {
-    show_errors: bool, // show python errors, if any
-    buffer: String,    // buffer
+    show_errors: bool,              // show python errors, if any
+    buffer: String,                 // buffer
+    save_tight: bool,               // option for savefig: enable bbox_inches='tight'
+    save_pad_inches: Option<f64>,   // option for savefig: add some padding when save_tight==true
+    save_transparent: Option<bool>, // option for savefig: make it transparent
 }
 
 impl Plot {
@@ -94,12 +97,36 @@ impl Plot {
         Plot {
             show_errors: false,
             buffer: String::new(),
+            save_tight: true,
+            save_pad_inches: None,
+            save_transparent: None,
         }
     }
 
     /// Adds new graph entity
     pub fn add(&mut self, graph: &dyn GraphMaker) -> &mut Self {
         self.buffer.push_str(graph.get_buffer());
+        self
+    }
+
+    /// Tells matplotlib to try to figure out the tight bounding box of the figure (default = true)
+    pub fn set_save_tight(&mut self, tight: bool) -> &mut Self {
+        self.save_tight = tight;
+        self
+    }
+
+    /// Sets the padding around the figure when the 'tight' layout is enabled during saving
+    ///
+    /// This option may circumvent *rare* problems when matplotlib fails to compute the best bounding box
+    /// (e.g., when the labels of 3D plots are ignored)
+    pub fn set_save_pad_inches(&mut self, pad_inches: f64) -> &mut Self {
+        self.save_pad_inches = Some(pad_inches);
+        self
+    }
+
+    /// Sets the transparency during saving
+    pub fn set_save_transparent(&mut self, transparent: bool) -> &mut Self {
+        self.save_transparent = Some(transparent);
         self
     }
 
@@ -160,8 +187,8 @@ impl Plot {
             &mut self.buffer,
             "plt.gca().set_axisbelow(True)\n\
              plt.grid(linestyle='--',color='grey',zorder=-1000)\n\
-             plt.xlabel(r'{}')\n\
-             plt.ylabel(r'{}')\n",
+             set_axis_label(1,r'{}')\n\
+             set_axis_label(2,r'{}')\n",
             xlabel, ylabel
         )
         .unwrap();
@@ -174,8 +201,8 @@ impl Plot {
             &mut self.buffer,
             "plt.gca().set_axisbelow(True)\n\
              plt.grid(linestyle='--',color='grey',zorder=-1000)\n\
-             plt.xlabel(r'{}')\n\
-             plt.ylabel(r'{}')\n",
+             set_axis_label(1,r'{}')\n\
+             set_axis_label(2,r'{}')\n",
             xlabel, ylabel
         )
         .unwrap();
@@ -185,6 +212,18 @@ impl Plot {
     /// Sets flag to print python errors (if any) when calling save
     pub fn set_show_errors(&mut self, option: bool) -> &mut Self {
         self.show_errors = option;
+        self
+    }
+
+    /// Configures 3D subplots
+    ///
+    /// # Input
+    ///
+    /// * `row` -- number of rows in the subplot3d grid
+    /// * `col` -- number of columns in the subplot3d grid
+    /// * `index` -- activate current subplot3d; **indices start at one** (1-based)
+    pub fn set_subplot3d(&mut self, row: usize, col: usize, index: usize) -> &mut Self {
+        write!(&mut self.buffer, "\nsubplot3d({},{},{})\n", row, col, index).unwrap();
         self
     }
 
@@ -340,10 +379,9 @@ impl Plot {
     pub fn set_range_3d(&mut self, xmin: f64, xmax: f64, ymin: f64, ymax: f64, zmin: f64, zmax: f64) -> &mut Self {
         write!(
             &mut self.buffer,
-            "maybe_create_ax3d()\n\
-             AX3D.set_xlim3d({},{})\n\
-             AX3D.set_ylim3d({},{})\n\
-             AX3D.set_zlim3d({},{})\n",
+            "ax3d().set_xlim3d({},{})\n\
+             ax3d().set_ylim3d({},{})\n\
+             ax3d().set_zlim3d({},{})\n",
             xmin, xmax, ymin, ymax, zmin, zmax,
         )
         .unwrap();
@@ -624,22 +662,39 @@ impl Plot {
 
     /// Sets the label for the x-axis
     pub fn set_label_x(&mut self, label: &str) -> &mut Self {
-        write!(&mut self.buffer, "plt.xlabel(r'{}')\n", label).unwrap();
+        write!(&mut self.buffer, "set_axis_label(1,r'{}')\n", label).unwrap();
         self
     }
 
     /// Sets the label for the y-axis
     pub fn set_label_y(&mut self, label: &str) -> &mut Self {
-        write!(&mut self.buffer, "plt.ylabel(r'{}')\n", label).unwrap();
+        write!(&mut self.buffer, "set_axis_label(2,r'{}')\n", label).unwrap();
         self
     }
 
-    /// Sets the labels of x and y axis
+    /// Sets the label for the z-axis
+    pub fn set_label_z(&mut self, label: &str) -> &mut Self {
+        write!(&mut self.buffer, "set_axis_label(3,r'{}')\n", label).unwrap();
+        self
+    }
+
+    /// Sets the labels for the x and y axes
     pub fn set_labels(&mut self, xlabel: &str, ylabel: &str) -> &mut Self {
         write!(
             &mut self.buffer,
-            "plt.xlabel(r'{}')\nplt.ylabel(r'{}')\n",
+            "set_axis_label(1,r'{}')\nset_axis_label(2,r'{}')\n",
             xlabel, ylabel
+        )
+        .unwrap();
+        self
+    }
+
+    /// Sets the labels for the x, y, and z axes
+    pub fn set_labels_3d(&mut self, xlabel: &str, ylabel: &str, zlabel: &str) -> &mut Self {
+        write!(
+            &mut self.buffer,
+            "set_axis_label(1,r'{}')\nset_axis_label(2,r'{}')\nset_axis_label(3,r'{}')\n",
+            xlabel, ylabel, zlabel
         )
         .unwrap();
         self
@@ -716,10 +771,21 @@ impl Plot {
     {
         // update commands
         let fig_path = Path::new(figure_path);
-        let txt = if show {
-            "plt.savefig(fn,bbox_inches='tight',bbox_extra_artists=EXTRA_ARTISTS)\nplt.show()\n"
-        } else {
-            "plt.savefig(fn,bbox_inches='tight',bbox_extra_artists=EXTRA_ARTISTS)\n"
+        let mut txt = "plt.savefig(fn".to_string();
+        if self.save_tight {
+            txt.push_str(",bbox_inches='tight',bbox_extra_artists=EXTRA_ARTISTS");
+        }
+        if let Some(pad) = self.save_pad_inches {
+            txt.push_str(format!(",pad_inches={}", pad).as_str());
+        }
+        if let Some(transparent) = self.save_transparent {
+            if transparent {
+                txt.push_str(",transparent=True");
+            }
+        }
+        txt.push_str(")\n");
+        if show {
+            txt.push_str("\nplt.show()\n");
         };
         let commands = format!("{}\nfn=r'{}'\n{}", self.buffer, fig_path.to_string_lossy(), txt);
 
@@ -799,6 +865,14 @@ mod tests {
     }
 
     #[test]
+    fn subplot3d_works() {
+        let mut plot = Plot::new();
+        plot.set_subplot3d(3, 2, 1);
+        let b: &str = "\nsubplot3d(3,2,1)\n";
+        assert_eq!(plot.buffer, b);
+    }
+
+    #[test]
     fn subplot_functions_work() {
         let mut plot = Plot::new();
         plot.set_super_title("all subplots", None)
@@ -839,12 +913,12 @@ mod tests {
         plot.grid_and_labels("xx", "yy").grid_labels_legend("xx", "yy").legend();
         let b: &str = "plt.gca().set_axisbelow(True)\n\
                        plt.grid(linestyle='--',color='grey',zorder=-1000)\n\
-                       plt.xlabel(r'xx')\n\
-                       plt.ylabel(r'yy')\n\
+                       set_axis_label(1,r'xx')\n\
+                       set_axis_label(2,r'yy')\n\
                        plt.gca().set_axisbelow(True)\n\
                        plt.grid(linestyle='--',color='grey',zorder=-1000)\n\
-                       plt.xlabel(r'xx')\n\
-                       plt.ylabel(r'yy')\n\
+                       set_axis_label(1,r'xx')\n\
+                       set_axis_label(2,r'yy')\n\
                        h,l=plt.gca().get_legend_handles_labels()\n\
                        if len(h)>0 and len(l)>0:\n\
                        \x20\x20\x20\x20leg=plt.legend(handlelength=3,ncol=1,loc='best')\n\
@@ -895,10 +969,9 @@ mod tests {
                        set_equal_axes()\n\
                        plt.gca().axes.set_aspect('auto')\n\
                        plt.axis('off')\n\
-                       maybe_create_ax3d()\n\
-                       AX3D.set_xlim3d(-1,1)\n\
-                       AX3D.set_ylim3d(-1,1)\n\
-                       AX3D.set_zlim3d(-1,1)\n\
+                       ax3d().set_xlim3d(-1,1)\n\
+                       ax3d().set_ylim3d(-1,1)\n\
+                       ax3d().set_zlim3d(-1,1)\n\
                        plt.axis([-1,1,-1,1])\n\
                        plt.axis([0,1,0,1])\n\
                        plt.axis([0,plt.axis()[1],plt.axis()[2],plt.axis()[3]])\n\
@@ -915,10 +988,10 @@ mod tests {
                        plt.gca().set_yscale('log')\n\
                        plt.gca().set_xscale('linear')\n\
                        plt.gca().set_yscale('linear')\n\
-                       plt.xlabel(r'x-label')\n\
-                       plt.ylabel(r'y-label')\n\
-                       plt.xlabel(r'x')\n\
-                       plt.ylabel(r'y')\n\
+                       set_axis_label(1,r'x-label')\n\
+                       set_axis_label(2,r'y-label')\n\
+                       set_axis_label(1,r'x')\n\
+                       set_axis_label(2,r'y')\n\
                        plt.gca().view_init(elev=1,azim=10)\n\
                        major_locator = tck.MultipleLocator(1.5)\n\
                        n_ticks = (plt.gca().axis()[1] - plt.gca().axis()[0]) / 1.5\n\
@@ -1099,6 +1172,17 @@ mod tests {
                        plt.gca().tick_params(axis='x',rotation=55)\n\
                        plt.gca().tick_params(axis='y',rotation=45)\n\
                        plt.gcf().align_labels()\n";
+        assert_eq!(plot.buffer, b);
+    }
+
+    #[test]
+    fn set_labels_3d_works() {
+        let mut plot = Plot::new();
+        plot.set_label_z("Z").set_labels_3d("X", "Y", "Z");
+        let b: &str = "set_axis_label(3,r'Z')\n\
+                       set_axis_label(1,r'X')\n\
+                       set_axis_label(2,r'Y')\n\
+                       set_axis_label(3,r'Z')\n";
         assert_eq!(plot.buffer, b);
     }
 }

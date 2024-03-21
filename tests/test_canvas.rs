@@ -60,8 +60,7 @@ fn test_canvas_grid_2d() -> Result<(), StrError> {
 
     // save figure
     let path = Path::new(OUT_DIR).join("integ_canvas_grid_2d.svg");
-    plot.set_equal_axes(true).grid_and_labels("x", "y");
-    plot.save(&path)?;
+    plot.set_equal_axes(true).grid_and_labels("x", "y").save(&path)?;
 
     // check number of lines
     let file = File::open(path).map_err(|_| "cannot open file")?;
@@ -83,8 +82,10 @@ fn test_canvas_grid_3d() -> Result<(), StrError> {
 
     // save figure
     let path = Path::new(OUT_DIR).join("integ_canvas_grid_3d.svg");
-    plot.set_equal_axes(true).set_show_errors(true);
-    plot.save(&path)?;
+    plot.set_equal_axes(true)
+        .set_show_errors(true)
+        .set_save_pad_inches(0.3)
+        .save(&path)?;
 
     // check number of lines
     let file = File::open(path).map_err(|_| "cannot open file")?;
@@ -193,7 +194,7 @@ fn test_canvas_polyline_3d() -> Result<(), StrError> {
     // save figure
     let path = Path::new(OUT_DIR).join("integ_canvas_polyline_3d.svg");
     plot.set_equal_axes(true).set_show_errors(true);
-    plot.save(&path)?;
+    plot.set_save_tight(false).save(&path)?;
     // plot.save_and_show(&path)?;
 
     // check number of lines

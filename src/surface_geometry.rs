@@ -23,7 +23,7 @@ impl Surface {
     ///     let mut surface = Surface::new();
     ///     let a = &[0.0, 0.0, 0.0];
     ///     let b = &[0.0, 0.0, 1.0];
-    ///     surface.set_solid_color("#fcb827")
+    ///     surface.set_surf_color("#fcb827")
     ///            .draw_cylinder(a, b, 0.25, 1, 20)?;
     ///
     ///     // add surface to plot
@@ -115,7 +115,7 @@ impl Surface {
     ///     let mut surface = Surface::new();
     ///     let p = &[0.0, 0.0, 0.0];
     ///     let n = &[0.0, 0.0, 1.0];
-    ///     surface.set_solid_color("#5359e9")
+    ///     surface.set_surf_color("#5359e9")
     ///            .draw_plane_nzz(p, n, -1.0, 1.0, -1.0, 1.0, 3, 3)?;
     ///
     ///     // add surface to plot
@@ -188,13 +188,13 @@ impl Surface {
     ///     // draw hat
     ///     let mut hat = Surface::new();
     ///     let c = &[-0.5, 0.0, 0.0];
-    ///     hat.set_solid_color("#17af14")
+    ///     hat.set_surf_color("#17af14")
     ///        .draw_hemisphere(c, 0.5, -180.0, 180.0, 20, 20, false)?;
     ///
     ///     // draw cup
     ///     let mut cup = Surface::new();
     ///     let c = &[0.5, 0.0, 0.0];
-    ///     cup.set_solid_color("#ff8787")
+    ///     cup.set_surf_color("#ff8787")
     ///        .draw_hemisphere(c, 0.5, -180.0, 180.0, 20, 20, true)?;
     ///
     ///     // add surfaces to plot
@@ -287,7 +287,7 @@ impl Surface {
     ///     let r = &[1.0, 1.0, 1.0];
     ///     let k = &[1.0, 2.0, 0.5];
     ///     let mut surface = Surface::new();
-    ///     surface.set_solid_color("#cd0000")
+    ///     surface.set_surf_color("#cd0000")
     ///         .draw_superquadric(c, r, k, -180.0, 180.0, -90.0, 90.0, 40, 20)?;
     ///
     ///     // add surface to plot
@@ -372,7 +372,7 @@ impl Surface {
     ///     // configure and draw surface
     ///     let mut surface = Surface::new();
     ///     let c = &[0.0, 0.0, 0.0];
-    ///     surface.set_solid_color("#7812c3")
+    ///     surface.set_surf_color("#7812c3")
     ///            .draw_sphere(c, 1.0, 20, 20)?;
     ///
     ///     // add surface to plot

@@ -1,4 +1,5 @@
 use super::{matrix_to_array, AsMatrix, GraphMaker, StrError};
+use crate::quote_marker;
 use std::fmt::Write;
 
 /// Generates a 3D a surface (or wireframe, or both)
@@ -18,7 +19,7 @@ use std::fmt::Write;
 ///     surface.set_colormap_name("seismic")
 ///         .set_with_colorbar(true)
 ///         .set_with_wireframe(true)
-///         .set_line_width(0.3);
+///         .set_wire_line_width(0.3);
 ///
 ///     // draw surface + wireframe
 ///     surface.draw(&x, &y, &z);
@@ -47,16 +48,21 @@ pub struct Surface {
     col_stride: usize,        // Column stride
     with_surface: bool,       // Generates a surface
     with_wireframe: bool,     // Generates a wireframe
-    colormap_index: usize,    // Colormap index
+    with_points: bool,        // Generates (a scatter of) points on the surface
     colormap_name: String,    // Colormap name
-    with_colormap: bool,      // Use colormap
     with_colorbar: bool,      // Draw a colorbar
     colorbar_label: String,   // Colorbar label
     number_format_cb: String, // Number format for labels in colorbar
-    solid_color: String,      // Solid color of surface (when not using colormap)
-    line_color: String,       // Color of wireframe lines
-    line_style: String,       // Style of wireframe line
-    line_width: f64,          // Width of wireframe line
+    surf_color: String,       // Const color of surface (when not using colormap)
+    wire_line_color: String,  // Color of wireframe lines
+    wire_line_style: String,  // Style of wireframe line
+    wire_line_width: f64,     // Width of wireframe line
+    point_color: String,      // Color of markers (scatter)
+    point_void: bool,         // Draws a void marker (edge only)
+    point_line_color: String, // Edge color of markers
+    point_line_width: f64,    // Edge width of markers
+    point_size: f64,          // Size of markers
+    point_style: String,      // Style of markers, e.g., "`o`", "`+`"
     buffer: String,           // buffer
 }
 
@@ -68,16 +74,21 @@ impl Surface {
             col_stride: 0,
             with_surface: true,
             with_wireframe: false,
-            colormap_index: 0,
-            colormap_name: String::new(),
-            with_colormap: true,
+            with_points: false,
+            colormap_name: "bwr".to_string(),
             with_colorbar: false,
             colorbar_label: String::new(),
             number_format_cb: String::new(),
-            solid_color: String::new(),
-            line_color: "black".to_string(),
-            line_style: String::new(),
-            line_width: 0.0,
+            surf_color: String::new(),
+            wire_line_color: "black".to_string(),
+            wire_line_style: String::new(),
+            wire_line_width: 0.0,
+            point_color: String::new(),
+            point_void: false,
+            point_line_color: String::new(),
+            point_line_width: 0.0,
+            point_size: 0.0,
+            point_style: String::new(),
             buffer: String::new(),
         }
     }
@@ -109,14 +120,17 @@ impl Surface {
         matrix_to_array(&mut self.buffer, "x", x);
         matrix_to_array(&mut self.buffer, "y", y);
         matrix_to_array(&mut self.buffer, "z", z);
-        write!(&mut self.buffer, "maybe_create_ax3d()\n").unwrap();
         if self.with_surface {
             let opt_surface = self.options_surface();
-            write!(&mut self.buffer, "sf=AX3D.plot_surface(x,y,z{})\n", &opt_surface).unwrap();
+            write!(&mut self.buffer, "sf=ax3d().plot_surface(x,y,z{})\n", &opt_surface).unwrap();
         }
         if self.with_wireframe {
             let opt_wireframe = self.options_wireframe();
-            write!(&mut self.buffer, "AX3D.plot_wireframe(x,y,z{})\n", &opt_wireframe).unwrap();
+            write!(&mut self.buffer, "ax3d().plot_wireframe(x,y,z{})\n", &opt_wireframe).unwrap();
+        }
+        if self.with_points {
+            let opt_points = self.options_points();
+            write!(&mut self.buffer, "ax3d().scatter(x,y,z{})\n", &opt_points).unwrap();
         }
         if self.with_colorbar {
             let opt_colorbar = self.options_colorbar();
@@ -145,11 +159,19 @@ impl Surface {
         self
     }
 
-    /// Sets option to generate wireframe
+    /// Enables the drawing of a wireframe representing the surface
     pub fn set_with_wireframe(&mut self, flag: bool) -> &mut Self {
         self.with_wireframe = flag;
         self
     }
+
+    /// Enables the drawing of (a scatter of) points representing the surface
+    pub fn set_with_points(&mut self, flag: bool) -> &mut Self {
+        self.with_points = flag;
+        self
+    }
+
+    // -- surface --------------------------------------------------------------------------------
 
     /// Sets the colormap index
     ///
@@ -164,8 +186,8 @@ impl Surface {
     /// * 6 -- Greys
     /// * `>`6 -- starts over from 0
     pub fn set_colormap_index(&mut self, index: usize) -> &mut Self {
-        self.colormap_index = index;
-        self.colormap_name = String::new();
+        const CMAP: [&str; 7] = ["bwr", "RdBu", "hsv", "jet", "terrain", "pink", "Greys"];
+        self.colormap_name = CMAP[index % 7].to_string();
         self
     }
 
@@ -183,12 +205,6 @@ impl Surface {
     /// * see more here <https://matplotlib.org/stable/tutorials/colors/colormaps.html>
     pub fn set_colormap_name(&mut self, name: &str) -> &mut Self {
         self.colormap_name = String::from(name);
-        self
-    }
-
-    /// Sets option to use a colormap
-    pub fn set_with_colormap(&mut self, flag: bool) -> &mut Self {
-        self.with_colormap = flag;
         self
     }
 
@@ -210,16 +226,17 @@ impl Surface {
         self
     }
 
-    /// Sets a solid color for the surface (disables colormap)
-    pub fn set_solid_color(&mut self, color: &str) -> &mut Self {
-        self.solid_color = String::from(color);
-        self.with_colormap = false;
+    /// Sets a constant color for the surface (disables colormap)
+    pub fn set_surf_color(&mut self, color: &str) -> &mut Self {
+        self.surf_color = String::from(color);
         self
     }
 
+    // -- wireframe ------------------------------------------------------------------------------
+
     /// Sets the color of wireframe lines
-    pub fn set_line_color(&mut self, color: &str) -> &mut Self {
-        self.line_color = String::from(color);
+    pub fn set_wire_line_color(&mut self, color: &str) -> &mut Self {
+        self.wire_line_color = String::from(color);
         self
     }
 
@@ -228,16 +245,62 @@ impl Surface {
     /// Options:
     ///
     /// * "`-`", "`:`", "`--`", "`-.`"
-    pub fn set_line_style(&mut self, style: &str) -> &mut Self {
-        self.line_style = String::from(style);
+    pub fn set_wire_line_style(&mut self, style: &str) -> &mut Self {
+        self.wire_line_style = String::from(style);
         self
     }
 
     /// Sets the width of wireframe line
-    pub fn set_line_width(&mut self, width: f64) -> &mut Self {
-        self.line_width = width;
+    pub fn set_wire_line_width(&mut self, width: f64) -> &mut Self {
+        self.wire_line_width = width;
         self
     }
+
+    // -- scatter --------------------------------------------------------------------------------
+
+    /// Sets the color of point markers
+    pub fn set_point_color(&mut self, color: &str) -> &mut Self {
+        self.point_color = String::from(color);
+        self.point_void = false;
+        self
+    }
+
+    /// Sets the option to draw a void point marker (edge only)
+    pub fn set_point_void(&mut self, flag: bool) -> &mut Self {
+        self.point_void = flag;
+        self
+    }
+
+    /// Sets the edge color of point markers
+    pub fn set_point_line_color(&mut self, color: &str) -> &mut Self {
+        self.point_line_color = String::from(color);
+        self
+    }
+
+    /// Sets the edge width of point markers
+    pub fn set_point_line_width(&mut self, width: f64) -> &mut Self {
+        self.point_line_width = width;
+        self
+    }
+
+    /// Sets the size of point markers
+    pub fn set_point_size(&mut self, size: f64) -> &mut Self {
+        self.point_size = size;
+        self
+    }
+
+    /// Sets the style of point markers
+    ///
+    /// Examples:
+    ///
+    /// * "`o`", "`+`"
+    /// * As defined in <https://matplotlib.org/stable/api/markers_api.html>
+    pub fn set_point_style(&mut self, style: &str) -> &mut Self {
+        self.point_style = String::from(style);
+        self
+    }
+
+    // -- options --------------------------------------------------------------------------------
 
     /// Returns options for surface
     fn options_surface(&self) -> String {
@@ -248,14 +311,11 @@ impl Surface {
         if self.col_stride > 0 {
             write!(&mut opt, ",cstride={}", self.col_stride).unwrap();
         }
-        if self.solid_color != "" {
-            write!(&mut opt, ",color='{}'", self.solid_color).unwrap();
-        }
-        if self.with_colormap {
+        if self.surf_color != "" {
+            write!(&mut opt, ",color='{}'", self.surf_color).unwrap();
+        } else {
             if self.colormap_name != "" {
                 write!(&mut opt, ",cmap=plt.get_cmap('{}')", self.colormap_name).unwrap();
-            } else {
-                write!(&mut opt, ",cmap=get_colormap({})", self.colormap_index).unwrap();
             }
         }
         opt
@@ -270,14 +330,51 @@ impl Surface {
         if self.col_stride > 0 {
             write!(&mut opt, ",cstride={}", self.col_stride).unwrap();
         }
-        if self.line_color != "" {
-            write!(&mut opt, ",color='{}'", self.line_color).unwrap();
+        if self.wire_line_color != "" {
+            write!(&mut opt, ",color='{}'", self.wire_line_color).unwrap();
         }
-        if self.line_style != "" {
-            write!(&mut opt, ",linestyle='{}'", self.line_style).unwrap();
+        if self.wire_line_style != "" {
+            write!(&mut opt, ",linestyle='{}'", self.wire_line_style).unwrap();
         }
-        if self.line_width > 0.0 {
-            write!(&mut opt, ",linewidth={}", self.line_width).unwrap();
+        if self.wire_line_width > 0.0 {
+            write!(&mut opt, ",linewidth={}", self.wire_line_width).unwrap();
+        }
+        opt
+    }
+
+    /// Returns options for points
+    fn options_points(&self) -> String {
+        let mut opt = String::new();
+        if self.row_stride > 0 {
+            write!(&mut opt, ",rstride={}", self.row_stride).unwrap();
+        }
+        if self.col_stride > 0 {
+            write!(&mut opt, ",cstride={}", self.col_stride).unwrap();
+        }
+        if self.point_line_width > 0.0 {
+            write!(&mut opt, ",linewidths={}", self.point_line_width).unwrap();
+        }
+        if self.point_size > 0.0 {
+            write!(&mut opt, ",s={}", self.point_size).unwrap();
+        }
+        if self.point_style != "" {
+            write!(&mut opt, ",marker={}", quote_marker(&self.point_style)).unwrap();
+        }
+        // note: unlike contour and surface, scatter requires setting 'c=z'
+        if self.point_void {
+            let lc = if self.point_line_color == "" {
+                "black"
+            } else {
+                self.point_line_color.as_str()
+            };
+            write!(&mut opt, ",color='none',edgecolor='{}'", lc).unwrap();
+        } else if self.point_color != "" {
+            write!(&mut opt, ",color='{}'", self.point_color).unwrap();
+            if self.point_line_color != "" {
+                write!(&mut opt, ",edgecolor='{}'", self.point_line_color).unwrap();
+            }
+        } else if self.colormap_name != "" {
+            write!(&mut opt, ",c=z,cmap=plt.get_cmap('{}')", self.colormap_name).unwrap();
         }
         opt
     }
@@ -353,14 +450,13 @@ mod tests {
         assert_eq!(surface.col_stride, 0);
         assert_eq!(surface.with_surface, true);
         assert_eq!(surface.with_wireframe, false);
-        assert_eq!(surface.colormap_index, 0);
-        assert_eq!(surface.colormap_name.len(), 0);
+        assert_eq!(surface.colormap_name, "bwr".to_string());
         assert_eq!(surface.with_colorbar, false);
         assert_eq!(surface.colorbar_label.len(), 0);
         assert_eq!(surface.number_format_cb.len(), 0);
-        assert_eq!(surface.line_color, "black".to_string());
-        assert_eq!(surface.line_style.len(), 0);
-        assert_eq!(surface.line_width, 0.0);
+        assert_eq!(surface.wire_line_color, "black".to_string());
+        assert_eq!(surface.wire_line_style.len(), 0);
+        assert_eq!(surface.wire_line_width, 0.0);
         assert_eq!(surface.buffer.len(), 0);
     }
 
@@ -369,7 +465,7 @@ mod tests {
         let mut surface = Surface::new();
         surface.set_row_stride(3).set_col_stride(4);
         let opt = surface.options_surface();
-        assert_eq!(opt, ",rstride=3,cstride=4,cmap=get_colormap(0)");
+        assert_eq!(opt, ",rstride=3,cstride=4,cmap=plt.get_cmap('bwr')");
 
         surface.set_colormap_name("Pastel1");
         let opt = surface.options_surface();
@@ -377,19 +473,14 @@ mod tests {
 
         surface.set_colormap_index(3);
         let opt = surface.options_surface();
-        assert_eq!(opt, ",rstride=3,cstride=4,cmap=get_colormap(3)");
+        assert_eq!(opt, ",rstride=3,cstride=4,cmap=plt.get_cmap('jet')");
 
         surface.set_colormap_name("turbo");
         let opt = surface.options_surface();
         assert_eq!(opt, ",rstride=3,cstride=4,cmap=plt.get_cmap('turbo')");
 
-        surface.set_with_colormap(false);
+        surface.set_surf_color("blue");
         let opt = surface.options_surface();
-        assert_eq!(opt, ",rstride=3,cstride=4");
-
-        surface.set_with_colormap(true).set_solid_color("blue");
-        let opt = surface.options_surface();
-        assert_eq!(surface.with_colormap, false);
         assert_eq!(opt, ",rstride=3,cstride=4,color='blue'");
     }
 
@@ -399,11 +490,49 @@ mod tests {
         surface
             .set_row_stride(3)
             .set_col_stride(4)
-            .set_line_color("red")
-            .set_line_style("--")
-            .set_line_width(2.5);
+            .set_wire_line_color("red")
+            .set_wire_line_style("--")
+            .set_wire_line_width(2.5);
         let opt = surface.options_wireframe();
         assert_eq!(opt, ",rstride=3,cstride=4,color='red',linestyle='--',linewidth=2.5");
+    }
+
+    #[test]
+    fn options_points_works() {
+        let mut surface = Surface::new();
+        surface.set_row_stride(3).set_col_stride(4);
+        let opt = surface.options_points();
+        assert_eq!(opt, ",rstride=3,cstride=4,c=z,cmap=plt.get_cmap('bwr')");
+
+        surface.set_colormap_name("Pastel1");
+        let opt = surface.options_points();
+        assert_eq!(opt, ",rstride=3,cstride=4,c=z,cmap=plt.get_cmap('Pastel1')");
+
+        surface.set_colormap_index(3);
+        let opt = surface.options_points();
+        assert_eq!(opt, ",rstride=3,cstride=4,c=z,cmap=plt.get_cmap('jet')");
+
+        surface.set_colormap_name("turbo");
+        let opt = surface.options_points();
+        assert_eq!(opt, ",rstride=3,cstride=4,c=z,cmap=plt.get_cmap('turbo')");
+
+        let mut surface = Surface::new();
+        surface
+            .set_point_color("blue")
+            .set_point_line_color("red")
+            .set_point_size(100.0)
+            .set_point_style("*")
+            .set_point_line_width(3.0);
+        let opt = surface.options_points();
+        assert_eq!(opt, ",linewidths=3,s=100,marker='*',color='blue',edgecolor='red'");
+
+        surface.set_point_void(true);
+        let opt = surface.options_points();
+        assert_eq!(opt, ",linewidths=3,s=100,marker='*',color='none',edgecolor='red'");
+
+        surface.set_point_void(true).set_point_line_color("");
+        let opt = surface.options_points();
+        assert_eq!(opt, ",linewidths=3,s=100,marker='*',color='none',edgecolor='black'");
     }
 
     #[test]
@@ -428,9 +557,8 @@ mod tests {
         let b: &str = "x=np.array([[-0.5,0,0.5,],[-0.5,0,0.5,],[-0.5,0,0.5,],],dtype=float)\n\
                        y=np.array([[-0.5,-0.5,-0.5,],[0,0,0,],[0.5,0.5,0.5,],],dtype=float)\n\
                        z=np.array([[0.5,0.25,0.5,],[0.25,0,0.25,],[0.5,0.25,0.5,],],dtype=float)\n\
-                       maybe_create_ax3d()\n\
-                       sf=AX3D.plot_surface(x,y,z,cmap=get_colormap(0))\n\
-                       AX3D.plot_wireframe(x,y,z,color='black')\n\
+                       sf=ax3d().plot_surface(x,y,z,cmap=plt.get_cmap('bwr'))\n\
+                       ax3d().plot_wireframe(x,y,z,color='black')\n\
                        cb=plt.colorbar(sf)\n\
                        cb.ax.set_ylabel(r'temperature')\n";
         assert_eq!(surface.buffer, b);

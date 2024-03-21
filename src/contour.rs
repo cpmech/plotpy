@@ -46,7 +46,6 @@ use std::fmt::Write;
 pub struct Contour {
     colors: Vec<String>,         // Colors to be used instead of colormap
     levels: Vec<f64>,            // Pre-defined levels
-    colormap_index: usize,       // Colormap index
     colormap_name: String,       // Colormap name
     no_lines: bool,              // Skip drawing a lines contour
     no_labels: bool,             // Skip adding labels to the lines contour
@@ -72,8 +71,7 @@ impl Contour {
         Contour {
             colors: Vec::new(),
             levels: Vec::new(),
-            colormap_index: 0,
-            colormap_name: String::new(),
+            colormap_name: "bwr".to_string(),
             no_lines: false,
             no_labels: false,
             no_inline_labels: false,
@@ -178,9 +176,9 @@ impl Contour {
     /// * 6 -- Greys
     /// * `>`6 -- starts over from 0
     pub fn set_colormap_index(&mut self, index: usize) -> &mut Self {
+        const CMAP: [&str; 7] = ["bwr", "RdBu", "hsv", "jet", "terrain", "pink", "Greys"];
+        self.colormap_name = CMAP[index % 7].to_string();
         self.colors = Vec::new();
-        self.colormap_index = index;
-        self.colormap_name = String::new();
         self
     }
 
@@ -193,6 +191,7 @@ impl Contour {
     /// Will use `colormap_index` instead if `colormap_name` is empty.
     pub fn set_colormap_name(&mut self, name: &str) -> &mut Self {
         self.colormap_name = String::from(name);
+        self.colors = Vec::new();
         self
     }
 
@@ -299,8 +298,6 @@ impl Contour {
         } else {
             if self.colormap_name != "" {
                 write!(&mut opt, ",cmap=plt.get_cmap('{}')", self.colormap_name).unwrap();
-            } else {
-                write!(&mut opt, ",cmap=get_colormap({})", self.colormap_index).unwrap();
             }
         }
         if self.levels.len() > 0 {
@@ -388,8 +385,7 @@ mod tests {
         let contour = Contour::new();
         assert_eq!(contour.colors.len(), 0);
         assert_eq!(contour.levels.len(), 0);
-        assert_eq!(contour.colormap_index, 0);
-        assert_eq!(contour.colormap_name.len(), 0);
+        assert_eq!(contour.colormap_name, "bwr");
         assert_eq!(contour.no_lines, false);
         assert_eq!(contour.no_labels, false);
         assert_eq!(contour.no_inline_labels, false);
@@ -424,7 +420,7 @@ mod tests {
         let opt = contour.options_filled();
         assert_eq!(
             opt,
-            ",cmap=get_colormap(4)\
+            ",cmap=plt.get_cmap('terrain')\
              ,levels=levels"
         );
     }

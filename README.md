@@ -101,7 +101,7 @@ fn main() -> Result<(), StrError> {
     let c = &[-1.0, 1.0, 1.0];
     let k = &[4.0, 4.0, 4.0];
     let mut cube = Surface::new();
-    cube.set_solid_color("#ee29f2")
+    cube.set_surf_color("#ee29f2")
         .draw_superquadric(c, r, k, -180.0, 180.0, -90.0, 90.0, 40, 20)?;
 
     // sphere

@@ -89,8 +89,7 @@ impl Text {
         let opt = self.options();
         write!(
             &mut self.buffer,
-            "maybe_create_ax3d()\n\
-             t=AX3D.text({},{},{},'{}'{})\n",
+            "t=ax3d().text({},{},{},'{}'{})\n",
             x, y, z, message, &opt
         )
         .unwrap();
@@ -295,8 +294,7 @@ mod tests {
     fn draw_3d_works() {
         let mut text = Text::new();
         text.draw_3d(1.2, 3.4, 5.6, &"message".to_string());
-        let b: &str = "maybe_create_ax3d()\n\
-                       t=AX3D.text(1.2,3.4,5.6,'message')\n";
+        let b: &str = "t=ax3d().text(1.2,3.4,5.6,'message')\n";
         assert_eq!(text.buffer, b);
     }
 }

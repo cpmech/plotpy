@@ -6,7 +6,7 @@ use std::path::Path;
 const OUT_DIR: &str = "/tmp/plotpy/integ_tests";
 
 #[test]
-fn test_subplot3d() -> Result<(), StrError> {
+fn test_subplot_3d() -> Result<(), StrError> {
     // data
     let n = 9;
     let (x, y, z) = generate3d(-2.0, 2.0, -2.0, 2.0, n, n, |x, y| x * x + y * y);
@@ -34,23 +34,23 @@ fn test_subplot3d() -> Result<(), StrError> {
         .draw(&x, &y, &z);
 
     // add surfaces to plot
-    plot.set_subplot3d(2, 2, 1)
+    plot.set_subplot_3d(2, 2, 1)
         .set_label_x("X AXIS IS BEAUTIFUL")
         .set_label_y("Y AXIS IS BEAUTIFUL")
         .set_label_z("Z AXIS IS BEAUTIFUL")
         .add(&surf1);
-    plot.set_subplot3d(2, 2, 2)
+    plot.set_subplot_3d(2, 2, 2)
         .set_labels_3d("X AXIS IS BEAUTIFUL", "Y AXIS IS BEAUTIFUL", "Z AXIS IS BEAUTIFUL")
         .add(&surf2);
-    plot.set_subplot3d(2, 2, 3)
+    plot.set_subplot_3d(2, 2, 3)
         .set_labels_3d("X AXIS IS BEAUTIFUL", "Y AXIS IS BEAUTIFUL", "Z AXIS IS BEAUTIFUL")
         .add(&surf3);
-    plot.set_subplot3d(2, 2, 4)
+    plot.set_subplot_3d(2, 2, 4)
         .set_labels_3d("X AXIS IS BEAUTIFUL", "Y AXIS IS BEAUTIFUL", "Z AXIS IS BEAUTIFUL")
         .add(&surf4);
 
     // save figure
-    let path = Path::new(OUT_DIR).join("integ_subplot3d.svg");
+    let path = Path::new(OUT_DIR).join("integ_subplot_3d.svg");
     plot.set_figure_size_points(600.0, 600.0)
         .set_save_pad_inches(0.4)
         .save(&path)?;

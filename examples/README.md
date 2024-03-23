@@ -55,6 +55,7 @@ Some output of integration tests are shown below.
 ![plot](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_plot_multiple_of_pi.svg)
 ![plot](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_plot_subplots.svg)
 ![plot](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_plot.svg)
+![plot_3d](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_plot_3d.svg)
 
 ## Subplot and GridSpec
 
@@ -92,9 +93,9 @@ Some output of integration tests are shown below.
 ![points_color](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_surface_points_color.svg)
 ![points_void](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_surface_points_void.svg)
 
-[test_subplot3d.rs](https://github.com/cpmech/plotpy/tree/main/tests/test_subplot3d.rs)
+[test_subplot_3d.rs](https://github.com/cpmech/plotpy/tree/main/tests/test_subplot_3d.rs)
 
-![subplot3d](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_subplot3d.svg)
+![subplot_3d](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_subplot_3d.svg)
 
 ## Text
 

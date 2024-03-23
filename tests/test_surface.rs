@@ -69,6 +69,36 @@ fn test_surface_color() -> Result<(), StrError> {
 }
 
 #[test]
+fn test_surface_lines() -> Result<(), StrError> {
+    let mut surface = Surface::new();
+    surface
+        .set_surf_line_color("limegreen")
+        .set_surf_line_style("--")
+        .set_surf_line_width(0.75);
+
+    // draw surface
+    let n = 9;
+    let (x, y, z) = generate3d(-2.0, 2.0, -2.0, 2.0, n, n, |x, y| x * x + y * y);
+    surface.draw(&x, &y, &z);
+
+    // add surface to plot
+    let mut plot = Plot::new();
+    plot.add(&surface);
+
+    // save figure
+    let path = Path::new(OUT_DIR).join("integ_surface_lines.svg");
+    plot.save(&path)?;
+
+    // check number of lines
+    let file = File::open(path).map_err(|_| "cannot open file")?;
+    let buffered = BufReader::new(file);
+    let lines_iter = buffered.lines();
+    let n_lines = lines_iter.count();
+    assert!(n_lines > 1000 && n_lines < 1200);
+    Ok(())
+}
+
+#[test]
 fn test_surface_wireframe() -> Result<(), StrError> {
     let mut surface = Surface::new();
     surface.set_with_surface(false).set_with_wireframe(true);

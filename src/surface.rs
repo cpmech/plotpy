@@ -54,6 +54,9 @@ pub struct Surface {
     colorbar_label: String,   // Colorbar label
     number_format_cb: String, // Number format for labels in colorbar
     surf_color: String,       // Const color of surface (when not using colormap)
+    surf_line_color: String,  // Color of surface lines
+    surf_line_style: String,  // Style of surface lines
+    surf_line_width: f64,     // Width of surface lines
     wire_line_color: String,  // Color of wireframe lines
     wire_line_style: String,  // Style of wireframe line
     wire_line_width: f64,     // Width of wireframe line
@@ -80,6 +83,9 @@ impl Surface {
             colorbar_label: String::new(),
             number_format_cb: String::new(),
             surf_color: String::new(),
+            surf_line_color: String::new(),
+            surf_line_style: String::new(),
+            surf_line_width: 0.0,
             wire_line_color: "black".to_string(),
             wire_line_style: String::new(),
             wire_line_width: 0.0,
@@ -232,6 +238,28 @@ impl Surface {
         self
     }
 
+    /// Sets the color of surface lines
+    pub fn set_surf_line_color(&mut self, color: &str) -> &mut Self {
+        self.surf_line_color = String::from(color);
+        self
+    }
+
+    /// Sets the style of surface lines
+    ///
+    /// Options:
+    ///
+    /// * "`-`", "`:`", "`--`", "`-.`"
+    pub fn set_surf_line_style(&mut self, style: &str) -> &mut Self {
+        self.surf_line_style = String::from(style);
+        self
+    }
+
+    /// Sets the width of surface lines
+    pub fn set_surf_line_width(&mut self, width: f64) -> &mut Self {
+        self.surf_line_width = width;
+        self
+    }
+
     // -- wireframe ------------------------------------------------------------------------------
 
     /// Sets the color of wireframe lines
@@ -240,7 +268,7 @@ impl Surface {
         self
     }
 
-    /// Sets the style of wireframe line
+    /// Sets the style of wireframe lines
     ///
     /// Options:
     ///
@@ -250,7 +278,7 @@ impl Surface {
         self
     }
 
-    /// Sets the width of wireframe line
+    /// Sets the width of wireframe lines
     pub fn set_wire_line_width(&mut self, width: f64) -> &mut Self {
         self.wire_line_width = width;
         self
@@ -317,6 +345,15 @@ impl Surface {
             if self.colormap_name != "" {
                 write!(&mut opt, ",cmap=plt.get_cmap('{}')", self.colormap_name).unwrap();
             }
+        }
+        if self.surf_line_color != "" {
+            write!(&mut opt, ",edgecolors='{}'", self.surf_line_color).unwrap();
+        }
+        if self.surf_line_style != "" {
+            write!(&mut opt, ",linestyle='{}'", self.surf_line_style).unwrap();
+        }
+        if self.surf_line_width > 0.0 {
+            write!(&mut opt, ",linewidth={}", self.surf_line_width).unwrap();
         }
         opt
     }
@@ -482,6 +519,17 @@ mod tests {
         surface.set_surf_color("blue");
         let opt = surface.options_surface();
         assert_eq!(opt, ",rstride=3,cstride=4,color='blue'");
+
+        let mut surface = Surface::new();
+        surface
+            .set_surf_line_color("red")
+            .set_surf_line_style("--")
+            .set_surf_line_width(2.5);
+        let opt = surface.options_surface();
+        assert_eq!(
+            opt,
+            ",cmap=plt.get_cmap('bwr'),edgecolors='red',linestyle='--',linewidth=2.5"
+        );
     }
 
     #[test]

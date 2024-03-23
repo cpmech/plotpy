@@ -64,7 +64,6 @@ Some output of integration tests are shown below.
 ![gridspec](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_gridspec_1.svg)
 ![gridspec](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_gridspec_2.svg)
 
-
 ## Slope icon
 
 [test_slope_icon.rs](https://github.com/cpmech/plotpy/tree/main/tests/test_slope_icon.rs)
@@ -88,6 +87,7 @@ Some output of integration tests are shown below.
 [test_surface.rs](https://github.com/cpmech/plotpy/tree/main/tests/test_surface.rs)
 
 ![surface](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_surface.svg)
+![surface_lines](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_surface_lines.svg)
 ![wireframe](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_surface_wireframe.svg)
 ![points](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_surface_points.svg)
 ![points_color](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_surface_points_color.svg)

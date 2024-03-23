@@ -67,6 +67,93 @@ fn test_plot() -> Result<(), StrError> {
 }
 
 #[test]
+fn test_plot_3d() -> Result<(), StrError> {
+    // curve
+    let mut curve = Curve::new();
+    // https://matplotlib.org/stable/gallery/mplot3d/lines3d.html
+    // theta = np.linspace(-4 * np.pi, 4 * np.pi, 100)
+    // z = np.linspace(-2, 2, 100)
+    // r = z**2 + 1
+    // x = r * np.sin(theta)
+    // y = r * np.cos(theta)
+    let np = 101;
+    let t0 = -4.0 * PI;
+    let t1 = 4.0 * PI;
+    let dt = (t1 - t0) / ((np - 1) as f64);
+    let z0 = -2.0;
+    let z1 = 2.0;
+    let dz = (z1 - z0) / ((np - 1) as f64);
+    let mut xx = vec![0.0; np];
+    let mut yy = vec![0.0; np];
+    let mut zz = vec![0.0; np];
+    for i in 0..np {
+        let theta = t0 + (i as f64) * dt;
+        let z = z0 + (i as f64) * dz;
+        let r = z * z + 1.0;
+        xx[i] = r * f64::sin(theta);
+        yy[i] = r * f64::cos(theta);
+        zz[i] = z;
+    }
+    curve.draw_3d(&xx, &yy, &zz);
+
+    // plot
+    let mut plot = Plot::new();
+    plot.set_subplot_3d(2, 2, 1)
+        .add(&curve)
+        .set_labels_3d("X AXIS", "Y AXIS", "Z AXIS")
+        .set_num_ticks_x(0)
+        .set_num_ticks_y(0)
+        .set_num_ticks_z(0)
+        .set_subplot_3d(2, 2, 2)
+        .add(&curve)
+        .set_label_x("X AXIS IS BEAUTIFUL")
+        .set_label_y("Y AXIS IS BEAUTIFUL")
+        .set_label_z("Z AXIS IS BEAUTIFUL")
+        .set_xrange(-3.0, 3.0)
+        .set_yrange(-3.0, 3.0)
+        .set_zrange(-1.5, 1.5)
+        .set_num_ticks_x(3)
+        .set_num_ticks_y(3)
+        .set_num_ticks_z(3)
+        .set_hide_xticks()
+        .set_hide_yticks()
+        .set_hide_zticks()
+        .set_subplot_3d(2, 2, 3)
+        .add(&curve)
+        .set_labels_3d("X HERE", "Y HERE", "Z HERE")
+        .set_xmin(-2.0)
+        .set_xmax(2.0)
+        .set_ymin(-2.0)
+        .set_ymax(2.0)
+        .set_zmin(-1.0)
+        .set_zmax(1.0)
+        .set_subplot_3d(2, 2, 4)
+        .add(&curve)
+        .set_hide_xticks()
+        .set_hide_yticks()
+        .set_hide_zticks()
+        .set_label_x_and_pad("X IS CLOSER NOW", -15.0)
+        .set_label_y_and_pad("Y IS CLOSER NOW", -15.0)
+        .set_label_z_and_pad("Z IS CLOSER NOW", -15.0)
+        .set_range_3d(-10.0, 10.0, -10.0, 10.0, -3.0, 3.0);
+
+    // save figure
+    let path = Path::new(OUT_DIR).join("integ_plot_3d.svg");
+    plot.set_horizontal_gap(0.2)
+        .set_save_pad_inches(0.4)
+        .set_figure_size_points(600.0, 600.0)
+        .save(&path)?;
+
+    // check number of lines
+    let file = File::open(path).map_err(|_| "cannot open file")?;
+    let buffered = BufReader::new(file);
+    let lines_iter = buffered.lines();
+    let n_lines = lines_iter.count();
+    assert!(n_lines > 1800 && n_lines < 1900);
+    Ok(())
+}
+
+#[test]
 fn test_plot_error() {
     let plot = Plot::new();
     let path = Path::new(OUT_DIR).join("integ_plot_error.xyz");

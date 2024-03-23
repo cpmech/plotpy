@@ -43,6 +43,7 @@
     "horizontalalignment",
     "hspace",
     "joinstyle",
+    "labelpad",
     "larrow",
     "lineplot",
     "linestyle",
@@ -79,13 +80,21 @@
     "xmin",
     "xnticks",
     "xrange",
+    "xticklabels",
+    "xticks",
     "yaxis",
     "ylabel",
     "ymax",
     "ymin",
     "ynticks",
     "yrange",
+    "yticklabels",
+    "yticks",
+    "zaxis",
     "zlabel",
-    "zorder"
+    "zorder",
+    "zrange",
+    "zticklabels",
+    "zticks"
   ]
 }

@@ -154,17 +154,18 @@ fn test_curve_3d() -> Result<(), StrError> {
 
     // add curves to plot
     let mut plot = Plot::new();
-    plot.set_range_3d(-0.5, 6.0, -0.5, 30.0, -0.5, 1.5);
     plot.add(&curve);
+    plot.set_range_3d(-0.5, 6.0, -0.5, 30.0, -0.5, 1.5); // must be after add curve
 
     // save figure
     let path = Path::new(OUT_DIR).join("integ_curve_3d.svg");
-    plot.save(&path)?;
+    plot.set_save_pad_inches(0.3).save(&path)?;
 
     // check number of lines
     let file = File::open(path).map_err(|_| "cannot open file")?;
     let buffered = BufReader::new(file);
     let lines_iter = buffered.lines();
-    assert!(lines_iter.count() > 700);
+    let n_lines = lines_iter.count();
+    assert!(n_lines > 800 && n_lines < 900);
     Ok(())
 }

@@ -187,8 +187,8 @@ impl Plot {
             &mut self.buffer,
             "plt.gca().set_axisbelow(True)\n\
              plt.grid(linestyle='--',color='grey',zorder=-1000)\n\
-             set_axis_label(1,r'{}')\n\
-             set_axis_label(2,r'{}')\n",
+             plt.gca().set_xlabel(r'{}')\n\
+             plt.gca().set_ylabel(r'{}')\n",
             xlabel, ylabel
         )
         .unwrap();
@@ -201,8 +201,8 @@ impl Plot {
             &mut self.buffer,
             "plt.gca().set_axisbelow(True)\n\
              plt.grid(linestyle='--',color='grey',zorder=-1000)\n\
-             set_axis_label(1,r'{}')\n\
-             set_axis_label(2,r'{}')\n",
+             plt.gca().set_xlabel(r'{}')\n\
+             plt.gca().set_ylabel(r'{}')\n",
             xlabel, ylabel
         )
         .unwrap();
@@ -219,11 +219,11 @@ impl Plot {
     ///
     /// # Input
     ///
-    /// * `row` -- number of rows in the subplot3d grid
-    /// * `col` -- number of columns in the subplot3d grid
-    /// * `index` -- activate current subplot3d; **indices start at one** (1-based)
-    pub fn set_subplot3d(&mut self, row: usize, col: usize, index: usize) -> &mut Self {
-        write!(&mut self.buffer, "\nsubplot3d({},{},{})\n", row, col, index).unwrap();
+    /// * `row` -- number of rows in the subplot_3d grid
+    /// * `col` -- number of columns in the subplot_3d grid
+    /// * `index` -- activate current 3D subplot; **indices start at one** (1-based)
+    pub fn set_subplot_3d(&mut self, row: usize, col: usize, index: usize) -> &mut Self {
+        write!(&mut self.buffer, "\nsubplot_3d({},{},{})\n", row, col, index).unwrap();
         self
     }
 
@@ -368,7 +368,25 @@ impl Plot {
         self
     }
 
-    /// Set option to hide axes
+    /// Sets an option to hide the ticks along the x axis
+    pub fn set_hide_xticks(&mut self) -> &mut Self {
+        write!(&mut self.buffer, "plt.gca().set_xticklabels([])\n").unwrap();
+        self
+    }
+
+    /// Sets an option to hide the ticks along the y axis
+    pub fn set_hide_yticks(&mut self) -> &mut Self {
+        write!(&mut self.buffer, "plt.gca().set_yticklabels([])\n").unwrap();
+        self
+    }
+
+    /// Sets an option to hide the ticks along the z axis
+    pub fn set_hide_zticks(&mut self) -> &mut Self {
+        write!(&mut self.buffer, "plt.gca().set_zticklabels([])\n").unwrap();
+        self
+    }
+
+    /// Sets an option to hide/show all axes
     pub fn set_hide_axes(&mut self, hide: bool) -> &mut Self {
         let option = if hide { "off" } else { "on" };
         write!(&mut self.buffer, "plt.axis('{}')\n", option).unwrap();
@@ -379,9 +397,9 @@ impl Plot {
     pub fn set_range_3d(&mut self, xmin: f64, xmax: f64, ymin: f64, ymax: f64, zmin: f64, zmax: f64) -> &mut Self {
         write!(
             &mut self.buffer,
-            "ax3d().set_xlim3d({},{})\n\
-             ax3d().set_ylim3d({},{})\n\
-             ax3d().set_zlim3d({},{})\n",
+            "plt.gca().set_xlim({},{})\n\
+             plt.gca().set_ylim({},{})\n\
+             plt.gca().set_zlim({},{})\n",
             xmin, xmax, ymin, ymax, zmin, zmax,
         )
         .unwrap();
@@ -407,67 +425,55 @@ impl Plot {
 
     /// Sets minimum x
     pub fn set_xmin(&mut self, xmin: f64) -> &mut Self {
-        write!(
-            &mut self.buffer,
-            "plt.axis([{},plt.axis()[1],plt.axis()[2],plt.axis()[3]])\n",
-            xmin
-        )
-        .unwrap();
+        write!(&mut self.buffer, "plt.gca().set_xlim([{},None])\n", xmin).unwrap();
         self
     }
 
     /// Sets maximum x
     pub fn set_xmax(&mut self, xmax: f64) -> &mut Self {
-        write!(
-            &mut self.buffer,
-            "plt.axis([plt.axis()[0],{},plt.axis()[2],plt.axis()[3]])\n",
-            xmax
-        )
-        .unwrap();
+        write!(&mut self.buffer, "plt.gca().set_xlim([None,{}])\n", xmax).unwrap();
         self
     }
 
     /// Sets minimum y
     pub fn set_ymin(&mut self, ymin: f64) -> &mut Self {
-        write!(
-            &mut self.buffer,
-            "plt.axis([plt.axis()[0],plt.axis()[1],{},plt.axis()[3]])\n",
-            ymin
-        )
-        .unwrap();
+        write!(&mut self.buffer, "plt.gca().set_ylim([{},None])\n", ymin).unwrap();
         self
     }
 
     /// Sets maximum y
     pub fn set_ymax(&mut self, ymax: f64) -> &mut Self {
-        write!(
-            &mut self.buffer,
-            "plt.axis([plt.axis()[0],plt.axis()[1],plt.axis()[2],{}])\n",
-            ymax
-        )
-        .unwrap();
+        write!(&mut self.buffer, "plt.gca().set_ylim([None,{}])\n", ymax).unwrap();
+        self
+    }
+
+    /// Sets minimum z
+    pub fn set_zmin(&mut self, zmin: f64) -> &mut Self {
+        write!(&mut self.buffer, "plt.gca().set_zlim([{},None])\n", zmin).unwrap();
+        self
+    }
+
+    /// Sets maximum z
+    pub fn set_zmax(&mut self, zmax: f64) -> &mut Self {
+        write!(&mut self.buffer, "plt.gca().set_zlim([None,{}])\n", zmax).unwrap();
         self
     }
 
     /// Sets x-range (i.e. limits)
     pub fn set_xrange(&mut self, xmin: f64, xmax: f64) -> &mut Self {
-        write!(
-            &mut self.buffer,
-            "plt.axis([{},{},plt.axis()[2],plt.axis()[3]])\n",
-            xmin, xmax
-        )
-        .unwrap();
+        write!(&mut self.buffer, "plt.gca().set_xlim([{},{}])\n", xmin, xmax).unwrap();
         self
     }
 
     /// Sets y-range (i.e. limits)
     pub fn set_yrange(&mut self, ymin: f64, ymax: f64) -> &mut Self {
-        write!(
-            &mut self.buffer,
-            "plt.axis([plt.axis()[0],plt.axis()[1],{},{}])\n",
-            ymin, ymax
-        )
-        .unwrap();
+        write!(&mut self.buffer, "plt.gca().set_ylim([{},{}])\n", ymin, ymax).unwrap();
+        self
+    }
+
+    /// Sets z-range (i.e. limits)
+    pub fn set_zrange(&mut self, zmin: f64, zmax: f64) -> &mut Self {
+        write!(&mut self.buffer, "plt.gca().set_zlim([{},{}])\n", zmin, zmax).unwrap();
         self
     }
 
@@ -494,6 +500,21 @@ impl Plot {
             write!(
                 &mut self.buffer,
                 "plt.gca().get_yaxis().set_major_locator(tck.MaxNLocator({}))\n",
+                num
+            )
+            .unwrap();
+        }
+        self
+    }
+
+    /// Sets number of ticks along z
+    pub fn set_num_ticks_z(&mut self, num: usize) -> &mut Self {
+        if num == 0 {
+            self.buffer.push_str("plt.gca().get_zaxis().set_ticks([])\n");
+        } else {
+            write!(
+                &mut self.buffer,
+                "plt.gca().get_zaxis().set_major_locator(tck.MaxNLocator({}))\n",
                 num
             )
             .unwrap();
@@ -662,19 +683,52 @@ impl Plot {
 
     /// Sets the label for the x-axis
     pub fn set_label_x(&mut self, label: &str) -> &mut Self {
-        write!(&mut self.buffer, "set_axis_label(1,r'{}')\n", label).unwrap();
+        write!(&mut self.buffer, "plt.gca().set_xlabel(r'{}')\n", label).unwrap();
         self
     }
 
     /// Sets the label for the y-axis
     pub fn set_label_y(&mut self, label: &str) -> &mut Self {
-        write!(&mut self.buffer, "set_axis_label(2,r'{}')\n", label).unwrap();
+        write!(&mut self.buffer, "plt.gca().set_ylabel(r'{}')\n", label).unwrap();
         self
     }
 
     /// Sets the label for the z-axis
     pub fn set_label_z(&mut self, label: &str) -> &mut Self {
-        write!(&mut self.buffer, "set_axis_label(3,r'{}')\n", label).unwrap();
+        write!(&mut self.buffer, "plt.gca().set_zlabel(r'{}')\n", label).unwrap();
+        self
+    }
+
+    /// Sets the label for the x-axis and the padding
+    pub fn set_label_x_and_pad(&mut self, label: &str, pad: f64) -> &mut Self {
+        write!(
+            &mut self.buffer,
+            "plt.gca().set_xlabel(r'{}',labelpad={})\n",
+            label, pad
+        )
+        .unwrap();
+        self
+    }
+
+    /// Sets the label for the y-axis and the padding
+    pub fn set_label_y_and_pad(&mut self, label: &str, pad: f64) -> &mut Self {
+        write!(
+            &mut self.buffer,
+            "plt.gca().set_ylabel(r'{}',labelpad={})\n",
+            label, pad
+        )
+        .unwrap();
+        self
+    }
+
+    /// Sets the label for the z-axis and the padding
+    pub fn set_label_z_and_pad(&mut self, label: &str, pad: f64) -> &mut Self {
+        write!(
+            &mut self.buffer,
+            "plt.gca().set_zlabel(r'{}',labelpad={})\n",
+            label, pad
+        )
+        .unwrap();
         self
     }
 
@@ -682,7 +736,7 @@ impl Plot {
     pub fn set_labels(&mut self, xlabel: &str, ylabel: &str) -> &mut Self {
         write!(
             &mut self.buffer,
-            "set_axis_label(1,r'{}')\nset_axis_label(2,r'{}')\n",
+            "plt.gca().set_xlabel(r'{}')\nplt.gca().set_ylabel(r'{}')\n",
             xlabel, ylabel
         )
         .unwrap();
@@ -693,7 +747,7 @@ impl Plot {
     pub fn set_labels_3d(&mut self, xlabel: &str, ylabel: &str, zlabel: &str) -> &mut Self {
         write!(
             &mut self.buffer,
-            "set_axis_label(1,r'{}')\nset_axis_label(2,r'{}')\nset_axis_label(3,r'{}')\n",
+            "plt.gca().set_xlabel(r'{}')\nplt.gca().set_ylabel(r'{}')\nplt.gca().set_zlabel(r'{}')\n",
             xlabel, ylabel, zlabel
         )
         .unwrap();
@@ -865,10 +919,10 @@ mod tests {
     }
 
     #[test]
-    fn subplot3d_works() {
+    fn subplot_3d_works() {
         let mut plot = Plot::new();
-        plot.set_subplot3d(3, 2, 1);
-        let b: &str = "\nsubplot3d(3,2,1)\n";
+        plot.set_subplot_3d(3, 2, 1);
+        let b: &str = "\nsubplot_3d(3,2,1)\n";
         assert_eq!(plot.buffer, b);
     }
 
@@ -913,12 +967,12 @@ mod tests {
         plot.grid_and_labels("xx", "yy").grid_labels_legend("xx", "yy").legend();
         let b: &str = "plt.gca().set_axisbelow(True)\n\
                        plt.grid(linestyle='--',color='grey',zorder=-1000)\n\
-                       set_axis_label(1,r'xx')\n\
-                       set_axis_label(2,r'yy')\n\
+                       plt.gca().set_xlabel(r'xx')\n\
+                       plt.gca().set_ylabel(r'yy')\n\
                        plt.gca().set_axisbelow(True)\n\
                        plt.grid(linestyle='--',color='grey',zorder=-1000)\n\
-                       set_axis_label(1,r'xx')\n\
-                       set_axis_label(2,r'yy')\n\
+                       plt.gca().set_xlabel(r'xx')\n\
+                       plt.gca().set_ylabel(r'yy')\n\
                        h,l=plt.gca().get_legend_handles_labels()\n\
                        if len(h)>0 and len(l)>0:\n\
                        \x20\x20\x20\x20leg=plt.legend(handlelength=3,ncol=1,loc='best')\n\
@@ -941,12 +995,15 @@ mod tests {
             .set_range_3d(-1.0, 1.0, -1.0, 1.0, -1.0, 1.0)
             .set_range(-1.0, 1.0, -1.0, 1.0)
             .set_range_from_vec(&[0.0, 1.0, 0.0, 1.0])
-            .set_xmin(0.0)
-            .set_xmax(1.0)
-            .set_ymin(0.0)
-            .set_ymax(1.0)
-            .set_xrange(0.0, 1.0)
-            .set_yrange(0.0, 1.0)
+            .set_xrange(-80.0, 800.0)
+            .set_yrange(13.0, 130.0)
+            .set_zrange(44.0, 444.0)
+            .set_xmin(-3.0)
+            .set_xmax(8.0)
+            .set_ymin(-7.0)
+            .set_ymax(33.0)
+            .set_zmin(12.0)
+            .set_zmax(34.0)
             .set_num_ticks_x(0)
             .set_num_ticks_x(8)
             .set_num_ticks_y(0)
@@ -969,17 +1026,20 @@ mod tests {
                        set_equal_axes()\n\
                        plt.gca().axes.set_aspect('auto')\n\
                        plt.axis('off')\n\
-                       ax3d().set_xlim3d(-1,1)\n\
-                       ax3d().set_ylim3d(-1,1)\n\
-                       ax3d().set_zlim3d(-1,1)\n\
+                       plt.gca().set_xlim(-1,1)\n\
+                       plt.gca().set_ylim(-1,1)\n\
+                       plt.gca().set_zlim(-1,1)\n\
                        plt.axis([-1,1,-1,1])\n\
                        plt.axis([0,1,0,1])\n\
-                       plt.axis([0,plt.axis()[1],plt.axis()[2],plt.axis()[3]])\n\
-                       plt.axis([plt.axis()[0],1,plt.axis()[2],plt.axis()[3]])\n\
-                       plt.axis([plt.axis()[0],plt.axis()[1],0,plt.axis()[3]])\n\
-                       plt.axis([plt.axis()[0],plt.axis()[1],plt.axis()[2],1])\n\
-                       plt.axis([0,1,plt.axis()[2],plt.axis()[3]])\n\
-                       plt.axis([plt.axis()[0],plt.axis()[1],0,1])\n\
+                       plt.gca().set_xlim([-80,800])\n\
+                       plt.gca().set_ylim([13,130])\n\
+                       plt.gca().set_zlim([44,444])\n\
+                       plt.gca().set_xlim([-3,None])\n\
+                       plt.gca().set_xlim([None,8])\n\
+                       plt.gca().set_ylim([-7,None])\n\
+                       plt.gca().set_ylim([None,33])\n\
+                       plt.gca().set_zlim([12,None])\n\
+                       plt.gca().set_zlim([None,34])\n\
                        plt.gca().get_xaxis().set_ticks([])\n\
                        plt.gca().get_xaxis().set_major_locator(tck.MaxNLocator(8))\n\
                        plt.gca().get_yaxis().set_ticks([])\n\
@@ -988,10 +1048,10 @@ mod tests {
                        plt.gca().set_yscale('log')\n\
                        plt.gca().set_xscale('linear')\n\
                        plt.gca().set_yscale('linear')\n\
-                       set_axis_label(1,r'x-label')\n\
-                       set_axis_label(2,r'y-label')\n\
-                       set_axis_label(1,r'x')\n\
-                       set_axis_label(2,r'y')\n\
+                       plt.gca().set_xlabel(r'x-label')\n\
+                       plt.gca().set_ylabel(r'y-label')\n\
+                       plt.gca().set_xlabel(r'x')\n\
+                       plt.gca().set_ylabel(r'y')\n\
                        plt.gca().view_init(elev=1,azim=10)\n\
                        major_locator = tck.MultipleLocator(1.5)\n\
                        n_ticks = (plt.gca().axis()[1] - plt.gca().axis()[0]) / 1.5\n\
@@ -1152,9 +1212,23 @@ mod tests {
     #[test]
     fn additional_features_work() {
         let mut plot = Plot::new();
-        plot.set_inv_x().set_inv_y().extra("plt.show()\n");
+        plot.set_inv_x()
+            .set_inv_y()
+            .set_hide_xticks()
+            .set_hide_yticks()
+            .set_hide_zticks()
+            .set_label_x_and_pad("X IS CLOSER NOW", -15.0)
+            .set_label_y_and_pad("Y IS CLOSER NOW", -25.0)
+            .set_label_z_and_pad("Z IS CLOSER NOW", -35.0)
+            .extra("plt.show()\n");
         let b: &str = "plt.gca().invert_xaxis()\n\
                        plt.gca().invert_yaxis()\n\
+                       plt.gca().set_xticklabels([])\n\
+                       plt.gca().set_yticklabels([])\n\
+                       plt.gca().set_zticklabels([])\n\
+                       plt.gca().set_xlabel(r'X IS CLOSER NOW',labelpad=-15)\n\
+                       plt.gca().set_ylabel(r'Y IS CLOSER NOW',labelpad=-25)\n\
+                       plt.gca().set_zlabel(r'Z IS CLOSER NOW',labelpad=-35)\n\
                        plt.show()\n";
         assert_eq!(plot.buffer, b);
     }
@@ -1179,10 +1253,10 @@ mod tests {
     fn set_labels_3d_works() {
         let mut plot = Plot::new();
         plot.set_label_z("Z").set_labels_3d("X", "Y", "Z");
-        let b: &str = "set_axis_label(3,r'Z')\n\
-                       set_axis_label(1,r'X')\n\
-                       set_axis_label(2,r'Y')\n\
-                       set_axis_label(3,r'Z')\n";
+        let b: &str = "plt.gca().set_zlabel(r'Z')\n\
+                       plt.gca().set_xlabel(r'X')\n\
+                       plt.gca().set_ylabel(r'Y')\n\
+                       plt.gca().set_zlabel(r'Z')\n";
         assert_eq!(plot.buffer, b);
     }
 }

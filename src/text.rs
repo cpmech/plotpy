@@ -77,7 +77,7 @@ impl Text {
     /// Draws text
     pub fn draw(&mut self, x: f64, y: f64, message: &str) {
         let opt = self.options();
-        write!(&mut self.buffer, "t=plt.text({},{},'{}'{})\n", x, y, message, &opt).unwrap();
+        write!(&mut self.buffer, "t=plt.text({},{},r'{}'{})\n", x, y, message, &opt).unwrap();
         if self.bbox {
             let opt_bbox = self.options_bbox();
             write!(&mut self.buffer, "t.set_bbox(dict({}))\n", opt_bbox).unwrap();
@@ -89,7 +89,7 @@ impl Text {
         let opt = self.options();
         write!(
             &mut self.buffer,
-            "t=ax3d().text({},{},{},'{}'{})\n",
+            "t=ax3d().text({},{},{},r'{}'{})\n",
             x, y, z, message, &opt
         )
         .unwrap();
@@ -284,7 +284,7 @@ mod tests {
     fn draw_works() {
         let mut text = Text::new();
         text.draw(1.2, 3.4, &"message".to_string());
-        let b: &str = "t=plt.text(1.2,3.4,'message')\n";
+        let b: &str = "t=plt.text(1.2,3.4,r'message')\n";
         assert_eq!(text.buffer, b);
         text.clear_buffer();
         assert_eq!(text.buffer, "");
@@ -294,7 +294,7 @@ mod tests {
     fn draw_3d_works() {
         let mut text = Text::new();
         text.draw_3d(1.2, 3.4, 5.6, &"message".to_string());
-        let b: &str = "t=ax3d().text(1.2,3.4,5.6,'message')\n";
+        let b: &str = "t=ax3d().text(1.2,3.4,5.6,r'message')\n";
         assert_eq!(text.buffer, b);
     }
 }

@@ -400,7 +400,7 @@ impl Curve {
 
         // label
         if self.label != "" {
-            write!(&mut opt, ",label='{}'", self.label).unwrap();
+            write!(&mut opt, ",label=r'{}'", self.label).unwrap();
         }
 
         // lines
@@ -503,7 +503,7 @@ mod tests {
         let options = curve.options();
         assert_eq!(
             options,
-            ",label='my-curve'\
+            ",label=r'my-curve'\
              ,alpha=0.7\
              ,color='#b33434'\
              ,linestyle='-'\
@@ -556,7 +556,7 @@ mod tests {
         curve.draw(x, y);
         let b: &str = "x=np.array([1,2,3,4,5,],dtype=float)\n\
                        y=np.array([1,4,9,16,25,],dtype=float)\n\
-                       plt.plot(x,y,label='the-curve')\n";
+                       plt.plot(x,y,label=r'the-curve')\n";
         assert_eq!(curve.buffer, b);
         curve.clear_buffer();
         assert_eq!(curve.buffer, "");
@@ -573,7 +573,7 @@ mod tests {
         let b: &str = "x=np.array([1,2,3,4,5,],dtype=float)\n\
                        y=np.array([1,4,9,16,25,],dtype=float)\n\
                        z=np.array([0,0,0,1,1,],dtype=float)\n\
-                       ax3d().plot(x,y,z,label='the-curve')\n";
+                       ax3d().plot(x,y,z,label=r'the-curve')\n";
         assert_eq!(curve.buffer, b);
     }
 

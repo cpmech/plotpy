@@ -12,24 +12,24 @@ fn test_text() -> Result<(), StrError> {
     text.set_color("blue")
         .set_align_horizontal("center")
         .set_align_vertical("center")
-        .set_fontsize(50.0)
+        .set_fontsize(40.0)
         .set_rotation(45.0)
         .set_bbox(true)
         .set_bbox_facecolor("pink")
         .set_bbox_edgecolor("black")
         .set_bbox_alpha(0.3)
         // .set_bbox_style("square,pad=0.3");
-    // .set_bbox_style("circle,pad=0.3");
-    // .set_bbox_style("larrow,pad=0.3");
-    // .set_bbox_style("rarrow,pad=0.3");
-    // .set_bbox_style("darrow,pad=0.3");
-    // .set_bbox_style("round,pad=0.3,rounding_size=0.15");
-    // .set_bbox_style("round4,pad=0.3,rounding_size=0.2");
-    .set_bbox_style("sawtooth,pad=0.3,tooth_size=0.1");
+        // .set_bbox_style("circle,pad=0.3");
+        // .set_bbox_style("larrow,pad=0.3");
+        // .set_bbox_style("rarrow,pad=0.3");
+        // .set_bbox_style("darrow,pad=0.3");
+        // .set_bbox_style("round,pad=0.3,rounding_size=0.15");
+        // .set_bbox_style("round4,pad=0.3,rounding_size=0.2");
+        .set_bbox_style("sawtooth,pad=0.3,tooth_size=0.1");
     // .set_bbox_style("roundtooth,pad=0.3,tooth_size=0.2");
 
     // draw text
-    text.draw(0.5, 0.5, "message");
+    text.draw(0.5, 0.5, "message: $\\frac{\\alpha}{\\beta} = \\gamma$");
 
     // add text to plot
     let mut plot = Plot::new();
@@ -54,7 +54,7 @@ fn test_text_3d() -> Result<(), StrError> {
     text.set_color("blue")
         .set_align_horizontal("center")
         .set_align_vertical("center")
-        .set_fontsize(50.0)
+        .set_fontsize(32.0)
         .set_rotation(45.0)
         .set_bbox(true)
         .set_bbox_facecolor("pink")
@@ -62,7 +62,7 @@ fn test_text_3d() -> Result<(), StrError> {
         .set_bbox_alpha(0.3);
 
     // draw text
-    text.draw_3d(0.5, 0.5, 0.5, "message");
+    text.draw_3d(0.5, 0.5, 0.5, "message: $\\frac{\\alpha}{\\beta} = \\gamma$");
 
     // add text to plot
     let mut plot = Plot::new();

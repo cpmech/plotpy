@@ -812,6 +812,14 @@ impl Plot {
         self.set_frame_border(show_all, show_all, show_all, show_all)
     }
 
+    /// Draws infinite lines at x=0 and y=0
+    pub fn set_cross(&mut self, color: &str, line_style: &str, line_width: f64) -> &mut Self {
+        let opt = format!(",color='{}',linestyle='{}',linewidth={}", color, line_style, line_width);
+        self.buffer
+            .push_str(&format!("plt.axhline(0{})\nplt.axvline(0{})\n", &opt, &opt));
+        self
+    }
+
     /// Writes extra python commands
     pub fn extra(&mut self, commands: &str) -> &mut Self {
         self.buffer.write_str(commands).unwrap();
@@ -1257,6 +1265,15 @@ mod tests {
                        plt.gca().set_xlabel(r'X')\n\
                        plt.gca().set_ylabel(r'Y')\n\
                        plt.gca().set_zlabel(r'Z')\n";
+        assert_eq!(plot.buffer, b);
+    }
+
+    #[test]
+    fn extra_functionality_works() {
+        let mut plot = Plot::new();
+        plot.set_cross("red", "--", 3.0);
+        let b: &str = "plt.axhline(0,color='red',linestyle='--',linewidth=3)\n\
+                       plt.axvline(0,color='red',linestyle='--',linewidth=3)\n";
         assert_eq!(plot.buffer, b);
     }
 }

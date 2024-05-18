@@ -300,3 +300,22 @@ fn test_plot_multiple_of_pi() -> Result<(), StrError> {
     assert!(lines_iter.count() > 1060);
     Ok(())
 }
+
+#[test]
+fn test_plot_extra_functionality() -> Result<(), StrError> {
+    // plot
+    let mut plot = Plot::new();
+    plot.set_cross("red", "--", 3.0).set_range(-1.0, 1.0, -1.0, 1.0);
+
+    // save figure
+    let path = Path::new(OUT_DIR).join("integ_plot_extra_functionality.svg");
+    plot.set_show_errors(true).save(&path)?;
+
+    // check number of lines
+    let file = File::open(path).map_err(|_| "cannot open file")?;
+    let buffered = BufReader::new(file);
+    let lines_iter = buffered.lines();
+    let n = lines_iter.count();
+    assert!(n > 480 && n < 520);
+    Ok(())
+}

@@ -305,7 +305,10 @@ fn test_plot_multiple_of_pi() -> Result<(), StrError> {
 fn test_plot_extra_functionality() -> Result<(), StrError> {
     // plot
     let mut plot = Plot::new();
-    plot.set_cross("red", "--", 3.0).set_range(-1.0, 1.0, -1.0, 1.0);
+    plot.set_horiz_line(-0.5, "green", "-", 1.0)
+        .set_vert_line(-0.75, "gold", ":", 10.0)
+        .set_cross(0.25, 0.75, "red", "--", 3.0)
+        .set_range(-1.0, 1.0, -1.0, 1.0);
 
     // save figure
     let path = Path::new(OUT_DIR).join("integ_plot_extra_functionality.svg");
@@ -316,6 +319,6 @@ fn test_plot_extra_functionality() -> Result<(), StrError> {
     let buffered = BufReader::new(file);
     let lines_iter = buffered.lines();
     let n = lines_iter.count();
-    assert!(n > 480 && n < 520);
+    assert!(n > 490 && n < 530);
     Ok(())
 }

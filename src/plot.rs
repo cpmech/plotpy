@@ -812,11 +812,25 @@ impl Plot {
         self.set_frame_border(show_all, show_all, show_all, show_all)
     }
 
-    /// Draws infinite lines at x=0 and y=0
-    pub fn set_cross(&mut self, color: &str, line_style: &str, line_width: f64) -> &mut Self {
+    /// Draws an infinite horizontal line at y
+    pub fn set_horiz_line(&mut self, y: f64, color: &str, line_style: &str, line_width: f64) -> &mut Self {
+        let opt = format!(",color='{}',linestyle='{}',linewidth={}", color, line_style, line_width);
+        self.buffer.push_str(&format!("plt.axhline({}{})\n", y, &opt));
+        self
+    }
+
+    /// Draws an infinite vertical line at x
+    pub fn set_vert_line(&mut self, x: f64, color: &str, line_style: &str, line_width: f64) -> &mut Self {
+        let opt = format!(",color='{}',linestyle='{}',linewidth={}", color, line_style, line_width);
+        self.buffer.push_str(&format!("plt.axvline({}{})\n", x, &opt));
+        self
+    }
+
+    /// Draws infinite horizontal and vertical lines at (x, y)
+    pub fn set_cross(&mut self, x: f64, y: f64, color: &str, line_style: &str, line_width: f64) -> &mut Self {
         let opt = format!(",color='{}',linestyle='{}',linewidth={}", color, line_style, line_width);
         self.buffer
-            .push_str(&format!("plt.axhline(0{})\nplt.axvline(0{})\n", &opt, &opt));
+            .push_str(&format!("plt.axhline({}{})\nplt.axvline({}{})\n", y, &opt, x, &opt));
         self
     }
 
@@ -1271,9 +1285,13 @@ mod tests {
     #[test]
     fn extra_functionality_works() {
         let mut plot = Plot::new();
-        plot.set_cross("red", "--", 3.0);
-        let b: &str = "plt.axhline(0,color='red',linestyle='--',linewidth=3)\n\
-                       plt.axvline(0,color='red',linestyle='--',linewidth=3)\n";
+        plot.set_horiz_line(-1.0, "blue", "-", 1.1)
+            .set_vert_line(-2.0, "green", ":", 1.2)
+            .set_cross(0.25, 0.75, "red", "--", 3.0);
+        let b: &str = "plt.axhline(-1,color='blue',linestyle='-',linewidth=1.1)\n\
+                       plt.axvline(-2,color='green',linestyle=':',linewidth=1.2)\n\
+                       plt.axhline(0.75,color='red',linestyle='--',linewidth=3)\n\
+                       plt.axvline(0.25,color='red',linestyle='--',linewidth=3)\n";
         assert_eq!(plot.buffer, b);
     }
 }

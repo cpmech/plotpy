@@ -128,6 +128,7 @@ pub struct Canvas {
     edge_color: String,  // Edge color (shared)
     face_color: String,  // Face color (shared)
     line_width: f64,     // Line width of edge (shared)
+    line_style: String,  // Style of lines (shared)
     arrow_scale: f64,    // Arrow scale
     arrow_style: String, // Arrow style
 
@@ -159,6 +160,7 @@ impl Canvas {
             edge_color: "#427ce5".to_string(),
             face_color: String::new(),
             line_width: 0.0,
+            line_style: String::new(),
             arrow_scale: 0.0,
             arrow_style: String::new(),
             // text
@@ -601,6 +603,17 @@ impl Canvas {
         self
     }
 
+    /// Sets the line width of edge (shared among features)
+    ///
+    /// Options:
+    ///
+    /// * "`-`", `:`", "`--`", "`-.`", or "`None`"
+    /// * As defined in <https://matplotlib.org/stable/gallery/lines_bars_and_markers/linestyles.html>
+    pub fn set_line_style(&mut self, style: &str) -> &mut Self {
+        self.line_style = String::from(style);
+        self
+    }
+
     /// Sets the arrow scale
     pub fn set_arrow_scale(&mut self, scale: f64) -> &mut Self {
         self.arrow_scale = scale;
@@ -717,6 +730,9 @@ impl Canvas {
         if self.line_width > 0.0 {
             write!(&mut opt, ",linewidth={}", self.line_width).unwrap();
         }
+        if self.line_style != "" {
+            write!(&mut opt, ",linestyle='{}'", self.line_style).unwrap();
+        }
         if self.stop_clip {
             write!(&mut opt, ",clip_on=False").unwrap();
         }
@@ -785,6 +801,9 @@ impl Canvas {
         }
         if self.line_width > 0.0 {
             write!(&mut opt, ",linewidth={}", self.line_width).unwrap();
+        }
+        if self.line_style != "" {
+            write!(&mut opt, ",linestyle='{}'", self.line_style).unwrap();
         }
         opt
     }
@@ -894,6 +913,7 @@ mod tests {
         assert_eq!(canvas.edge_color.len(), 7);
         assert_eq!(canvas.face_color.len(), 0);
         assert_eq!(canvas.line_width, 0.0);
+        assert_eq!(canvas.line_style.len(), 0);
         assert_eq!(canvas.arrow_scale, 0.0);
         assert_eq!(canvas.arrow_style.len(), 0);
         assert_eq!(canvas.text_color.len(), 7);
@@ -911,6 +931,7 @@ mod tests {
             .set_edge_color("red")
             .set_face_color("blue")
             .set_line_width(2.5)
+            .set_line_style("--")
             .set_stop_clip(true);
         let opt = canvas.options_shared();
         assert_eq!(
@@ -918,6 +939,7 @@ mod tests {
             ",edgecolor='red'\
              ,facecolor='blue'\
              ,linewidth=2.5\
+             ,linestyle='--'\
              ,clip_on=False"
         );
     }
@@ -982,9 +1004,9 @@ mod tests {
         assert_eq!(opt, ",color='red'");
 
         let mut canvas = Canvas::new();
-        canvas.set_edge_color("red").set_line_width(5.0);
+        canvas.set_edge_color("red").set_line_width(5.0).set_line_style(":");
         let opt = canvas.options_line_3d();
-        assert_eq!(opt, ",color='red',linewidth=5");
+        assert_eq!(opt, ",color='red',linewidth=5,linestyle=':'");
     }
 
     #[test]

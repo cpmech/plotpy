@@ -12,9 +12,11 @@ fn test_canvas() -> Result<(), StrError> {
     canvas.set_edge_color("#cd0000").set_face_color("#1862ab");
 
     // draw arc
+    canvas.set_line_style("--");
     canvas.draw_arc(0.5, 0.5, 0.4, 195.0, -15.0);
 
     // draw arrow
+    canvas.set_line_style("-");
     canvas.set_arrow_scale(50.0).set_arrow_style("fancy");
     canvas.draw_arrow(0.0, 0.0, 1.0, 1.0);
 
@@ -124,6 +126,7 @@ fn test_canvas_polyline_3d_methods() -> Result<(), StrError> {
 
     y = 1.5;
     canvas
+        .set_line_style("--")
         .polyline_3d_begin()
         .polyline_3d_add(W, y, 0.0)
         .polyline_3d_add(0.0, y, 0.0)

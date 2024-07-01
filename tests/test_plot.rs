@@ -42,7 +42,7 @@ fn test_plot() -> Result<(), StrError> {
         .set_labels("x", "y")
         .clear_current_axes();
     plot.clear_current_figure();
-    plot.set_title("my plot")
+    plot.set_title("my plot'") // the extra "'" should be sanitized
         .set_frame_borders(false)
         .set_frame_borders(true)
         .set_frame_borders(false)
@@ -161,6 +161,25 @@ fn test_plot_error() {
 }
 
 #[test]
+fn test_plot_handles_quotes() -> Result<(), StrError> {
+    let mut plot = Plot::new();
+    plot.set_title("\"$\\int$ \"The Plot of the Developer\" $versus$ \"Developer's Plot\" $\\mathrm{d}\\sigma$\"");
+
+    // save figure
+    let path = Path::new(OUT_DIR).join("integ_plot_handles_quotes.svg");
+    plot.set_figure_size_points(250.0, 250.0 * 0.75);
+    plot.save(&path)?;
+
+    // check number of lines
+    let file = File::open(path).map_err(|_| "cannot open file")?;
+    let buffered = BufReader::new(file);
+    let lines_iter = buffered.lines();
+    let count = lines_iter.count();
+    assert!(count > 920 && count < 980);
+    Ok(())
+}
+
+#[test]
 fn test_plot_subplots() -> Result<(), StrError> {
     // curve object and options
     let mut curve = Curve::new();
@@ -176,20 +195,16 @@ fn test_plot_subplots() -> Result<(), StrError> {
 
     // configure plot
     let mut plot = Plot::new();
-    plot.set_super_title("This is the \"super title\", \\n followed by a very long text to see \\n if this whole thing will be wrapped or not \\n we hope that it gets wrapped and beautifully formatted.", Some(params))
+    plot.set_super_title("\"Plot's Owner Says: This is the \"super title\", \\n followed by a very long text to see \\n if this whole thing will be wrapped or not \\n we hope that it gets wrapped and beautifully formatted.\"", Some(params))
         .set_horizontal_gap(0.5)
         .set_vertical_gap(0.5)
-        .set_gaps(0.3, 0.2);
+        .set_gaps(0.3, 0.3);
 
     // add curve to subplots
-    plot.set_subplot(2, 2, 1);
-    plot.add(&curve);
-    plot.set_subplot(2, 2, 2);
-    plot.add(&curve);
-    plot.set_subplot(2, 2, 3);
-    plot.add(&curve);
-    plot.set_subplot(2, 2, 4);
-    plot.add(&curve);
+    plot.set_subplot(2, 2, 1).set_title("\"Owner's First\"").add(&curve);
+    plot.set_subplot(2, 2, 2).set_title("\"Owner's Second\"").add(&curve);
+    plot.set_subplot(2, 2, 3).set_title("\"Owner's Third\"").add(&curve);
+    plot.set_subplot(2, 2, 4).set_title("\"Owner's Fourth\"").add(&curve);
 
     // save figure
     let path = Path::new(OUT_DIR).join("integ_plot_subplots.svg");

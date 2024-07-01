@@ -307,17 +307,18 @@ impl Plot {
 
     /// Adds a title to the plot or sub-plot
     pub fn set_title(&mut self, title: &str) -> &mut Self {
-        write!(&mut self.buffer, "plt.title(r'{}')\n", title).unwrap();
+        // we need the extra space in case the user passes a double-quoted string
+        write!(&mut self.buffer, r#"plt.title(""" {} """){}"#, title, "\n").unwrap();
         self
     }
 
     /// Adds a title to all sub-plots
     pub fn set_super_title(&mut self, title: &str, params: Option<SuperTitleParams>) -> &mut Self {
         match params {
-            Some(p) => write!(&mut self.buffer, "st=plt.suptitle('{}'{})\n", title, p.options()).unwrap(),
-            None => write!(&mut self.buffer, "st=plt.suptitle('{}')\n", title).unwrap(),
+            Some(p) => write!(&mut self.buffer, r#"st=plt.suptitle(""" {} """{})"#, title, p.options(),).unwrap(),
+            None => write!(&mut self.buffer, r#"st=plt.suptitle(""" {} """)"#, title).unwrap(),
         }
-        write!(&mut self.buffer, "add_to_ea(st)\n").unwrap();
+        write!(&mut self.buffer, "\nadd_to_ea(st)\n").unwrap();
         self
     }
 
@@ -956,7 +957,7 @@ mod tests {
             .set_horizontal_gap(0.1)
             .set_vertical_gap(0.2)
             .set_gaps(0.3, 0.4);
-        let b: &str = "st=plt.suptitle('all subplots')\n\
+        let b: &str = "st=plt.suptitle(\"\"\" all subplots \"\"\")\n\
                        add_to_ea(st)\n\
                        \nplt.subplot(2,2,1)\n\
                          plt.subplots_adjust(wspace=0.1)\n\
@@ -978,7 +979,7 @@ mod tests {
         let mut plot = Plot::new();
         plot.set_super_title("all subplots", Some(params));
         let b: &str =
-            "st=plt.suptitle('all subplots',x=123.3,y=456.7,ha='left',va='bottom',fontsize=12,fontweight=10)\n\
+            "st=plt.suptitle(\"\"\" all subplots \"\"\",x=123.3,y=456.7,ha='left',va='bottom',fontsize=12,fontweight=10)\n\
                        add_to_ea(st)\n";
         assert_eq!(plot.buffer, b);
     }
@@ -1007,10 +1008,33 @@ mod tests {
     }
 
     #[test]
+    fn set_title_and_super_title_handle_quotes() {
+        let mut p1 = Plot::new();
+        p1.set_title("Without Quotes").set_super_title("Hi", None);
+        let b: &str = "plt.title(\"\"\" Without Quotes \"\"\")\n\
+                       st=plt.suptitle(\"\"\" Hi \"\"\")\n\
+                       add_to_ea(st)\n";
+        assert_eq!(p1.buffer, b);
+
+        let mut p2 = Plot::new();
+        p2.set_title("Developer's Plot").set_super_title("Dev's", None);
+        let b: &str = "plt.title(\"\"\" Developer's Plot \"\"\")\n\
+                       st=plt.suptitle(\"\"\" Dev's \"\"\")\n\
+                       add_to_ea(st)\n";
+        assert_eq!(p2.buffer, b);
+
+        let mut p3 = Plot::new();
+        p3.set_title("\"Look at This\"").set_super_title("\"Dev's\"", None);
+        let b: &str = "plt.title(\"\"\" \"Look at This\" \"\"\")\n\
+                       st=plt.suptitle(\"\"\" \"Dev's\" \"\"\")\n\
+                       add_to_ea(st)\n";
+        assert_eq!(p3.buffer, b);
+    }
+
+    #[test]
     fn set_functions_work() {
         let mut plot = Plot::new();
         plot.set_show_errors(true)
-            .set_title("my plot")
             .set_equal_axes(true)
             .set_equal_axes(false)
             .set_hide_axes(true)
@@ -1044,8 +1068,7 @@ mod tests {
             .set_figure_size_points(7227.0, 7227.0)
             .clear_current_axes()
             .clear_current_figure();
-        let b: &str = "plt.title(r'my plot')\n\
-                       set_equal_axes()\n\
+        let b: &str = "set_equal_axes()\n\
                        plt.gca().axes.set_aspect('auto')\n\
                        plt.axis('off')\n\
                        plt.gca().set_xlim(-1,1)\n\

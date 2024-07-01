@@ -36,7 +36,7 @@ import matplotlib.transforms as tra
 import mpl_toolkits.mplot3d
 
 # Variable to handle NaN values coming from Rust
-NaN = np.NaN
+NaN = np.nan
 
 # List of additional objects to calculate bounding boxes
 EXTRA_ARTISTS = []

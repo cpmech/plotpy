@@ -180,6 +180,25 @@ fn test_plot_handles_quotes() -> Result<(), StrError> {
 }
 
 #[test]
+fn test_plot_title_handles_tex() -> Result<(), StrError> {
+    let mut plot = Plot::new();
+    plot.set_title("Van der Pol ($\\varepsilon = 10^{-6}$) - Radau5 - Tol = 1e-4");
+
+    // save figure
+    let path = Path::new(OUT_DIR).join("integ_plot_title_handles_tex.svg");
+    plot.set_figure_size_points(250.0, 250.0 * 0.75);
+    plot.save(&path)?;
+
+    // check number of lines
+    let file = File::open(path).map_err(|_| "cannot open file")?;
+    let buffered = BufReader::new(file);
+    let lines_iter = buffered.lines();
+    let count = lines_iter.count();
+    assert!(count > 800 && count < 850);
+    Ok(())
+}
+
+#[test]
 fn test_plot_subplots() -> Result<(), StrError> {
     // curve object and options
     let mut curve = Curve::new();
@@ -195,7 +214,7 @@ fn test_plot_subplots() -> Result<(), StrError> {
 
     // configure plot
     let mut plot = Plot::new();
-    plot.set_super_title("\"Plot's Owner Says: This is the \"super title\", \\n followed by a very long text to see \\n if this whole thing will be wrapped or not \\n we hope that it gets wrapped and beautifully formatted.\"", Some(params))
+    plot.set_super_title("\"$\\int$ Plot's Owner Says $\\mathrm{d}\\sigma$\": This is the \"super title\", \\n followed by a very long text to see \\n if this whole thing will be wrapped or not \\n we hope that it gets wrapped and beautifully formatted.\"", Some(params))
         .set_horizontal_gap(0.5)
         .set_vertical_gap(0.5)
         .set_gaps(0.3, 0.3);

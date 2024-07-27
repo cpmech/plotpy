@@ -5,6 +5,8 @@ use std::fs::File;
 use std::io::Write as IoWrite;
 use std::path::Path;
 
+const DEFAULT_PYTHON_EXE: &str = "python3";
+
 /// Defines the trait used by Plot to add graph entities
 pub trait GraphMaker {
     /// Returns the text buffer with Python3 commands
@@ -89,6 +91,7 @@ pub struct Plot {
     save_tight: bool,               // option for savefig: enable bbox_inches='tight'
     save_pad_inches: Option<f64>,   // option for savefig: add some padding when save_tight==true
     save_transparent: Option<bool>, // option for savefig: make it transparent
+    python_exe: String,             // `python3` or simply `python` (e.g., on Windows)
 }
 
 impl Plot {
@@ -100,6 +103,7 @@ impl Plot {
             save_tight: true,
             save_pad_inches: None,
             save_transparent: None,
+            python_exe: DEFAULT_PYTHON_EXE.to_string(),
         }
     }
 
@@ -857,6 +861,14 @@ impl Plot {
         self
     }
 
+    /// Sets the Python3 executable command
+    ///
+    /// The default is `python3`
+    pub fn set_python_exe(&mut self, python_exe: &str) -> &mut Self {
+        self.python_exe = python_exe.to_string();
+        self
+    }
+
     /// Run python
     fn run<S>(&self, figure_path: &S, show: bool) -> Result<(), StrError>
     where
@@ -885,7 +897,7 @@ impl Plot {
         // call python
         let mut path = Path::new(figure_path).to_path_buf();
         path.set_extension("py");
-        let output = call_python3(&commands, &path)?;
+        let output = call_python3(&self.python_exe, &commands, &path)?;
 
         // handle error => write log file
         if output != "" {
@@ -1332,5 +1344,13 @@ mod tests {
                        plt.axhline(0.75,color='red',linestyle='--',linewidth=3)\n\
                        plt.axvline(0.25,color='red',linestyle='--',linewidth=3)\n";
         assert_eq!(plot.buffer, b);
+    }
+
+    #[test]
+    fn set_python_exe_works() {
+        let mut plot = Plot::new();
+        assert_eq!(plot.python_exe, "python3");
+        plot.set_python_exe("python");
+        assert_eq!(plot.python_exe, "python");
     }
 }

@@ -16,7 +16,7 @@ use std::process::Command;
 /// # Note
 ///
 /// The contents of [PYTHON_HEADER] are added at the beginning of the file.
-pub(crate) fn call_python3(python_commands: &String, path: &Path) -> Result<String, StrError> {
+pub(crate) fn call_python3(python_exe: &str, python_commands: &String, path: &Path) -> Result<String, StrError> {
     // create directory
     if let Some(p) = path.parent() {
         fs::create_dir_all(p).map_err(|_| "cannot create directory")?;
@@ -35,7 +35,7 @@ pub(crate) fn call_python3(python_commands: &String, path: &Path) -> Result<Stri
     file.sync_all().map_err(|_| "cannot sync file")?;
 
     // execute file
-    let output = Command::new("python3")
+    let output = Command::new(python_exe)
         .arg(path)
         .output()
         .map_err(|_| "cannot run python3")?;
@@ -69,7 +69,7 @@ mod tests {
     fn call_python3_works() {
         let commands = "print(\"Python says: Hello World!\")".to_string();
         let path = Path::new("call_python3_works.py");
-        let output = call_python3(&commands, &path).unwrap();
+        let output = call_python3("python3", &commands, &path).unwrap();
         let data = fs::read_to_string(&path).map_err(|_| "cannot read test file").unwrap();
         let mut correct = String::from(PYTHON_HEADER);
         correct.push_str(&commands);
@@ -81,7 +81,7 @@ mod tests {
     fn call_python3_create_dir_works() {
         let commands = "print(\"Python says: Hello World!\")".to_string();
         let path = Path::new(OUT_DIR).join("call_python3_works.py");
-        let output = call_python3(&commands, &path).unwrap();
+        let output = call_python3("python3", &commands, &path).unwrap();
         let data = fs::read_to_string(&path).map_err(|_| "cannot read test file").unwrap();
         let mut correct = String::from(PYTHON_HEADER);
         correct.push_str(&commands);
@@ -94,7 +94,7 @@ mod tests {
         let path = Path::new(OUT_DIR).join("call_python3_twice_works.py");
         // first
         let commands_first = "print(\"Python says: Hello World!\")".to_string();
-        let output_first = call_python3(&commands_first, &path).unwrap();
+        let output_first = call_python3("python3", &commands_first, &path).unwrap();
         let data_first = fs::read_to_string(&path).map_err(|_| "cannot read test file").unwrap();
         let mut correct_first = String::from(PYTHON_HEADER);
         correct_first.push_str(&commands_first);
@@ -102,7 +102,7 @@ mod tests {
         assert_eq!(output_first, "Python says: Hello World!\n");
         // second
         let commands_second = "print(\"Python says: Hello World! again\")".to_string();
-        let output_second = call_python3(&commands_second, &path).unwrap();
+        let output_second = call_python3("python3", &commands_second, &path).unwrap();
         let data_second = fs::read_to_string(&path).map_err(|_| "cannot read test file").unwrap();
         let mut correct_second = String::from(PYTHON_HEADER);
         correct_second.push_str(&commands_second);

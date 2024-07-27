@@ -29,6 +29,15 @@ On Debian/Ubuntu/Linux, run:
 sudo apt install python3-matplotlib
 ```
 
+**Important:** The Rust code will call `python3` via `std::process::Command`. However, there is an option to call a different python executable; for instance:
+
+```rust
+let mut plot = Plot::new();
+plot.set_python_exe("python")
+    .add(...)
+    .save(...)?;
+```
+
 ## <a name="cargo"></a> Setting Cargo.toml
 
 [![Crates.io](https://img.shields.io/crates/v/plotpy.svg)](https://crates.io/crates/plotpy)

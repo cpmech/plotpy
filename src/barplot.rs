@@ -5,6 +5,33 @@ use std::fmt::Write;
 ///
 /// # Examples
 ///
+/// ## Basic bar plot
+///
+/// ```
+/// use plotpy::{Barplot, Plot, StrError};
+/// use std::collections::HashMap;
+///
+/// fn main() -> Result<(), StrError> {
+///     // data
+///     let x = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+///     let y = [5, 4, 3, 2, 1, 0, 1, 2, 3, 4];
+///
+///     // barplot object and options
+///     let mut bar = Barplot::new();
+///     bar.draw(&x, &y);
+///
+///     // save figure
+///     let mut plot = Plot::new();
+///     plot.add(&bar)
+///         .save("/tmp/plotpy/doc_tests/doc_barplot_1.svg")?;
+///     Ok(())
+/// }
+/// ```
+///
+/// ![doc_barplot_1.svg](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/doc_barplot_1.svg)
+///
+/// ## Using string as labels
+///
 /// The code below implements the [Bar Label Demo from Matplotlib documentation](https://matplotlib.org/stable/gallery/lines_bars_and_markers/bar_label_demo.html#sphx-glr-gallery-lines-bars-and-markers-bar-label-demo-py)
 ///
 /// ```
@@ -39,12 +66,45 @@ use std::fmt::Write;
 ///     plot.add(&bar)
 ///         .set_title("Number of penguins by sex")
 ///         .legend()
-///         .save("/tmp/plotpy/doc_tests/doc_barplot_1.svg")?;
+///         .save("/tmp/plotpy/doc_tests/doc_barplot_2.svg")?;
 ///     Ok(())
 /// }
 /// ```
 ///
-/// ![doc_barplot_1.svg](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/doc_barplot_1.svg)
+/// ![doc_barplot_2.svg](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/doc_barplot_2.svg)
+///
+/// ## Horizontal bars
+///
+/// ```
+/// use plotpy::{Barplot, Plot, StrError};
+///
+/// fn main() -> Result<(), StrError> {
+///     // data
+///     let fruits = ["Apple", "Banana", "Orange"];
+///     let prices = [10.0, 20.0, 30.0];
+///     let errors = [3.0, 2.0, 1.0];
+///
+///     // barplot object and options
+///     let mut bar = Barplot::new();
+///     bar.set_x_errors(&errors)
+///         .set_horizontal(true)
+///         .set_with_text("edge")
+///         .draw_with_str(&fruits, &prices);
+///
+///     // save figure
+///     let mut plot = Plot::new();
+///     plot.set_inv_y()
+///         .add(&bar)
+///         .set_title("Fruits")
+///         .set_label_x("price")
+///         .save("/tmp/plotpy/doc_tests/doc_barplot_3.svg")?;
+///     Ok(())
+/// }
+/// ```
+///
+/// ![doc_barplot_3.svg](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/doc_barplot_3.svg)
+///
+/// ## More examples
 ///
 /// See also integration test in the **tests** directory.
 pub struct Barplot {

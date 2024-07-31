@@ -53,6 +53,7 @@ pub struct Barplot {
     width: f64,                // Width of the bars
     bottom: Vec<f64>,          // bottom coordinates to stack bars
     with_text: Option<String>, // Text to be added to each bar (aka, bar_label)
+    extra: String,             // Extra commands (comma separated)
     buffer: String,            // buffer
 }
 
@@ -65,6 +66,7 @@ impl Barplot {
             width: 0.0,
             bottom: Vec::new(),
             with_text: None,
+            extra: String::new(),
             buffer: String::new(),
         }
     }
@@ -161,6 +163,12 @@ impl Barplot {
         self
     }
 
+    // Sets extra python/matplotlib commands (comma separated)
+    pub fn set_extra(&mut self, extra: &str) -> &mut Self {
+        self.extra = extra.to_string();
+        self
+    }
+
     /// Returns options for barplot
     fn options(&self) -> String {
         let mut opt = String::new();
@@ -175,6 +183,9 @@ impl Barplot {
         }
         if self.bottom.len() > 0 {
             write!(&mut opt, ",bottom=bottom").unwrap();
+        }
+        if self.extra != "" {
+            write!(&mut opt, ",{}", self.extra).unwrap();
         }
         opt
     }
@@ -208,34 +219,83 @@ mod tests {
     }
 
     #[test]
-    fn options_works() {
-        let mut barplot = Barplot::new();
-        barplot
-            .set_label("LABEL")
-            .set_colors(&vec!["red", "green"])
-            .set_width(10.0)
-            .set_bottom(&[1.0, 2.0, 3.0]);
-        let opt = barplot.options();
-        assert_eq!(
-            opt,
-            ",label=r'LABEL'\
-             ,color=colors\
-             ,width=10\
-             ,bottom=bottom"
-        );
-    }
-
-    #[test]
-    fn draw_works() {
+    fn draw_works_1() {
         let xx = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
         let yy = [5, 4, 3, 2, 1, 0, 1, 2, 3, 4];
-        let mut barplot = Barplot::new();
-        barplot.draw(&xx, &yy);
+        let mut bar = Barplot::new();
+        bar.draw(&xx, &yy);
         let b: &str = "x=np.array([0,1,2,3,4,5,6,7,8,9,],dtype=float)\n\
                        y=np.array([5,4,3,2,1,0,1,2,3,4,],dtype=float)\n\
                        p=plt.bar(x,y)\n";
-        assert_eq!(barplot.buffer, b);
-        barplot.clear_buffer();
-        assert_eq!(barplot.buffer, "");
+        assert_eq!(bar.buffer, b);
+        bar.clear_buffer();
+        assert_eq!(bar.buffer, "");
+    }
+
+    #[test]
+    fn draw_works_2() {
+        let xx = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+        let yy = [5, 4, 3, 2, 1, 0, 1, 2, 3, 4];
+        let mut bar = Barplot::new();
+        bar.set_label("LABEL")
+            .set_colors(&vec!["red", "green"])
+            .set_width(10.0)
+            .set_bottom(&[1.0, 2.0, 3.0])
+            .set_with_text("center")
+            .set_extra("edgecolor='black'")
+            .draw(&xx, &yy);
+        let b: &str = "x=np.array([0,1,2,3,4,5,6,7,8,9,],dtype=float)\n\
+                       y=np.array([5,4,3,2,1,0,1,2,3,4,],dtype=float)\n\
+                       colors=['red','green',]\n\
+                       bottom=np.array([1,2,3,],dtype=float)\n\
+                       p=plt.bar(x,y\
+                       ,label=r'LABEL'\
+                       ,color=colors\
+                       ,width=10\
+                       ,bottom=bottom\
+                       ,edgecolor='black')\n\
+                       plt.gca().bar_label(p,label_type='center')\n";
+        assert_eq!(bar.buffer, b);
+        bar.clear_buffer();
+        bar.set_with_text("");
+        assert_eq!(bar.buffer, "");
+    }
+
+    #[test]
+    fn draw_with_str_works_1() {
+        let xx = ["one", "two", "three"];
+        let yy = [1, 2, 3];
+        let mut bar = Barplot::new();
+        bar.draw_with_str(&xx, &yy);
+        let b: &str = "x=['one','two','three',]\n\
+                       y=np.array([1,2,3,],dtype=float)\n\
+                       p=plt.bar(x,y)\n";
+        assert_eq!(bar.buffer, b);
+    }
+
+    #[test]
+    fn draw_with_str_works_2() {
+        let xx = ["one", "two", "three"];
+        let yy = [1, 2, 3];
+        let mut bar = Barplot::new();
+        bar.set_label("LABEL")
+            .set_colors(&vec!["red", "green"])
+            .set_width(10.0)
+            .set_bottom(&[1.0, 2.0, 3.0])
+            .set_with_text("center")
+            .set_extra("edgecolor='black'")
+            .draw_with_str(&xx, &yy);
+        let b: &str = "x=['one','two','three',]\n\
+                       y=np.array([1,2,3,],dtype=float)\n\
+                       colors=['red','green',]\n\
+                       bottom=np.array([1,2,3,],dtype=float)\n\
+                       p=plt.bar(x,y\
+                       ,label=r'LABEL'\
+                       ,color=colors\
+                       ,width=10\
+                       ,bottom=bottom\
+                       ,edgecolor='black')\n\
+                       plt.gca().bar_label(p,label_type='center')\n";
+        assert_eq!(bar.buffer, b);
     }
 }

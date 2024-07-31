@@ -43,7 +43,11 @@ fn test_barplot_2() -> Result<(), StrError> {
 
     // barplot object and options
     let mut bar = Barplot::new();
-    bar.set_with_text("center");
+    let colors = &["red", "green", "blue"];
+    bar.set_with_text("center")
+        .set_width(0.6)
+        .set_colors(colors)
+        .set_extra("edgecolor='black'");
 
     // draw bars
     let mut bottom = [0.0, 0.0, 0.0];

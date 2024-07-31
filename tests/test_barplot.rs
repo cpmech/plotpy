@@ -37,22 +37,21 @@ fn test_barplot_2() -> Result<(), StrError> {
     // data
     let species = ["Adelie", "Chinstrap", "Gentoo"];
     let sex_counts = HashMap::from([
-        ("Male", [73.0, 34.0, 61.0]), //
-        ("Female", [73.0, 34.0, 58.0]),
+        ("Male", ([73.0, 34.0, 61.0], ["red", "green", "blue"])),
+        ("Female", ([73.0, 34.0, 58.0], ["#DE3163", "#40E0D0", "#6495ED"])),
     ]);
 
     // barplot object and options
     let mut bar = Barplot::new();
-    let colors = &["red", "green", "blue"];
     bar.set_with_text("center")
         .set_width(0.6)
-        .set_colors(colors)
         .set_extra("edgecolor='black'");
 
     // draw bars
     let mut bottom = [0.0, 0.0, 0.0];
-    for (sex, sex_count) in &sex_counts {
+    for (sex, (sex_count, colors)) in &sex_counts {
         bar.set_label(sex)
+            .set_colors(colors)
             .set_bottom(&bottom)
             .draw_with_str(&species, sex_count);
         for i in 0..sex_count.len() {

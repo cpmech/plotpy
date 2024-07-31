@@ -720,6 +720,59 @@ impl Plot {
         self
     }
 
+    /// Sets the color of the label for the x-axis
+    pub fn set_label_x_color(&mut self, color: &str) -> &mut Self {
+        write!(
+            &mut self.buffer,
+            "plt.gca().xaxis.label.set_color('{}')\n\
+             plt.gca().tick_params(axis='x',labelcolor='{}')\n",
+            color, color
+        )
+        .unwrap();
+        self
+    }
+
+    /// Sets the color of the label for the y-axis
+    pub fn set_label_y_color(&mut self, color: &str) -> &mut Self {
+        write!(
+            &mut self.buffer,
+            "plt.gca().yaxis.label.set_color('{}')\n\
+             plt.gca().tick_params(axis='y',labelcolor='{}')\n",
+            color, color
+        )
+        .unwrap();
+        self
+    }
+
+    /// Sets the label for the y-axis on a twin-x graph
+    ///
+    /// **Warning:** The curve with a twin-x graph must be added first
+    pub fn set_label_y_twinx(&mut self, label: &str) -> &mut Self {
+        write!(
+            &mut self.buffer,
+            "if 'ax_twinx' in locals():\n\
+             \x20\x20\x20\x20ax_twinx.set_ylabel(r'{}')\n",
+            label,
+        )
+        .unwrap();
+        self
+    }
+
+    /// Sets the color of the label for the y-axis on a twin-x graph
+    ///
+    /// **Warning:** The curve with a twin-x graph must be added first
+    pub fn set_label_y_twinx_color(&mut self, color: &str) -> &mut Self {
+        write!(
+            &mut self.buffer,
+            "if 'ax_twinx' in locals():\n\
+             \x20\x20\x20\x20ax_twinx.yaxis.label.set_color('{}')\n\
+             \x20\x20\x20\x20ax_twinx.tick_params(axis='y',labelcolor='{}')\n",
+            color, color
+        )
+        .unwrap();
+        self
+    }
+
     /// Sets the label for the x-axis and the padding
     pub fn set_label_x_and_pad(&mut self, label: &str, pad: f64) -> &mut Self {
         write!(

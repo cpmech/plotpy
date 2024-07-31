@@ -53,6 +53,8 @@ pub struct Barplot {
     width: f64,                // Width of the bars
     bottom: Vec<f64>,          // bottom coordinates to stack bars
     with_text: Option<String>, // Text to be added to each bar (aka, bar_label)
+    horizontal: bool,          // Horizontal barplot
+    x_errors: Vec<f64>,        // Shows x-error icons on horizontal bars
     extra: String,             // Extra commands (comma separated)
     buffer: String,            // buffer
 }
@@ -66,6 +68,8 @@ impl Barplot {
             width: 0.0,
             bottom: Vec::new(),
             with_text: None,
+            horizontal: false,
+            x_errors: Vec::new(),
             extra: String::new(),
             buffer: String::new(),
         }
@@ -90,7 +94,14 @@ impl Barplot {
         if self.bottom.len() > 0 {
             vector_to_array(&mut self.buffer, "bottom", &self.bottom);
         }
-        write!(&mut self.buffer, "p=plt.bar(x,y{})\n", &opt).unwrap();
+        if self.x_errors.len() > 0 {
+            vector_to_array(&mut self.buffer, "xerr", &self.x_errors);
+        }
+        if self.horizontal {
+            write!(&mut self.buffer, "p=plt.barh(x,y{})\n", &opt).unwrap();
+        } else {
+            write!(&mut self.buffer, "p=plt.bar(x,y{})\n", &opt).unwrap();
+        }
         if let Some(t) = &self.with_text {
             write!(&mut self.buffer, "plt.gca().bar_label(p,label_type='{}')\n", t).unwrap();
         }
@@ -117,7 +128,14 @@ impl Barplot {
         if self.bottom.len() > 0 {
             vector_to_array(&mut self.buffer, "bottom", &self.bottom);
         }
-        write!(&mut self.buffer, "p=plt.bar(x,y{})\n", &opt).unwrap();
+        if self.x_errors.len() > 0 {
+            vector_to_array(&mut self.buffer, "xerr", &self.x_errors);
+        }
+        if self.horizontal {
+            write!(&mut self.buffer, "p=plt.barh(x,y{})\n", &opt).unwrap();
+        } else {
+            write!(&mut self.buffer, "p=plt.bar(x,y{})\n", &opt).unwrap();
+        }
         if let Some(t) = &self.with_text {
             write!(&mut self.buffer, "plt.gca().bar_label(p,label_type='{}')\n", t).unwrap();
         }
@@ -163,6 +181,18 @@ impl Barplot {
         self
     }
 
+    // Sets an option to draw horizontal bars
+    pub fn set_horizontal(&mut self, flag: bool) -> &mut Self {
+        self.horizontal = flag;
+        self
+    }
+
+    // Sets extra python/matplotlib commands (comma separated)
+    pub fn set_x_errors(&mut self, errors: &[f64]) -> &mut Self {
+        self.x_errors = errors.to_vec();
+        self
+    }
+
     // Sets extra python/matplotlib commands (comma separated)
     pub fn set_extra(&mut self, extra: &str) -> &mut Self {
         self.extra = extra.to_string();
@@ -183,6 +213,9 @@ impl Barplot {
         }
         if self.bottom.len() > 0 {
             write!(&mut opt, ",bottom=bottom").unwrap();
+        }
+        if self.x_errors.len() > 0 {
+            write!(&mut opt, ",xerr=xerr").unwrap();
         }
         if self.extra != "" {
             write!(&mut opt, ",{}", self.extra).unwrap();

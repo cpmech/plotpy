@@ -75,3 +75,65 @@ fn test_barplot_2() -> Result<(), StrError> {
     assert!(c > 1180 && c < 1200);
     Ok(())
 }
+
+#[test]
+fn test_barplot_3() -> Result<(), StrError> {
+    // data
+    let fruits = [1.0, 2.0, 3.0];
+    let prices = [10.0, 20.0, 30.0];
+    let errors = [3.0, 2.0, 1.0];
+
+    // barplot object and options
+    let mut bar = Barplot::new();
+    bar.set_x_errors(&errors)
+        .set_horizontal(true)
+        .set_with_text("edge")
+        .draw(&fruits, &prices);
+
+    // plot
+    let mut plot = Plot::new();
+    plot.set_inv_y().add(&bar);
+
+    // save figure
+    let path = Path::new(OUT_DIR).join("integ_barplot_3.svg");
+    plot.set_title("Fruits").set_label_x("price").save(&path)?;
+
+    // check number of lines
+    let file = File::open(path).map_err(|_| "cannot open file")?;
+    let buffered = BufReader::new(file);
+    let lines_iter = buffered.lines();
+    let c = lines_iter.count();
+    assert!(c > 660 && c < 700);
+    Ok(())
+}
+
+#[test]
+fn test_barplot_4() -> Result<(), StrError> {
+    // data
+    let fruits = ["Apple", "Banana", "Orange"];
+    let prices = [10.0, 20.0, 30.0];
+    let errors = [3.0, 2.0, 1.0];
+
+    // barplot object and options
+    let mut bar = Barplot::new();
+    bar.set_x_errors(&errors)
+        .set_horizontal(true)
+        .set_with_text("edge")
+        .draw_with_str(&fruits, &prices);
+
+    // plot
+    let mut plot = Plot::new();
+    plot.set_inv_y().add(&bar);
+
+    // save figure
+    let path = Path::new(OUT_DIR).join("integ_barplot_4.svg");
+    plot.set_title("Fruits").set_label_x("price").save(&path)?;
+
+    // check number of lines
+    let file = File::open(path).map_err(|_| "cannot open file")?;
+    let buffered = BufReader::new(file);
+    let lines_iter = buffered.lines();
+    let c = lines_iter.count();
+    assert!(c > 770 && c < 810);
+    Ok(())
+}

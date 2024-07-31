@@ -31,7 +31,7 @@ sudo apt install python3-matplotlib
 
 **Important:** The Rust code will call `python3` via `std::process::Command`. However, there is an option to call a different python executable; for instance:
 
-```rust
+```text
 let mut plot = Plot::new();
 plot.set_python_exe("python")
     .add(...)

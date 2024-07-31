@@ -1,0 +1,241 @@
+use super::{vector_to_array, vector_to_strings, AsVector, GraphMaker};
+use std::fmt::Write;
+
+/// Generates a Barplot plot
+///
+/// # Examples
+///
+/// The code below implements the [Bar Label Demo from Matplotlib documentation](https://matplotlib.org/stable/gallery/lines_bars_and_markers/bar_label_demo.html#sphx-glr-gallery-lines-bars-and-markers-bar-label-demo-py)
+///
+/// ```
+/// use plotpy::{Barplot, Plot, StrError};
+/// use std::collections::HashMap;
+///
+/// fn main() -> Result<(), StrError> {
+///     // data
+///     let species = ["Adelie", "Chinstrap", "Gentoo"];
+///     let sex_counts = HashMap::from([
+///         ("Male", [73.0, 34.0, 61.0]), //
+///         ("Female", [73.0, 34.0, 58.0]),
+///     ]);
+///
+///    // barplot object and options
+///    let mut bar = Barplot::new();
+///    bar.set_with_text("center");
+///
+///    // draw bars
+///    let mut bottom = [0.0, 0.0, 0.0];
+///    for (sex, sex_count) in &sex_counts {
+///        bar.set_label(sex)
+///            .set_bottom(&bottom)
+///            .draw_with_str(&species, sex_count);
+///        for i in 0..sex_count.len() {
+///            bottom[i] += sex_count[i];
+///        }
+///    }
+///
+///     // add barplot to plot and save figure
+///     let mut plot = Plot::new();
+///     plot.add(&bar)
+///         .set_title("Number of penguins by sex")
+///         .legend()
+///         .save("/tmp/plotpy/doc_tests/doc_barplot_1.svg")?;
+///     Ok(())
+/// }
+/// ```
+///
+/// ![doc_barplot_1.svg](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/doc_barplot_1.svg)
+///
+/// See also integration test in the **tests** directory.
+pub struct Barplot {
+    label: String,             // Name of this bar in the legend
+    colors: Vec<String>,       // Colors for each bar
+    width: f64,                // Width of the bars
+    bottom: Vec<f64>,          // bottom coordinates to stack bars
+    with_text: Option<String>, // Text to be added to each bar (aka, bar_label)
+    buffer: String,            // buffer
+}
+
+impl Barplot {
+    /// Creates a new Barplot object
+    pub fn new() -> Self {
+        Barplot {
+            label: String::new(),
+            colors: Vec::new(),
+            width: 0.0,
+            bottom: Vec::new(),
+            with_text: None,
+            buffer: String::new(),
+        }
+    }
+
+    /// Draws the bar plot
+    ///
+    /// # Notes
+    ///
+    /// * The type `U` of the input array must be a number.
+    pub fn draw<'a, T, U>(&mut self, x: &'a T, y: &'a T)
+    where
+        T: AsVector<'a, U>,
+        U: 'a + std::fmt::Display,
+    {
+        vector_to_array(&mut self.buffer, "x", x);
+        vector_to_array(&mut self.buffer, "y", y);
+        let opt = self.options();
+        if self.colors.len() > 0 {
+            vector_to_strings(&mut self.buffer, "colors", self.colors.as_slice());
+        }
+        if self.bottom.len() > 0 {
+            vector_to_array(&mut self.buffer, "bottom", &self.bottom);
+        }
+        write!(&mut self.buffer, "p=plt.bar(x,y{})\n", &opt).unwrap();
+        if let Some(t) = &self.with_text {
+            write!(&mut self.buffer, "plt.gca().bar_label(p,label_type='{}')\n", t).unwrap();
+        }
+    }
+
+    /// Draws the bar plot with strings
+    ///
+    /// # Notes
+    ///
+    /// * The type `S` of the input array must be a string.
+    /// * The type `U` of the input array must be a number.
+    pub fn draw_with_str<'a, S, T, U>(&mut self, x: &[S], y: &'a T)
+    where
+        S: std::fmt::Display,
+        T: AsVector<'a, U>,
+        U: 'a + std::fmt::Display,
+    {
+        vector_to_strings(&mut self.buffer, "x", x);
+        vector_to_array(&mut self.buffer, "y", y);
+        let opt = self.options();
+        if self.colors.len() > 0 {
+            vector_to_strings(&mut self.buffer, "colors", self.colors.as_slice());
+        }
+        if self.bottom.len() > 0 {
+            vector_to_array(&mut self.buffer, "bottom", &self.bottom);
+        }
+        write!(&mut self.buffer, "p=plt.bar(x,y{})\n", &opt).unwrap();
+        if let Some(t) = &self.with_text {
+            write!(&mut self.buffer, "plt.gca().bar_label(p,label_type='{}')\n", t).unwrap();
+        }
+    }
+
+    /// Sets the name of this bar in the legend
+    pub fn set_label(&mut self, label: &str) -> &mut Self {
+        self.label = String::from(label);
+        self
+    }
+
+    /// Sets the colors for each bar
+    pub fn set_colors(&mut self, colors: &[&str]) -> &mut Self {
+        self.colors = colors.iter().map(|color| color.to_string()).collect();
+        self
+    }
+
+    /// Sets the width of the bars
+    pub fn set_width(&mut self, width: f64) -> &mut Self {
+        self.width = width;
+        self
+    }
+
+    /// Sets the vertical offset to stack bars
+    pub fn set_bottom(&mut self, bottom: &[f64]) -> &mut Self {
+        self.bottom = Vec::from(bottom);
+        self
+    }
+
+    /// Sets an option to show the text (labels) of each bar
+    ///
+    /// # Input
+    ///
+    /// `position` -- "edge" or "center"; Use "" to remove the label
+    ///
+    /// See [Matplotlib documentation](https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.bar_label.html#matplotlib.axes.Axes.bar_label)
+    pub fn set_with_text(&mut self, position: &str) -> &mut Self {
+        if position == "" {
+            self.with_text = None
+        } else {
+            self.with_text = Some(position.to_string());
+        }
+        self
+    }
+
+    /// Returns options for barplot
+    fn options(&self) -> String {
+        let mut opt = String::new();
+        if self.label != "" {
+            write!(&mut opt, ",label=r'{}'", self.label).unwrap();
+        }
+        if self.colors.len() > 0 {
+            write!(&mut opt, ",color=colors").unwrap();
+        }
+        if self.width > 0.0 {
+            write!(&mut opt, ",width={}", self.width).unwrap();
+        }
+        if self.bottom.len() > 0 {
+            write!(&mut opt, ",bottom=bottom").unwrap();
+        }
+        opt
+    }
+}
+
+impl GraphMaker for Barplot {
+    fn get_buffer<'a>(&'a self) -> &'a String {
+        &self.buffer
+    }
+    fn clear_buffer(&mut self) {
+        self.buffer.clear();
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+#[cfg(test)]
+mod tests {
+    use super::Barplot;
+    use crate::GraphMaker;
+
+    #[test]
+    fn new_works() {
+        let barplot = Barplot::new();
+        assert_eq!(barplot.label.len(), 0);
+        assert_eq!(barplot.colors.len(), 0);
+        assert_eq!(barplot.width, 0.0);
+        assert_eq!(barplot.bottom.len(), 0);
+        assert_eq!(barplot.with_text, None);
+        assert_eq!(barplot.buffer.len(), 0);
+    }
+
+    #[test]
+    fn options_works() {
+        let mut barplot = Barplot::new();
+        barplot
+            .set_label("LABEL")
+            .set_colors(&vec!["red", "green"])
+            .set_width(10.0)
+            .set_bottom(&[1.0, 2.0, 3.0]);
+        let opt = barplot.options();
+        assert_eq!(
+            opt,
+            ",label=r'LABEL'\
+             ,color=colors\
+             ,width=10\
+             ,bottom=bottom"
+        );
+    }
+
+    #[test]
+    fn draw_works() {
+        let xx = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+        let yy = [5, 4, 3, 2, 1, 0, 1, 2, 3, 4];
+        let mut barplot = Barplot::new();
+        barplot.draw(&xx, &yy);
+        let b: &str = "x=np.array([0,1,2,3,4,5,6,7,8,9,],dtype=float)\n\
+                       y=np.array([5,4,3,2,1,0,1,2,3,4,],dtype=float)\n\
+                       p=plt.bar(x,y)\n";
+        assert_eq!(barplot.buffer, b);
+        barplot.clear_buffer();
+        assert_eq!(barplot.buffer, "");
+    }
+}

@@ -5,12 +5,15 @@
     "**/Cargo.lock": true
   },
   "cSpell.words": [
+    "Adelie",
     "arrowstyle",
     "axhline",
     "axisbelow",
     "axline",
     "axvline",
     "azim",
+    "barh",
+    "barplot",
     "barstacked",
     "bbox",
     "borderaxespad",
@@ -77,6 +80,7 @@
     "verticalalignment",
     "wspace",
     "xaxis",
+    "xerr",
     "xlabel",
     "xmax",
     "xmin",

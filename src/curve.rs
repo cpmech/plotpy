@@ -104,6 +104,49 @@ pub enum RayEndpoint {
 ///
 /// ![doc_curve_vector.svg](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/doc_curve_vector.svg)
 ///
+/// ## (twinx) Plot two vertical axes with different scales
+///
+/// ```
+/// use plotpy::{linspace, Curve, Plot, StrError};
+/// use std::f64::consts::PI;
+///
+/// fn main() -> Result<(), StrError> {
+///     // data
+///     let np = 201;
+///     let mut x = vec![0.0; np];
+///     let mut y1 = vec![0.0; np];
+///     let mut y2 = vec![0.0; np];
+///     let dx = 4.0 / (np as f64);
+///     for i in 0..np {
+///         x[i] = (i as f64) * dx;
+///         y1[i] = f64::exp(x[i]);
+///         y2[i] = f64::sin(2.0 * PI * x[i]);
+///     }
+///
+///     // curve
+///     let mut curve = Curve::new();
+///     curve.set_line_color("red").draw(&x, &y1);
+///     curve.set_line_color("blue").draw_with_twin_x(&y2);
+///
+///     // add curve to plot
+///     let mut plot = Plot::new();
+///     plot.add(&curve) // must occur before set twinx options
+///         .grid_and_labels("time (s)", "exp function")
+///         .set_label_x_color("green")
+///         .set_label_y_color("red")
+///         .set_label_y_twinx("sin function")
+///         .set_label_y_twinx_color("blue");
+///
+///     // save figure
+///     plot.save("/tmp/plotpy/doc_tests/doc_curve_twinx.svg")?;
+///     Ok(())
+/// }
+/// ```
+///
+/// ![doc_curve_twinx.svg](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/doc_curve_twinx.svg)
+///
+/// ## More examples
+///
 /// See also integration tests in the [tests directory](https://github.com/cpmech/plotpy/tree/main/tests)
 ///
 /// Output from some integration tests:
@@ -238,7 +281,6 @@ impl Curve {
     /// # Notes
     ///
     /// * The type `U` of the input array must be a number.
-    ///
     pub fn draw<'a, T, U>(&mut self, x: &'a T, y: &'a T)
     where
         T: AsVector<'a, U>,
@@ -248,6 +290,31 @@ impl Curve {
         vector_to_array(&mut self.buffer, "y", y);
         let opt = self.options();
         write!(&mut self.buffer, "plt.plot(x,y{})\n", &opt).unwrap();
+    }
+
+    /// Draws curve on a previously drawn figure with the same x
+    ///
+    /// * `y` - ordinate values on the right-hand side
+    ///
+    /// # Notes
+    ///
+    /// * The type `U` of the input array must be a number.
+    pub fn draw_with_twin_x<'a, T, U>(&mut self, y: &'a T)
+    where
+        T: AsVector<'a, U>,
+        U: 'a + std::fmt::Display,
+    {
+        vector_to_array(&mut self.buffer, "y2", y);
+        let opt = self.options();
+        write!(
+            &mut self.buffer,
+            "ax=plt.gca()\n\
+             ax_twinx=ax.twinx()\n\
+             ax_twinx.plot(x,y2{})\n\
+             plt.sca(ax)\n",
+            &opt
+        )
+        .unwrap();
     }
 
     /// Draws curve in 3D plot

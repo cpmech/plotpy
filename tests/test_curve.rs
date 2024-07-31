@@ -1,4 +1,5 @@
 use plotpy::{Curve, Plot, RayEndpoint, StrError};
+use std::f64::consts::PI;
 use std::fs::File;
 use std::io::{BufRead, BufReader};
 use std::path::Path;
@@ -71,6 +72,47 @@ fn test_curve() -> Result<(), StrError> {
     let buffered = BufReader::new(file);
     let lines_iter = buffered.lines();
     assert!(lines_iter.count() > 530);
+    Ok(())
+}
+
+#[test]
+fn test_curve_twinx() -> Result<(), StrError> {
+    // data
+    let np = 201;
+    let mut x = vec![0.0; np];
+    let mut y1 = vec![0.0; np];
+    let mut y2 = vec![0.0; np];
+    let dx = 4.0 / (np as f64);
+    for i in 0..np {
+        x[i] = (i as f64) * dx;
+        y1[i] = f64::exp(x[i]);
+        y2[i] = f64::sin(2.0 * PI * x[i]);
+    }
+
+    // curve
+    let mut curve = Curve::new();
+    curve.set_line_color("red").draw(&x, &y1);
+    curve.set_line_color("blue").draw_with_twin_x(&y2);
+
+    // add curve to plot
+    let mut plot = Plot::new();
+    plot.add(&curve) // must occur before set twin_x options
+        .grid_and_labels("time (s)", "exp function")
+        .set_label_x_color("green")
+        .set_label_y_color("red")
+        .set_label_y_twinx("sin function")
+        .set_label_y_twinx_color("blue");
+
+    // save figure
+    let path = Path::new(OUT_DIR).join("integ_curve_twinx.svg");
+    plot.save(&path)?;
+
+    // check number of lines
+    let file = File::open(path).map_err(|_| "cannot open file")?;
+    let buffered = BufReader::new(file);
+    let lines_iter = buffered.lines();
+    let c = lines_iter.count();
+    assert!(c > 1250 && c < 1300);
     Ok(())
 }
 

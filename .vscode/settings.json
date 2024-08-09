@@ -46,6 +46,7 @@
     "histtype",
     "horizontalalignment",
     "hspace",
+    "imshow",
     "joinstyle",
     "labelcolor",
     "labelpad",

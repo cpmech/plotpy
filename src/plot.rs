@@ -1,4 +1,4 @@
-use super::{call_python3, Legend, StrError, SuperTitleParams};
+use super::{call_python3, vector_to_array, vector_to_strings, AsVector, Legend, StrError, SuperTitleParams};
 use std::ffi::OsStr;
 use std::fmt::Write;
 use std::fs::File;
@@ -18,7 +18,9 @@ pub trait GraphMaker {
 
 /// Driver structure that calls Python
 ///
-/// # Example
+/// # Examples
+///
+/// ## Drawing curves
 ///
 /// ```
 /// use plotpy::{linspace, Curve, Plot, StrError};
@@ -83,6 +85,73 @@ pub trait GraphMaker {
 /// ```
 ///
 /// ![doc_plot.svg](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/doc_plot.svg)
+///
+/// ## Drawing an image from data and setting the ticks
+///
+/// See [Matplotlib example](https://matplotlib.org/stable/gallery/images_contours_and_fields/image_annotated_heatmap.html)
+///
+/// ```
+/// use plotpy::{Image, Plot, Text, StrError};
+///
+/// fn main() -> Result<(), StrError> {
+///     // data
+///     let vegetables = [
+///         "cucumber",
+///         "tomato",
+///         "lettuce",
+///         "asparagus",
+///         "potato",
+///         "wheat",
+///         "barley",
+///     ];
+///     let farmers = [
+///         "Farmer Joe",
+///         "Upland Bros.",
+///         "Smith Gardening",
+///         "Agrifun",
+///         "Organiculture",
+///         "BioGoods Ltd.",
+///         "Cornylee Corp.",
+///     ];
+///     let harvest = [
+///         [0.8, 2.4, 2.5, 3.9, 0.0, 4.0, 0.0],
+///         [2.4, 0.0, 4.0, 1.0, 2.7, 0.0, 0.0],
+///         [1.1, 2.4, 0.8, 4.3, 1.9, 4.4, 0.0],
+///         [0.6, 0.0, 0.3, 0.0, 3.1, 0.0, 0.0],
+///         [0.7, 1.7, 0.6, 2.6, 2.2, 6.2, 0.0],
+///         [1.3, 1.2, 0.0, 0.0, 0.0, 3.2, 5.1],
+///         [0.1, 2.0, 0.0, 1.4, 0.0, 1.9, 6.3],
+///     ];
+///
+///     // draw image
+///     let mut img = Image::new();
+///     img.draw(&harvest);
+///
+///     // set tick labels
+///     let mut plot = Plot::new();
+///     let ticks: Vec<_> = (0..vegetables.len()).into_iter().collect();
+///     plot.add(&img)
+///         .set_rotation_ticks_x(45.0)
+///         .set_ticks_x_labels(&ticks, &farmers)
+///         .set_ticks_y_labels(&ticks, &vegetables);
+///
+///     // add text
+///     let mut text = Text::new();
+///     text.set_color("white").set_align_horizontal("center");
+///     for i in 0..vegetables.len() {
+///         for j in 0..farmers.len() {
+///             text.draw(j as f64, i as f64, harvest[i][j].to_string().as_str());
+///         }
+///     }
+///     plot.add(&text);
+///
+///     // save figure
+///     plot.save("/tmp/plotpy/doc_tests/doc_plot_2.svg")?;
+///     Ok(())
+/// }
+/// ```
+///
+/// ![doc_plot_2.svg](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/doc_plot_2.svg)
 ///
 /// See also integration tests in the [tests directory](https://github.com/cpmech/plotpy/tree/main/tests)
 pub struct Plot {
@@ -598,6 +667,34 @@ impl Plot {
             write!(&mut self.buffer, "major_formatter = tck.FormatStrFormatter(r'{}')\n", major_number_format).unwrap();
             write!(&mut self.buffer, "plt.gca().yaxis.set_major_formatter(major_formatter)\n").unwrap();
         }
+        self
+    }
+
+    /// Sets the ticks and labels along x
+    pub fn set_ticks_x_labels<'a, S, T, U>(&mut self, ticks: &'a T, labels: &[S]) -> &mut Self
+    where
+        S: std::fmt::Display,
+        T: AsVector<'a, U>,
+        U: 'a + std::fmt::Display,
+    {
+        assert_eq!(ticks.vec_size(), labels.len());
+        vector_to_array(&mut self.buffer, "tx", ticks);
+        vector_to_strings(&mut self.buffer, "lx", labels);
+        write!(&mut self.buffer, "plt.gca().set_xticks(tx,labels=lx)\n").unwrap();
+        self
+    }
+
+    /// Sets the ticks and labels along y
+    pub fn set_ticks_y_labels<'a, S, T, U>(&mut self, ticks: &'a T, labels: &[S]) -> &mut Self
+    where
+        S: std::fmt::Display,
+        T: AsVector<'a, U>,
+        U: 'a + std::fmt::Display,
+    {
+        assert_eq!(ticks.vec_size(), labels.len());
+        vector_to_array(&mut self.buffer, "ty", ticks);
+        vector_to_strings(&mut self.buffer, "ly", labels);
+        write!(&mut self.buffer, "plt.gca().set_yticks(ty,labels=ly)\n").unwrap();
         self
     }
 

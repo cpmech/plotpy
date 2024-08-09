@@ -5,6 +5,36 @@ use std::fmt::Write;
 ///
 /// # Examples
 ///
+/// ```
+/// use plotpy::{Image, Plot, StrError};
+///
+/// fn main() -> Result<(), StrError> {
+///     // set values
+///     let data = [
+///         [0.8, 2.4, 2.5, 3.9, 0.0, 4.0, 0.0],
+///         [2.4, 0.0, 4.0, 1.0, 2.7, 0.0, 0.0],
+///         [1.1, 2.4, 0.8, 4.3, 1.9, 4.4, 0.0],
+///         [0.6, 0.0, 0.3, 0.0, 3.1, 0.0, 0.0],
+///         [0.7, 1.7, 0.6, 2.6, 2.2, 6.2, 0.0],
+///         [1.3, 1.2, 0.0, 0.0, 0.0, 3.2, 5.1],
+///         [0.1, 2.0, 0.0, 1.4, 0.0, 1.9, 6.3],
+///     ];
+///
+///     // image plot and options
+///     let mut img = Image::new();
+///     img.set_colormap_name("hsv").set_normalization("linear").draw(&data);
+///
+///     // save figure
+///     let mut plot = Plot::new();
+///     plot.add(&img);
+///     plot.save("/tmp/plotpy/doc_tests/doc_image_1.svg")?;
+///     Ok(())
+/// }
+/// ```
+///
+/// ![doc_image_1.svg](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/doc_image_1.svg)
+///
+/// See also integration test in the **tests** directory.
 pub struct Image {
     colormap_name: String, // Colormap name
     normalization: String, // Normalization method
@@ -127,9 +157,12 @@ mod tests {
     fn draw_works_1() {
         let xx = [[1, 2], [3, 2]];
         let mut img = Image::new();
-        img.draw(&xx);
+        img.set_colormap_index(0)
+            .set_colormap_name("terrain")
+            .set_normalization("linear")
+            .draw(&xx);
         let b: &str = "data=np.array([[1,2,],[3,2,],],dtype=float)\n\
-                       plt.imshow(data)\n";
+                       plt.imshow(data,cmap=plt.get_cmap('terrain'),norm=r'linear')\n";
         assert_eq!(img.buffer, b);
         img.clear_buffer();
         assert_eq!(img.buffer, "");

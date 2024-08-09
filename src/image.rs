@@ -22,7 +22,7 @@ use std::fmt::Write;
 ///
 ///     // image plot and options
 ///     let mut img = Image::new();
-///     img.set_colormap_name("hsv").set_normalization("linear").draw(&data);
+///     img.set_colormap_name("hsv").draw(&data);
 ///
 ///     // save figure
 ///     let mut plot = Plot::new();
@@ -37,7 +37,6 @@ use std::fmt::Write;
 /// See also integration test in the **tests** directory.
 pub struct Image {
     colormap_name: String, // Colormap name
-    normalization: String, // Normalization method
     extra: String,         // Extra commands (comma separated)
     buffer: String,        // buffer
 }
@@ -47,7 +46,6 @@ impl Image {
     pub fn new() -> Self {
         Image {
             colormap_name: String::new(),
-            normalization: String::new(),
             extra: String::new(),
             buffer: String::new(),
         }
@@ -98,14 +96,6 @@ impl Image {
         self
     }
 
-    /// Sets the normalization method to scale the data in 0 to 1
-    ///
-    /// Examples: "linear", "log", "symlog", "logit"
-    pub fn set_normalization(&mut self, norm: &str) -> &mut Self {
-        self.normalization = String::from(norm);
-        self
-    }
-
     // Sets extra python/matplotlib commands (comma separated)
     pub fn set_extra(&mut self, extra: &str) -> &mut Self {
         self.extra = extra.to_string();
@@ -117,9 +107,6 @@ impl Image {
         let mut opt = String::new();
         if self.colormap_name != "" {
             write!(&mut opt, ",cmap=plt.get_cmap('{}')", self.colormap_name).unwrap();
-        }
-        if self.normalization != "" {
-            write!(&mut opt, ",norm=r'{}'", self.normalization).unwrap();
         }
         if self.extra != "" {
             write!(&mut opt, ",{}", self.extra).unwrap();
@@ -148,7 +135,6 @@ mod tests {
     fn new_works() {
         let img = Image::new();
         assert_eq!(img.colormap_name.len(), 0);
-        assert_eq!(img.normalization.len(), 0);
         assert_eq!(img.extra.len(), 0);
         assert_eq!(img.buffer.len(), 0);
     }
@@ -157,12 +143,9 @@ mod tests {
     fn draw_works_1() {
         let xx = [[1, 2], [3, 2]];
         let mut img = Image::new();
-        img.set_colormap_index(0)
-            .set_colormap_name("terrain")
-            .set_normalization("linear")
-            .draw(&xx);
+        img.set_colormap_index(0).set_colormap_name("terrain").draw(&xx);
         let b: &str = "data=np.array([[1,2,],[3,2,],],dtype=float)\n\
-                       plt.imshow(data,cmap=plt.get_cmap('terrain'),norm=r'linear')\n";
+                       plt.imshow(data,cmap=plt.get_cmap('terrain'))\n";
         assert_eq!(img.buffer, b);
         img.clear_buffer();
         assert_eq!(img.buffer, "");

@@ -1,4 +1,4 @@
-use plotpy::{linspace, Curve, Plot, StrError, SuperTitleParams};
+use plotpy::{linspace, Curve, Image, Plot, StrError, SuperTitleParams, Text};
 use std::f64::consts::PI;
 use std::fs::File;
 use std::io::{BufRead, BufReader};
@@ -354,5 +354,71 @@ fn test_plot_extra_functionality() -> Result<(), StrError> {
     let lines_iter = buffered.lines();
     let n = lines_iter.count();
     assert!(n > 490 && n < 530);
+    Ok(())
+}
+
+#[test]
+fn test_plot_tick_labels() -> Result<(), StrError> {
+    // data
+    let vegetables = [
+        "cucumber",
+        "tomato",
+        "lettuce",
+        "asparagus",
+        "potato",
+        "wheat",
+        "barley",
+    ];
+    let farmers = [
+        "Farmer Joe",
+        "Upland Bros.",
+        "Smith Gardening",
+        "Agrifun",
+        "Organiculture",
+        "BioGoods Ltd.",
+        "Cornylee Corp.",
+    ];
+    let harvest = [
+        [0.8, 2.4, 2.5, 3.9, 0.0, 4.0, 0.0],
+        [2.4, 0.0, 4.0, 1.0, 2.7, 0.0, 0.0],
+        [1.1, 2.4, 0.8, 4.3, 1.9, 4.4, 0.0],
+        [0.6, 0.0, 0.3, 0.0, 3.1, 0.0, 0.0],
+        [0.7, 1.7, 0.6, 2.6, 2.2, 6.2, 0.0],
+        [1.3, 1.2, 0.0, 0.0, 0.0, 3.2, 5.1],
+        [0.1, 2.0, 0.0, 1.4, 0.0, 1.9, 6.3],
+    ];
+
+    // draw image
+    let mut img = Image::new();
+    img.draw(&harvest);
+
+    // set tick labels
+    let mut plot = Plot::new();
+    let ticks: Vec<_> = (0..vegetables.len()).into_iter().collect();
+    plot.add(&img)
+        .set_rotation_ticks_x(45.0)
+        .set_ticks_x_labels(&ticks, &farmers)
+        .set_ticks_y_labels(&ticks, &vegetables);
+
+    // add text
+    let mut text = Text::new();
+    text.set_color("white").set_align_horizontal("center");
+    for i in 0..vegetables.len() {
+        for j in 0..farmers.len() {
+            text.draw(j as f64, i as f64, harvest[i][j].to_string().as_str());
+        }
+    }
+    plot.add(&text);
+
+    // save figure
+    let path = Path::new(OUT_DIR).join("integ_plot_tick_labels.svg");
+    plot.set_show_errors(true).save(&path)?;
+
+    // check number of lines
+    let file = File::open(path).map_err(|_| "cannot open file")?;
+    let buffered = BufReader::new(file);
+    let lines_iter = buffered.lines();
+    let n = lines_iter.count();
+    assert!(n > 1620 && n < 1700);
     Ok(())
 }

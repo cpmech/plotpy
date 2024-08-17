@@ -1,7 +1,7 @@
 use super::{call_python3, vector_to_array, vector_to_strings, AsVector, Legend, StrError, SuperTitleParams};
 use std::ffi::OsStr;
 use std::fmt::Write;
-use std::fs::File;
+use std::fs::{self, File};
 use std::io::Write as IoWrite;
 use std::path::Path;
 
@@ -234,7 +234,30 @@ impl Plot {
     {
         self.run(figure_path, true)
     }
-
+    
+    /// Show the plot in `evcxr` kernel Jupyter Notebook
+    /// 
+    /// # Input
+    /// 
+    /// * `figure_path` -- may be a String, &str or Path
+    /// 
+    /// # Note 
+    /// 
+    /// The input must be the same file which was saved by `plot.save()`. Be sure the
+    /// plot has been saved before calling `plot.show()`. This method only works in
+    /// Jupyter Notebook.
+    pub fn show<S>(&self, figure_path: &S) -> Result<(), StrError>
+    where
+        S: AsRef<OsStr> + ?Sized,
+    {
+        let fig_path = Path::new(figure_path);
+        match fs::read_to_string(fig_path) {
+            Ok(figure) => println!("EVCXR_BEGIN_CONTENT text/html\n{}\nEVCXR_END_CONTENT", figure),
+            Err(e) => return Err("Failed to read the SVG figure, please check it."),
+        }
+        Ok(())
+    }
+    
     /// Clears the current axes
     pub fn clear_current_axes(&mut self) -> &mut Self {
         self.buffer.push_str("plt.gca().cla()\n");
@@ -1096,7 +1119,16 @@ mod tests {
         let lines_iter = buffered.lines();
         assert!(lines_iter.count() > 20);
     }
-
+    
+    #[test]
+    fn show_works() {
+        let plot = Plot::new();
+        let path = Path::new(OUT_DIR).join("show_works.svg");
+        plot.save(&path).unwrap();
+        let result = plot.show(&path).unwrap();
+        assert_eq!(result, ());
+    }
+    
     #[test]
     fn save_str_works() {
         let plot = Plot::new();

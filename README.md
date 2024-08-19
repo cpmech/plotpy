@@ -7,6 +7,7 @@
 * [Introduction](#introduction)
 * [Installation](#installation)
 * [Setting Cargo.toml](#cargo)
+* [Trying with Jupyter evcxr Kernel Interactively](#Trying with Jupyter evcxr Kernel Interactively)
 * [Examples](#examples)
 
 ## <a name="introduction"></a> Introduction

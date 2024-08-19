@@ -50,7 +50,7 @@ plotpy = "*"
 ```
 
 ## <a name="Trying with Jupyter evcxr Kernel Interactively"></a> Trying with Jupyter evcxr Kernel Interactively
-Plotpy now supports integration with `evcxr` and is able to interactively display the saved plots in Jupyter Notebook. This feature needs (evcxr)[https://github.com/evcxr/evcxr] kernel, please install it following the (tutorial)[https://depth-first.com/articles/2020/09/21/interactive-rust-in-a-repl-and-jupyter-notebook-with-evcxr/].
+Plotpy now supports integration with `evcxr` and is able to interactively display the saved plots in Jupyter Notebook. This feature needs [evcxr](https://github.com/evcxr/evcxr) kernel, please install it following the [tutorial](https://depth-first.com/articles/2020/09/21/interactive-rust-in-a-repl-and-jupyter-notebook-with-evcxr/).
 
 The following code shows a minimal example of this.
 ```rust

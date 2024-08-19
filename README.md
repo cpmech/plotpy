@@ -54,7 +54,8 @@ Plotpy now supports integration with `evcxr` and is able to interactively displa
 
 The following code shows a minimal example of this.
 ```rust
-// Set python path. There's not currently any integration with evcxr for python, so we must set python path in order to use the suitable python environment.
+// Set python path. There's not currently any integration with evcxr for python, so
+// we must set python path in order to use the suitable python environment.
 let python = "/home/test/miniconda3/envs/py311/bin/python";
 // Set the figure path and name to be saved.
 let file = "figure.svg";

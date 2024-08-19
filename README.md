@@ -62,6 +62,7 @@ let python = "/home/test/miniconda3/envs/py311/bin/python";
 let path = "figure.svg";
 // Plot and save and then show in jupyter notebook
 let plot = Plot::new();
+plot.set_python_exe(python);
 plot.save(file)?;
 plot.show_in_evcxr(path)?;
 ```

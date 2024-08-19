@@ -63,7 +63,7 @@ let path = "figure.svg";
 // Plot and save and then show in jupyter notebook
 let plot = Plot::new();
 plot.set_python_exe(python);
-plot.save(file)?;
+plot.save(path)?;
 plot.show_in_evcxr(path)?;
 ```
 Run the above code in jupyter notebook and then an empty figure will be displayed.

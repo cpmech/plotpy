@@ -61,7 +61,7 @@ let python = "/home/test/miniconda3/envs/py311/bin/python";
 // Set the figure path and name to be saved.
 let path = "figure.svg";
 // Plot and save and then show in jupyter notebook
-let plot = Plot::new();
+let mut plot = Plot::new();
 plot.set_python_exe(python);
 plot.save(path)?;
 plot.show_in_evcxr(path)?;

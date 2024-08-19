@@ -59,11 +59,11 @@ The following code shows a minimal example of this.
 // we must set python path in order to use the suitable python environment.
 let python = "/home/test/miniconda3/envs/py311/bin/python";
 // Set the figure path and name to be saved.
-let file = "figure.svg";
+let path = "figure.svg";
 // Plot and save and then show in jupyter notebook
 let plot = Plot::new();
 plot.save(file)?;
-plot.show_in_evcxr(&path)?;
+plot.show_in_evcxr(path)?;
 ```
 Run the above code in jupyter notebook and then an empty figure will be displayed.
 

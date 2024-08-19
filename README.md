@@ -49,6 +49,22 @@ plot.set_python_exe("python")
 plotpy = "*"
 ```
 
+## <a name="Trying with Jupyter evcxr Kernel Interactively"></a> Trying with Jupyter evcxr Kernel Interactively
+Plotpy now supports integration with `evcxr` and is able to interactively display the saved plots in Jupyter Notebook. This feature needs (evcxr)[https://github.com/evcxr/evcxr] kernel, please install it following the (tutorial)[https://depth-first.com/articles/2020/09/21/interactive-rust-in-a-repl-and-jupyter-notebook-with-evcxr/].
+
+The following code shows a minimal example of this.
+```rust
+// Set python path. There's not currently any integration with evcxr for python, so we must set python path in order to use the suitable python environment.
+let python = "/home/test/miniconda3/envs/py311/bin/python";
+// Set the figure path and name to be saved.
+let file = "figure.svg";
+// Plot and save and then show in jupyter notebook
+let plot = Plot::new();
+plot.save(file)?;
+plot.show_in_evcxr(&path)?;
+```
+Run the above code in jupyter notebook and then an empty figure will be displayed.
+
 ## <a name="examples"></a> Examples
 
 ### Contour

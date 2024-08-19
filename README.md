@@ -63,6 +63,8 @@ let path = "figure.svg";
 // Plot and save and then show in jupyter notebook
 let mut plot = Plot::new();
 plot.set_python_exe(python);
+plot.set_label_x("x");
+plot.set_label_y("y");
 plot.save(path)?;
 plot.show_in_evcxr(path)?;
 ```

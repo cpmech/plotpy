@@ -246,7 +246,7 @@ impl Plot {
     /// The input must be the same file which was saved by `plot.save()`. Be sure the
     /// plot has been saved before calling `plot.show()`. This method only works in
     /// Jupyter Notebook.
-    pub fn show<S>(&self, figure_path: &S) -> Result<(), StrError>
+    pub fn show_in_evcxr<S>(&self, figure_path: &S) -> Result<(), StrError>
     where
         S: AsRef<OsStr> + ?Sized,
     {
@@ -1121,7 +1121,7 @@ mod tests {
     }
     
     #[test]
-    fn show_works() {
+    fn show_in_evcxr_works() {
         let plot = Plot::new();
         let path = Path::new(OUT_DIR).join("show_works.svg");
         plot.save(&path).unwrap();

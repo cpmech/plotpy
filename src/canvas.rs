@@ -453,6 +453,18 @@ impl Canvas {
         self
     }
 
+    /// Draws a text in a 2D graph
+    pub fn draw_text(&mut self, x: f64, y: f64, label: &str) -> &mut Self {
+        self.text(2, &[x, y, 0.0], label, false);
+        self
+    }
+
+    /// Draws an alternative text in a 2D graph
+    pub fn draw_alt_text(&mut self, x: f64, y: f64, label: &str) -> &mut Self {
+        self.text(2, &[x, y, 0.0], label, true);
+        self
+    }
+
     /// Draws a 2D or 3D grid
     ///
     /// # Input

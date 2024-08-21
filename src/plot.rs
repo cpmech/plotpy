@@ -243,9 +243,9 @@ impl Plot {
     ///
     /// # Note
     ///
-    /// The input must be the same file which was saved by `plot.save()`. Be sure the
-    /// plot has been saved before calling `plot.show()`. This method only works in
-    /// Jupyter Notebook.
+    /// 1. This method only works in a Jupyter Notebook
+    /// 2. The input must be the same saved by `plot.save(...)`. Thus, make sure
+    ///    that the plot has been saved before calling `plot.show_in_evcxr()`.
     pub fn show_in_evcxr<S>(&self, figure_path: &S) -> Result<(), StrError>
     where
         S: AsRef<OsStr> + ?Sized,

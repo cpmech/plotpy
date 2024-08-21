@@ -164,17 +164,17 @@ impl Canvas {
             arrow_scale: 0.0,
             arrow_style: String::new(),
             // text
-            text_color: "#a81414".to_string(),
-            text_align_horizontal: String::new(),
-            text_align_vertical: String::new(),
-            text_fontsize: 8.0,
-            text_rotation: 45.0,
+            text_color: "#343434".to_string(),
+            text_align_horizontal: "center".to_string(),
+            text_align_vertical: "center".to_string(),
+            text_fontsize: 10.0,
+            text_rotation: 0.0,
             // alternative text
-            alt_text_color: "#343434".to_string(),
-            alt_text_align_horizontal: "center".to_string(),
-            alt_text_align_vertical: "center".to_string(),
-            alt_text_fontsize: 10.0,
-            alt_text_rotation: 0.0,
+            alt_text_color: "#a81414".to_string(),
+            alt_text_align_horizontal: String::new(),
+            alt_text_align_vertical: String::new(),
+            alt_text_fontsize: 8.0,
+            alt_text_rotation: 45.0,
             // options
             stop_clip: false,
             // buffer
@@ -549,7 +549,7 @@ impl Canvas {
                     for i in 0..npoint[0] {
                         a[0] = xmin[0] + delta[0] * (i as f64);
                         let txt = format!("{}", id_point);
-                        self.text(ndim, &a, &txt, false);
+                        self.text(ndim, &a, &txt, true);
                         id_point += 1;
                     }
                 }
@@ -572,7 +572,7 @@ impl Canvas {
                         a[0] = xmin[0] + delta[0] * (i as f64);
                         b[0] = a[0] + delta[0] / 2.0;
                         let txt = format!("{}", id_cell);
-                        self.text(ndim, &b, &txt, true);
+                        self.text(ndim, &b, &txt, false);
                         id_cell += 1;
                     }
                 }

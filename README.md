@@ -1,25 +1,40 @@
-# Rust plotting library using Python (Matplotlib)
+# Rust plotting library using Python (Matplotlib) <!-- omit from toc --> 
 
+[![documentation](https://img.shields.io/badge/plotpy-documentation-blue)](https://docs.rs/plotpy)
+[![Track Awesome List](https://www.trackawesomelist.com/badge.svg)](https://www.trackawesomelist.com/rust-unofficial/awesome-rust/)
+
+[![Test & Coverage](https://github.com/cpmech/plotpy/actions/workflows/test_and_coverage.yml/badge.svg)](https://github.com/cpmech/plotpy/actions/workflows/test_and_coverage.yml)
 [![codecov](https://codecov.io/gh/cpmech/plotpy/branch/main/graph/badge.svg?token=SUBRKUN63U)](https://codecov.io/gh/cpmech/plotpy)
 
-## Contents
 
-* [Introduction](#introduction)
-* [Installation](#installation)
-* [Setting Cargo.toml](#cargo)
-* [Examples](#examples)
+## Contents <!-- omit from toc --> 
 
-## <a name="introduction"></a> Introduction
+- [Introduction](#introduction)
+- [Installation](#installation)
+- [Setting Cargo.toml](#setting-cargotoml)
+- [Use of Jupyter via evcxr](#use-of-jupyter-via-evcxr)
+- [Examples](#examples)
+  - [Contour](#contour)
+  - [Superquadric](#superquadric)
 
-This crate implements high-level functions to generate plots and drawings.  Although we use Python/Matplotlib, the goal is to provide a convenient Rust library that is **different** than Matplotlib. The difference happens because we want **convenience** for the Rust developer while getting the **fantastic quality of Matplotlib** 😀.
 
-Internally, we use [Matplotlib](https://matplotlib.org/) via a Python 3 script.  First, we generate a python code in a directory of your choice (e.g., `/tmp/plotpy`), and then we call **python3** using Rust's `std::process::Command`.
+## Introduction
+
+This crate implements high-level functions to generate plots and drawings. Although we use Python/Matplotlib, the goal is to provide a convenient Rust library that is **different** than Matplotlib. The difference happens because we want **convenience** for the Rust developer while getting the **fantastic quality of Matplotlib** 😀.
+
+Plotpy is more verbose than Matplotlib because we aim to minimize the need to memorize the functionality by taking advantage of the intelligence of the IDE (e.g., VS Code) on auto-completing the code.
+
+Internally, we use [Matplotlib](https://matplotlib.org/) via a Python 3 script. First, we generate a python code in a directory of your choice (e.g., `/tmp/plotpy`), and then we call **python3** using Rust's `std::process::Command`.
 
 For more information (and examples), check out the [plotpy documentation on docs.rs](https://docs.rs/plotpy).
 
 See also the [examples directory](https://github.com/cpmech/plotpy/tree/main/examples) with the output of the [integration tests](https://github.com/cpmech/plotpy/tree/main/tests).
 
-## <a name="installation"></a> Installation on Debian/Ubuntu/Linux
+
+
+## Installation
+
+*This code is mainly tested on Debian/Ubuntu/Linux.*
 
 This crate needs Python3 and Matplotlib, of course.
 
@@ -29,16 +44,18 @@ On Debian/Ubuntu/Linux, run:
 sudo apt install python3-matplotlib
 ```
 
-**Important:** The Rust code will call `python3` via `std::process::Command`. However, there is an option to call a different python executable; for instance:
+**Important:** The Rust code will call `python3` via `std::process::Command`. However, there is an option to call a different python executable; for instance (the code below is no tested):
 
 ```text
 let mut plot = Plot::new();
-plot.set_python_exe("python")
+plot.set_python_exe("C:\Windows11\WhereIs\python.exe")
     .add(...)
     .save(...)?;
 ```
 
-## <a name="cargo"></a> Setting Cargo.toml
+
+
+## Setting Cargo.toml
 
 [![Crates.io](https://img.shields.io/crates/v/plotpy.svg)](https://crates.io/crates/plotpy)
 
@@ -49,7 +66,33 @@ plot.set_python_exe("python")
 plotpy = "*"
 ```
 
-## <a name="examples"></a> Examples
+
+
+## Use of Jupyter via evcxr
+
+Plotpy can be used with Jupyter via [evcxr](https://github.com/evcxr/evcxr). Thus, it can interactively display the plots in a Jupyter Notebook. This feature requires the installation of `evcxr`. See the [Jupyter/evcxr article](https://depth-first.com/articles/2020/09/21/interactive-rust-in-a-repl-and-jupyter-notebook-with-evcxr/).
+
+The following code shows a minimal example (not tested)
+
+```text
+// set the python path
+let python = "where-is-my/python";
+
+// set the figure path and name to be saved
+let path = "my-figure.svg";
+
+// plot and show in a Jupyter notebook
+let mut plot = Plot::new();
+plot.set_python_exe(python)
+    .set_label_x("x");
+    .set_label_y("y");
+    .save(path)?;
+plot.show_in_evcxr(path)?;
+```
+
+
+
+## Examples
 
 ### Contour
 

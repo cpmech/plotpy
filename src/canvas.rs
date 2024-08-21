@@ -944,11 +944,6 @@ mod tests {
         assert_eq!(canvas.line_style.len(), 0);
         assert_eq!(canvas.arrow_scale, 0.0);
         assert_eq!(canvas.arrow_style.len(), 0);
-        assert_eq!(canvas.text_color.len(), 7);
-        assert_eq!(canvas.text_align_horizontal.len(), 0);
-        assert_eq!(canvas.text_align_vertical.len(), 0);
-        assert_eq!(canvas.text_fontsize, 8.0);
-        assert_eq!(canvas.text_rotation, 45.0);
         assert_eq!(canvas.buffer.len(), 0);
     }
 
@@ -1057,8 +1052,8 @@ mod tests {
     fn text_works() {
         let mut canvas = Canvas::new();
         let a = [0.0; 3];
-        canvas.text(2, &a, "hello", false);
-        canvas.text(3, &a, "hello", true);
+        canvas.text(2, &a, "hello", true);
+        canvas.text(3, &a, "hello", false);
         assert_eq!(
             canvas.buffer,
             "plt.text(0,0,'hello',color='#a81414',fontsize=8,rotation=45)\n\

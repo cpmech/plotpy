@@ -347,3 +347,83 @@ fn test_canvas_polycurve_methods() -> Result<(), StrError> {
     assert!(lines_iter.count() > 355);
     Ok(())
 }
+
+#[test]
+fn test_canvas_rectangle() -> Result<(), StrError> {
+    // canvas
+    let mut canvas = Canvas::new();
+
+    // rectangles
+    canvas
+        .set_line_style("--")
+        .set_edge_color("#1536b3")
+        .set_face_color("#fcbbbe")
+        .draw_rectangle(0.5, 0.5, 2.0, 1.0)
+        .set_line_style(":")
+        .draw_rectangle(0.5, 2.0, 2.0, 0.5);
+
+    // add canvas to plot
+    let mut plot = Plot::new();
+    plot.add(&canvas);
+
+    // save figure
+    let path = Path::new(OUT_DIR).join("integ_canvas_rectangle.svg");
+    plot.set_range(0.0, 3.0, 0.0, 3.0)
+        .set_equal_axes(true)
+        .set_show_errors(true);
+    plot.save(&path)?;
+
+    // check number of lines
+    let file = File::open(path).map_err(|_| "cannot open file")?;
+    let buffered = BufReader::new(file);
+    let lines_iter = buffered.lines();
+    let n = lines_iter.count();
+    assert!(n > 420 && n < 470);
+    Ok(())
+}
+
+#[test]
+fn test_canvas_rectangle_and_text() -> Result<(), StrError> {
+    // canvas
+    let mut canvas = Canvas::new();
+
+    // configurations
+    canvas
+        .set_face_color("#de3163")
+        .set_line_style("None")
+        .set_text_color("white")
+        .set_alt_text_rotation(0.0)
+        .set_alt_text_color("white")
+        .set_alt_text_fontsize(14.0)
+        .set_text_fontsize(20.0);
+
+    // draw rectangles and text
+    canvas
+        .draw_rectangle(0.5, 0.5, 2.0, 1.0)
+        .draw_text(1.5, 1.0, "HELLO")
+        .set_alt_text_align_vertical("top")
+        .set_alt_text_align_horizontal("left")
+        .draw_alt_text(0.5, 1.5, "123")
+        .set_alt_text_align_vertical("bottom")
+        .set_alt_text_align_horizontal("right")
+        .draw_alt_text(2.5, 0.5, "456");
+
+    // add canvas to plot
+    let mut plot = Plot::new();
+    plot.add(&canvas);
+
+    // save figure
+    let path = Path::new(OUT_DIR).join("integ_canvas_rectangle_and_text.svg");
+    plot.set_range(0.0, 3.0, 0.0, 3.0)
+        .set_equal_axes(true)
+        .set_show_errors(true);
+    plot.save(&path)?;
+
+    // check number of lines
+    let file = File::open(path).map_err(|_| "cannot open file")?;
+    let buffered = BufReader::new(file);
+    let lines_iter = buffered.lines();
+    let n = lines_iter.count();
+    assert!(n > 530 && n < 600);
+    Ok(())
+}

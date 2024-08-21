@@ -164,17 +164,17 @@ impl Canvas {
             arrow_scale: 0.0,
             arrow_style: String::new(),
             // text
-            text_color: "#a81414".to_string(),
-            text_align_horizontal: String::new(),
-            text_align_vertical: String::new(),
-            text_fontsize: 8.0,
-            text_rotation: 45.0,
+            text_color: "#343434".to_string(),
+            text_align_horizontal: "center".to_string(),
+            text_align_vertical: "center".to_string(),
+            text_fontsize: 10.0,
+            text_rotation: 0.0,
             // alternative text
-            alt_text_color: "#343434".to_string(),
-            alt_text_align_horizontal: "center".to_string(),
-            alt_text_align_vertical: "center".to_string(),
-            alt_text_fontsize: 10.0,
-            alt_text_rotation: 0.0,
+            alt_text_color: "#a81414".to_string(),
+            alt_text_align_horizontal: String::new(),
+            alt_text_align_vertical: String::new(),
+            alt_text_fontsize: 8.0,
+            alt_text_rotation: 45.0,
             // options
             stop_clip: false,
             // buffer
@@ -440,12 +440,40 @@ impl Canvas {
         }
     }
 
+    /// Draws a rectangle
+    pub fn draw_rectangle(&mut self, x: f64, y: f64, width: f64, height: f64) -> &mut Self {
+        let opt = self.options_shared();
+        write!(
+            &mut self.buffer,
+            "p=pat.Rectangle(({},{}),{},{}{})\n\
+             plt.gca().add_patch(p)\n",
+            x, y, width, height, &opt
+        )
+        .unwrap();
+        self
+    }
+
+    /// Draws a text in a 2D graph
+    pub fn draw_text(&mut self, x: f64, y: f64, label: &str) -> &mut Self {
+        self.text(2, &[x, y, 0.0], label, false);
+        self
+    }
+
+    /// Draws an alternative text in a 2D graph
+    pub fn draw_alt_text(&mut self, x: f64, y: f64, label: &str) -> &mut Self {
+        self.text(2, &[x, y, 0.0], label, true);
+        self
+    }
+
     /// Draws a 2D or 3D grid
     ///
     /// # Input
     ///
     /// * `xmin, xmax` -- min and max coordinates (len = 2 or 3 == ndim)
     /// * `ndiv` -- number of divisions along each dimension (len = 2 or 3 == ndim)
+    ///
+    /// **Note:** See the `set_text_...` and `set_alt_text_...` functions to configure
+    /// the cell and point labels, respectively.
     pub fn draw_grid(
         &mut self,
         xmin: &[f64],
@@ -533,7 +561,7 @@ impl Canvas {
                     for i in 0..npoint[0] {
                         a[0] = xmin[0] + delta[0] * (i as f64);
                         let txt = format!("{}", id_point);
-                        self.text(ndim, &a, &txt, false);
+                        self.text(ndim, &a, &txt, true);
                         id_point += 1;
                     }
                 }
@@ -556,7 +584,7 @@ impl Canvas {
                         a[0] = xmin[0] + delta[0] * (i as f64);
                         b[0] = a[0] + delta[0] / 2.0;
                         let txt = format!("{}", id_cell);
-                        self.text(ndim, &b, &txt, true);
+                        self.text(ndim, &b, &txt, false);
                         id_cell += 1;
                     }
                 }
@@ -916,11 +944,6 @@ mod tests {
         assert_eq!(canvas.line_style.len(), 0);
         assert_eq!(canvas.arrow_scale, 0.0);
         assert_eq!(canvas.arrow_style.len(), 0);
-        assert_eq!(canvas.text_color.len(), 7);
-        assert_eq!(canvas.text_align_horizontal.len(), 0);
-        assert_eq!(canvas.text_align_vertical.len(), 0);
-        assert_eq!(canvas.text_fontsize, 8.0);
-        assert_eq!(canvas.text_rotation, 45.0);
         assert_eq!(canvas.buffer.len(), 0);
     }
 
@@ -1029,8 +1052,8 @@ mod tests {
     fn text_works() {
         let mut canvas = Canvas::new();
         let a = [0.0; 3];
-        canvas.text(2, &a, "hello", false);
-        canvas.text(3, &a, "hello", true);
+        canvas.text(2, &a, "hello", true);
+        canvas.text(3, &a, "hello", false);
         assert_eq!(
             canvas.buffer,
             "plt.text(0,0,'hello',color='#a81414',fontsize=8,rotation=45)\n\

@@ -347,3 +347,37 @@ fn test_canvas_polycurve_methods() -> Result<(), StrError> {
     assert!(lines_iter.count() > 355);
     Ok(())
 }
+
+#[test]
+fn test_canvas_rectangle() -> Result<(), StrError> {
+    // canvas
+    let mut canvas = Canvas::new();
+
+    // rectangles
+    canvas
+        .set_line_style("--")
+        .set_edge_color("#1536b3")
+        .set_face_color("#fcbbbe")
+        .draw_rectangle(0.5, 0.5, 2.0, 1.0)
+        .set_line_style(":")
+        .draw_rectangle(0.5, 2.0, 2.0, 0.5);
+
+    // add canvas to plot
+    let mut plot = Plot::new();
+    plot.add(&canvas);
+
+    // save figure
+    let path = Path::new(OUT_DIR).join("integ_canvas_rectangle.svg");
+    plot.set_range(0.0, 3.0, 0.0, 3.0)
+        .set_equal_axes(true)
+        .set_show_errors(true);
+    plot.save(&path)?;
+
+    // check number of lines
+    let file = File::open(path).map_err(|_| "cannot open file")?;
+    let buffered = BufReader::new(file);
+    let lines_iter = buffered.lines();
+    let n = lines_iter.count();
+    assert!(n > 420 && n < 470);
+    Ok(())
+}

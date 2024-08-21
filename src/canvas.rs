@@ -440,6 +440,19 @@ impl Canvas {
         }
     }
 
+    /// Draws a rectangle
+    pub fn draw_rectangle(&mut self, x: f64, y: f64, width: f64, height: f64) -> &mut Self {
+        let opt = self.options_shared();
+        write!(
+            &mut self.buffer,
+            "p=pat.Rectangle(({},{}),{},{}{})\n\
+             plt.gca().add_patch(p)\n",
+            x, y, width, height, &opt
+        )
+        .unwrap();
+        self
+    }
+
     /// Draws a 2D or 3D grid
     ///
     /// # Input

@@ -459,6 +459,9 @@ impl Canvas {
     ///
     /// * `xmin, xmax` -- min and max coordinates (len = 2 or 3 == ndim)
     /// * `ndiv` -- number of divisions along each dimension (len = 2 or 3 == ndim)
+    ///
+    /// **Note:** See the `set_text_...` and `set_alt_text_...` functions to configure
+    /// the cell and point labels, respectively.
     pub fn draw_grid(
         &mut self,
         xmin: &[f64],

@@ -225,10 +225,12 @@ impl Plot {
     ///
     /// * `figure_path` -- may be a String, &str, or Path
     ///
-    /// # Note
+    /// # Notes
     ///
-    /// Call `set_show_errors` to configure how the errors (if any) are printed.
-    pub fn save_and_show<S>(&self, figure_path: &S) -> Result<(), StrError>
+    /// 1. You may want to call [Plot::set_show_errors()] to enable the
+    ///    display of Python errors (if any)
+    /// 2. This function will also save a figure as [Plot::save()] does
+    pub fn show<S>(&self, figure_path: &S) -> Result<(), StrError>
     where
         S: AsRef<OsStr> + ?Sized,
     {

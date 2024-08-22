@@ -203,15 +203,16 @@ impl Plot {
         self
     }
 
-    /// Calls python3 and saves the python script and figure
+    /// Calls Python and saves the python script and figure
     ///
     /// # Input
     ///
     /// * `figure_path` -- may be a String, &str, or Path
     ///
-    /// # Note
+    /// # Notes
     ///
-    /// Call `set_show_errors` to configure how the errors (if any) are printed.
+    /// 1. You may want to call [Plot::set_show_errors()] to enable the
+    ///    display of Python errors (if any)
     pub fn save<S>(&self, figure_path: &S) -> Result<(), StrError>
     where
         S: AsRef<OsStr> + ?Sized,
@@ -219,7 +220,7 @@ impl Plot {
         self.run(figure_path, false)
     }
 
-    /// Calls python3, saves the python script and figure, and show the plot window
+    /// Calls Python, saves the python script and figure, and shows the plot window
     ///
     /// # Input
     ///
@@ -237,21 +238,25 @@ impl Plot {
         self.run(figure_path, true)
     }
 
-    /// Show the plot in `evcxr` kernel Jupyter Notebook
+    /// Calls Python, saves the python script and figure, and shows the result in a Jupyter notebook
+    ///
+    /// **Important:** This function requires [evcxr_jupyter](https://github.com/evcxr/evcxr).
     ///
     /// # Input
     ///
     /// * `figure_path` -- may be a String, &str or Path
     ///
-    /// # Note
+    /// # Notes
     ///
-    /// 1. This method only works in a Jupyter Notebook
-    /// 2. The input must be the same saved by `plot.save(...)`. Thus, make sure
-    ///    that the plot has been saved before calling `plot.show_in_evcxr()`.
-    pub fn show_in_evcxr<S>(&self, figure_path: &S) -> Result<(), StrError>
+    /// 1. You may want to call [Plot::set_show_errors()] to enable the
+    ///    display of Python errors (if any)
+    /// 2. This function will also save a figure as [Plot::save()] does
+    /// 3. This method only works in a Jupyter Notebook
+    pub fn show_in_jupyter<S>(&self, figure_path: &S) -> Result<(), StrError>
     where
         S: AsRef<OsStr> + ?Sized,
     {
+        self.run(figure_path, false)?;
         let fig_path = Path::new(figure_path);
         match fs::read_to_string(fig_path) {
             Ok(figure) => println!("EVCXR_BEGIN_CONTENT text/html\n{}\nEVCXR_END_CONTENT", figure),
@@ -307,7 +312,7 @@ impl Plot {
         self.legend()
     }
 
-    /// Sets flag to print python errors (if any) when calling save
+    /// Enables the display of python errors (if any)
     pub fn set_show_errors(&mut self, option: bool) -> &mut Self {
         self.show_errors = option;
         self
@@ -1127,7 +1132,7 @@ mod tests {
         let plot = Plot::new();
         let path = Path::new(OUT_DIR).join("show_works.svg");
         plot.save(&path).unwrap();
-        let result = plot.show_in_evcxr(&path).unwrap();
+        let result = plot.show_in_jupyter(&path).unwrap();
         assert_eq!(result, ());
     }
 

@@ -18,14 +18,17 @@
 //! should be useful for double checking or even directly adding Python/Matplotlib commands,
 //! in case the functionality is not implemented here yet.
 //!
-//! When calling [Plot::save] or [Plot::save_and_show], if an error occurs, we generate a log
+//! When calling [Plot::save()] or [Plot::show()], if an error occurs, we generate a log
 //! file in the same output directory with the same filename as the figure (and python script),
 //! but with the `.log` extension.
 //!
 //! The typical use of this library is by allocating structures such as [Canvas], [Curve], [Contour],
 //! [Histogram], [Surface], [Text] (and more) and then passing them to [Plot] for the generation
-//! of the files mentioned above. The [Plot::save_and_show] function may also be used to immediately
+//! of the files mentioned above. The [Plot::show()] function may also be used to immediately
 //! see the plot or drawing on the screen.
+//!
+//! Alternatively, [if evcxr is installed](https://github.com/evcxr/evcxr), the function
+//! [Plot::show_in_jupyter()] can be used to show the resulting figure in a Jupyter notebook.
 //!
 //! Each structure (e.g. [Curve], [Legend], or [Text]) defines many configuration options
 //! that can be set by calling their own `set_...` function. Typically, these structures provide

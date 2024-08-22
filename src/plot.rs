@@ -1128,7 +1128,7 @@ mod tests {
     }
 
     #[test]
-    fn show_in_evcxr_works() {
+    fn show_in_jupyter_works() {
         let plot = Plot::new();
         let path = Path::new(OUT_DIR).join("show_works.svg");
         plot.save(&path).unwrap();

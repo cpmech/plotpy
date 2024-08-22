@@ -84,10 +84,9 @@ let path = "my-figure.svg";
 // plot and show in a Jupyter notebook
 let mut plot = Plot::new();
 plot.set_python_exe(python)
-    .set_label_x("x");
-    .set_label_y("y");
-    .save(path)?;
-plot.show_in_evcxr(path)?;
+    .set_label_x("x")
+    .set_label_y("y")
+    .show_in_jupyter(path)?;
 ```
 
 

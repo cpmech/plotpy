@@ -18,7 +18,9 @@ fn test_contour() -> Result<(), StrError> {
         .set_line_width(2.5)
         .set_selected_line_color("#69e699")
         .set_selected_line_width(5.0)
-        .set_selected_level(1.0, true);
+        .set_selected_level(1.0, true)
+        .set_extra_filled("alpha=0.8")
+        .set_extra_line("alpha=0.3");
 
     // draw contour
     let n = 9;
@@ -37,7 +39,8 @@ fn test_contour() -> Result<(), StrError> {
     let file = File::open(path).map_err(|_| "cannot open file")?;
     let buffered = BufReader::new(file);
     let lines_iter = buffered.lines();
-    assert!(lines_iter.count() > 1470);
+    let n = lines_iter.count();
+    assert!(n > 1520 && n < 1570);
     Ok(())
 }
 

@@ -62,6 +62,8 @@ pub struct Contour {
     selected_line_color: String, // Color to mark the selected level
     selected_line_style: String, // Line style for the selected level
     selected_line_width: f64,    // Line width for the selected level
+    extra_filled: String,        // Extra commands (comma separated) for the filled contour
+    extra_line: String,          // Extra commands (comma separated) for the line contour
     buffer: String,              // buffer
 }
 
@@ -87,6 +89,8 @@ impl Contour {
             selected_line_color: "yellow".to_string(),
             selected_line_style: "-".to_string(),
             selected_line_width: 2.0,
+            extra_filled: String::new(),
+            extra_line: String::new(),
             buffer: String::new(),
         }
     }
@@ -290,6 +294,34 @@ impl Contour {
         self
     }
 
+    /// Sets extra matplotlib commands (comma separated) for the filled contour
+    ///
+    /// **Important:** The extra commands must be comma separated. For example:
+    ///
+    /// ```text
+    /// param1=123,param2="hello"
+    /// ```
+    ///
+    /// [See Matplotlib's documentation for extra parameters](https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.contour.html)
+    pub fn set_extra_filled(&mut self, extra: &str) -> &mut Self {
+        self.extra_filled = extra.to_string();
+        self
+    }
+
+    /// Sets extra matplotlib commands (comma separated) for the line contour
+    ///
+    /// **Important:** The extra commands must be comma separated. For example:
+    ///
+    /// ```text
+    /// param1=123,param2="hello"
+    /// ```
+    ///
+    /// [See Matplotlib's documentation for extra parameters](https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.contour.html)
+    pub fn set_extra_line(&mut self, extra: &str) -> &mut Self {
+        self.extra_line = extra.to_string();
+        self
+    }
+
     /// Returns options for filled contour
     fn options_filled(&self) -> String {
         let mut opt = String::new();
@@ -302,6 +334,9 @@ impl Contour {
         }
         if self.levels.len() > 0 {
             write!(&mut opt, ",levels=levels").unwrap();
+        }
+        if self.extra_filled != "" {
+            write!(&mut opt, ",{}", self.extra_filled).unwrap();
         }
         opt
     }
@@ -320,6 +355,9 @@ impl Contour {
         }
         if self.line_width > 0.0 {
             write!(&mut opt, ",linewidths=[{}]", self.line_width).unwrap();
+        }
+        if self.extra_line != "" {
+            write!(&mut opt, ",{}", self.extra_line).unwrap();
         }
         opt
     }

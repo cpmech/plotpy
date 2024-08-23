@@ -3,6 +3,8 @@ use std::fmt::Write;
 
 /// Generates a Legend
 ///
+/// [See Matplotlib's documentation](https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.legend.html)
+///
 /// # Example
 ///
 /// ```
@@ -73,6 +75,7 @@ pub struct Legend {
     outside: bool,      // Put legend outside plot area
     show_frame: bool,   // Show frame around legend
     x_coords: Vec<f64>, // Normalized coordinates to put legend outside
+    extra: String,      // Extra commands (comma separated)
     buffer: String,     // buffer
 }
 
@@ -87,6 +90,7 @@ impl Legend {
             outside: false,
             show_frame: true,
             x_coords: vec![0.0, 1.02, 1.0, 0.102],
+            extra: String::new(),
             buffer: String::new(),
         }
     }
@@ -155,6 +159,20 @@ impl Legend {
         self
     }
 
+    /// Sets extra matplotlib commands (comma separated)
+    ///
+    /// **Important:** The extra commands must be comma separated. For example:
+    ///
+    /// ```text
+    /// param1=123,param2='hello'
+    /// ```
+    ///
+    /// [See Matplotlib's documentation for extra parameters](https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.legend.html)
+    pub fn set_extra(&mut self, extra: &str) -> &mut Self {
+        self.extra = extra.to_string();
+        self
+    }
+
     /// Returns options for legend
     fn options(&self) -> String {
         let mut opt = String::new();
@@ -182,6 +200,9 @@ impl Legend {
             if self.location != "" {
                 write!(&mut opt, "{}loc='{}'", comma, self.location).unwrap();
             }
+        }
+        if self.extra != "" {
+            write!(&mut opt, ",{}", self.extra).unwrap();
         }
         opt
     }

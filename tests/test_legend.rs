@@ -57,11 +57,11 @@ fn test_legend_1() -> Result<(), StrError> {
 fn test_legend_2() -> Result<(), StrError> {
     // curve and options
     let mut curve1 = Curve::new();
-    curve1.set_label("my-curve");
+    curve1.set_marker_style("o").set_label("my-curve");
 
     // another curve
     let mut curve2 = Curve::new();
-    curve2.set_label("another-curve");
+    curve2.set_marker_style("*").set_label("another-curve");
 
     // draw curve
     let x = &[1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0];
@@ -72,7 +72,7 @@ fn test_legend_2() -> Result<(), StrError> {
 
     // legend and options
     let mut legend = Legend::new();
-    legend.set_location("lower right");
+    legend.set_extra("numpoints=3").set_location("lower right");
 
     // draw legend
     legend.draw();

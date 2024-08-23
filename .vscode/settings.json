@@ -66,6 +66,7 @@
     "markevery",
     "MOVETO",
     "mplot",
+    "numpoints",
     "numpy",
     "patheffects",
     "polyline",

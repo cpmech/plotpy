@@ -241,19 +241,19 @@ impl Barplot {
         self
     }
 
-    // Sets an option to draw horizontal bars
+    /// Enables drawing horizontal bars
     pub fn set_horizontal(&mut self, flag: bool) -> &mut Self {
         self.horizontal = flag;
         self
     }
 
-    // Sets extra python/matplotlib commands (comma separated)
+    /// Enables the error indicators
     pub fn set_x_errors(&mut self, errors: &[f64]) -> &mut Self {
         self.x_errors = errors.to_vec();
         self
     }
 
-    // Sets extra python/matplotlib commands (comma separated)
+    /// Sets extra python/matplotlib commands (comma separated)
     pub fn set_extra(&mut self, extra: &str) -> &mut Self {
         self.extra = extra.to_string();
         self

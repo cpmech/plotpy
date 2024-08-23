@@ -20,7 +20,7 @@ fn test_image_1() -> Result<(), StrError> {
 
     // image plot and options
     let mut img = Image::new();
-    img.set_colormap_name("terrain").draw(&data);
+    img.set_colormap_name("terrain").set_extra("alpha=0.8").draw(&data);
 
     let mut plot = Plot::new();
     plot.add(&img);

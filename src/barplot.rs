@@ -258,7 +258,7 @@ impl Barplot {
     /// **Important:** The extra commands must be comma separated. For example:
     ///
     /// ```text
-    /// param1=123,param2="hello"
+    /// param1=123,param2='hello'
     /// ```
     ///
     /// [See Matplotlib's documentation for extra parameters](https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.bar.html)

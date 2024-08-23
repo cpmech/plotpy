@@ -253,7 +253,15 @@ impl Barplot {
         self
     }
 
-    /// Sets extra python/matplotlib commands (comma separated)
+    /// Sets extra matplotlib commands (comma separated)
+    ///
+    /// **Important:** The extra commands must be comma separated. For example:
+    ///
+    /// ```text
+    /// param1=123,param2="hello"
+    /// ```
+    ///
+    /// [See Matplotlib's documentation for extra parameters](https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.bar.html)
     pub fn set_extra(&mut self, extra: &str) -> &mut Self {
         self.extra = extra.to_string();
         self

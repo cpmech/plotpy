@@ -40,7 +40,11 @@ fn test_histogram_1() -> Result<(), StrError> {
 #[test]
 fn test_histogram_2() -> Result<(), StrError> {
     let mut histogram = Histogram::new();
-    histogram.set_no_fill(true).set_number_bins(16).set_stacked(true);
+    histogram
+        .set_no_fill(true)
+        .set_number_bins(16)
+        .set_stacked(true)
+        .set_extra("orientation='horizontal'");
 
     // draw histogram
     let values = vec![

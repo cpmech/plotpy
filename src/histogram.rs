@@ -53,6 +53,7 @@ pub struct Histogram {
     stacked: bool,       // Draws stacked histogram
     no_fill: bool,       // Skip filling bars
     number_bins: usize,  // Number of bins
+    extra: String,       // Extra commands (comma separated)
     buffer: String,      // buffer
 }
 
@@ -66,6 +67,7 @@ impl Histogram {
             stacked: false,
             no_fill: false,
             number_bins: 0,
+            extra: String::new(),
             buffer: String::new(),
         }
     }
@@ -140,6 +142,20 @@ impl Histogram {
         self
     }
 
+    /// Sets extra matplotlib commands (comma separated)
+    ///
+    /// **Important:** The extra commands must be comma separated. For example:
+    ///
+    /// ```text
+    /// param1=123,param2='hello'
+    /// ```
+    ///
+    /// [See Matplotlib's documentation for extra parameters](https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.hist.html)
+    pub fn set_extra(&mut self, extra: &str) -> &mut Self {
+        self.extra = extra.to_string();
+        self
+    }
+
     /// Returns options for histogram
     fn options(&self) -> String {
         let mut opt = String::new();
@@ -160,6 +176,9 @@ impl Histogram {
         }
         if self.number_bins > 0 {
             write!(&mut opt, ",bins={}", self.number_bins).unwrap();
+        }
+        if self.extra != "" {
+            write!(&mut opt, ",{}", self.extra).unwrap();
         }
         opt
     }

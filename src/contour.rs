@@ -3,6 +3,8 @@ use std::fmt::Write;
 
 /// Generates a contour plot
 ///
+/// [See Matplotlib's documentation](https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.contour.html)
+///
 /// # Example
 ///
 /// ```

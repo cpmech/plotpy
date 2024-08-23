@@ -3,6 +3,8 @@ use std::fmt::Write;
 
 /// Generates a Histogram plot
 ///
+/// [See Matplotlib's documentation](https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.hist.html)
+///
 /// # Example
 ///
 /// ```

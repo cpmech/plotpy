@@ -3,6 +3,8 @@ use std::fmt::Write;
 
 /// Generates a Barplot plot
 ///
+/// [See Matplotlib's documentation](https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.bar.html)
+///
 /// # Examples
 ///
 /// ## Basic bar plot

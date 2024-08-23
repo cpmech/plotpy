@@ -20,6 +20,8 @@ pub enum RayEndpoint {
 
 /// Generates a curve (aka line-plot) given two arrays (x,y)
 ///
+/// [See Matplotlib's documentation](https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.plot.html)
+///
 /// # Notes
 ///
 /// * This struct corresponds to the **plot** function of Matplotlib.

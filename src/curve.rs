@@ -168,6 +168,7 @@ pub struct Curve {
     marker_size: f64,          // Size of markers
     marker_style: String,      // Style of markers, e.g., "`o`", "`+`"
     stop_clip: bool,           // Stop clipping features within margins
+    extra: String,             // Extra commands (comma separated)
     buffer: String,            // buffer
 }
 
@@ -188,6 +189,7 @@ impl Curve {
             marker_size: 0.0,
             marker_style: String::new(),
             stop_clip: false,
+            extra: String::new(),
             buffer: String::new(),
         }
     }
@@ -453,6 +455,20 @@ impl Curve {
         self
     }
 
+    /// Sets extra matplotlib commands (comma separated)
+    ///
+    /// **Important:** The extra commands must be comma separated. For example:
+    ///
+    /// ```text
+    /// param1=123,param2='hello'
+    /// ```
+    ///
+    /// [See Matplotlib's documentation for extra parameters](https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.plot.html)
+    pub fn set_extra(&mut self, extra: &str) -> &mut Self {
+        self.extra = extra.to_string();
+        self
+    }
+
     /// Returns options for curve
     fn options(&self) -> String {
         // fix color if marker is void
@@ -512,6 +528,10 @@ impl Curve {
             write!(&mut opt, ",clip_on=False").unwrap();
         }
 
+        // extra
+        if self.extra != "" {
+            write!(&mut opt, ",{}", self.extra).unwrap();
+        }
         opt
     }
 }

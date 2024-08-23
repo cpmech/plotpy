@@ -33,6 +33,7 @@
     "columnspacing",
     "contourf",
     "cstride",
+    "drawstyle",
     "dtype",
     "edgecolor",
     "edgecolors",

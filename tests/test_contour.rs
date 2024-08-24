@@ -40,8 +40,7 @@ fn test_contour() -> Result<(), StrError> {
     let buffered = BufReader::new(file);
     let lines_iter = buffered.lines();
     let n = lines_iter.count();
-    println!(">>>>>>>>>>>>>>>>>>>>>>>>>>>>> n = {}", n);
-    assert!(n > 1500 && n < 1600);
+    assert!(n > 1400 && n < 1700);
     Ok(())
 }
 

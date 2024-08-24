@@ -3,6 +3,8 @@ use std::fmt::Write;
 
 /// Creates text to be added to a plot
 ///
+/// [See Matplotlib's documentation](https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.text.html)
+///
 /// # Example
 ///
 /// ```
@@ -52,8 +54,9 @@ pub struct Text {
     bbox_alpha: f64,        // Alpha of bounding box
     bbox_style: String,     // Style of bounding box; example "round,pad=0.2"
 
-    // buffer
-    buffer: String,
+    // extra and buffer
+    extra: String,  // Extra commands (comma separated)
+    buffer: String, // buffer
 }
 
 impl Text {
@@ -70,6 +73,7 @@ impl Text {
             bbox_edgecolor: String::new(),
             bbox_alpha: 1.0,
             bbox_style: String::new(),
+            extra: String::new(),
             buffer: String::new(),
         }
     }
@@ -177,6 +181,20 @@ impl Text {
         self
     }
 
+    /// Sets extra matplotlib commands (comma separated)
+    ///
+    /// **Important:** The extra commands must be comma separated. For example:
+    ///
+    /// ```text
+    /// param1=123,param2='hello'
+    /// ```
+    ///
+    /// [See Matplotlib's documentation for extra parameters](https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.text.html)
+    pub fn set_extra(&mut self, extra: &str) -> &mut Self {
+        self.extra = extra.to_string();
+        self
+    }
+
     /// Returns options for text
     fn options(&self) -> String {
         let mut opt = String::new();
@@ -194,6 +212,9 @@ impl Text {
         }
         if self.rotation > 0.0 {
             write!(&mut opt, ",rotation={}", self.rotation).unwrap();
+        }
+        if self.extra != "" {
+            write!(&mut opt, ",{}", self.extra).unwrap();
         }
         opt
     }

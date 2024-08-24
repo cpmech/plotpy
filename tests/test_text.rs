@@ -25,7 +25,8 @@ fn test_text() -> Result<(), StrError> {
         // .set_bbox_style("darrow,pad=0.3");
         // .set_bbox_style("round,pad=0.3,rounding_size=0.15");
         // .set_bbox_style("round4,pad=0.3,rounding_size=0.2");
-        .set_bbox_style("sawtooth,pad=0.3,tooth_size=0.1");
+        .set_bbox_style("sawtooth,pad=0.3,tooth_size=0.1")
+        .set_extra("fontweight=10");
     // .set_bbox_style("roundtooth,pad=0.3,tooth_size=0.2");
 
     // draw text

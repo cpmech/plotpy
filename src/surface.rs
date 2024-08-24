@@ -4,6 +4,8 @@ use std::fmt::Write;
 
 /// Generates a 3D a surface (or wireframe, or both)
 ///
+/// [See Matplotlib's documentation](https://matplotlib.org/stable/api/_as_gen/mpl_toolkits.mplot3d.axes3d.Axes3D.plot_surface.html)
+///
 /// # Example
 ///
 /// ```

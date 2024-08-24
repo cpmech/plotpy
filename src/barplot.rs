@@ -3,6 +3,8 @@ use std::fmt::Write;
 
 /// Generates a Barplot plot
 ///
+/// [See Matplotlib's documentation](https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.bar.html)
+///
 /// # Examples
 ///
 /// ## Basic bar plot
@@ -241,19 +243,27 @@ impl Barplot {
         self
     }
 
-    // Sets an option to draw horizontal bars
+    /// Enables drawing horizontal bars
     pub fn set_horizontal(&mut self, flag: bool) -> &mut Self {
         self.horizontal = flag;
         self
     }
 
-    // Sets extra python/matplotlib commands (comma separated)
+    /// Enables the error indicators
     pub fn set_x_errors(&mut self, errors: &[f64]) -> &mut Self {
         self.x_errors = errors.to_vec();
         self
     }
 
-    // Sets extra python/matplotlib commands (comma separated)
+    /// Sets extra matplotlib commands (comma separated)
+    ///
+    /// **Important:** The extra commands must be comma separated. For example:
+    ///
+    /// ```text
+    /// param1=123,param2='hello'
+    /// ```
+    ///
+    /// [See Matplotlib's documentation for extra parameters](https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.bar.html)
     pub fn set_extra(&mut self, extra: &str) -> &mut Self {
         self.extra = extra.to_string();
         self

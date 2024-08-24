@@ -3,6 +3,8 @@ use std::fmt::Write;
 
 /// Generates an image plot (imshow)
 ///
+/// [See Matplotlib's documentation](https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.imshow.html)
+///
 /// # Examples
 ///
 /// ```

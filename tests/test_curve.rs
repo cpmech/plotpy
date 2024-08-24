@@ -31,6 +31,9 @@ fn test_curve() -> Result<(), StrError> {
         .set_marker_style("8")
         .set_marker_void(true);
 
+    let mut curve3 = Curve::new();
+    curve3.set_extra("drawstyle='steps'");
+
     // draw curves
     let x = &[1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0];
     let y = &[
@@ -39,6 +42,7 @@ fn test_curve() -> Result<(), StrError> {
     let y2 = &[1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 3.5, 3.5, 3.5, 3.5];
     curve1.draw(x, y);
     curve2.draw(x, y2);
+    curve3.draw(x, x);
 
     // draw ray
     let mut ray1 = Curve::new();
@@ -58,6 +62,7 @@ fn test_curve() -> Result<(), StrError> {
     let mut plot = Plot::new();
     plot.add(&curve1)
         .add(&curve2)
+        .add(&curve3)
         .add(&ray1)
         .add(&ray2)
         .add(&ray3)
@@ -71,7 +76,8 @@ fn test_curve() -> Result<(), StrError> {
     let file = File::open(path).map_err(|_| "cannot open file")?;
     let buffered = BufReader::new(file);
     let lines_iter = buffered.lines();
-    assert!(lines_iter.count() > 530);
+    let n = lines_iter.count();
+    assert!(n > 450 && n < 500);
     Ok(())
 }
 

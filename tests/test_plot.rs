@@ -66,8 +66,7 @@ fn test_plot() -> Result<(), StrError> {
     Ok(())
 }
 
-#[test]
-fn test_plot_3d() -> Result<(), StrError> {
+fn gen_curve_3d() -> Curve {
     // curve
     let mut curve = Curve::new();
     // https://matplotlib.org/stable/gallery/mplot3d/lines3d.html
@@ -95,6 +94,13 @@ fn test_plot_3d() -> Result<(), StrError> {
         zz[i] = z;
     }
     curve.draw_3d(&xx, &yy, &zz);
+    curve
+}
+
+#[test]
+fn test_plot_3d() -> Result<(), StrError> {
+    // curve
+    let curve = gen_curve_3d();
 
     // plot
     let mut plot = Plot::new();
@@ -453,5 +459,39 @@ fn test_plot_fontsize_2d() -> Result<(), StrError> {
     let lines_iter = buffered.lines();
     let n = lines_iter.count();
     assert!(n > 630 && n < 700);
+    Ok(())
+}
+
+#[test]
+fn test_plot_fontsize_3d() -> Result<(), StrError> {
+    // curve
+    let curve = gen_curve_3d();
+
+    // add to plot
+    let mut plot = Plot::new();
+    plot.add(&curve);
+
+    // set fontsize
+    plot.set_save_pad_inches(0.4)
+        .set_label_x("x axis")
+        .set_label_x_fontsize(20.0) // after
+        .set_ticks_x_fontsize(15.0) // after
+        .set_label_y_fontsize(30.0) // before
+        .set_ticks_y_fontsize(8.0) // before
+        .set_label_y("y axis")
+        .set_label_z_fontsize(15.0)
+        .set_ticks_z_fontsize(20.0)
+        .set_label_z("z axis");
+
+    // save figure
+    let path = Path::new(OUT_DIR).join("integ_plot_fontsize_3d.svg");
+    plot.set_show_errors(true).save(&path)?;
+
+    // check number of lines
+    let file = File::open(path).map_err(|_| "cannot open file")?;
+    let buffered = BufReader::new(file);
+    let lines_iter = buffered.lines();
+    let n = lines_iter.count();
+    assert!(n > 650 && n < 750);
     Ok(())
 }

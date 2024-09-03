@@ -728,6 +728,28 @@ impl Plot {
         self
     }
 
+    /// Sets the fontsize of the ticks for the x-axis
+    pub fn set_ticks_x_fontsize(&mut self, fontsize: f64) -> &mut Self {
+        write!(
+            &mut self.buffer,
+            "plt.gca().tick_params(axis='x',labelsize={})\n",
+            fontsize,
+        )
+        .unwrap();
+        self
+    }
+
+    /// Sets the fontsize of the ticks for the y-axis
+    pub fn set_ticks_y_fontsize(&mut self, fontsize: f64) -> &mut Self {
+        write!(
+            &mut self.buffer,
+            "plt.gca().tick_params(axis='y',labelsize={})\n",
+            fontsize,
+        )
+        .unwrap();
+        self
+    }
+
     /// Writes the function multiple_of_pi_formatter to buffer
     #[inline]
     fn write_multiple_of_pi_formatter(&mut self) {
@@ -844,6 +866,18 @@ impl Plot {
     /// Sets the label for the z-axis
     pub fn set_label_z(&mut self, label: &str) -> &mut Self {
         write!(&mut self.buffer, "plt.gca().set_zlabel(r'{}')\n", label).unwrap();
+        self
+    }
+
+    /// Sets the fontsize of the label for the x-axis
+    pub fn set_label_x_fontsize(&mut self, fontsize: f64) -> &mut Self {
+        write!(&mut self.buffer, "plt.gca().xaxis.label.set_fontsize({})\n", fontsize,).unwrap();
+        self
+    }
+
+    /// Sets the fontsize of the label for the y-axis
+    pub fn set_label_y_fontsize(&mut self, fontsize: f64) -> &mut Self {
+        write!(&mut self.buffer, "plt.gca().yaxis.label.set_fontsize({})\n", fontsize,).unwrap();
         self
     }
 

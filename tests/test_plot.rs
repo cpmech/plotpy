@@ -422,3 +422,36 @@ fn test_plot_tick_labels() -> Result<(), StrError> {
     assert!(n > 1620 && n < 1700);
     Ok(())
 }
+
+#[test]
+fn test_plot_fontsize_2d() -> Result<(), StrError> {
+    // curve
+    let x = [1.0, 2.0, 3.0, 4.0];
+    let y = [1.0, 4.0, 9.0, 16.0];
+    let mut curve = Curve::new();
+    curve.draw(&x, &y);
+
+    // add to plot
+    let mut plot = Plot::new();
+    plot.add(&curve);
+
+    // set fontsize
+    plot.set_label_x("x axis")
+        .set_label_x_fontsize(20.0) // after
+        .set_ticks_x_fontsize(15.0) // after
+        .set_label_y_fontsize(30.0) // before
+        .set_ticks_y_fontsize(8.0) // before
+        .set_label_y("y axis");
+
+    // save figure
+    let path = Path::new(OUT_DIR).join("integ_plot_fontsize_2d.svg");
+    plot.set_show_errors(true).save(&path)?;
+
+    // check number of lines
+    let file = File::open(path).map_err(|_| "cannot open file")?;
+    let buffered = BufReader::new(file);
+    let lines_iter = buffered.lines();
+    let n = lines_iter.count();
+    assert!(n > 630 && n < 700);
+    Ok(())
+}

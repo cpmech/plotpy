@@ -52,6 +52,7 @@
     "joinstyle",
     "labelcolor",
     "labelpad",
+    "labelsize",
     "larrow",
     "limegreen",
     "lineplot",

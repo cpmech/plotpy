@@ -922,6 +922,18 @@ impl Plot {
         self
     }
 
+    /// Sets the color of the label for the z-axis
+    pub fn set_label_z_color(&mut self, color: &str) -> &mut Self {
+        write!(
+            &mut self.buffer,
+            "plt.gca().zaxis.label.set_color('{}')\n\
+             plt.gca().tick_params(axis='z',labelcolor='{}')\n",
+            color, color
+        )
+        .unwrap();
+        self
+    }
+
     /// Sets the label for the y-axis on a twin-x graph
     ///
     /// **Warning:** The curve with a twin-x graph must be added first

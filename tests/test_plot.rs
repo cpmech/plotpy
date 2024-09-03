@@ -430,7 +430,7 @@ fn test_plot_tick_labels() -> Result<(), StrError> {
 }
 
 #[test]
-fn test_plot_fontsize_2d() -> Result<(), StrError> {
+fn test_plot_fontsize_and_color_2d() -> Result<(), StrError> {
     // curve
     let x = [1.0, 2.0, 3.0, 4.0];
     let y = [1.0, 4.0, 9.0, 16.0];
@@ -447,10 +447,12 @@ fn test_plot_fontsize_2d() -> Result<(), StrError> {
         .set_ticks_x_fontsize(15.0) // after
         .set_label_y_fontsize(30.0) // before
         .set_ticks_y_fontsize(8.0) // before
-        .set_label_y("y axis");
+        .set_label_y("y axis")
+        .set_label_x_color("red")
+        .set_label_y_color("blue");
 
     // save figure
-    let path = Path::new(OUT_DIR).join("integ_plot_fontsize_2d.svg");
+    let path = Path::new(OUT_DIR).join("integ_plot_fontsize_and_color_2d.svg");
     plot.set_show_errors(true).save(&path)?;
 
     // check number of lines
@@ -463,7 +465,7 @@ fn test_plot_fontsize_2d() -> Result<(), StrError> {
 }
 
 #[test]
-fn test_plot_fontsize_3d() -> Result<(), StrError> {
+fn test_plot_fontsize_and_color_3d() -> Result<(), StrError> {
     // curve
     let curve = gen_curve_3d();
 
@@ -481,10 +483,13 @@ fn test_plot_fontsize_3d() -> Result<(), StrError> {
         .set_label_y("y axis")
         .set_label_z_fontsize(15.0)
         .set_ticks_z_fontsize(20.0)
-        .set_label_z("z axis");
+        .set_label_z("z axis")
+        .set_label_x_color("red")
+        .set_label_y_color("blue")
+        .set_label_z_color("green");
 
     // save figure
-    let path = Path::new(OUT_DIR).join("integ_plot_fontsize_3d.svg");
+    let path = Path::new(OUT_DIR).join("integ_plot_fontsize_and_color_3d.svg");
     plot.set_show_errors(true).save(&path)?;
 
     // check number of lines

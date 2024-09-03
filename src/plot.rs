@@ -710,7 +710,11 @@ impl Plot {
         assert_eq!(ticks.vec_size(), labels.len());
         vector_to_array(&mut self.buffer, "tx", ticks);
         vector_to_strings(&mut self.buffer, "lx", labels);
-        write!(&mut self.buffer, "plt.gca().set_xticks(tx,labels=lx)\n").unwrap();
+        write!(
+            &mut self.buffer,
+            "plt.gca().set_xticks(tx)\nplt.gca().set_xticklabels(lx)\n"
+        )
+        .unwrap();
         self
     }
 
@@ -724,7 +728,44 @@ impl Plot {
         assert_eq!(ticks.vec_size(), labels.len());
         vector_to_array(&mut self.buffer, "ty", ticks);
         vector_to_strings(&mut self.buffer, "ly", labels);
-        write!(&mut self.buffer, "plt.gca().set_yticks(ty,labels=ly)\n").unwrap();
+        write!(
+            &mut self.buffer,
+            "plt.gca().set_yticks(ty)\nplt.gca().set_yticklabels(ly)\n"
+        )
+        .unwrap();
+        self
+    }
+
+    /// Sets the fontsize of the ticks for the x-axis
+    pub fn set_ticks_x_fontsize(&mut self, fontsize: f64) -> &mut Self {
+        write!(
+            &mut self.buffer,
+            "plt.gca().tick_params(axis='x',labelsize={})\n",
+            fontsize,
+        )
+        .unwrap();
+        self
+    }
+
+    /// Sets the fontsize of the ticks for the y-axis
+    pub fn set_ticks_y_fontsize(&mut self, fontsize: f64) -> &mut Self {
+        write!(
+            &mut self.buffer,
+            "plt.gca().tick_params(axis='y',labelsize={})\n",
+            fontsize,
+        )
+        .unwrap();
+        self
+    }
+
+    /// Sets the fontsize of the ticks for the z-axis
+    pub fn set_ticks_z_fontsize(&mut self, fontsize: f64) -> &mut Self {
+        write!(
+            &mut self.buffer,
+            "plt.gca().tick_params(axis='z',labelsize={})\n",
+            fontsize,
+        )
+        .unwrap();
         self
     }
 
@@ -847,6 +888,24 @@ impl Plot {
         self
     }
 
+    /// Sets the fontsize of the label for the x-axis
+    pub fn set_label_x_fontsize(&mut self, fontsize: f64) -> &mut Self {
+        write!(&mut self.buffer, "plt.gca().xaxis.label.set_fontsize({})\n", fontsize,).unwrap();
+        self
+    }
+
+    /// Sets the fontsize of the label for the y-axis
+    pub fn set_label_y_fontsize(&mut self, fontsize: f64) -> &mut Self {
+        write!(&mut self.buffer, "plt.gca().yaxis.label.set_fontsize({})\n", fontsize,).unwrap();
+        self
+    }
+
+    /// Sets the fontsize of the label for the z-axis
+    pub fn set_label_z_fontsize(&mut self, fontsize: f64) -> &mut Self {
+        write!(&mut self.buffer, "plt.gca().zaxis.label.set_fontsize({})\n", fontsize,).unwrap();
+        self
+    }
+
     /// Sets the color of the label for the x-axis
     pub fn set_label_x_color(&mut self, color: &str) -> &mut Self {
         write!(
@@ -865,6 +924,18 @@ impl Plot {
             &mut self.buffer,
             "plt.gca().yaxis.label.set_color('{}')\n\
              plt.gca().tick_params(axis='y',labelcolor='{}')\n",
+            color, color
+        )
+        .unwrap();
+        self
+    }
+
+    /// Sets the color of the label for the z-axis
+    pub fn set_label_z_color(&mut self, color: &str) -> &mut Self {
+        write!(
+            &mut self.buffer,
+            "plt.gca().zaxis.label.set_color('{}')\n\
+             plt.gca().tick_params(axis='z',labelcolor='{}')\n",
             color, color
         )
         .unwrap();

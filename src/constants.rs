@@ -43,6 +43,7 @@ EXTRA_ARTISTS = []
 
 # Adds an entity to the EXTRA_ARTISTS list to calculate bounding boxes
 def add_to_ea(obj):
+    global EXTRA_ARTISTS
     if obj!=None: EXTRA_ARTISTS.append(obj)
 
 # Is a dictionary of mplot3d objects (one for each subplot_3d)
@@ -145,6 +146,6 @@ mod tests {
 
     #[test]
     fn constants_are_correct() {
-        assert_eq!(PYTHON_HEADER.len(), 2745);
+        assert_eq!(PYTHON_HEADER.len(), 2770);
     }
 }

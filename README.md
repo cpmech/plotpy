@@ -14,6 +14,7 @@
 - [Setting Cargo.toml](#setting-cargotoml)
 - [Use of Jupyter via evcxr](#use-of-jupyter-via-evcxr)
 - [Examples](#examples)
+  - [Curve](#curve)
   - [Contour](#contour)
   - [Superquadric](#superquadric)
 
@@ -92,6 +93,47 @@ plot.set_python_exe(python)
 
 
 ## Examples
+
+### Curve
+
+```rust
+use plotpy::{linspace, Curve, Plot, StrError};
+
+fn main() -> Result<(), StrError> {
+    // generate (x,y) points
+    let x = linspace(-1.0, 1.0, 21);
+    let y: Vec<_> = x.iter().map(|v| 1.0 / (1.0 + f64::exp(-5.0 * *v))).collect();
+
+    // configure curve
+    let mut curve = Curve::new();
+    curve
+        .set_label("logistic function")
+        .set_line_alpha(0.8)
+        .set_line_color("#5f9cd8")
+        .set_line_style("-")
+        .set_line_width(5.0)
+        .set_marker_color("#eeea83")
+        .set_marker_every(5)
+        .set_marker_line_color("#da98d1")
+        .set_marker_line_width(2.5)
+        .set_marker_size(20.0)
+        .set_marker_style("*");
+
+    // draw curve
+    curve.draw(&x, &y);
+
+    // add curve to plot
+    let mut plot = Plot::new();
+    plot.add(&curve).set_num_ticks_y(11).grid_labels_legend("x", "y");
+
+    // save figure
+    plot.save("/tmp/plotpy/doc_tests/doc_curve.svg")?;
+    Ok(())
+}
+```
+
+![curve.svg](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/doc_curve_vector.svg)
+
 
 ### Contour
 

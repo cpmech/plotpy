@@ -14,9 +14,14 @@
 - [Setting Cargo.toml](#setting-cargotoml)
 - [Use of Jupyter via evcxr](#use-of-jupyter-via-evcxr)
 - [Examples](#examples)
-  - [Curve](#curve)
+  - [Barplot](#barplot)
+  - [Canvas](#canvas)
   - [Contour](#contour)
-  - [Superquadric](#superquadric)
+  - [Curve](#curve)
+  - [Histogram](#histogram)
+  - [Image](#image)
+  - [Surface](#surface)
+  - [Text](#text)
 
 
 ## Introduction
@@ -94,7 +99,132 @@ plot.set_python_exe(python)
 
 ## Examples
 
+
+
+### Barplot
+
+[See the documentation](https://docs.rs/plotpy/latest/plotpy/struct.Barplot.html)
+
+```rust
+use plotpy::{Barplot, Plot, StrError};
+
+fn main() -> Result<(), StrError> {
+    // data
+    let fruits = ["Apple", "Banana", "Orange"];
+    let prices = [10.0, 20.0, 30.0];
+    let errors = [3.0, 2.0, 1.0];
+
+    // barplot object and options
+    let mut bar = Barplot::new();
+    bar.set_x_errors(&errors)
+        .set_horizontal(true)
+        .set_with_text("edge")
+        .draw_with_str(&fruits, &prices);
+
+    // save figure
+    let mut plot = Plot::new();
+    plot.set_inv_y()
+        .add(&bar)
+        .set_title("Fruits")
+        .set_label_x("price")
+        .save("/tmp/plotpy/doc_tests/doc_barplot_3.svg")?;
+    Ok(())
+}
+```
+
+![barplot.svg](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/doc_barplot_3.svg)
+
+
+
+### Canvas
+
+[See the documentation](https://docs.rs/plotpy/latest/plotpy/struct.Canvas.html)
+
+```rust
+use plotpy::{Canvas, Plot, PolyCode, StrError};
+
+fn main() -> Result<(), StrError> {
+    // codes
+    let data = [
+        (3.0, 0.0, PolyCode::MoveTo),
+        (1.0, 1.5, PolyCode::Curve4),
+        (0.0, 4.0, PolyCode::Curve4),
+        (2.5, 3.9, PolyCode::Curve4),
+        (3.0, 3.8, PolyCode::LineTo),
+        (3.5, 3.9, PolyCode::LineTo),
+        (6.0, 4.0, PolyCode::Curve4),
+        (5.0, 1.5, PolyCode::Curve4),
+        (3.0, 0.0, PolyCode::Curve4),
+    ];
+
+    // polycurve
+    let mut canvas = Canvas::new();
+    canvas.set_face_color("#f88989").set_edge_color("red");
+    canvas.polycurve_begin();
+    for (x, y, code) in data {
+        canvas.polycurve_add(x, y, code);
+    }
+    canvas.polycurve_end(true);
+
+    // add canvas to plot
+    let mut plot = Plot::new();
+    plot.add(&canvas);
+
+    // save figure
+    plot.set_range(1.0, 5.0, 0.0, 4.0)
+        .set_frame_borders(false)
+        .set_hide_axes(true)
+        .set_equal_axes(true)
+        .set_show_errors(true);
+    plot.save("/tmp/plotpy/doc_tests/doc_canvas_polycurve.svg")?;
+    Ok(())
+}
+```
+
+![canvas.svg](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/doc_canvas_polycurve.svg)
+
+
+
+### Contour
+
+[See the documentation](https://docs.rs/plotpy/latest/plotpy/struct.Contour.html)
+
+```rust
+use plotpy::{generate3d, Contour, Plot, StrError};
+
+fn main() -> Result<(), StrError> {
+    // generate (x,y,z) matrices
+    let n = 21;
+    let (x, y, z) = generate3d(-2.0, 2.0, -2.0, 2.0, n, n, |x, y| x * x - y * y);
+
+    // configure contour
+    let mut contour = Contour::new();
+    contour
+        .set_colorbar_label("temperature")
+        .set_colormap_name("terrain")
+        .set_selected_level(0.0, true);
+
+    // draw contour
+    contour.draw(&x, &y, &z);
+
+    // add contour to plot
+    let mut plot = Plot::new();
+    plot.add(&contour);
+    plot.set_labels("x", "y");
+
+    // save figure
+    plot.save("/tmp/plotpy/readme_contour.svg")?;
+    Ok(())
+}
+```
+
+![contour.svg](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/readme_contour.svg)
+
+
+
 ### Curve
+
+[See the documentation](https://docs.rs/plotpy/latest/plotpy/struct.Curve.html)
 
 ```rust
 use plotpy::{linspace, Curve, Plot, StrError};
@@ -135,40 +265,83 @@ fn main() -> Result<(), StrError> {
 ![curve.svg](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/doc_curve_vector.svg)
 
 
-### Contour
+### Histogram
+
+[See the documentation](https://docs.rs/plotpy/latest/plotpy/struct.Histogram.html)
 
 ```rust
-use plotpy::{generate3d, Contour, Plot, StrError};
+use plotpy::{Histogram, Plot, StrError};
 
 fn main() -> Result<(), StrError> {
-    // generate (x,y,z) matrices
-    let n = 21;
-    let (x, y, z) = generate3d(-2.0, 2.0, -2.0, 2.0, n, n, |x, y| x * x - y * y);
+    // set values
+    let values = vec![
+        vec![1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 4, 5, 6], // first series
+        vec![-1, -1, 0, 1, 2, 3],                    // second series
+        vec![5, 6, 7, 8],                            // third series
+    ];
 
-    // configure contour
-    let mut contour = Contour::new();
-    contour
-        .set_colorbar_label("temperature")
-        .set_colormap_name("terrain")
-        .set_selected_level(0.0, true);
+    // set labels
+    let labels = ["first", "second", "third"];
 
-    // draw contour
-    contour.draw(&x, &y, &z);
+    // configure and draw histogram
+    let mut histogram = Histogram::new();
+    histogram.set_colors(&["#9de19a", "#e7eca3", "#98a7f2"])
+        .set_line_width(10.0)
+        .set_stacked(true)
+        .set_style("step");
+    histogram.draw(&values, &labels);
 
-    // add contour to plot
+    // add histogram to plot
     let mut plot = Plot::new();
-    plot.add(&contour);
-    plot.set_labels("x", "y");
+    plot.add(&histogram)
+        .set_frame_border(true, false, true, false)
+        .grid_labels_legend("values", "count");
 
     // save figure
-    plot.save("/tmp/plotpy/readme_contour.svg")?;
+    plot.save("/tmp/plotpy/doc_tests/doc_histogram.svg")?;
     Ok(())
 }
 ```
 
-![readme_contour.svg](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/readme_contour.svg)
+![histogram](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/doc_histogram.svg)
 
-### Superquadric
+
+### Image
+
+```rust
+use plotpy::{Image, Plot, StrError};
+
+fn main() -> Result<(), StrError> {
+    // set values
+    let data = [
+        [0.8, 2.4, 2.5, 3.9, 0.0, 4.0, 0.0],
+        [2.4, 0.0, 4.0, 1.0, 2.7, 0.0, 0.0],
+        [1.1, 2.4, 0.8, 4.3, 1.9, 4.4, 0.0],
+        [0.6, 0.0, 0.3, 0.0, 3.1, 0.0, 0.0],
+        [0.7, 1.7, 0.6, 2.6, 2.2, 6.2, 0.0],
+        [1.3, 1.2, 0.0, 0.0, 0.0, 3.2, 5.1],
+        [0.1, 2.0, 0.0, 1.4, 0.0, 1.9, 6.3],
+    ];
+
+    // image plot and options
+    let mut img = Image::new();
+    img.set_colormap_name("hsv").draw(&data);
+
+    // save figure
+    let mut plot = Plot::new();
+    plot.add(&img);
+    plot.save("/tmp/plotpy/doc_tests/doc_image_1.svg")?;
+    Ok(())
+}
+```
+
+![image](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/doc_image_1.svg)
+
+
+
+### Surface
+
+[See the documentation](https://docs.rs/plotpy/latest/plotpy/struct.Surface.html)
 
 ```rust
 use plotpy::{Plot, StrError, Surface};
@@ -226,3 +399,39 @@ fn main() -> Result<(), StrError> {
 ```
 
 ![readme_superquadric.svg](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/readme_superquadric.svg)
+
+
+### Text
+
+```rust
+use plotpy::{Plot, Text, StrError};
+use std::path::Path;
+
+fn main() -> Result<(), StrError> {
+    // configure text
+    let mut text = Text::new();
+    text.set_color("purple")
+        .set_align_horizontal("center")
+        .set_align_vertical("center")
+        .set_fontsize(30.0)
+        .set_rotation(45.0)
+        .set_bbox(true)
+        .set_bbox_facecolor("pink")
+        .set_bbox_edgecolor("black")
+        .set_bbox_alpha(0.3)
+        .set_bbox_style("roundtooth,pad=0.3,tooth_size=0.2");
+
+    // draw text
+    text.draw_3d(0.5, 0.5, 0.5, "Hello World!");
+
+    // add text to plot
+    let mut plot = Plot::new();
+    plot.add(&text);
+
+    // save figure
+    plot.save("/tmp/plotpy/doc_tests/doc_text.svg")?;
+    Ok(())
+}
+```
+
+![text](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/doc_text.svg)

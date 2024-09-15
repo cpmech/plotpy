@@ -33,7 +33,8 @@ use std::fmt::Write;
 ///     plot.add(&text);
 ///
 ///     // save figure
-///     plot.save("/tmp/plotpy/doc_tests/doc_text.svg")?;
+///     plot.set_save_pad_inches(0.25)
+///         .save("/tmp/plotpy/doc_tests/doc_text.svg")?;
 ///     Ok(())
 /// }
 /// ```

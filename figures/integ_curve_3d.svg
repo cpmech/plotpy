@@ -6,7 +6,7 @@
   <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
    <cc:Work>
     <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
-    <dc:date>2024-03-23T12:26:40.052319</dc:date>
+    <dc:date>2024-09-16T08:12:58.585147</dc:date>
     <dc:format>image/svg+xml</dc:format>
     <dc:creator>
      <cc:Agent>
@@ -798,9 +798,9 @@ L 112.219304 198.759166
 L 148.157549 193.063459 
 L 189.522253 128.98276 
 L 235.083324 114.704364 
-" clip-path="url(#p1c273ac5e2)" style="fill: none; stroke-dasharray: 7.4,3.2; stroke-dashoffset: 0; stroke: #cd0000; stroke-opacity: 0.7; stroke-width: 2"/>
+" clip-path="url(#p46b371e768)" style="fill: none; stroke-dasharray: 7.4,3.2; stroke-dashoffset: 0; stroke: #cd0000; stroke-opacity: 0.7; stroke-width: 2"/>
     <defs>
-     <path id="m2ab81d5a4b" d="M 0 -4 
+     <path id="mfbac2d024e" d="M 0 -4 
 L -3.804226 -1.236068 
 L -2.351141 3.236068 
 L 2.351141 3.236068 
@@ -808,16 +808,16 @@ L 3.804226 -1.236068
 z
 " style="stroke: #cda500; stroke-opacity: 0.7; stroke-width: 3; stroke-linejoin: miter"/>
     </defs>
-    <g clip-path="url(#p1c273ac5e2)">
-     <use xlink:href="#m2ab81d5a4b" x="81.74884" y="199.487724" style="fill: #1862ab; fill-opacity: 0.7; stroke: #cda500; stroke-opacity: 0.7; stroke-width: 3; stroke-linejoin: miter"/>
-     <use xlink:href="#m2ab81d5a4b" x="148.157549" y="193.063459" style="fill: #1862ab; fill-opacity: 0.7; stroke: #cda500; stroke-opacity: 0.7; stroke-width: 3; stroke-linejoin: miter"/>
-     <use xlink:href="#m2ab81d5a4b" x="235.083324" y="114.704364" style="fill: #1862ab; fill-opacity: 0.7; stroke: #cda500; stroke-opacity: 0.7; stroke-width: 3; stroke-linejoin: miter"/>
+    <g clip-path="url(#p46b371e768)">
+     <use xlink:href="#mfbac2d024e" x="81.74884" y="199.487724" style="fill: #1862ab; fill-opacity: 0.7; stroke: #cda500; stroke-opacity: 0.7; stroke-width: 3; stroke-linejoin: miter"/>
+     <use xlink:href="#mfbac2d024e" x="148.157549" y="193.063459" style="fill: #1862ab; fill-opacity: 0.7; stroke: #cda500; stroke-opacity: 0.7; stroke-width: 3; stroke-linejoin: miter"/>
+     <use xlink:href="#mfbac2d024e" x="235.083324" y="114.704364" style="fill: #1862ab; fill-opacity: 0.7; stroke: #cda500; stroke-opacity: 0.7; stroke-width: 3; stroke-linejoin: miter"/>
     </g>
    </g>
   </g>
  </g>
  <defs>
-  <clipPath id="p1c273ac5e2">
+  <clipPath id="p46b371e768">
    <rect x="21.6" y="21.6" width="266.112" height="266.112"/>
   </clipPath>
  </defs>

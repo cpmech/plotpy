@@ -4,6 +4,15 @@ Please check out [the documentation](https://docs.rs/plotpy) and the integration
 
 Some output of integration tests are shown below.
 
+## Barplot
+
+[test_barplot.rs](https://github.com/cpmech/plotpy/tree/main/tests/test_barplot.rs)
+
+![barplot](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_barplot_1.svg)
+![barplot](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_barplot_2.svg)
+![barplot](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_barplot_3.svg)
+![barplot](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_barplot_4.svg)
+
 ## Canvas
 
 [test_canvas.rs](https://github.com/cpmech/plotpy/tree/main/tests/test_canvas.rs)
@@ -15,12 +24,27 @@ Some output of integration tests are shown below.
 ![canvas](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_canvas_polycurve_quadratic.svg)
 ![canvas](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_canvas_polyline_3d_methods.svg)
 ![canvas](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_canvas_polyline_3d.svg)
+![canvas](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_canvas_rectangle_and_text.svg)
+![canvas](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_canvas_rectangle.svg)
 ![canvas](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_canvas.svg)
 
 ## Contour
 
 [test_contour.rs](https://github.com/cpmech/plotpy/tree/main/tests/test_contour.rs)
 
+![contour](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_contour_colormap_0.svg)
+![contour](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_contour_colormap_1.svg)
+![contour](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_contour_colormap_2.svg)
+![contour](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_contour_colormap_3.svg)
+![contour](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_contour_colormap_4.svg)
+![contour](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_contour_colormap_5.svg)
+![contour](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_contour_colormap_6.svg)
+![contour](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_contour_colormap_7.svg)
+![contour](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_contour_colormap_8.svg)
+![contour](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_contour_colormap_9.svg)
+![contour](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_contour_colormap_gnuplot2.svg)
+![contour](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_contour_colormap_Pastel1.svg)
+![contour](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_contour_colormap_tab20c.svg)
 ![contour](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_contour_colors.svg)
 ![contour](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_contour.svg)
 
@@ -31,6 +55,7 @@ Some output of integration tests are shown below.
 ![curve](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_curve_3d.svg)
 ![curve](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_curve_points_3d_methods.svg)
 ![curve](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_curve_points_methods.svg)
+![curve](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_curve_twinx.svg)
 ![curve](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_curve.svg)
 
 ## Histogram
@@ -39,6 +64,12 @@ Some output of integration tests are shown below.
 
 ![histogram](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_histogram_1.svg)
 ![histogram](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_histogram_2.svg)
+
+## Image
+
+[test_image.rs](https://github.com/cpmech/plotpy/tree/main/tests/test_image.rs)
+
+![image](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_image_1.svg)
 
 ## Legend
 
@@ -51,9 +82,15 @@ Some output of integration tests are shown below.
 
 [test_plot.rs](https://github.com/cpmech/plotpy/tree/main/tests/test_plot.rs)
 
+![plot](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_plot_extra_funcionality.svg)
+![plot](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_plot_fontsize_and_color_2d.svg)
+![plot](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_plot_fontsize_and_color_3d.svg)
+![plot](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_plot_handles_quotes.svg)
 ![plot](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_plot_log.svg)
 ![plot](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_plot_multiple_of_pi.svg)
 ![plot](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_plot_subplots.svg)
+![plot](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_plot_tick_labels.svg)
+![plot](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_plot_title_handles_tex.svg)
 ![plot](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_plot.svg)
 ![plot_3d](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_plot_3d.svg)
 

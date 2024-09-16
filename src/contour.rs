@@ -1,4 +1,4 @@
-use super::{matrix_to_array, vector_to_array, vector_to_strings, AsMatrix, GraphMaker};
+use super::{matrix_to_array, vector_to_array, generate_list_quoted, AsMatrix, GraphMaker};
 use std::fmt::Write;
 
 /// Generates a contour plot
@@ -127,7 +127,7 @@ impl Contour {
         matrix_to_array(&mut self.buffer, "y", y);
         matrix_to_array(&mut self.buffer, "z", z);
         if self.colors.len() > 0 {
-            vector_to_strings(&mut self.buffer, "colors", &self.colors);
+            generate_list_quoted(&mut self.buffer, "colors", &self.colors);
         }
         if self.levels.len() > 0 {
             vector_to_array(&mut self.buffer, "levels", &self.levels);

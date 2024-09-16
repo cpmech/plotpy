@@ -1,4 +1,4 @@
-use super::{call_python3, vector_to_array, vector_to_strings, AsVector, Legend, StrError, SuperTitleParams};
+use super::{call_python3, generate_list_quoted, vector_to_array, AsVector, Legend, StrError, SuperTitleParams};
 use std::ffi::OsStr;
 use std::fmt::Write;
 use std::fs::{self, File};
@@ -709,7 +709,7 @@ impl Plot {
     {
         assert_eq!(ticks.vec_size(), labels.len());
         vector_to_array(&mut self.buffer, "tx", ticks);
-        vector_to_strings(&mut self.buffer, "lx", labels);
+        generate_list_quoted(&mut self.buffer, "lx", labels);
         write!(
             &mut self.buffer,
             "plt.gca().set_xticks(tx)\nplt.gca().set_xticklabels(lx)\n"
@@ -727,7 +727,7 @@ impl Plot {
     {
         assert_eq!(ticks.vec_size(), labels.len());
         vector_to_array(&mut self.buffer, "ty", ticks);
-        vector_to_strings(&mut self.buffer, "ly", labels);
+        generate_list_quoted(&mut self.buffer, "ly", labels);
         write!(
             &mut self.buffer,
             "plt.gca().set_yticks(ty)\nplt.gca().set_yticklabels(ly)\n"

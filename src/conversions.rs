@@ -1,25 +1,25 @@
 use super::{AsMatrix, AsVector};
 use std::fmt::Write;
 
-/// Converts vector to a Python list of numbers
-pub(crate) fn vector_to_numbers<T>(buf: &mut String, name: &str, vector: &[T])
+/// Generates a Python list
+pub(crate) fn generate_list<T>(buf: &mut String, name: &str, data: &[T])
 where
     T: std::fmt::Display,
 {
     write!(buf, "{}=[", name).unwrap();
-    for val in vector.into_iter() {
+    for val in data.into_iter() {
         write!(buf, "{},", val).unwrap();
     }
     write!(buf, "]\n").unwrap();
 }
 
-/// Converts vector to a Python list of strings
-pub(crate) fn vector_to_strings<T>(buf: &mut String, name: &str, vector: &[T])
+/// Generates a Python list with quoted entries
+pub(crate) fn generate_list_quoted<T>(buf: &mut String, name: &str, data: &[T])
 where
     T: std::fmt::Display,
 {
     write!(buf, "{}=[", name).unwrap();
-    for val in vector.into_iter() {
+    for val in data.into_iter() {
         write!(buf, "'{}',", val).unwrap();
     }
     write!(buf, "]\n").unwrap();
@@ -39,13 +39,13 @@ where
     write!(buf, "],dtype=float)\n").unwrap();
 }
 
-/// Converts a matrix to a nested Python list
-pub(crate) fn matrix_to_list<T>(buf: &mut String, name: &str, matrix: &Vec<Vec<T>>)
+/// Generates a nested Python list
+pub(crate) fn generate_nested_list<T>(buf: &mut String, name: &str, data: &Vec<Vec<T>>)
 where
     T: std::fmt::Display,
 {
     write!(buf, "{}=[", name).unwrap();
-    for row in matrix.into_iter() {
+    for row in data.into_iter() {
         write!(buf, "[").unwrap();
         for val in row.into_iter() {
             write!(buf, "{},", val).unwrap();
@@ -77,17 +77,17 @@ where
 
 #[cfg(test)]
 mod tests {
-    use super::{matrix_to_array, matrix_to_list, vector_to_array, vector_to_numbers, vector_to_strings};
+    use super::{generate_list, generate_list_quoted, generate_nested_list, matrix_to_array, vector_to_array};
 
     #[test]
-    fn vector_to_numbers_works() {
+    fn generate_list_works() {
         let mut buf = String::new();
         let x: Vec<f64> = vec![0.1, 0.2, 0.3];
         let y: [f64; 3] = [1.0, 2.0, 3.0];
         let z: &[f64] = &[10.0, 20.0, 30.0];
-        vector_to_numbers(&mut buf, "x", &x);
-        vector_to_numbers(&mut buf, "y", &y);
-        vector_to_numbers(&mut buf, "z", z);
+        generate_list(&mut buf, "x", &x);
+        generate_list(&mut buf, "y", &y);
+        generate_list(&mut buf, "z", z);
         assert_eq!(
             buf,
             "x=[0.1,0.2,0.3,]\n\
@@ -97,14 +97,14 @@ mod tests {
     }
 
     #[test]
-    fn vector_to_strings_works() {
+    fn generate_list_quoted_works() {
         let mut buf = String::new();
         let x: Vec<&str> = vec!["red", "green", "blue"];
         let y: [String; 3] = ["cyan".to_string(), "magenta".to_string(), "white".to_string()];
         let z: &[&str] = &["#f00", "#0f0", "#00f"];
-        vector_to_strings(&mut buf, "x", &x);
-        vector_to_strings(&mut buf, "y", &y);
-        vector_to_strings(&mut buf, "z", z);
+        generate_list_quoted(&mut buf, "x", &x);
+        generate_list_quoted(&mut buf, "y", &y);
+        generate_list_quoted(&mut buf, "z", z);
         assert_eq!(
             buf,
             "x=['red','green','blue',]\n\
@@ -131,10 +131,10 @@ mod tests {
     }
 
     #[test]
-    fn matrix_to_list_works() {
+    fn generate_nested_list_works() {
         let mut buf = String::new();
         let a = vec![vec![1.0, 2.0, 3.0], vec![4.0, 5.0], vec![6.0, 7.0, 8.0, 9.0]];
-        matrix_to_list(&mut buf, "a", &a);
+        generate_nested_list(&mut buf, "a", &a);
         assert_eq!(buf, "a=[[1,2,3,],[4,5,],[6,7,8,9,],]\n");
     }
 

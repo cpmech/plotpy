@@ -1,6 +1,6 @@
 [package]
 name = "plotpy"
-version = "1.7.2"
+version = "1.7.3"
 edition = "2021"
 license = "MIT"
 description = "Rust plotting library using Python (Matplotlib)"

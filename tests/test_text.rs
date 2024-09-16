@@ -56,7 +56,6 @@ fn test_text_3d() -> Result<(), StrError> {
         .set_align_horizontal("center")
         .set_align_vertical("center")
         .set_fontsize(32.0)
-        .set_rotation(45.0)
         .set_bbox(true)
         .set_bbox_facecolor("pink")
         .set_bbox_edgecolor("black")

@@ -18,7 +18,6 @@ use std::fmt::Write;
 ///         .set_align_horizontal("center")
 ///         .set_align_vertical("center")
 ///         .set_fontsize(30.0)
-///         .set_rotation(45.0)
 ///         .set_bbox(true)
 ///         .set_bbox_facecolor("pink")
 ///         .set_bbox_edgecolor("black")
@@ -132,7 +131,7 @@ impl Text {
         self
     }
 
-    /// Sets the text rotation
+    /// Sets the text rotation (2D only)
     pub fn set_rotation(&mut self, rotation: f64) -> &mut Self {
         self.rotation = rotation;
         self

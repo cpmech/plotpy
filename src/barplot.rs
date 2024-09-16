@@ -1,4 +1,4 @@
-use super::{vector_to_array, vector_to_strings, AsVector, GraphMaker};
+use super::{vector_to_array, generate_list_quoted, AsVector, GraphMaker};
 use std::fmt::Write;
 
 /// Generates a Barplot plot
@@ -151,7 +151,7 @@ impl Barplot {
         vector_to_array(&mut self.buffer, "y", y);
         let opt = self.options();
         if self.colors.len() > 0 {
-            vector_to_strings(&mut self.buffer, "colors", self.colors.as_slice());
+            generate_list_quoted(&mut self.buffer, "colors", self.colors.as_slice());
         }
         if self.bottom.len() > 0 {
             vector_to_array(&mut self.buffer, "bottom", &self.bottom);
@@ -181,11 +181,11 @@ impl Barplot {
         T: AsVector<'a, U>,
         U: 'a + std::fmt::Display,
     {
-        vector_to_strings(&mut self.buffer, "x", x);
+        generate_list_quoted(&mut self.buffer, "x", x);
         vector_to_array(&mut self.buffer, "y", y);
         let opt = self.options();
         if self.colors.len() > 0 {
-            vector_to_strings(&mut self.buffer, "colors", self.colors.as_slice());
+            generate_list_quoted(&mut self.buffer, "colors", self.colors.as_slice());
         }
         if self.bottom.len() > 0 {
             vector_to_array(&mut self.buffer, "bottom", &self.bottom);

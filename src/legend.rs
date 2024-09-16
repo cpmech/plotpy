@@ -1,4 +1,4 @@
-use super::{vector_to_numbers, GraphMaker};
+use super::{generate_list, GraphMaker};
 use std::fmt::Write;
 
 /// Generates a Legend
@@ -99,7 +99,7 @@ impl Legend {
     pub fn draw(&mut self) {
         let opt = self.options();
         if self.outside {
-            vector_to_numbers(&mut self.buffer, "coo", self.x_coords.as_slice());
+            generate_list(&mut self.buffer, "coo", self.x_coords.as_slice());
         }
         write!(&mut self.buffer, "h,l=plt.gca().get_legend_handles_labels()\n").unwrap();
         write!(&mut self.buffer, "if len(h)>0 and len(l)>0:\n").unwrap();

@@ -3,7 +3,7 @@ use std::fmt::Write;
 
 /// Draw a box and whisker plot
 ///
-/// [See Matplotlib's documentation](https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.boxplot.html)
+/// [See Matplotlib's documentation](https://matplotlib.org/3.6.3/api/_as_gen/matplotlib.pyplot.boxplot.html)
 ///
 /// # Examples
 ///
@@ -47,7 +47,7 @@ use std::fmt::Write;
 /// See also integration test in the **tests** directory.
 pub struct Boxplot {
     symbol: Option<String>, // The default symbol for flier (outlier) points.
-    vertical: Option<bool>, // Vertical boxplot
+    horizontal: bool,       // Horizontal boxplot (default is false)
     whisker: Option<f64>,   // The position of the whiskers
     positions: Vec<f64>,    // The positions of the boxes
     width: Option<f64>,     // The width of the boxes
@@ -60,7 +60,7 @@ impl Boxplot {
     pub fn new() -> Self {
         Boxplot {
             symbol: None,
-            vertical: None,
+            horizontal: false,
             whisker: None,
             positions: Vec::new(),
             width: None,
@@ -93,9 +93,9 @@ impl Boxplot {
         self
     }
 
-    /// Enables drawing vertical boxplot
-    pub fn set_vertical(&mut self, flag: bool) -> &mut Self {
-        self.vertical = Some(flag);
+    /// Enables drawing horizontal boxplot
+    pub fn set_horizontal(&mut self, flag: bool) -> &mut Self {
+        self.horizontal = flag;
         self
     }
 
@@ -124,7 +124,7 @@ impl Boxplot {
     /// ```text
     /// param1=123,param2='hello'
     /// ```
-    /// [See Matplotlib's documentation for extra parameters](https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.boxplot.html)
+    /// [See Matplotlib's documentation for extra parameters](https://matplotlib.org/3.6.3/api/_as_gen/matplotlib.pyplot.boxplot.html)
     pub fn set_extra(&mut self, extra: &str) -> &mut Self {
         self.extra = extra.to_string();
         self
@@ -136,9 +136,7 @@ impl Boxplot {
         if self.symbol != None {
             write!(&mut opt, ",sym=r'{}'", self.symbol.clone().unwrap()).unwrap();
         }
-        if self.vertical == Some(true) {
-            write!(&mut opt, ",vert=True").unwrap();
-        } else if self.vertical == Some(false) {
+        if self.horizontal {
             write!(&mut opt, ",vert=False").unwrap();
         }
         if self.whisker != None {
@@ -177,7 +175,7 @@ mod tests {
     fn new_works() {
         let boxes = Boxplot::new();
         assert_eq!(boxes.symbol, None);
-        assert_eq!(boxes.vertical, None);
+        assert_eq!(boxes.horizontal, false);
         assert_eq!(boxes.whisker, None);
         assert_eq!(boxes.positions.len(), 0);
         assert_eq!(boxes.width, None);
@@ -217,14 +215,14 @@ mod tests {
         let mut boxes = Boxplot::new();
         boxes
             .set_symbol("b+")
-            .set_vertical(true)
+            .set_horizontal(true)
             .set_whisker(1.5)
             .set_positions(vec![1.0, 2.0, 3.0, 4.0, 5.0])
             .set_width(0.5)
             .draw(&x);
         let b: &str = "x=np.array([[1,2,3,4,5,],[2,3,4,5,6,],[3,4,5,6,7,],[4,5,6,7,8,],[5,6,7,8,9,],[6,7,8,9,10,],],dtype=float)\n\
                        positions=[1,2,3,4,5,]\n\
-                       p=plt.boxplot(x,sym=r'b+',vert=True,whis=1.5,positions=positions,widths=0.5)\n";
+                       p=plt.boxplot(x,sym=r'b+',vert=False,whis=1.5,positions=positions,widths=0.5)\n";
         assert_eq!(boxes.buffer, b);
         boxes.clear_buffer();
         assert_eq!(boxes.buffer, "");

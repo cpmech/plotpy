@@ -30,7 +30,7 @@ fn test_boxplot_1() -> Result<(), StrError> {
         .set_width(0.45)
         .set_whisker(2.0)
         .set_extra("notch=True")
-        .draw(&data);
+        .draw_mat(&data);
 
     let mut plot = Plot::new();
     plot.add(&boxes)

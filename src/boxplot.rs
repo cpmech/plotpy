@@ -7,11 +7,13 @@ use std::fmt::Write;
 ///
 /// # Examples
 ///
+/// ## Data as a 2D array
+///
 /// ```
 /// use plotpy::{Boxplot, Plot, StrError};
 ///
 /// fn main() -> Result<(), StrError> {
-///     // data
+///     // data (as a 2D array/matrix)
 ///     let data = vec![
 ///         //   A  B  C  D  E
 ///         vec![1, 2, 3, 4, 5],
@@ -30,7 +32,7 @@ use std::fmt::Write;
 ///
 ///     // boxplot object and options
 ///     let mut boxes = Boxplot::new();
-///     boxes.draw(&data);
+///     boxes.draw_mat(&data);
 ///
 ///     // save figure
 ///     let mut plot = Plot::new();
@@ -71,12 +73,12 @@ impl Boxplot {
         }
     }
 
-    /// Draws the box plot
+    /// Draws the box plot given a 2D array (Matrix)
     ///
     /// # Notes
     ///
     /// * The type `U` must be a number.
-    pub fn draw<'a, T, U>(&mut self, x: &'a T)
+    pub fn draw_mat<'a, T, U>(&mut self, x: &'a T)
     where
         T: AsMatrix<'a, U>,
         U: 'a + std::fmt::Display,
@@ -201,7 +203,7 @@ mod tests {
             vec![6, 7, 8, 9, 10],
         ];
         let mut boxes = Boxplot::new();
-        boxes.draw(&x);
+        boxes.draw_mat(&x);
         let b: &str = "x=np.array([[1,2,3,4,5,],[2,3,4,5,6,],[3,4,5,6,7,],[4,5,6,7,8,],[5,6,7,8,9,],[6,7,8,9,10,],],dtype=float)\n\
                        p=plt.boxplot(x)\n";
         assert_eq!(boxes.buffer, b);
@@ -226,7 +228,7 @@ mod tests {
             .set_whisker(1.5)
             .set_positions(&[1.0, 2.0, 3.0, 4.0, 5.0])
             .set_width(0.5)
-            .draw(&x);
+            .draw_mat(&x);
         let b: &str = "x=np.array([[1,2,3,4,5,],[2,3,4,5,6,],[3,4,5,6,7,],[4,5,6,7,8,],[5,6,7,8,9,],[6,7,8,9,10,],],dtype=float)\n\
                        positions=[1,2,3,4,5,]\n\
                        p=plt.boxplot(x,sym=r'b+',vert=False,whis=1.5,positions=positions,widths=0.5)\n";

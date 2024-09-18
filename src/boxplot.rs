@@ -46,7 +46,6 @@ use std::fmt::Write;
 ///
 /// See also integration test in the **tests** directory.
 pub struct Boxplot {
-    label: String,          // Name of this box in the legend
     symbol: Option<String>, // The default symbol for flier (outlier) points.
     vertical: Option<bool>, // Vertical boxplot
     whisker: Option<f64>,   // The position of the whiskers
@@ -60,7 +59,6 @@ impl Boxplot {
     /// Creates a new Boxplot object
     pub fn new() -> Self {
         Boxplot {
-            label: String::new(),
             symbol: None,
             vertical: None,
             whisker: None,
@@ -87,12 +85,6 @@ impl Boxplot {
         }
         let opt = self.options(); // Optional parameters
         write!(&mut self.buffer, "p=plt.boxplot(x{})\n", &opt).unwrap();
-    }
-
-    /// Sets the name of this boxplot in the legend
-    pub fn set_label(&mut self, label: &str) -> &mut Self {
-        self.label = String::from(label);
-        self
     }
 
     /// Sets the symbol for the boxplot
@@ -141,9 +133,6 @@ impl Boxplot {
     /// Returns options (optional parameters) for boxplot
     fn options(&self) -> String {
         let mut opt = String::new();
-        if self.label != "" {
-            write!(&mut opt, ",label=r'{}'", self.label).unwrap();
-        }
         if self.symbol != None {
             write!(&mut opt, ",sym=r'{}'", self.symbol.clone().unwrap()).unwrap();
         }
@@ -187,7 +176,6 @@ mod tests {
     #[test]
     fn new_works() {
         let boxes = Boxplot::new();
-        assert_eq!(boxes.label.len(), 0);
         assert_eq!(boxes.symbol, None);
         assert_eq!(boxes.vertical, None);
         assert_eq!(boxes.whisker, None);
@@ -228,7 +216,6 @@ mod tests {
         ];
         let mut boxes = Boxplot::new();
         boxes
-            .set_label("LABEL")
             .set_symbol("b+")
             .set_vertical(true)
             .set_whisker(1.5)
@@ -237,7 +224,7 @@ mod tests {
             .draw(&x);
         let b: &str = "x=np.array([[1,2,3,4,5,],[2,3,4,5,6,],[3,4,5,6,7,],[4,5,6,7,8,],[5,6,7,8,9,],[6,7,8,9,10,],],dtype=float)\n\
                        positions=[1,2,3,4,5,]\n\
-                       p=plt.boxplot(x,label=r'LABEL',sym=r'b+',vert=True,whis=1.5,positions=positions,widths=0.5)\n";
+                       p=plt.boxplot(x,sym=r'b+',vert=True,whis=1.5,positions=positions,widths=0.5)\n";
         assert_eq!(boxes.buffer, b);
         boxes.clear_buffer();
         assert_eq!(boxes.buffer, "");

@@ -7,34 +7,36 @@ use std::fmt::Write;
 ///
 /// # Examples
 ///
-/// ## Basic box plot
-///
 /// ```
-/// use plotpy::{Boxplot, AsMatrix, Plot, StrError};
+/// use plotpy::{Boxplot, Plot, StrError};
 ///
 /// fn main() -> Result<(), StrError> {
 ///     // data
-///     let x = vec![vec![1,2,3,4,5],
-///                  vec![2,3,4,5,6],
-///                  vec![3,4,5,6,7],
-///                  vec![4,5,6,7,8],
-///                  vec![5,6,7,8,9],
-///                  vec![6,7,8,9,10]];
+///     let data = vec![
+///         //   A  B  C  D  E
+///         vec![1, 2, 3, 4, 5],
+///         vec![2, 3, 4, 5, 6],
+///         vec![3, 4, 5, 6, 7],
+///         vec![4, 5, 6, 7, 8],
+///         vec![5, 6, 7, 8, 9],
+///         vec![6, 7, 8, 9, 10],
+///         vec![14, 14, 14, 14, 14], // outliers
+///     ];
 ///
 ///     // x ticks and labels
-///     let ticks: Vec<_> = (1..=x.size().1).into_iter().collect();
-///     let labels = ["x1", "x2", "x3", "x4", "x5"];
+///     let ncol = data[0].len();
+///     let ticks: Vec<_> = (1..(ncol + 1)).into_iter().collect();
+///     let labels = ["A", "B", "C", "D", "E"];
 ///
 ///     // boxplot object and options
 ///     let mut boxes = Boxplot::new();
-///     boxes.set_vertical(true)
-///          .draw(&x);
+///     boxes.draw(&data);
 ///
 ///     // save figure
 ///     let mut plot = Plot::new();
-///     plot.add(&boxes).set_title("boxplot")
+///     plot.add(&boxes)
+///         .set_title("boxplot documentation test")
 ///         .set_ticks_x_labels(&ticks, &labels)
-///         .set_labels("x", "y")  // x-axis and y-axis label
 ///         .save("/tmp/plotpy/doc_tests/doc_boxplot_1.svg")?;
 ///     Ok(())
 /// }

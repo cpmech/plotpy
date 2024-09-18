@@ -1,4 +1,4 @@
-use super::{generate_list, matrix_to_array, AsMatrix, GraphMaker};
+use super::{generate_list, generate_nested_list, matrix_to_array, AsMatrix, GraphMaker};
 use std::fmt::Write;
 
 /// Draw a box and whisker plot
@@ -73,21 +73,48 @@ impl Boxplot {
         }
     }
 
-    /// Draws the box plot given a 2D array (Matrix)
+    /// Draws the box plot given a nested list
+    ///
+    /// # Input
+    ///
+    /// * `data` -- Is a sequence of 1D arrays such that a boxplot is drawn for each array in the sequence.
+    ///   [From Matplotlib](https://matplotlib.org/3.6.3/api/_as_gen/matplotlib.pyplot.boxplot.html)
+    ///
+    /// # Notes
+    ///
+    /// * The type `T` must be a number.
+    pub fn draw<T>(&mut self, data: &Vec<Vec<T>>)
+    where
+        T: std::fmt::Display,
+    {
+        generate_nested_list(&mut self.buffer, "x", data);
+        if self.positions.len() > 0 {
+            generate_list(&mut self.buffer, "positions", self.positions.as_slice());
+        }
+        let opt = self.options();
+        write!(&mut self.buffer, "p=plt.boxplot(x{})\n", &opt).unwrap();
+    }
+
+    /// Draws the box plot given a 2D array (matrix)
+    ///
+    /// # Input
+    ///
+    /// * `data` -- Is a 2D array (matrix) such that a boxplot is drawn for each column in the matrix.
+    ///   [From Matplotlib](https://matplotlib.org/3.6.3/api/_as_gen/matplotlib.pyplot.boxplot.html)
     ///
     /// # Notes
     ///
     /// * The type `U` must be a number.
-    pub fn draw_mat<'a, T, U>(&mut self, x: &'a T)
+    pub fn draw_mat<'a, T, U>(&mut self, data: &'a T)
     where
         T: AsMatrix<'a, U>,
         U: 'a + std::fmt::Display,
     {
-        matrix_to_array(&mut self.buffer, "x", x);
+        matrix_to_array(&mut self.buffer, "x", data);
         if self.positions.len() > 0 {
             generate_list(&mut self.buffer, "positions", self.positions.as_slice());
         }
-        let opt = self.options(); // Optional parameters
+        let opt = self.options();
         write!(&mut self.buffer, "p=plt.boxplot(x{})\n", &opt).unwrap();
     }
 
@@ -195,6 +222,23 @@ mod tests {
     #[test]
     fn draw_works_1() {
         let x = vec![
+            vec![1, 2, 3],       // A
+            vec![2, 3, 4, 5, 6], // B
+            vec![6, 7],          // C
+        ];
+        let mut boxes = Boxplot::new();
+        boxes.draw(&x);
+        let b: &str = "x=[[1,2,3,],[2,3,4,5,6,],[6,7,],]\n\
+                       p=plt.boxplot(x)\n";
+        assert_eq!(boxes.buffer, b);
+        boxes.clear_buffer();
+        assert_eq!(boxes.buffer, "");
+    }
+
+    #[test]
+    fn draw_mat_works_1() {
+        let x = vec![
+            //   A  B  C  D  E
             vec![1, 2, 3, 4, 5],
             vec![2, 3, 4, 5, 6],
             vec![3, 4, 5, 6, 7],
@@ -212,8 +256,9 @@ mod tests {
     }
 
     #[test]
-    fn draw_works_2() {
+    fn draw_mat_works_2() {
         let x = vec![
+            //   A  B  C  D  E
             vec![1, 2, 3, 4, 5],
             vec![2, 3, 4, 5, 6],
             vec![3, 4, 5, 6, 7],

@@ -50,3 +50,44 @@ fn test_boxplot_1() -> Result<(), StrError> {
     assert!(c > 1000 && c < 1100);
     Ok(())
 }
+
+#[test]
+fn test_boxplot_2() -> Result<(), StrError> {
+    let data = vec![
+        vec![1, 2, 3, 4, 5],              // A
+        vec![2, 3, 4, 5, 6, 7, 8, 9, 10], // B
+        vec![3, 4, 5, 6],                 // C
+        vec![4, 5, 6, 7, 8, 9, 10],       // D
+        vec![5, 6, 7],                    // E
+    ];
+
+    let positions = [2.0, 2.5, 3.0, 3.5, 4.0];
+    let labels = ["A", "B", "C", "D", "E"];
+
+    // boxplot object and options
+    let mut boxes = Boxplot::new();
+    boxes
+        .set_symbol("b.")
+        .set_horizontal(true)
+        .set_positions(&positions)
+        .set_width(0.45)
+        .draw(&data);
+
+    let mut plot = Plot::new();
+    plot.add(&boxes)
+        .set_inv_y()
+        .set_title("boxplot integration test")
+        .set_ticks_y_labels(&positions, &labels);
+
+    // save figure
+    let path = Path::new(OUT_DIR).join("integ_boxplot_2.svg");
+    plot.save(&path)?;
+
+    // check number of lines
+    let file = File::open(path).map_err(|_| "cannot open file")?;
+    let buffered = BufReader::new(file);
+    let lines_iter = buffered.lines();
+    let c = lines_iter.count();
+    assert!(c > 950 && c < 1000);
+    Ok(())
+}

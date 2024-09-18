@@ -46,20 +46,20 @@ use std::fmt::Write;
 ///
 /// See also integration test in the **tests** directory.
 pub struct Boxplot {
-    symbol: Option<String>, // The default symbol for flier (outlier) points.
-    horizontal: bool,       // Horizontal boxplot (default is false)
-    whisker: Option<f64>,   // The position of the whiskers
-    positions: Vec<f64>,    // The positions of the boxes
-    width: Option<f64>,     // The width of the boxes
-    extra: String,          // Extra commands (comma separated)
-    buffer: String,         // Buffer
+    symbol: String,       // The default symbol for flier (outlier) points.
+    horizontal: bool,     // Horizontal boxplot (default is false)
+    whisker: Option<f64>, // The position of the whiskers
+    positions: Vec<f64>,  // The positions of the boxes
+    width: Option<f64>,   // The width of the boxes
+    extra: String,        // Extra commands (comma separated)
+    buffer: String,       // Buffer
 }
 
 impl Boxplot {
     /// Creates a new Boxplot object
     pub fn new() -> Self {
         Boxplot {
-            symbol: None,
+            symbol: String::new(),
             horizontal: false,
             whisker: None,
             positions: Vec::new(),
@@ -89,7 +89,7 @@ impl Boxplot {
 
     /// Sets the symbol for the boxplot
     pub fn set_symbol(&mut self, symbol: &str) -> &mut Self {
-        self.symbol = Some(symbol.to_string());
+        self.symbol = symbol.to_string();
         self
     }
 
@@ -133,8 +133,8 @@ impl Boxplot {
     /// Returns options (optional parameters) for boxplot
     fn options(&self) -> String {
         let mut opt = String::new();
-        if self.symbol != None {
-            write!(&mut opt, ",sym=r'{}'", self.symbol.clone().unwrap()).unwrap();
+        if self.symbol != "" {
+            write!(&mut opt, ",sym=r'{}'", self.symbol).unwrap();
         }
         if self.horizontal {
             write!(&mut opt, ",vert=False").unwrap();
@@ -174,7 +174,7 @@ mod tests {
     #[test]
     fn new_works() {
         let boxes = Boxplot::new();
-        assert_eq!(boxes.symbol, None);
+        assert_eq!(boxes.symbol.len(), 0);
         assert_eq!(boxes.horizontal, false);
         assert_eq!(boxes.whisker, None);
         assert_eq!(boxes.positions.len(), 0);

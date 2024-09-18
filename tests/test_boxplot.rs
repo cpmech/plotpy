@@ -19,7 +19,10 @@ fn test_boxplot_1() -> Result<(), StrError> {
   
     // boxplot object and options
     let mut boxes = Boxplot::new();
-    boxes.draw(&x);
+    boxes.draw(&x)
+         .set_title("boxplot")
+         .set_ticks_x_labels(&ticks, &labels)
+         .set_labels("x", "y");
 
     let mut plot = Plot::new();
     plot.add(&boxes);

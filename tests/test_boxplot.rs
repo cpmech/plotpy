@@ -19,13 +19,12 @@ fn test_boxplot_1() -> Result<(), StrError> {
   
     // boxplot object and options
     let mut boxes = Boxplot::new();
-    boxes.draw(&x)
-         .set_title("boxplot")
-         .set_ticks_x_labels(&ticks, &labels)
-         .set_labels("x", "y");
+    boxes.draw(&x);
 
     let mut plot = Plot::new();
-    plot.add(&boxes);
+    plot.add(&boxes).set_title("boxplot")
+        .set_ticks_x_labels(&ticks, &labels)
+        .set_labels("x", "y") ;
   
     // save figure
     let path = Path::new(OUT_DIR).join("integ_boxplot_1.svg");

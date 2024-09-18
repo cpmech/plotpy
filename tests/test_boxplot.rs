@@ -22,7 +22,7 @@ fn test_boxplot_1() -> Result<(), StrError> {
     boxes.draw(&x);
 
     let mut plot = Plot::new();
-    plot.add(&boxplot);
+    plot.add(&boxes);
   
     // save figure
     let path = Path::new(OUT_DIR).join("integ_boxplot_1.svg");

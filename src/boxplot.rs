@@ -87,27 +87,31 @@ impl Boxplot {
         write!(&mut self.buffer, "p=plt.boxplot(x{})\n", &opt).unwrap();
     }
 
-    /// Sets the symbol for the boxplot
+    /// Sets the symbol for the outliers
     pub fn set_symbol(&mut self, symbol: &str) -> &mut Self {
         self.symbol = symbol.to_string();
         self
     }
 
-    /// Enables drawing horizontal boxplot
+    /// Enables drawing horizontal boxes
     pub fn set_horizontal(&mut self, flag: bool) -> &mut Self {
         self.horizontal = flag;
         self
     }
 
-    /// Sets the whisker of this boxplot
+    /// Sets the position of the whiskers
+    ///
+    /// The default value of whisker = 1.5 corresponds to Tukey's original definition of boxplots.
+    ///
+    /// [See Matplotlib's documentation](https://matplotlib.org/3.6.3/api/_as_gen/matplotlib.pyplot.boxplot.html)
     pub fn set_whisker(&mut self, whisker: f64) -> &mut Self {
         self.whisker = Some(whisker);
         self
     }
 
     /// Sets the positions of the boxes
-    pub fn set_positions(&mut self, positions: Vec<f64>) -> &mut Self {
-        self.positions = positions;
+    pub fn set_positions(&mut self, positions: &[f64]) -> &mut Self {
+        self.positions = positions.to_vec();
         self
     }
 
@@ -124,6 +128,7 @@ impl Boxplot {
     /// ```text
     /// param1=123,param2='hello'
     /// ```
+    ///
     /// [See Matplotlib's documentation for extra parameters](https://matplotlib.org/3.6.3/api/_as_gen/matplotlib.pyplot.boxplot.html)
     pub fn set_extra(&mut self, extra: &str) -> &mut Self {
         self.extra = extra.to_string();
@@ -217,7 +222,7 @@ mod tests {
             .set_symbol("b+")
             .set_horizontal(true)
             .set_whisker(1.5)
-            .set_positions(vec![1.0, 2.0, 3.0, 4.0, 5.0])
+            .set_positions(&[1.0, 2.0, 3.0, 4.0, 5.0])
             .set_width(0.5)
             .draw(&x);
         let b: &str = "x=np.array([[1,2,3,4,5,],[2,3,4,5,6,],[3,4,5,6,7,],[4,5,6,7,8,],[5,6,7,8,9,],[6,7,8,9,10,],],dtype=float)\n\

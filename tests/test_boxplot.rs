@@ -1,4 +1,4 @@
-use plotpy::{AsMatrix, Boxplot, Plot, StrError};
+use plotpy::{Boxplot, Plot, StrError};
 use std::fs::File;
 use std::io::{BufRead, BufReader};
 use std::path::Path;
@@ -8,6 +8,7 @@ const OUT_DIR: &str = "/tmp/plotpy/integ_tests";
 #[test]
 fn test_boxplot_1() -> Result<(), StrError> {
     let data = vec![
+        //   A  B  C  D  E
         vec![1, 2, 3, 4, 5],
         vec![2, 3, 4, 5, 6],
         vec![3, 4, 5, 6, 7],
@@ -17,18 +18,25 @@ fn test_boxplot_1() -> Result<(), StrError> {
         vec![15, 15, 15, 15, 15], // outliers
     ];
 
-    let ticks: Vec<_> = (1..=data.size().1).into_iter().collect();
-    let labels = ["first", "second", "third", "fourth", "fifth"];
+    let positions = [2.0, 2.5, 3.0, 3.5, 4.0];
+    let labels = ["A", "B", "C", "D", "E"];
 
     // boxplot object and options
     let mut boxes = Boxplot::new();
-    boxes.set_symbol("b+").set_horizontal(true).draw(&data);
+    boxes
+        .set_symbol("b.")
+        .set_horizontal(true)
+        .set_positions(&positions)
+        .set_width(0.45)
+        .set_whisker(2.0)
+        .set_extra("notch=True")
+        .draw(&data);
 
     let mut plot = Plot::new();
     plot.add(&boxes)
         .set_inv_y()
         .set_title("boxplot integration test")
-        .set_ticks_y_labels(&ticks, &labels);
+        .set_ticks_y_labels(&positions, &labels);
 
     // save figure
     let path = Path::new(OUT_DIR).join("integ_boxplot_1.svg");

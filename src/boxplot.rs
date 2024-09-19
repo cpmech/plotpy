@@ -23,8 +23,8 @@ use std::fmt::Write;
 ///     ];
 ///
 ///     // x ticks and labels
-///     let ncol = data[0].len();
-///     let ticks: Vec<_> = (1..(ncol + 1)).into_iter().collect();
+///     let n = data.len();
+///     let ticks: Vec<_> = (1..(n + 1)).into_iter().collect();
 ///     let labels = ["A", "B", "C", "D", "E"];
 ///
 ///     // boxplot object and options

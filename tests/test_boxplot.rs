@@ -91,3 +91,48 @@ fn test_boxplot_2() -> Result<(), StrError> {
     assert!(c > 950 && c < 1000);
     Ok(())
 }
+
+#[test]
+fn test_boxplot_3() -> Result<(), StrError> {
+    let data = vec![
+        //    A    B    C    D    E ← matrix: columns are series
+        //                            nested: rows are series
+        //                                ↓
+        vec![1.0, 2.0, 3.0, 4.0, 5.0], // A
+        vec![1.1, 2.1, 3.1, 4.1, 5.1], // B
+        vec![1.2, 2.2, 3.2, 4.2, 5.2], // C
+        vec![1.3, 2.3, 3.3, 4.3, 5.3], // D
+        vec![1.4, 2.4, 3.4, 4.4, 5.4], // E
+    ];
+
+    let ticks = [1, 2, 3, 4, 5];
+    let labels = ["A", "B", "C", "D", "E"];
+
+    let mut boxes_nes = Boxplot::new();
+    boxes_nes.draw(&data);
+
+    let mut boxes_mat = Boxplot::new();
+    boxes_mat.draw_mat(&data);
+
+    let mut plot = Plot::new();
+    plot.set_subplot(1, 2, 1)
+        .set_title("nested")
+        .add(&boxes_nes)
+        .set_ticks_x_labels(&ticks, &labels)
+        .set_subplot(1, 2, 2)
+        .set_title("matrix")
+        .add(&boxes_mat)
+        .set_ticks_x_labels(&ticks, &labels);
+
+    // save figure
+    let path = Path::new(OUT_DIR).join("integ_boxplot_3.svg");
+    plot.set_figure_size_points(650.0, 300.0).save(&path)?;
+
+    // check number of lines
+    let file = File::open(path).map_err(|_| "cannot open file")?;
+    let buffered = BufReader::new(file);
+    let lines_iter = buffered.lines();
+    let c = lines_iter.count();
+    assert!(c > 1180 && c < 1260);
+    Ok(())
+}

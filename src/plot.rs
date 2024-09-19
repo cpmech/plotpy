@@ -431,7 +431,7 @@ impl Plot {
     /// 2. The TeX handling in the super-title string is more limited than in the title string
     ///    because we cannot use Python's raw string notation (`r''`) here. The reason is that we want
     ///    the super-title to be wrapped if it is too long and only non-raw strings can do that.
-    pub fn set_super_title(&mut self, title: &str, params: Option<SuperTitleParams>) -> &mut Self {
+    pub fn set_super_title(&mut self, title: &str, params: Option<&SuperTitleParams>) -> &mut Self {
         let t = title.replace("'", "’");
         match params {
             Some(p) => write!(&mut self.buffer, "st=plt.suptitle('{}'{})\n", t, p.options()).unwrap(),
@@ -1265,7 +1265,7 @@ mod tests {
             .set_fontsize(12.0)
             .set_fontweight(10.0);
         let mut plot = Plot::new();
-        plot.set_super_title("all subplots", Some(params));
+        plot.set_super_title("all subplots", Some(&params));
         let b: &str =
             "st=plt.suptitle('all subplots',x=123.3,y=456.7,ha='left',va='bottom',fontsize=12,fontweight=10)\n\
                        add_to_ea(st)\n";

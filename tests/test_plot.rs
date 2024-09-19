@@ -220,7 +220,7 @@ fn test_plot_subplots() -> Result<(), StrError> {
 
     // configure plot
     let mut plot = Plot::new();
-    plot.set_super_title("\"$\\int$ Plot's Owner Says $\\mathrm{d}\\sigma$\": This is the \"super title\", \\n followed by a very long text to see \\n if this whole thing will be wrapped or not \\n we hope that it gets wrapped and beautifully formatted.\"", Some(params))
+    plot.set_super_title("\"$\\int$ Plot's Owner Says $\\mathrm{d}\\sigma$\": This is the \"super title\", \\n followed by a very long text to see \\n if this whole thing will be wrapped or not \\n we hope that it gets wrapped and beautifully formatted.\"", Some(&params))
         .set_horizontal_gap(0.5)
         .set_vertical_gap(0.5)
         .set_gaps(0.3, 0.3);

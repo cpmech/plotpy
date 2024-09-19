@@ -13,6 +13,13 @@ Some output of integration tests are shown below.
 ![barplot](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_barplot_3.svg)
 ![barplot](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_barplot_4.svg)
 
+## Boxplot
+
+[test_boxplot.rs](https://github.com/cpmech/plotpy/tree/main/tests/test_boxplot.rs)
+
+![boxplot](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_boxplot_1.svg)
+![boxplot](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_boxplot_2.svg)
+
 ## Canvas
 
 [test_canvas.rs](https://github.com/cpmech/plotpy/tree/main/tests/test_canvas.rs)

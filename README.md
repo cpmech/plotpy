@@ -15,6 +15,7 @@
 - [Use of Jupyter via evcxr](#use-of-jupyter-via-evcxr)
 - [Examples](#examples)
   - [Barplot](#barplot)
+  - [Boxplot](#boxplot)
   - [Canvas](#canvas)
   - [Contour](#contour)
   - [Curve](#curve)
@@ -133,6 +134,46 @@ fn main() -> Result<(), StrError> {
 ```
 
 ![barplot.svg](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/doc_barplot_3.svg)
+
+
+
+### Boxplot
+
+[See the documentation](https://docs.rs/plotpy/latest/plotpy/struct.Boxplot.html)
+
+```rust
+use plotpy::{Boxplot, Plot, StrError};
+
+fn main() -> Result<(), StrError> {
+    // data (as a nested list)
+    let data = vec![
+        vec![1, 2, 3, 4, 5],              // A
+        vec![2, 3, 4, 5, 6, 7, 8, 9, 10], // B
+        vec![3, 4, 5, 6],                 // C
+        vec![4, 5, 6, 7, 8, 9, 10],       // D
+        vec![5, 6, 7],                    // E
+    ];
+
+    // x ticks and labels
+    let ncol = data[0].len();
+    let ticks: Vec<_> = (1..(ncol + 1)).into_iter().collect();
+    let labels = ["A", "B", "C", "D", "E"];
+
+    // boxplot object and options
+    let mut boxes = Boxplot::new();
+    boxes.draw(&data);
+
+    // save figure
+    let mut plot = Plot::new();
+    plot.add(&boxes)
+        .set_title("boxplot documentation test")
+        .set_ticks_x_labels(&ticks, &labels)
+        .save("/tmp/plotpy/doc_tests/doc_boxplot_2.svg")?;
+    Ok(())
+}
+```
+
+![boxplot.svg](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/doc_boxplot_2.svg)
 
 
 

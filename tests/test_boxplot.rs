@@ -137,3 +137,47 @@ fn test_boxplot_3() -> Result<(), StrError> {
     assert!(c > 1180 && c < 1260);
     Ok(())
 }
+
+#[test]
+fn test_boxplot_4() -> Result<(), StrError> {
+    let data = vec![
+        vec![1, 2, 3, 4, 5, 10],          // A
+        vec![2, 3, 4, 5, 6, 7, 8, 9, 10], // B
+        vec![3, 4, 5, 6, 10],             // C
+    ];
+
+    let ticks = [1, 2, 3];
+    let labels = ["A", "B", "C"];
+
+    let mut b1 = Boxplot::new();
+    b1.draw(&data);
+
+    let mut b2 = Boxplot::new();
+    b2.set_symbol("b+").draw(&data);
+
+    let mut b3 = Boxplot::new();
+    b3.set_symbol("b+").set_no_fliers(true).draw(&data);
+
+    let mut plot = Plot::new();
+    plot.set_vertical_gap(0.0)
+        .set_subplot(3, 1, 1)
+        .add(&b1)
+        .set_subplot(3, 1, 2)
+        .add(&b2)
+        .set_subplot(3, 1, 3)
+        .add(&b3)
+        .set_ticks_x_labels(&ticks, &labels)
+        .set_figure_size_points(300.0, 450.0);
+
+    // save figure
+    let path = Path::new(OUT_DIR).join("integ_boxplot_4.svg");
+    plot.save(&path)?;
+
+    // check number of lines
+    let file = File::open(path).map_err(|_| "cannot open file")?;
+    let buffered = BufReader::new(file);
+    let lines_iter = buffered.lines();
+    let c = lines_iter.count();
+    assert!(c > 1020 && c < 1100);
+    Ok(())
+}

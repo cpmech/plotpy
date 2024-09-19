@@ -20,6 +20,7 @@ Some output of integration tests are shown below.
 ![boxplot](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_boxplot_1.svg)
 ![boxplot](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_boxplot_2.svg)
 ![boxplot](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_boxplot_3.svg)
+![boxplot](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_boxplot_4.svg)
 
 ## Canvas
 

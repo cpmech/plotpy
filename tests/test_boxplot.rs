@@ -15,7 +15,7 @@ fn test_boxplot_1() -> Result<(), StrError> {
         vec![4, 5, 6, 7, 8],
         vec![5, 6, 7, 8, 9],
         vec![6, 7, 8, 9, 10],
-        vec![15, 15, 15, 15, 15], // outliers
+        vec![15, 15, 15, 15, 15], // fliers
     ];
 
     let positions = [2.0, 2.5, 3.0, 3.5, 4.0];

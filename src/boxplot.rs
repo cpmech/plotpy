@@ -58,7 +58,7 @@ use std::fmt::Write;
 ///         vec![4, 5, 6, 7, 8],
 ///         vec![5, 6, 7, 8, 9],
 ///         vec![6, 7, 8, 9, 10],
-///         vec![14, 14, 14, 14, 14], // outliers
+///         vec![14, 14, 14, 14, 14], // fliers
 ///     ];
 ///
 ///     // x ticks and labels
@@ -156,7 +156,7 @@ impl Boxplot {
         write!(&mut self.buffer, "p=plt.boxplot(x{})\n", &opt).unwrap();
     }
 
-    /// Sets the symbol for the outliers
+    /// Sets the symbol for the fliers
     pub fn set_symbol(&mut self, symbol: &str) -> &mut Self {
         self.symbol = symbol.to_string();
         self

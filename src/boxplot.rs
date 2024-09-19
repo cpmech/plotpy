@@ -91,6 +91,7 @@ pub struct Boxplot {
     whisker: Option<f64>, // The position of the whiskers
     positions: Vec<f64>,  // The positions of the boxes
     width: Option<f64>,   // The width of the boxes
+    no_fliers: bool,      // Disables fliers
     extra: String,        // Extra commands (comma separated)
     buffer: String,       // Buffer
 }
@@ -104,6 +105,7 @@ impl Boxplot {
             whisker: None,
             positions: Vec::new(),
             width: None,
+            no_fliers: false,
             extra: String::new(),
             buffer: String::new(),
         }
@@ -188,6 +190,12 @@ impl Boxplot {
         self
     }
 
+    /// Disables the fliers
+    pub fn set_no_fliers(&mut self, flag: bool) -> &mut Self {
+        self.no_fliers = flag;
+        self
+    }
+
     /// Sets extra matplotlib commands (comma separated)
     ///
     /// **Important:** The extra commands must be comma separated. For example:
@@ -205,8 +213,12 @@ impl Boxplot {
     /// Returns options (optional parameters) for boxplot
     fn options(&self) -> String {
         let mut opt = String::new();
-        if self.symbol != "" {
-            write!(&mut opt, ",sym=r'{}'", self.symbol).unwrap();
+        if self.no_fliers {
+            write!(&mut opt, ",sym=''").unwrap();
+        } else {
+            if self.symbol != "" {
+                write!(&mut opt, ",sym=r'{}'", self.symbol).unwrap();
+            }
         }
         if self.horizontal {
             write!(&mut opt, ",vert=False").unwrap();
@@ -305,6 +317,7 @@ mod tests {
         let mut boxes = Boxplot::new();
         boxes
             .set_symbol("b+")
+            .set_no_fliers(true)
             .set_horizontal(true)
             .set_whisker(1.5)
             .set_positions(&[1.0, 2.0, 3.0, 4.0, 5.0])
@@ -312,7 +325,7 @@ mod tests {
             .draw_mat(&x);
         let b: &str = "x=np.array([[1,2,3,4,5,],[2,3,4,5,6,],[3,4,5,6,7,],[4,5,6,7,8,],[5,6,7,8,9,],[6,7,8,9,10,],],dtype=float)\n\
                        positions=[1,2,3,4,5,]\n\
-                       p=plt.boxplot(x,sym=r'b+',vert=False,whis=1.5,positions=positions,widths=0.5)\n";
+                       p=plt.boxplot(x,sym='',vert=False,whis=1.5,positions=positions,widths=0.5)\n";
         assert_eq!(boxes.buffer, b);
         boxes.clear_buffer();
         assert_eq!(boxes.buffer, "");

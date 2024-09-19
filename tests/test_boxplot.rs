@@ -29,6 +29,7 @@ fn test_boxplot_1() -> Result<(), StrError> {
         .set_positions(&positions)
         .set_width(0.45)
         .set_whisker(2.0)
+        .set_no_fliers(false)
         .set_extra("notch=True")
         .draw_mat(&data);
 

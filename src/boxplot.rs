@@ -213,12 +213,8 @@ impl Boxplot {
     /// Returns options (optional parameters) for boxplot
     fn options(&self) -> String {
         let mut opt = String::new();
-        if self.no_fliers {
-            write!(&mut opt, ",sym=''").unwrap();
-        } else {
-            if self.symbol != "" {
-                write!(&mut opt, ",sym=r'{}'", self.symbol).unwrap();
-            }
+        if self.symbol != "" {
+            write!(&mut opt, ",sym=r'{}'", self.symbol).unwrap();
         }
         if self.horizontal {
             write!(&mut opt, ",vert=False").unwrap();
@@ -231,6 +227,9 @@ impl Boxplot {
         }
         if self.width != None {
             write!(&mut opt, ",widths={}", self.width.unwrap()).unwrap();
+        }
+        if self.no_fliers {
+            write!(&mut opt, ",showfliers=False").unwrap();
         }
         if self.extra != "" {
             write!(&mut opt, ",{}", self.extra).unwrap();
@@ -325,7 +324,7 @@ mod tests {
             .draw_mat(&x);
         let b: &str = "x=np.array([[1,2,3,4,5,],[2,3,4,5,6,],[3,4,5,6,7,],[4,5,6,7,8,],[5,6,7,8,9,],[6,7,8,9,10,],],dtype=float)\n\
                        positions=[1,2,3,4,5,]\n\
-                       p=plt.boxplot(x,sym='',vert=False,whis=1.5,positions=positions,widths=0.5)\n";
+                       p=plt.boxplot(x,sym=r'b+',vert=False,whis=1.5,positions=positions,widths=0.5,showfliers=False)\n";
         assert_eq!(boxes.buffer, b);
         boxes.clear_buffer();
         assert_eq!(boxes.buffer, "");

@@ -1,6 +1,7 @@
 use std::fmt::Write;
 
 /// Holds parameters for the SuperTitle
+#[derive(Clone)]
 pub struct SuperTitleParams {
     /// The x location of the text in figure coordinates (default = 0.5)
     x: Option<f64>,
@@ -118,6 +119,13 @@ mod tests {
         assert_eq!(params.align_vertical.len(), 0);
         assert_eq!(params.fontsize, 0.0);
         assert_eq!(params.fontweight, 0.0);
+    }
+
+    #[test]
+    fn clone_works() {
+        let params = SuperTitleParams::new();
+        let clone = params.clone();
+        assert_eq!(clone.fontsize, 0.0);
     }
 
     #[test]

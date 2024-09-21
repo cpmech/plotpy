@@ -86,14 +86,18 @@ use std::fmt::Write;
 ///
 /// See also integration test in the **tests** directory.
 pub struct Boxplot {
-    symbol: String,       // The default symbol for flier (outlier) points.
-    horizontal: bool,     // Horizontal boxplot (default is false)
-    whisker: Option<f64>, // The position of the whiskers
-    positions: Vec<f64>,  // The positions of the boxes
-    width: Option<f64>,   // The width of the boxes
-    no_fliers: bool,      // Disables fliers
-    extra: String,        // Extra commands (comma separated)
-    buffer: String,       // Buffer
+    symbol: String,                 // The default symbol for flier (outlier) points.
+    horizontal: bool,               // Horizontal boxplot (default is false)
+    whisker: Option<f64>,           // The position of the whiskers
+    positions: Vec<f64>,            // The positions of the boxes
+    width: Option<f64>,             // The width of the boxes
+    no_fliers: bool,                // Disables fliers
+    patch_artist: bool,             // If false, produces boxes with the Line2D artist. Otherwise, boxes are drawn with Patch artists.
+    medianprops: String,           // The properties of the median
+    boxprops: String,              // The properties of the box
+    whiskerprops: String,          // The properties of the whisker
+    extra: String,                  // Extra commands (comma separated)
+    buffer: String,                 // Buffer
 }
 
 impl Boxplot {
@@ -106,6 +110,10 @@ impl Boxplot {
             positions: Vec::new(),
             width: None,
             no_fliers: false,
+            patch_artist: false,
+            medianprops: String::new(),
+            boxprops: String::new(),
+            whiskerprops: String::new(),
             extra: String::new(),
             buffer: String::new(),
         }
@@ -196,6 +204,31 @@ impl Boxplot {
         self
     }
 
+    /// Enable fill the boxes
+    pub fn set_patch_artist(&mut self, flag: bool) -> &mut Self {
+        self.patch_artist = flag;
+        self
+    }
+
+    /// Set the median properties.
+    /// [See Matplotlib's documentation for medianprops, boxprops and whiskerprops parameters](https://matplotlib.org/3.6.3/api/_as_gen/matplotlib.pyplot.boxplot.html)
+    pub fn set_medianprops(&mut self, props: &str) -> &mut Self {
+        self.medianprops = props.to_string();
+        self
+    }
+
+    /// Set the properties of the box
+    pub fn set_boxprops(&mut self, props: &str) -> &mut Self {
+        self.boxprops = props.to_string();
+        self
+    }
+
+    /// Set the properties of the whisker
+    pub fn set_whiskerprops(&mut self, props: &str) -> &mut Self {
+        self.whiskerprops = props.to_string();
+        self
+    }
+
     /// Sets extra matplotlib commands (comma separated)
     ///
     /// **Important:** The extra commands must be comma separated. For example:
@@ -231,6 +264,18 @@ impl Boxplot {
         if self.no_fliers {
             write!(&mut opt, ",showfliers=False").unwrap();
         }
+        if self.patch_artist {
+            write!(&mut opt, ",patch_artist=True").unwrap();
+        }
+        if self.medianprops != "" {
+            write!(&mut opt, ",medianprops={}", self.medianprops).unwrap();
+        }
+        if self.boxprops != "" {
+            write!(&mut opt, ",boxprops={}", self.boxprops).unwrap();
+        }
+        if self.whiskerprops != "" {
+            write!(&mut opt, ",whiskerprops={}", self.whiskerprops).unwrap();
+        }
         if self.extra != "" {
             write!(&mut opt, ",{}", self.extra).unwrap();
         }
@@ -262,6 +307,11 @@ mod tests {
         assert_eq!(boxes.whisker, None);
         assert_eq!(boxes.positions.len(), 0);
         assert_eq!(boxes.width, None);
+        assert_eq!(boxes.no_fliers, false);
+        assert_eq!(boxes.patch_artist, false);
+        assert_eq!(boxes.medianprops.len(), 0);
+        assert_eq!(boxes.boxprops.len(), 0);
+        assert_eq!(boxes.whiskerprops.len(), 0);
         assert_eq!(boxes.extra.len(), 0);
         assert_eq!(boxes.buffer.len(), 0);
     }
@@ -277,6 +327,32 @@ mod tests {
         boxes.draw(&x);
         let b: &str = "x=[[1,2,3,],[2,3,4,5,6,],[6,7,],]\n\
                        p=plt.boxplot(x)\n";
+        assert_eq!(boxes.buffer, b);
+        boxes.clear_buffer();
+        assert_eq!(boxes.buffer, "");
+    }
+
+    #[test]
+    fn draw_works_2() {
+        let x = vec![
+            vec![1, 2, 3],       // A
+            vec![2, 3, 4, 5, 6], // B
+            vec![6, 7],          // C
+        ];
+        let mut boxes = Boxplot::new();
+        boxes
+            .set_symbol("b+")
+            .set_no_fliers(true)
+            .set_horizontal(true)
+            .set_whisker(1.5)
+            .set_positions(&[1.0, 2.0, 3.0])
+            .set_width(0.5)
+            .set_patch_artist(true)
+            .set_boxprops("{'facecolor': 'C0', 'edgecolor': 'white','linewidth': 0.5}")
+            .draw(&x);
+        let b: &str = "x=[[1,2,3,],[2,3,4,5,6,],[6,7,],]\n\
+                       positions=[1,2,3,]\n\
+                       p=plt.boxplot(x,sym=r'b+',vert=False,whis=1.5,positions=positions,widths=0.5,showfliers=False,patch_artist=True,boxprops={'facecolor': 'C0', 'edgecolor': 'white','linewidth': 0.5})\n";
         assert_eq!(boxes.buffer, b);
         boxes.clear_buffer();
         assert_eq!(boxes.buffer, "");

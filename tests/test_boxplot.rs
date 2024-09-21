@@ -181,3 +181,37 @@ fn test_boxplot_4() -> Result<(), StrError> {
     assert!(c > 1020 && c < 1100);
     Ok(())
 }
+
+#[test]
+fn test_boxplot_5() -> Result<(), StrError> {
+    let x = vec![
+        vec![1, 2, 3],       // A
+        vec![2, 3, 4, 5, 6], // B
+        vec![6, 7],          // C
+    ];
+    let mut boxes = Boxplot::new();
+    boxes
+        .set_symbol("b+")
+        .set_no_fliers(true)
+        .set_horizontal(true)
+        .set_whisker(1.5)
+        .set_positions(&[1.0, 2.0, 3.0])
+        .set_width(0.5)
+        .set_patch_artist(true)
+        .set_boxprops("{'facecolor': 'C0', 'edgecolor': 'white','linewidth': 0.5}")
+        .draw(&x);
+    let mut plot = Plot::new();
+    plot.add(&boxes);
+
+    // save figure
+    let path = Path::new(OUT_DIR).join("integ_boxplot_5.svg");
+    plot.save(&path)?;
+
+    // check number of lines
+    let file = File::open(path).map_err(|_| "cannot open file")?;
+    let buffered = BufReader::new(file);
+    let lines_iter = buffered.lines();
+    let c = lines_iter.count();
+    assert!(c > 460 && c < 500);
+    Ok(())
+}

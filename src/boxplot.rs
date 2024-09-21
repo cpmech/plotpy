@@ -92,13 +92,9 @@ pub struct Boxplot {
     positions: Vec<f64>,            // The positions of the boxes
     width: Option<f64>,             // The width of the boxes
     no_fliers: bool,                // Disables fliers
-    median_color: String,           // The color of the median
-    median_linewidth: Option<f64>,  // Line width of the median
-    box_facecolor: String,          // The facecolor of the box
-    box_edgecolor: String,          // The color of the box edge
-    box_linewidth: Option<f64>,     // Line width of box
-    whisker_color: String,          // The color of the whisker
-    whisker_length: Option<f64>,    // The length of the whisker
+    median_props: String,           // The properties of the median
+    box_props: String,              // The properties of the box
+    whisker_props: String,          // The properties of the whisker
     extra: String,                  // Extra commands (comma separated)
     buffer: String,                 // Buffer
 }
@@ -113,13 +109,9 @@ impl Boxplot {
             positions: Vec::new(),
             width: None,
             no_fliers: false,
-            median_color: String::from("black"),
-            median_linewidth: None,
-            box_facecolor: String::new(),
-            box_edgecolor: String::new(),
-            box_linewidth: None,
-            whisker_color: String::new(),
-            whisker_length: None,
+            median_props: String::new(),
+            box_props: String::new(),
+            whisker_props: String::new(),
             extra: String::new(),
             buffer: String::new(),
         }
@@ -210,45 +202,21 @@ impl Boxplot {
         self
     }
 
-    /// Set the median color
-    pub fn set_median_color(&mut self, color: &str) -> &mut Self {
-        self.median_color = color.to_string();
+    /// Set the median properties
+    pub fn set_median_props(&mut self, props: &str) -> &mut Self {
+        self.median_props = props.to_string();
         self
     }
 
-    /// Set the line width of the median
-    pub fn set_median_linewidth(&mut self, width: f64) -> &mut Self {
-        self.median_linewidth = Some(width);
+    /// Set the properties of the box
+    pub fn set_box_props(&mut self, props: &str) -> &mut Self {
+        self.box_props = props.to_string();
         self
     }
 
-    /// Set the facecolor of the box
-    pub fn set_box_facecolor(&mut self, color: &str) -> &mut Self {
-        self.box_facecolor = color.to_string();
-        self
-    }
-
-    /// Set the color of the box edge
-    pub fn set_box_edgecolor(&mut self, color: &str) -> &mut Self {
-        self.box_edgecolor = color.to_string();
-        self
-    }
-
-    /// Set the line width of the box
-    pub fn set_box_linewidth(&mut self, width: f64) -> &mut Self {
-        self.box_linewidth = Some(width);
-        self
-    }
-    
-    /// Set the color of the whisker
-    pub fn set_whisker_color(&mut self, color: &str) -> &mut Self {
-        self.whisker_color = color.to_string();
-        self
-    }
-
-    /// Set the length of the whisker
-    pub fn set_whisker_length(&mut self, length: f64) -> &mut Self {
-        self.whisker_length = Some(length);
+    /// Set the properties of the whisker
+    pub fn set_whisker_props(&mut self, props: &str) -> &mut Self {
+        self.whisker_props = props.to_string();
         self
     }
 
@@ -287,7 +255,15 @@ impl Boxplot {
         if self.no_fliers {
             write!(&mut opt, ",showfliers=False").unwrap();
         }
-        write!(&mut opt, ",medianprops={'color': {}}", self.median_color).unwrap();
+        if self.median_props != "" {
+            write!(&mut opt, ",median_props={}", self.median_props).unwrap();
+        }
+        if self.box_props != "" {
+            write!(&mut opt, ",box_props={}", self.box_props).unwrap();
+        }
+        if self.whisker_props != "" {
+            write!(&mut opt, ",whisker_props={}", self.whisker_props).unwrap();
+        }
         if self.extra != "" {
             write!(&mut opt, ",{}", self.extra).unwrap();
         }

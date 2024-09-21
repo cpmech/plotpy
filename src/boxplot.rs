@@ -210,7 +210,8 @@ impl Boxplot {
         self
     }
 
-    /// Set the median properties
+    /// Set the median properties.
+    /// [See Matplotlib's documentation for medianprops, boxprops and whiskerprops parameters](https://matplotlib.org/3.6.3/api/_as_gen/matplotlib.pyplot.boxplot.html)
     pub fn set_medianprops(&mut self, props: &str) -> &mut Self {
         self.medianprops = props.to_string();
         self

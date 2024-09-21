@@ -86,14 +86,21 @@ use std::fmt::Write;
 ///
 /// See also integration test in the **tests** directory.
 pub struct Boxplot {
-    symbol: String,       // The default symbol for flier (outlier) points.
-    horizontal: bool,     // Horizontal boxplot (default is false)
-    whisker: Option<f64>, // The position of the whiskers
-    positions: Vec<f64>,  // The positions of the boxes
-    width: Option<f64>,   // The width of the boxes
-    no_fliers: bool,      // Disables fliers
-    extra: String,        // Extra commands (comma separated)
-    buffer: String,       // Buffer
+    symbol: String,                 // The default symbol for flier (outlier) points.
+    horizontal: bool,               // Horizontal boxplot (default is false)
+    whisker: Option<f64>,           // The position of the whiskers
+    positions: Vec<f64>,            // The positions of the boxes
+    width: Option<f64>,             // The width of the boxes
+    no_fliers: bool,                // Disables fliers
+    median_color: String,           // The color of the median
+    median_linewidth: Option<f64>,  // Line width of the median
+    box_facecolor: String,          // The facecolor of the box
+    box_edgecolor: String,          // The color of the box edge
+    box_linewidth: Option<f64>,     // Line width of box
+    whisker_color: String,          // The color of the whisker
+    whisker_length: Option<f64>,    // The length of the whisker
+    extra: String,                  // Extra commands (comma separated)
+    buffer: String,                 // Buffer
 }
 
 impl Boxplot {
@@ -106,6 +113,13 @@ impl Boxplot {
             positions: Vec::new(),
             width: None,
             no_fliers: false,
+            median_color: String::from("black"),
+            median_linewidth: None,
+            box_facecolor: String::new(),
+            box_edgecolor: String::new(),
+            box_linewidth: None,
+            whisker_color: String::new(),
+            whisker_length: None,
             extra: String::new(),
             buffer: String::new(),
         }
@@ -196,6 +210,48 @@ impl Boxplot {
         self
     }
 
+    /// Set the median color
+    pub fn set_median_color(&mut self, color: &str) -> &mut Self {
+        self.median_color = color.to_string();
+        self
+    }
+
+    /// Set the line width of the median
+    pub fn set_median_linewidth(&mut self, width: f64) -> &mut Self {
+        self.median_linewidth = Some(width);
+        self
+    }
+
+    /// Set the facecolor of the box
+    pub fn set_box_facecolor(&mut self, color: &str) -> &mut Self {
+        self.box_facecolor = color.to_string();
+        self
+    }
+
+    /// Set the color of the box edge
+    pub fn set_box_edgecolor(&mut self, color: &str) -> &mut Self {
+        self.box_edgecolor = color.to_string();
+        self
+    }
+
+    /// Set the line width of the box
+    pub fn set_box_linewidth(&mut self, width: f64) -> &mut Self {
+        self.box_linewidth = Some(width);
+        self
+    }
+    
+    /// Set the color of the whisker
+    pub fn set_whisker_color(&mut self, color: &str) -> &mut Self {
+        self.whisker_color = color.to_string();
+        self
+    }
+
+    /// Set the length of the whisker
+    pub fn set_whisker_length(&mut self, length: f64) -> &mut Self {
+        self.whisker_length = Some(length);
+        self
+    }
+
     /// Sets extra matplotlib commands (comma separated)
     ///
     /// **Important:** The extra commands must be comma separated. For example:
@@ -234,6 +290,7 @@ impl Boxplot {
         if self.extra != "" {
             write!(&mut opt, ",{}", self.extra).unwrap();
         }
+        write!(&mut opt, ",patch_artist=True").unwrap();
         opt
     }
 }

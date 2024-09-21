@@ -93,9 +93,9 @@ pub struct Boxplot {
     width: Option<f64>,             // The width of the boxes
     no_fliers: bool,                // Disables fliers
     patch_artist: bool,             // If false, produces boxes with the Line2D artist. Otherwise, boxes are drawn with Patch artists.
-    median_props: String,           // The properties of the median
-    box_props: String,              // The properties of the box
-    whisker_props: String,          // The properties of the whisker
+    medianprops: String,           // The properties of the median
+    boxprops: String,              // The properties of the box
+    whiskerprops: String,          // The properties of the whisker
     extra: String,                  // Extra commands (comma separated)
     buffer: String,                 // Buffer
 }
@@ -111,9 +111,9 @@ impl Boxplot {
             width: None,
             no_fliers: false,
             patch_artist: false,
-            median_props: String::new(),
-            box_props: String::new(),
-            whisker_props: String::new(),
+            medianprops: String::new(),
+            boxprops: String::new(),
+            whiskerprops: String::new(),
             extra: String::new(),
             buffer: String::new(),
         }
@@ -211,20 +211,20 @@ impl Boxplot {
     }
 
     /// Set the median properties
-    pub fn set_median_props(&mut self, props: &str) -> &mut Self {
-        self.median_props = props.to_string();
+    pub fn set_medianprops(&mut self, props: &str) -> &mut Self {
+        self.medianprops = props.to_string();
         self
     }
 
     /// Set the properties of the box
-    pub fn set_box_props(&mut self, props: &str) -> &mut Self {
-        self.box_props = props.to_string();
+    pub fn set_boxprops(&mut self, props: &str) -> &mut Self {
+        self.boxprops = props.to_string();
         self
     }
 
     /// Set the properties of the whisker
-    pub fn set_whisker_props(&mut self, props: &str) -> &mut Self {
-        self.whisker_props = props.to_string();
+    pub fn set_whiskerprops(&mut self, props: &str) -> &mut Self {
+        self.whiskerprops = props.to_string();
         self
     }
 
@@ -266,14 +266,14 @@ impl Boxplot {
         if self.patch_artist {
             write!(&mut opt, ",patch_artist=True").unwrap();
         }
-        if self.median_props != "" {
-            write!(&mut opt, ",median_props={}", self.median_props).unwrap();
+        if self.medianprops != "" {
+            write!(&mut opt, ",medianprops={}", self.medianprops).unwrap();
         }
-        if self.box_props != "" {
-            write!(&mut opt, ",box_props={}", self.box_props).unwrap();
+        if self.boxprops != "" {
+            write!(&mut opt, ",boxprops={}", self.boxprops).unwrap();
         }
-        if self.whisker_props != "" {
-            write!(&mut opt, ",whisker_props={}", self.whisker_props).unwrap();
+        if self.whiskerprops != "" {
+            write!(&mut opt, ",whiskerprops={}", self.whiskerprops).unwrap();
         }
         if self.extra != "" {
             write!(&mut opt, ",{}", self.extra).unwrap();
@@ -306,6 +306,11 @@ mod tests {
         assert_eq!(boxes.whisker, None);
         assert_eq!(boxes.positions.len(), 0);
         assert_eq!(boxes.width, None);
+        assert_eq!(boxes.no_fliers, false);
+        assert_eq!(boxes.patch_artist, false);
+        assert_eq!(boxes.medianprops.len(), 0);
+        assert_eq!(boxes.boxprops.len(), 0);
+        assert_eq!(boxes.whiskerprops.len(), 0);
         assert_eq!(boxes.extra.len(), 0);
         assert_eq!(boxes.buffer.len(), 0);
     }
@@ -321,6 +326,32 @@ mod tests {
         boxes.draw(&x);
         let b: &str = "x=[[1,2,3,],[2,3,4,5,6,],[6,7,],]\n\
                        p=plt.boxplot(x)\n";
+        assert_eq!(boxes.buffer, b);
+        boxes.clear_buffer();
+        assert_eq!(boxes.buffer, "");
+    }
+
+    #[test]
+    fn draw_works_2() {
+        let x = vec![
+            vec![1, 2, 3],       // A
+            vec![2, 3, 4, 5, 6], // B
+            vec![6, 7],          // C
+        ];
+        let mut boxes = Boxplot::new();
+        boxes
+            .set_symbol("b+")
+            .set_no_fliers(true)
+            .set_horizontal(true)
+            .set_whisker(1.5)
+            .set_positions(&[1.0, 2.0, 3.0, 4.0, 5.0])
+            .set_width(0.5)
+            .set_patch_artist(true)
+            .set_boxprops("{'facecolor': 'C0', 'edgecolor': 'white','linewidth': 0.5}")
+            .draw(&x);
+        let b: &str = "x=[[1,2,3,],[2,3,4,5,6,],[6,7,],]\n\
+                       positions=[1,2,3,4,5,]\n\
+                       p=plt.boxplot(x,sym=r'b+',vert=False,whis=1.5,positions=positions,widths=0.5,showfliers=False)\n";
         assert_eq!(boxes.buffer, b);
         boxes.clear_buffer();
         assert_eq!(boxes.buffer, "");

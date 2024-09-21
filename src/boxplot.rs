@@ -278,7 +278,6 @@ impl Boxplot {
         if self.extra != "" {
             write!(&mut opt, ",{}", self.extra).unwrap();
         }
-        write!(&mut opt, ",patch_artist=True").unwrap();
         opt
     }
 }

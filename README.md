@@ -4,7 +4,6 @@
 [![Track Awesome List](https://www.trackawesomelist.com/badge.svg)](https://www.trackawesomelist.com/rust-unofficial/awesome-rust/)
 
 [![Test & Coverage](https://github.com/cpmech/plotpy/actions/workflows/test_and_coverage.yml/badge.svg)](https://github.com/cpmech/plotpy/actions/workflows/test_and_coverage.yml)
-[![codecov](https://codecov.io/gh/cpmech/plotpy/branch/main/graph/badge.svg?token=SUBRKUN63U)](https://codecov.io/gh/cpmech/plotpy)
 
 
 ## Contents <!-- omit from toc --> 

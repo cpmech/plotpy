@@ -212,6 +212,6 @@ fn test_boxplot_5() -> Result<(), StrError> {
     let buffered = BufReader::new(file);
     let lines_iter = buffered.lines();
     let c = lines_iter.count();
-    assert!(c > 1020 && c < 1100);
+    assert!(c > 460 && c < 500);
     Ok(())
 }

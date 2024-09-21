@@ -287,6 +287,7 @@ impl Boxplot {
         if self.no_fliers {
             write!(&mut opt, ",showfliers=False").unwrap();
         }
+        write!(&mut opt, ",medianprops={'color': {}}", self.median_color).unwrap();
         if self.extra != "" {
             write!(&mut opt, ",{}", self.extra).unwrap();
         }

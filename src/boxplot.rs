@@ -344,14 +344,14 @@ mod tests {
             .set_no_fliers(true)
             .set_horizontal(true)
             .set_whisker(1.5)
-            .set_positions(&[1.0, 2.0, 3.0, 4.0, 5.0])
+            .set_positions(&[1.0, 2.0, 3.0])
             .set_width(0.5)
             .set_patch_artist(true)
             .set_boxprops("{'facecolor': 'C0', 'edgecolor': 'white','linewidth': 0.5}")
             .draw(&x);
         let b: &str = "x=[[1,2,3,],[2,3,4,5,6,],[6,7,],]\n\
-                       positions=[1,2,3,4,5,]\n\
-                       p=plt.boxplot(x,sym=r'b+',vert=False,whis=1.5,positions=positions,widths=0.5,showfliers=False)\n";
+                       positions=[1,2,3,]\n\
+                       p=plt.boxplot(x,sym=r'b+',vert=False,whis=1.5,positions=positions,widths=0.5,showfliers=False,patch_artist=True,boxprops={'facecolor': 'C0', 'edgecolor': 'white','linewidth': 0.5})\n";
         assert_eq!(boxes.buffer, b);
         boxes.clear_buffer();
         assert_eq!(boxes.buffer, "");

@@ -92,6 +92,7 @@ pub struct Boxplot {
     positions: Vec<f64>,            // The positions of the boxes
     width: Option<f64>,             // The width of the boxes
     no_fliers: bool,                // Disables fliers
+    patch_artist: bool,             // If false, produces boxes with the Line2D artist. Otherwise, boxes are drawn with Patch artists.
     median_props: String,           // The properties of the median
     box_props: String,              // The properties of the box
     whisker_props: String,          // The properties of the whisker
@@ -109,6 +110,7 @@ impl Boxplot {
             positions: Vec::new(),
             width: None,
             no_fliers: false,
+            patch_artist: false,
             median_props: String::new(),
             box_props: String::new(),
             whisker_props: String::new(),
@@ -202,6 +204,12 @@ impl Boxplot {
         self
     }
 
+    /// Enable fill the boxes
+    pub fn set_patch_artist(&mut self, flag: bool) -> &mut Self {
+        self.patch_artist = flag;
+        self
+    }
+
     /// Set the median properties
     pub fn set_median_props(&mut self, props: &str) -> &mut Self {
         self.median_props = props.to_string();
@@ -254,6 +262,9 @@ impl Boxplot {
         }
         if self.no_fliers {
             write!(&mut opt, ",showfliers=False").unwrap();
+        }
+        if self.patch_artist {
+            write!(&mut opt, ",patch_artist=True").unwrap();
         }
         if self.median_props != "" {
             write!(&mut opt, ",median_props={}", self.median_props).unwrap();

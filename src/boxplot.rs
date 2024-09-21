@@ -86,18 +86,18 @@ use std::fmt::Write;
 ///
 /// See also integration test in the **tests** directory.
 pub struct Boxplot {
-    symbol: String,                 // The default symbol for flier (outlier) points.
-    horizontal: bool,               // Horizontal boxplot (default is false)
-    whisker: Option<f64>,           // The position of the whiskers
-    positions: Vec<f64>,            // The positions of the boxes
-    width: Option<f64>,             // The width of the boxes
-    no_fliers: bool,                // Disables fliers
-    patch_artist: bool,             // If false, produces boxes with the Line2D artist. Otherwise, boxes are drawn with Patch artists.
-    medianprops: String,           // The properties of the median
-    boxprops: String,              // The properties of the box
-    whiskerprops: String,          // The properties of the whisker
-    extra: String,                  // Extra commands (comma separated)
-    buffer: String,                 // Buffer
+    symbol: String,       // The default symbol for flier (outlier) points.
+    horizontal: bool,     // Horizontal boxplot (default is false)
+    whisker: Option<f64>, // The position of the whiskers
+    positions: Vec<f64>,  // The positions of the boxes
+    width: Option<f64>,   // The width of the boxes
+    no_fliers: bool,      // Disables fliers
+    patch_artist: bool, // If false, produces boxes with the Line2D artist. Otherwise, boxes are drawn with Patch artists.
+    medianprops: String, // The properties of the median
+    boxprops: String,   // The properties of the box
+    whiskerprops: String, // The properties of the whisker
+    extra: String,      // Extra commands (comma separated)
+    buffer: String,     // Buffer
 }
 
 impl Boxplot {
@@ -211,7 +211,8 @@ impl Boxplot {
     }
 
     /// Set the median properties.
-    /// [See Matplotlib's documentation for medianprops, boxprops and whiskerprops parameters](https://matplotlib.org/3.6.3/api/_as_gen/matplotlib.pyplot.boxplot.html)
+    ///
+    /// [See Matplotlib's documentation](https://matplotlib.org/3.6.3/api/_as_gen/matplotlib.pyplot.boxplot.html)
     pub fn set_medianprops(&mut self, props: &str) -> &mut Self {
         self.medianprops = props.to_string();
         self

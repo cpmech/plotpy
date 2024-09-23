@@ -304,7 +304,7 @@ impl GraphMaker for Boxplot {
 /// # Notes
 /// 
 /// * The type `T` must be a number.
-fn adjust_positions_and_width<T>(datasets: Vec<&Vec<Vec<T>>>, gap: f64, span: f64) -> (Vec<Vec<f64>>, f64)
+pub fn adjust_positions_and_width<T>(datasets: Vec<&Vec<Vec<T>>>, gap: f64, span: f64) -> (Vec<Vec<f64>>, f64)
 where
     T: std::fmt::Display,
 {
@@ -343,7 +343,7 @@ where
 /// # Notes
 /// 
 /// * The type `U` must be a number.
-fn adjust_positions_and_width_mat<'a, T, U>(datasets: Vec<&'a T>, gap: f64, span: f64) -> (Vec<Vec<f64>>, f64)
+pub fn adjust_positions_and_width_mat<'a, T, U>(datasets: Vec<&'a T>, gap: f64, span: f64) -> (Vec<Vec<f64>>, f64)
 where
     T: AsMatrix<'a, U>,
     U: 'a + std::fmt::Display,

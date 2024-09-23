@@ -1,4 +1,4 @@
-use plotpy::{Boxplot, Plot, StrError};
+use plotpy::{Boxplot, adjust_positions_and_width, Plot, StrError};
 use std::fs::File;
 use std::io::{BufRead, BufReader};
 use std::path::Path;
@@ -213,5 +213,69 @@ fn test_boxplot_5() -> Result<(), StrError> {
     let lines_iter = buffered.lines();
     let c = lines_iter.count();
     assert!(c > 460 && c < 500);
+    Ok(())
+}
+
+#[test]
+fn test_boxplot_6() -> Result<(), StrError> {
+    let data1 = vec![
+            vec![1, 2, 3, 4, 5],
+            vec![2, 3, 4, 5, 6],
+            vec![3, 4, 5, 6, 7],
+            vec![4, 5, 6, 7, 8],
+            vec![5, 6, 7, 8, 9],];
+    let data2 = vec![
+            vec![2, 3, 4, 5, 6],
+            vec![3, 4, 5, 6, 7],
+            vec![3, 2, 4, 7, 5],
+            vec![5, 6, 7, 8, 9],
+            vec![6, 7, 8, 9, 10],];
+    let datasets = vec![&data1, &data2];
+
+    // Adjust the positions and width for each group
+    let (positions, width) = adjust_positions_and_width(vec![&data1, &data2], 0.1, 0.6);
+
+    // x ticks and labels
+    let ticks: Vec<_> = (1..(datasets[0].len() + 1)).into_iter().collect();
+    let labels = ["A", "B", "C", "D", "E"];
+
+    // boxplot objects and options
+    let mut boxes = Boxplot::new();
+    boxes
+        .set_width(width)
+        .set_positions(&positions[0])
+        .set_patch_artist(true)
+        .set_medianprops("{'color': 'black'}")
+        .set_boxprops("{'facecolor': 'C0'}")
+        .set_extra("label='group1'")
+        .draw(&data1);
+    boxes
+        .set_width(width)
+        .set_positions(&positions[1])
+        .set_patch_artist(true)
+        .set_medianprops("{'color': 'black'}")
+        .set_boxprops("{'facecolor': 'C1'}")
+        .set_extra("label='group2'")
+        .draw(&data2);
+
+    // Save figure
+    let mut plot = Plot::new();
+    plot
+        .add(&boxes)
+        .legend()
+        .set_ticks_x_labels(&ticks, &labels)
+        .set_label_x("Time/s")
+        .set_label_y("Volumn/mL");
+
+    // save figure
+    let path = Path::new(OUT_DIR).join("integ_boxplot_6.svg");
+    plot.save(&path)?;
+
+    // check number of lines
+    let file = File::open(path).map_err(|_| "cannot open file")?;
+    let buffered = BufReader::new(file);
+    let lines_iter = buffered.lines();
+    let c = lines_iter.count();
+    assert!(c > 1150 && c < 1250);
     Ok(())
 }

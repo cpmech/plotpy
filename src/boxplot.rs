@@ -82,6 +82,66 @@ use std::fmt::Write;
 ///
 /// ![doc_boxplot_1.svg](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/doc_boxplot_1.svg)
 ///
+/// ## Grouped boxplot (Data as a nested list for each group)
+/// 
+/// ```
+/// use plotpy::{Boxplot, adjust_positions_and_width, Plot, StrError};
+/// 
+/// fn main() -> Result<(), StrError> {
+///     let data1 = vec![
+///             vec![1, 2, 3, 4, 5],
+///             vec![2, 3, 4, 5, 6],
+///             vec![3, 4, 5, 6, 7],
+///             vec![4, 5, 6, 7, 8],
+///             vec![5, 6, 7, 8, 9],];
+///     let data2 = vec![
+///             vec![2, 3, 4, 5, 6],
+///             vec![3, 4, 5, 6, 7],
+///             vec![3, 2, 4, 7, 5],
+///             vec![5, 6, 7, 8, 9],
+///             vec![6, 7, 8, 9, 10],];
+///     let datasets = vec![&data1, &data2];
+/// 
+///     // Adjust the positions and width for each group
+///     let (positions, width) = adjust_positions_and_width(vec![&data1, &data2], 0.1, 0.6);
+///
+///     // x ticks and labels
+///     let ticks: Vec<_> = (1..(datasets[0].len() + 1)).into_iter().collect();
+///     let labels = ["A", "B", "C", "D", "E"];
+///
+///     // boxplot objects and options
+///     let mut boxes = Boxplot::new();
+///     boxes
+///         .set_width(width)
+///         .set_positions(&positions[0])
+///         .set_patch_artist(true)
+///         .set_medianprops("{'color': 'black'}")
+///         .set_boxprops("{'facecolor': 'C0'}")
+///         .set_extra("label='group1'")  // Legend label
+///         .draw(&data1);
+///     boxes
+///         .set_width(width)
+///         .set_positions(&positions[1])
+///         .set_patch_artist(true)
+///         .set_medianprops("{'color': 'black'}")
+///         .set_boxprops("{'facecolor': 'C1'}")
+///         .set_extra("label='group2'")  // Legend label
+///         .draw(&data2);
+///
+///     // Save figure
+///     let mut plot = Plot::new();
+///     plot
+///         .add(&boxes)
+///         .legend()
+///         .set_ticks_x_labels(&ticks, &labels)
+///         .set_label_x("Time/s")
+///         .set_label_y("Volumn/mL")
+///         .save("/tmp/plotpy/doc_tests/doc_boxplot_3.svg")?;
+///     Ok(())
+/// }
+/// ```
+/// ![doc_boxplot_3.svg](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/doc_boxplot_3.svg)
+///
 /// ## More examples
 ///
 /// See also integration test in the **tests** directory.
@@ -376,7 +436,7 @@ where
 
 #[cfg(test)]
 mod tests {
-    use super::Boxplot;
+    use super::{Boxplot, adjust_positions_and_width, adjust_positions_and_width_mat};
     use crate::GraphMaker;
 
     #[test]
@@ -484,5 +544,47 @@ mod tests {
         assert_eq!(boxes.buffer, b);
         boxes.clear_buffer();
         assert_eq!(boxes.buffer, "");
+    }
+
+    #[test]
+    fn adjust_positions_and_width_works() {
+        let data1 = vec![
+                vec![1, 2, 3, 4, 5],
+                vec![2, 3, 4, 5, 6],
+                vec![3, 4, 5, 6, 7],
+                vec![4, 5, 6, 7, 8],
+                vec![5, 6, 7, 8, 9],];
+        let data2 = vec![
+                vec![2, 3, 4, 5, 6],
+                vec![3, 4, 5, 6, 7],
+                vec![3, 2, 4, 7, 5],
+                vec![5, 6, 7, 8, 9],
+                vec![6, 7, 8, 9, 10],];
+        let datasets = vec![&data1, &data2];
+        let (positions, width) = adjust_positions_and_width(datasets, 0.1, 0.6);
+        assert_eq!(positions, vec![vec![0.8428571428571429, 1.842857142857143, 2.842857142857143, 3.842857142857143, 4.8428571428571425],
+                                vec![1.157142857142857, 2.157142857142857, 3.157142857142857, 4.1571428571428575, 5.1571428571428575]]);
+        assert_eq!(width, 0.2857142857142857);
+    }
+
+    #[test]
+    fn adjust_positions_and_width_mat_works() {
+        let data1 = vec![
+                vec![1, 2, 3, 4, 5],
+                vec![2, 3, 4, 5, 6],
+                vec![3, 4, 5, 6, 7],
+                vec![4, 5, 6, 7, 8],
+                vec![5, 6, 7, 8, 9],];
+        let data2 = vec![
+                vec![2, 3, 4, 5, 6],
+                vec![3, 4, 5, 6, 7],
+                vec![3, 2, 4, 7, 5],
+                vec![5, 6, 7, 8, 9],
+                vec![6, 7, 8, 9, 10],];
+        let datasets = vec![&data1, &data2];
+        let (positions, width) = adjust_positions_and_width_mat(datasets, 0.1, 0.6);
+        assert_eq!(positions, vec![vec![0.8428571428571429, 1.842857142857143, 2.842857142857143, 3.842857142857143, 4.8428571428571425],
+                                vec![1.157142857142857, 2.157142857142857, 3.157142857142857, 4.1571428571428575, 5.1571428571428575]]);
+        assert_eq!(width, 0.2857142857142857);
     }
 }

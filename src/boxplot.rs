@@ -85,7 +85,7 @@ use std::fmt::Write;
 /// ## Grouped boxplot (Data as a nested list for each group)
 /// 
 /// ```
-/// use plotpy::{Boxplot, adjust_positions_and_width, Plot, StrError};
+/// use plotpy::{Boxplot, Plot, StrError};
 /// 
 /// fn main() -> Result<(), StrError> {
 ///     let data1 = vec![
@@ -103,7 +103,7 @@ use std::fmt::Write;
 ///     let datasets = vec![&data1, &data2];
 /// 
 ///     // Adjust the positions and width for each group
-///     let (positions, width) = adjust_positions_and_width(&datasets, 0.1, 0.6);
+///     let (positions, width) = Boxplot::adjust_positions_and_width(&datasets, 0.1, 0.6);
 ///
 ///     // x ticks and labels
 ///     let ticks: Vec<_> = (1..(datasets[0].len() + 1)).into_iter().collect();
@@ -342,6 +342,85 @@ impl Boxplot {
         }
         opt
     }
+
+    /// A helper function to adjust the boxes positions and width to beautify the layout when plotting grouped boxplot
+    /// 
+    /// # Input
+    /// 
+    /// * `datasets` is a sequence of data ( a sequence of 1D arrays) used by `draw`.
+    /// * `gap`: Shrink on the orient axis by this factor to add a gap between dodged elements. 0.0-0.5 usually gives a beautiful layout.
+    /// * `span`: The total width of boxes and gaps in a position. 0.5-1.0 usually gives a beautiful layout.
+    /// 
+    /// # Notes
+    /// 
+    /// * The type `T` must be a number.
+    pub fn adjust_positions_and_width<T>(datasets: &Vec<&Vec<Vec<T>>>, gap: f64, span: f64) -> (Vec<Vec<f64>>, f64)
+    where
+        T: std::fmt::Display,
+    {
+        let groups = datasets.len();    // The number of groups
+        let gap = gap;
+        let span = span;
+
+        // Generate the adjusted width of a box
+        let mut width: f64 = 0.5;
+        width = width.min(span/(groups as f64 + (groups-1) as f64*gap));
+
+        // Generate the position offset for each box by an empirical formula. seaborn and plotnine all have their own algorithms.
+        let offsets: Vec<f64> = ((1 - groups as i64)..=(groups as i64 - 1)).step_by(2).map(|x| x as f64 * width * (1.0+gap)/2.0).collect();
+
+        let mut positions = Vec::new();
+        for i in 0..groups {
+            let mut position = Vec::new();
+            for j in 0..datasets[i].len() {
+                position.push((j+1) as f64 + offsets[i]);
+            }
+            positions.push(position);
+        }
+
+        // Return the adjusted positions and width for each group
+        (positions, width)
+    }
+
+    /// A helper function to adjust the boxes positions and width to beautify the layout for `draw_mat` when plotting grouped boxplot
+    /// 
+    /// # Input
+    /// 
+    /// * `datasets`: A sequence of data (2D array) used by `draw_mat`.
+    /// * `gap`: Shrink on the orient axis by this factor to add a gap between dodged elements. 0.0-0.5 usually gives a beautiful layout.
+    /// * `span`: The total width of boxes and gaps in a position. 0.0-1.0 usually gives a beautiful layout.
+    /// 
+    /// # Notes
+    /// 
+    /// * The type `U` must be a number.
+    pub fn adjust_positions_and_width_mat<'a, T, U>(datasets: &Vec<&'a T>, gap: f64, span: f64) -> (Vec<Vec<f64>>, f64)
+    where
+        T: AsMatrix<'a, U>,
+        U: 'a + std::fmt::Display,
+    {
+        let groups = datasets.len();    // The number of groups
+        let gap = gap;
+        let span = span;
+
+        // Generate the adjusted width of a box
+        let mut width: f64 = 0.5;
+        width = width.min(span/(groups as f64 + (groups-1) as f64*gap));
+
+        // Generate the position offset for each box by an empirical formula. seaborn and plotnine all have their own algorithms.
+        let offsets: Vec<f64> = ((1 - groups as i64)..=(groups as i64 - 1)).step_by(2).map(|x| x as f64 * width * (1.0+gap)/2.0).collect();
+
+        let mut positions = Vec::new();
+        for i in 0..groups {
+            let mut position = Vec::new();
+            for j in 0..datasets[i].size().1 {
+                position.push((j+1) as f64 + offsets[i]);
+            }
+            positions.push(position);
+        }
+
+        // Return the adjusted positions and width for each group
+        (positions, width)
+    }
 }
 
 impl GraphMaker for Boxplot {
@@ -353,90 +432,11 @@ impl GraphMaker for Boxplot {
     }
 }
 
-/// A helper function to adjust the boxes positions and width to beautify the layout when plotting grouped boxplot
-/// 
-/// # Input
-/// 
-/// * `datasets` is a sequence of data ( a sequence of 1D arrays) used by `draw`.
-/// * `gap`: Shrink on the orient axis by this factor to add a gap between dodged elements. 0.0-0.5 usually gives a beautiful layout.
-/// * `span`: The total width of boxes and gaps in a position. 0.5-1.0 usually gives a beautiful layout.
-/// 
-/// # Notes
-/// 
-/// * The type `T` must be a number.
-pub fn adjust_positions_and_width<T>(datasets: &Vec<&Vec<Vec<T>>>, gap: f64, span: f64) -> (Vec<Vec<f64>>, f64)
-where
-    T: std::fmt::Display,
-{
-    let groups = datasets.len();    // The number of groups
-    let gap = gap;
-    let span = span;
-
-    // Generate the adjusted width of a box
-    let mut width: f64 = 0.5;
-    width = width.min(span/(groups as f64 + (groups-1) as f64*gap));
-
-    // Generate the position offset for each box by an empirical formula. seaborn and plotnine all have their own algorithms.
-    let offsets: Vec<f64> = ((1 - groups as i64)..=(groups as i64 - 1)).step_by(2).map(|x| x as f64 * width * (1.0+gap)/2.0).collect();
-
-    let mut positions = Vec::new();
-    for i in 0..groups {
-        let mut position = Vec::new();
-        for j in 0..datasets[i].len() {
-            position.push((j+1) as f64 + offsets[i]);
-        }
-        positions.push(position);
-    }
-
-    // Return the adjusted positions and width for each group
-    (positions, width)
-}
-
-/// A helper function to adjust the boxes positions and width to beautify the layout for `draw_mat` when plotting grouped boxplot
-/// 
-/// # Input
-/// 
-/// * `datasets`: A sequence of data (2D array) used by `draw_mat`.
-/// * `gap`: Shrink on the orient axis by this factor to add a gap between dodged elements. 0.0-0.5 usually gives a beautiful layout.
-/// * `span`: The total width of boxes and gaps in a position. 0.0-1.0 usually gives a beautiful layout.
-/// 
-/// # Notes
-/// 
-/// * The type `U` must be a number.
-pub fn adjust_positions_and_width_mat<'a, T, U>(datasets: &Vec<&'a T>, gap: f64, span: f64) -> (Vec<Vec<f64>>, f64)
-where
-    T: AsMatrix<'a, U>,
-    U: 'a + std::fmt::Display,
-{
-    let groups = datasets.len();    // The number of groups
-    let gap = gap;
-    let span = span;
-
-    // Generate the adjusted width of a box
-    let mut width: f64 = 0.5;
-    width = width.min(span/(groups as f64 + (groups-1) as f64*gap));
-
-    // Generate the position offset for each box by an empirical formula. seaborn and plotnine all have their own algorithms.
-    let offsets: Vec<f64> = ((1 - groups as i64)..=(groups as i64 - 1)).step_by(2).map(|x| x as f64 * width * (1.0+gap)/2.0).collect();
-
-    let mut positions = Vec::new();
-    for i in 0..groups {
-        let mut position = Vec::new();
-        for j in 0..datasets[i].size().1 {
-            position.push((j+1) as f64 + offsets[i]);
-        }
-        positions.push(position);
-    }
-
-    // Return the adjusted positions and width for each group
-    (positions, width)
-}
-
 /////////////////////////////////////////////////////////////////////////////
 
 #[cfg(test)]
 mod tests {
-    use super::{Boxplot, adjust_positions_and_width, adjust_positions_and_width_mat};
+    use super::Boxplot;
     use crate::GraphMaker;
 
     #[test]
@@ -561,7 +561,7 @@ mod tests {
                 vec![5, 6, 7, 8, 9],
                 vec![6, 7, 8, 9, 10],];
         let datasets = vec![&data1, &data2];
-        let (positions, width) = adjust_positions_and_width(&datasets, 0.1, 0.6);
+        let (positions, width) = Boxplot::adjust_positions_and_width(&datasets, 0.1, 0.6);
         assert_eq!(positions, vec![vec![0.8428571428571429, 1.842857142857143, 2.842857142857143, 3.842857142857143, 4.8428571428571425],
                                 vec![1.157142857142857, 2.157142857142857, 3.157142857142857, 4.1571428571428575, 5.1571428571428575]]);
         assert_eq!(width, 0.2857142857142857);
@@ -582,7 +582,7 @@ mod tests {
                 vec![5, 6, 7, 8, 9],
                 vec![6, 7, 8, 9, 10],];
         let datasets = vec![&data1, &data2];
-        let (positions, width) = adjust_positions_and_width_mat(&datasets, 0.1, 0.6);
+        let (positions, width) = Boxplot::adjust_positions_and_width_mat(&datasets, 0.1, 0.6);
         assert_eq!(positions, vec![vec![0.8428571428571429, 1.842857142857143, 2.842857142857143, 3.842857142857143, 4.8428571428571425],
                                 vec![1.157142857142857, 2.157142857142857, 3.157142857142857, 4.1571428571428575, 5.1571428571428575]]);
         assert_eq!(width, 0.2857142857142857);

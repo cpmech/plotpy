@@ -1,4 +1,4 @@
-use plotpy::{Boxplot, adjust_positions_and_width, Plot, StrError};
+use plotpy::{Boxplot, Plot, StrError};
 use std::fs::File;
 use std::io::{BufRead, BufReader};
 use std::path::Path;
@@ -233,7 +233,7 @@ fn test_boxplot_6() -> Result<(), StrError> {
     let datasets = vec![&data1, &data2];
 
     // Adjust the positions and width for each group
-    let (positions, width) = adjust_positions_and_width(&datasets, 0.1, 0.6);
+    let (positions, width) = Boxplot::adjust_positions_and_width(&datasets, 0.1, 0.6);
 
     // x ticks and labels
     let ticks: Vec<_> = (1..(datasets[0].len() + 1)).into_iter().collect();

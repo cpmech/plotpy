@@ -72,7 +72,7 @@
 /// Defines a type alias for the error type as a static string
 pub type StrError = &'static str;
 
-// modules ////////////////////////////////////////
+// modules
 mod as_matrix;
 mod as_vector;
 mod auxiliary;
@@ -93,25 +93,27 @@ mod super_title_params;
 mod surface;
 mod surface_geometry;
 mod text;
-pub use crate::as_matrix::*;
-pub use crate::as_vector::*;
-pub use crate::auxiliary::*;
-pub use crate::barplot::*;
-pub use crate::boxplot::*;
-pub use crate::canvas::*;
-pub use crate::constants::*;
-pub use crate::contour::*;
-use crate::conversions::*;
-pub use crate::curve::*;
-use crate::fileio::*;
-pub use crate::histogram::*;
-pub use crate::image::*;
-pub use crate::legend::*;
-pub use crate::plot::*;
-pub use crate::slope_icon::*;
-pub use crate::super_title_params::*;
-pub use crate::surface::*;
-pub use crate::text::*;
+
+// re-export
+pub use as_matrix::*;
+pub use as_vector::*;
+pub use auxiliary::*;
+pub use barplot::*;
+pub use boxplot::*;
+pub use canvas::*;
+pub use constants::*;
+pub use contour::*;
+use conversions::*;
+pub use curve::*;
+use fileio::*;
+pub use histogram::*;
+pub use image::*;
+pub use legend::*;
+pub use plot::*;
+pub use slope_icon::*;
+pub use super_title_params::*;
+pub use surface::*;
+pub use text::*;
 
 // run code from README file
 #[cfg(doctest)]

@@ -20,15 +20,15 @@ fn test_curve() -> Result<(), StrError> {
         .set_marker_void(false)
         .set_marker_line_color("#cda500")
         .set_marker_line_width(3.0)
-        .set_marker_size(8.0)
+        .set_marker_size(15.0)
         .set_marker_style("p");
 
     // another curve
     let mut curve2 = Curve::new();
     curve2
         .set_line_style("None")
-        .set_marker_line_color("#1862ab")
-        .set_marker_style("8")
+        .set_marker_style("o")
+        .set_marker_size(20.0)
         .set_marker_void(true);
 
     let mut curve3 = Curve::new();

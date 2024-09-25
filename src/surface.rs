@@ -1,5 +1,6 @@
 use super::{matrix_to_array, AsMatrix, GraphMaker, StrError};
 use crate::quote_marker;
+use num_traits::Num;
 use std::fmt::Write;
 
 /// Generates a 3D a surface (or wireframe, or both)
@@ -115,15 +116,10 @@ impl Surface {
     ///
     /// * `surface` -- draws surface
     /// * `wireframe` -- draws wireframe
-    ///
-    /// # Notes
-    ///
-    /// * The type `U` of the input matrices must be a number.
-    ///
     pub fn draw<'a, T, U>(&mut self, x: &'a T, y: &'a T, z: &'a T)
     where
         T: AsMatrix<'a, U>,
-        U: 'a + std::fmt::Display,
+        U: 'a + std::fmt::Display + Num,
     {
         matrix_to_array(&mut self.buffer, "x", x);
         matrix_to_array(&mut self.buffer, "y", y);

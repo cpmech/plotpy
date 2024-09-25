@@ -1,4 +1,5 @@
 use super::{generate_list_quoted, generate_nested_list, GraphMaker};
+use num_traits::Num;
 use std::fmt::Write;
 
 /// Generates a Histogram plot
@@ -78,17 +79,11 @@ impl Histogram {
     ///
     /// # Input
     ///
-    /// * `values` - values
-    /// * `labels` - labels
-    ///
-    /// # Notes
-    ///
-    /// * The type `T` must be a number.
-    /// * The type `U` must be a String or &str.
-    ///
+    /// * `values` -- holds the values
+    /// * `labels` -- holds the labels
     pub fn draw<T, U>(&mut self, values: &Vec<Vec<T>>, labels: &[U])
     where
-        T: std::fmt::Display,
+        T: std::fmt::Display + Num,
         U: std::fmt::Display,
     {
         let opt = self.options();

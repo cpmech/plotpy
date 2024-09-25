@@ -1,5 +1,6 @@
 use super::{vector_to_array, AsVector, GraphMaker};
 use crate::quote_marker;
+use num_traits::Num;
 use std::fmt::Write;
 
 /// Holds either the second point coordinates of a ray or the slope of the ray
@@ -281,14 +282,10 @@ impl Curve {
     ///
     /// * `x` - abscissa values
     /// * `y` - ordinate values
-    ///
-    /// # Notes
-    ///
-    /// * The type `U` of the input array must be a number.
     pub fn draw<'a, T, U>(&mut self, x: &'a T, y: &'a T)
     where
         T: AsVector<'a, U>,
-        U: 'a + std::fmt::Display,
+        U: 'a + std::fmt::Display + Num,
     {
         vector_to_array(&mut self.buffer, "x", x);
         vector_to_array(&mut self.buffer, "y", y);
@@ -299,14 +296,10 @@ impl Curve {
     /// Draws curve on a previously drawn figure with the same x
     ///
     /// * `y` - ordinate values on the right-hand side
-    ///
-    /// # Notes
-    ///
-    /// * The type `U` of the input array must be a number.
     pub fn draw_with_twin_x<'a, T, U>(&mut self, y: &'a T)
     where
         T: AsVector<'a, U>,
-        U: 'a + std::fmt::Display,
+        U: 'a + std::fmt::Display + Num,
     {
         vector_to_array(&mut self.buffer, "y2", y);
         let opt = self.options();
@@ -328,15 +321,10 @@ impl Curve {
     /// * `x` - x values
     /// * `y` - y values
     /// * `z` - z values
-    ///
-    /// # Notes
-    ///
-    /// * The type `U` of the input array must be a number.
-    ///
     pub fn draw_3d<'a, T, U>(&mut self, x: &'a T, y: &'a T, z: &'a T)
     where
         T: AsVector<'a, U>,
-        U: 'a + std::fmt::Display,
+        U: 'a + std::fmt::Display + Num,
     {
         vector_to_array(&mut self.buffer, "x", x);
         vector_to_array(&mut self.buffer, "y", y);

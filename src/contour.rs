@@ -1,4 +1,5 @@
-use super::{matrix_to_array, vector_to_array, generate_list_quoted, AsMatrix, GraphMaker};
+use super::{generate_list_quoted, matrix_to_array, vector_to_array, AsMatrix, GraphMaker};
+use num_traits::Num;
 use std::fmt::Write;
 
 /// Generates a contour plot
@@ -113,15 +114,10 @@ impl Contour {
     /// * `no_labels` -- skip adding labels to the lines contour (if enabled)
     /// * `no_colorbar` -- skip drawing a colorbar
     /// * `with_selected` -- draw a line contour with a selected level (e.g., 0.0) on top of everything
-    ///
-    /// # Notes
-    ///
-    /// * The type `U` of the input matrices must be a number.
-    ///
     pub fn draw<'a, T, U>(&mut self, x: &'a T, y: &'a T, z: &'a T)
     where
         T: AsMatrix<'a, U>,
-        U: 'a + std::fmt::Display,
+        U: 'a + std::fmt::Display + Num,
     {
         matrix_to_array(&mut self.buffer, "x", x);
         matrix_to_array(&mut self.buffer, "y", y);

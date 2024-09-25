@@ -12,3 +12,4 @@ categories = ["mathematics", "science"]
 keywords = ["plot", "2D", "3D", "python", "matplotlib"]
 
 [dependencies]
+num-traits = "0.2"

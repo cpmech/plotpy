@@ -1,4 +1,5 @@
-use super::{vector_to_array, generate_list_quoted, AsVector, GraphMaker};
+use super::{generate_list_quoted, vector_to_array, AsVector, GraphMaker};
+use num_traits::Num;
 use std::fmt::Write;
 
 /// Generates a Barplot plot
@@ -138,14 +139,10 @@ impl Barplot {
     }
 
     /// Draws the bar plot
-    ///
-    /// # Notes
-    ///
-    /// * The type `U` of the input array must be a number.
     pub fn draw<'a, T, U>(&mut self, x: &'a T, y: &'a T)
     where
         T: AsVector<'a, U>,
-        U: 'a + std::fmt::Display,
+        U: 'a + std::fmt::Display + Num,
     {
         vector_to_array(&mut self.buffer, "x", x);
         vector_to_array(&mut self.buffer, "y", y);
@@ -170,16 +167,10 @@ impl Barplot {
     }
 
     /// Draws the bar plot with strings
-    ///
-    /// # Notes
-    ///
-    /// * The type `S` of the input array must be a string.
-    /// * The type `U` of the input array must be a number.
-    pub fn draw_with_str<'a, S, T, U>(&mut self, x: &[S], y: &'a T)
+    pub fn draw_with_str<'a, T, U>(&mut self, x: &[&str], y: &'a T)
     where
-        S: std::fmt::Display,
         T: AsVector<'a, U>,
-        U: 'a + std::fmt::Display,
+        U: 'a + std::fmt::Display + Num,
     {
         generate_list_quoted(&mut self.buffer, "x", x);
         vector_to_array(&mut self.buffer, "y", y);

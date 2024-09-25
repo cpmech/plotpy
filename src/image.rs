@@ -1,4 +1,5 @@
 use super::{matrix_to_array, AsMatrix, GraphMaker};
+use num_traits::Num;
 use std::fmt::Write;
 
 /// Generates an image plot (imshow)
@@ -54,14 +55,10 @@ impl Image {
     }
 
     /// (imshow) Displays data as an image
-    ///
-    /// # Notes
-    ///
-    /// * The type `U` of the input array must be a number.
     pub fn draw<'a, T, U>(&mut self, data: &'a T)
     where
         T: AsMatrix<'a, U>,
-        U: 'a + std::fmt::Display,
+        U: 'a + std::fmt::Display + Num,
     {
         matrix_to_array(&mut self.buffer, "data", data);
         let opt = self.options();

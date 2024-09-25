@@ -1,10 +1,11 @@
 use super::{AsMatrix, AsVector};
+use num_traits::Num;
 use std::fmt::Write;
 
 /// Generates a Python list
 pub(crate) fn generate_list<T>(buf: &mut String, name: &str, data: &[T])
 where
-    T: std::fmt::Display,
+    T: std::fmt::Display + Num,
 {
     write!(buf, "{}=[", name).unwrap();
     for val in data.into_iter() {
@@ -29,7 +30,7 @@ where
 pub(crate) fn vector_to_array<'a, T, U>(buf: &mut String, name: &str, vector: &'a T)
 where
     T: AsVector<'a, U>,
-    U: 'a + std::fmt::Display,
+    U: 'a + std::fmt::Display + Num,
 {
     write!(buf, "{}=np.array([", name).unwrap();
     let m = vector.vec_size();
@@ -42,7 +43,7 @@ where
 /// Generates a nested Python list
 pub(crate) fn generate_nested_list<T>(buf: &mut String, name: &str, data: &Vec<Vec<T>>)
 where
-    T: std::fmt::Display,
+    T: std::fmt::Display + Num,
 {
     write!(buf, "{}=[", name).unwrap();
     for row in data.into_iter() {
@@ -59,7 +60,7 @@ where
 pub(crate) fn matrix_to_array<'a, T, U>(buf: &mut String, name: &str, matrix: &'a T)
 where
     T: AsMatrix<'a, U>,
-    U: 'a + std::fmt::Display,
+    U: 'a + std::fmt::Display + Num,
 {
     write!(buf, "{}=np.array([", name).unwrap();
     let (m, n) = matrix.size();

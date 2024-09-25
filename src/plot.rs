@@ -1,4 +1,5 @@
 use super::{call_python3, generate_list_quoted, vector_to_array, AsVector, Legend, StrError, SuperTitleParams};
+use num_traits::Num;
 use std::ffi::OsStr;
 use std::fmt::Write;
 use std::fs::{self, File};
@@ -705,7 +706,7 @@ impl Plot {
     where
         S: std::fmt::Display,
         T: AsVector<'a, U>,
-        U: 'a + std::fmt::Display,
+        U: 'a + std::fmt::Display + Num,
     {
         assert_eq!(ticks.vec_size(), labels.len());
         vector_to_array(&mut self.buffer, "tx", ticks);
@@ -723,7 +724,7 @@ impl Plot {
     where
         S: std::fmt::Display,
         T: AsVector<'a, U>,
-        U: 'a + std::fmt::Display,
+        U: 'a + std::fmt::Display + Num,
     {
         assert_eq!(ticks.vec_size(), labels.len());
         vector_to_array(&mut self.buffer, "ty", ticks);

@@ -1,4 +1,5 @@
 use super::{generate_list, generate_nested_list, matrix_to_array, AsMatrix, GraphMaker};
+use num_traits::Num;
 use std::fmt::Write;
 
 /// Draw a box and whisker plot
@@ -86,18 +87,18 @@ use std::fmt::Write;
 ///
 /// See also integration test in the **tests** directory.
 pub struct Boxplot {
-    symbol: String,       // The default symbol for flier (outlier) points.
-    horizontal: bool,     // Horizontal boxplot (default is false)
-    whisker: Option<f64>, // The position of the whiskers
-    positions: Vec<f64>,  // The positions of the boxes
-    width: Option<f64>,   // The width of the boxes
-    no_fliers: bool,      // Disables fliers
-    patch_artist: bool, // If false, produces boxes with the Line2D artist. Otherwise, boxes are drawn with Patch artists.
-    medianprops: String, // The properties of the median
-    boxprops: String,   // The properties of the box
-    whiskerprops: String, // The properties of the whisker
-    extra: String,      // Extra commands (comma separated)
-    buffer: String,     // Buffer
+    symbol: String,        // The default symbol for flier (outlier) points.
+    horizontal: bool,      // Horizontal boxplot (default is false)
+    whisker: Option<f64>,  // The position of the whiskers
+    positions: Vec<f64>,   // The positions of the boxes
+    width: Option<f64>,    // The width of the boxes
+    no_fliers: bool,       // Disables fliers
+    patch_artist: bool,    // Enables the use of Patch artist to draw boxes
+    median_props: String,  // The properties of the median
+    box_props: String,     // The properties of the box
+    whisker_props: String, // The properties of the whisker
+    extra: String,         // Extra commands (comma separated)
+    buffer: String,        // Buffer
 }
 
 impl Boxplot {
@@ -111,9 +112,9 @@ impl Boxplot {
             width: None,
             no_fliers: false,
             patch_artist: false,
-            medianprops: String::new(),
-            boxprops: String::new(),
-            whiskerprops: String::new(),
+            median_props: String::new(),
+            box_props: String::new(),
+            whisker_props: String::new(),
             extra: String::new(),
             buffer: String::new(),
         }
@@ -125,13 +126,9 @@ impl Boxplot {
     ///
     /// * `data` -- Is a sequence of 1D arrays such that a boxplot is drawn for each array in the sequence.
     ///   [From Matplotlib](https://matplotlib.org/3.6.3/api/_as_gen/matplotlib.pyplot.boxplot.html)
-    ///
-    /// # Notes
-    ///
-    /// * The type `T` must be a number.
     pub fn draw<T>(&mut self, data: &Vec<Vec<T>>)
     where
-        T: std::fmt::Display,
+        T: std::fmt::Display + Num,
     {
         generate_nested_list(&mut self.buffer, "x", data);
         if self.positions.len() > 0 {
@@ -147,14 +144,10 @@ impl Boxplot {
     ///
     /// * `data` -- Is a 2D array (matrix) such that a boxplot is drawn for each column in the matrix.
     ///   [From Matplotlib](https://matplotlib.org/3.6.3/api/_as_gen/matplotlib.pyplot.boxplot.html)
-    ///
-    /// # Notes
-    ///
-    /// * The type `U` must be a number.
     pub fn draw_mat<'a, T, U>(&mut self, data: &'a T)
     where
         T: AsMatrix<'a, U>,
-        U: 'a + std::fmt::Display,
+        U: 'a + std::fmt::Display + Num,
     {
         matrix_to_array(&mut self.buffer, "x", data);
         if self.positions.len() > 0 {
@@ -204,7 +197,7 @@ impl Boxplot {
         self
     }
 
-    /// Enable fill the boxes
+    /// Enables the use of Patch artist to draw boxes instead of Line2D artist
     pub fn set_patch_artist(&mut self, flag: bool) -> &mut Self {
         self.patch_artist = flag;
         self
@@ -214,19 +207,19 @@ impl Boxplot {
     ///
     /// [See Matplotlib's documentation](https://matplotlib.org/3.6.3/api/_as_gen/matplotlib.pyplot.boxplot.html)
     pub fn set_medianprops(&mut self, props: &str) -> &mut Self {
-        self.medianprops = props.to_string();
+        self.median_props = props.to_string();
         self
     }
 
     /// Set the properties of the box
     pub fn set_boxprops(&mut self, props: &str) -> &mut Self {
-        self.boxprops = props.to_string();
+        self.box_props = props.to_string();
         self
     }
 
     /// Set the properties of the whisker
     pub fn set_whiskerprops(&mut self, props: &str) -> &mut Self {
-        self.whiskerprops = props.to_string();
+        self.whisker_props = props.to_string();
         self
     }
 
@@ -268,14 +261,14 @@ impl Boxplot {
         if self.patch_artist {
             write!(&mut opt, ",patch_artist=True").unwrap();
         }
-        if self.medianprops != "" {
-            write!(&mut opt, ",medianprops={}", self.medianprops).unwrap();
+        if self.median_props != "" {
+            write!(&mut opt, ",medianprops={}", self.median_props).unwrap();
         }
-        if self.boxprops != "" {
-            write!(&mut opt, ",boxprops={}", self.boxprops).unwrap();
+        if self.box_props != "" {
+            write!(&mut opt, ",boxprops={}", self.box_props).unwrap();
         }
-        if self.whiskerprops != "" {
-            write!(&mut opt, ",whiskerprops={}", self.whiskerprops).unwrap();
+        if self.whisker_props != "" {
+            write!(&mut opt, ",whiskerprops={}", self.whisker_props).unwrap();
         }
         if self.extra != "" {
             write!(&mut opt, ",{}", self.extra).unwrap();
@@ -310,9 +303,9 @@ mod tests {
         assert_eq!(boxes.width, None);
         assert_eq!(boxes.no_fliers, false);
         assert_eq!(boxes.patch_artist, false);
-        assert_eq!(boxes.medianprops.len(), 0);
-        assert_eq!(boxes.boxprops.len(), 0);
-        assert_eq!(boxes.whiskerprops.len(), 0);
+        assert_eq!(boxes.median_props.len(), 0);
+        assert_eq!(boxes.box_props.len(), 0);
+        assert_eq!(boxes.whisker_props.len(), 0);
         assert_eq!(boxes.extra.len(), 0);
         assert_eq!(boxes.buffer.len(), 0);
     }

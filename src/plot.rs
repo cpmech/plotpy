@@ -433,10 +433,10 @@ impl Plot {
     ///    because we cannot use Python's raw string notation (`r''`) here. The reason is that we want
     ///    the super-title to be wrapped if it is too long and only non-raw strings can do that.
     pub fn set_super_title(&mut self, title: &str, params: Option<&SuperTitleParams>) -> &mut Self {
-        let t = title.replace("'", "’");
+        let t = title.replace("'", "’").replace("\\n", "'+'\\n'+r'");
         match params {
-            Some(p) => write!(&mut self.buffer, "st=plt.suptitle('{}'{})\n", t, p.options()).unwrap(),
-            None => write!(&mut self.buffer, "st=plt.suptitle('{}')\n", t).unwrap(),
+            Some(p) => write!(&mut self.buffer, "st=plt.suptitle(r'{}'{})\n", t, p.options()).unwrap(),
+            None => write!(&mut self.buffer, "st=plt.suptitle(r'{}')\n", t).unwrap(),
         }
         write!(&mut self.buffer, "add_to_ea(st)\n").unwrap();
         self
@@ -1246,7 +1246,7 @@ mod tests {
             .set_horizontal_gap(0.1)
             .set_vertical_gap(0.2)
             .set_gaps(0.3, 0.4);
-        let b: &str = "st=plt.suptitle('all subplots')\n\
+        let b: &str = "st=plt.suptitle(r'all subplots')\n\
                        add_to_ea(st)\n\
                        \nplt.subplot(2,2,1)\n\
                          plt.subplots_adjust(wspace=0.1)\n\
@@ -1268,7 +1268,7 @@ mod tests {
         let mut plot = Plot::new();
         plot.set_super_title("all subplots", Some(&params));
         let b: &str =
-            "st=plt.suptitle('all subplots',x=123.3,y=456.7,ha='left',va='bottom',fontsize=12,fontweight=10)\n\
+            "st=plt.suptitle(r'all subplots',x=123.3,y=456.7,ha='left',va='bottom',fontsize=12,fontweight=10)\n\
                        add_to_ea(st)\n";
         assert_eq!(plot.buffer, b);
     }
@@ -1301,23 +1301,32 @@ mod tests {
         let mut p1 = Plot::new();
         p1.set_title("Without Quotes").set_super_title("Hi", None);
         let b: &str = "plt.title(r'Without Quotes')\n\
-                       st=plt.suptitle('Hi')\n\
+                       st=plt.suptitle(r'Hi')\n\
                        add_to_ea(st)\n";
         assert_eq!(p1.buffer, b);
 
         let mut p2 = Plot::new();
         p2.set_title("Developer's Plot").set_super_title("Dev's", None);
         let b: &str = "plt.title(r'Developer’s Plot')\n\
-                       st=plt.suptitle('Dev’s')\n\
+                       st=plt.suptitle(r'Dev’s')\n\
                        add_to_ea(st)\n";
         assert_eq!(p2.buffer, b);
 
         let mut p3 = Plot::new();
         p3.set_title("\"Look at This\"").set_super_title("\"Dev's\"", None);
         let b: &str = "plt.title(r'\"Look at This\"')\n\
-                       st=plt.suptitle('\"Dev’s\"')\n\
+                       st=plt.suptitle(r'\"Dev’s\"')\n\
                        add_to_ea(st)\n";
         assert_eq!(p3.buffer, b);
+    }
+
+    #[test]
+    fn set_super_title_handles_math_and_newline() {
+        let mut plot = Plot::new();
+        plot.set_super_title("$\\alpha$\\n$\\beta$", None);
+        let b: &str = "st=plt.suptitle(r'$\\alpha$'+'\\n'+r'$\\beta$')\n\
+                       add_to_ea(st)\n";
+        assert_eq!(plot.buffer, b);
     }
 
     #[test]

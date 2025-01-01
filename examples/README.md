@@ -12,6 +12,7 @@ Some output of integration tests are shown below.
 ![barplot](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_barplot_2.svg)
 ![barplot](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_barplot_3.svg)
 ![barplot](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_barplot_4.svg)
+![barplot](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_barplot_5.svg)
 
 ## Boxplot
 

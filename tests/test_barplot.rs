@@ -85,7 +85,7 @@ fn test_barplot_3() -> Result<(), StrError> {
 
     // barplot object and options
     let mut bar = Barplot::new();
-    bar.set_x_errors(&errors)
+    bar.set_errors(&errors)
         .set_horizontal(true)
         .set_with_text("edge")
         .draw(&fruits, &prices);
@@ -116,7 +116,7 @@ fn test_barplot_4() -> Result<(), StrError> {
 
     // barplot object and options
     let mut bar = Barplot::new();
-    bar.set_x_errors(&errors)
+    bar.set_errors(&errors)
         .set_horizontal(true)
         .set_with_text("edge")
         .draw_with_str(&fruits, &prices);
@@ -135,5 +135,36 @@ fn test_barplot_4() -> Result<(), StrError> {
     let lines_iter = buffered.lines();
     let c = lines_iter.count();
     assert!(c > 770 && c < 810);
+    Ok(())
+}
+
+#[test]
+fn test_barplot_5() -> Result<(), StrError> {
+    // data
+    let y = vec![-2.5, -15.0, -5.0, -7.5, -2.5, -5.0, -17.5];
+    let e = vec![0.5, 0.4, 0.1, 0.7, 0.2, 0.0, 1.7];
+    let _x: Vec<f64> = (0..y.len()).map(|a| a as f64).collect();
+    let _x_str = vec!["Uno", "Dos", "Tres", "Cuatro", "Cinco", "Seis", "Siete"];
+
+    // barplot
+    let mut bar = Barplot::new();
+    bar.set_errors(&e)
+        // .draw(&_x, &y); // requires numbers, as expected
+        .draw_with_str(&_x_str, &y); // requires string, as expected
+
+    // plot
+    let mut plot = Plot::new();
+    plot.add(&bar);
+
+    // save figure
+    let path = Path::new(OUT_DIR).join("integ_barplot_5.svg");
+    plot.save(&path)?;
+
+    // check number of lines
+    let file = File::open(path).map_err(|_| "cannot open file")?;
+    let buffered = BufReader::new(file);
+    let lines_iter = buffered.lines();
+    let c = lines_iter.count();
+    assert!(c > 830 && c < 900);
     Ok(())
 }

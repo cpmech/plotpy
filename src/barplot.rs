@@ -89,7 +89,7 @@ use std::fmt::Write;
 ///
 ///     // barplot object and options
 ///     let mut bar = Barplot::new();
-///     bar.set_x_errors(&errors)
+///     bar.set_errors(&errors)
 ///         .set_horizontal(true)
 ///         .set_with_text("edge")
 ///         .draw_with_str(&fruits, &prices);
@@ -117,7 +117,7 @@ pub struct Barplot {
     bottom: Vec<f64>,          // bottom coordinates to stack bars
     with_text: Option<String>, // Text to be added to each bar (aka, bar_label)
     horizontal: bool,          // Horizontal barplot
-    x_errors: Vec<f64>,        // Shows x-error icons on horizontal bars
+    errors: Vec<f64>,          // Shows error icons on bars
     extra: String,             // Extra commands (comma separated)
     buffer: String,            // buffer
 }
@@ -132,7 +132,7 @@ impl Barplot {
             bottom: Vec::new(),
             with_text: None,
             horizontal: false,
-            x_errors: Vec::new(),
+            errors: Vec::new(),
             extra: String::new(),
             buffer: String::new(),
         }
@@ -153,8 +153,8 @@ impl Barplot {
         if self.bottom.len() > 0 {
             vector_to_array(&mut self.buffer, "bottom", &self.bottom);
         }
-        if self.x_errors.len() > 0 {
-            vector_to_array(&mut self.buffer, "xerr", &self.x_errors);
+        if self.errors.len() > 0 {
+            vector_to_array(&mut self.buffer, "err", &self.errors);
         }
         if self.horizontal {
             write!(&mut self.buffer, "p=plt.barh(x,y{})\n", &opt).unwrap();
@@ -181,8 +181,8 @@ impl Barplot {
         if self.bottom.len() > 0 {
             vector_to_array(&mut self.buffer, "bottom", &self.bottom);
         }
-        if self.x_errors.len() > 0 {
-            vector_to_array(&mut self.buffer, "xerr", &self.x_errors);
+        if self.errors.len() > 0 {
+            vector_to_array(&mut self.buffer, "err", &self.errors);
         }
         if self.horizontal {
             write!(&mut self.buffer, "p=plt.barh(x,y{})\n", &opt).unwrap();
@@ -240,9 +240,9 @@ impl Barplot {
         self
     }
 
-    /// Enables the error indicators
-    pub fn set_x_errors(&mut self, errors: &[f64]) -> &mut Self {
-        self.x_errors = errors.to_vec();
+    /// Enables error indicators
+    pub fn set_errors(&mut self, errors: &[f64]) -> &mut Self {
+        self.errors = errors.to_vec();
         self
     }
 
@@ -275,8 +275,12 @@ impl Barplot {
         if self.bottom.len() > 0 {
             write!(&mut opt, ",bottom=bottom").unwrap();
         }
-        if self.x_errors.len() > 0 {
-            write!(&mut opt, ",xerr=xerr").unwrap();
+        if self.errors.len() > 0 {
+            if self.horizontal {
+                write!(&mut opt, ",xerr=err").unwrap();
+            } else {
+                write!(&mut opt, ",yerr=err").unwrap();
+            }
         }
         if self.extra != "" {
             write!(&mut opt, ",{}", self.extra).unwrap();

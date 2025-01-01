@@ -99,6 +99,7 @@
     "xticklabels",
     "xticks",
     "yaxis",
+    "yerr",
     "ylabel",
     "ymax",
     "ymin",

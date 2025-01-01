@@ -116,7 +116,7 @@ fn main() -> Result<(), StrError> {
 
     // barplot object and options
     let mut bar = Barplot::new();
-    bar.set_x_errors(&errors)
+    bar.set_errors(&errors)
         .set_horizontal(true)
         .set_with_text("edge")
         .draw_with_str(&fruits, &prices);

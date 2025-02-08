@@ -3,6 +3,7 @@ use std::fmt::Write;
 
 /// Implements the capability to add inset Axes to existing Axes.
 pub struct InsetAxes {
+    handle: String,           // Python's variable name
     xlim: Option<(f64, f64)>, // range for x
     ylim: Option<(f64, f64)>, // range for y
     extra: String,            // extra commands (comma separated)
@@ -12,11 +13,16 @@ pub struct InsetAxes {
 impl InsetAxes {
     /// Creates a new `InsetAxes` object with an empty buffer.
     ///
+    /// # Arguments
+    ///
+    /// * `handle` - The name of the **Python variable** that will hold the inset Axes.
+    ///
     /// # Returns
     ///
     /// A new instance of `InsetAxes`.
-    pub fn new() -> Self {
+    pub fn new(handle: &str) -> Self {
         Self {
+            handle: handle.to_string(),
             xlim: None,
             ylim: None,
             extra: String::new(),
@@ -29,9 +35,10 @@ impl InsetAxes {
     /// This function generates a command to create an inset Axes within the current Axes.
     /// The command is stored in the buffer.
     ///
+    /// **Note::** The `handle` is the name of the **Python variable** that will hold the inset Axes.
+    ///
     /// # Arguments
     ///
-    /// * `handle` - The name of the **Python variable** that will hold the inset Axes.
     /// * `x0` - The x-coordinate of the lower-left corner of the inset Axes.
     /// * `y0` - The y-coordinate of the lower-left corner of the inset Axes.
     /// * `width` - The width of the inset Axes.
@@ -43,12 +50,12 @@ impl InsetAxes {
     /// # Returns
     ///
     /// A mutable reference to the `InsetAxes` instance, allowing for method chaining.
-    pub fn draw(&mut self, handle: &str, x0: f64, y0: f64, width: f64, height: f64) -> &mut Self {
+    pub fn draw(&mut self, x0: f64, y0: f64, width: f64, height: f64) -> &mut Self {
         let opt = self.options();
         write!(
             &mut self.buffer,
             "{} = plt.gca().inset_axes([{},{},{},{}]{})\n",
-            handle, x0, y0, width, height, opt
+            self.handle, x0, y0, width, height, opt
         )
         .unwrap();
         self
@@ -154,52 +161,50 @@ mod tests {
 
     #[test]
     fn new_works() {
-        let inset = InsetAxes::new();
+        let inset = InsetAxes::new("zoom");
+        assert_eq!(inset.handle, "zoom");
         assert_eq!(inset.get_buffer(), "");
     }
 
     #[test]
     fn draw_works() {
-        let mut inset = InsetAxes::new();
-        inset.draw("inset_ax", 0.1, 0.1, 0.4, 0.4);
-        assert_eq!(
-            inset.get_buffer(),
-            "inset_ax = plt.gca().inset_axes([0.1,0.1,0.4,0.4])\n"
-        );
+        let mut inset = InsetAxes::new("zoom");
+        inset.draw(0.1, 0.1, 0.4, 0.4);
+        assert_eq!(inset.get_buffer(), "zoom = plt.gca().inset_axes([0.1,0.1,0.4,0.4])\n");
     }
 
     #[test]
     fn set_xlim_works() {
-        let mut inset = InsetAxes::new();
+        let mut inset = InsetAxes::new("zoom");
         inset.set_xlim(8.0, 9.0);
         assert_eq!(inset.options(), ",xlim=(8,9)");
     }
 
     #[test]
     fn set_ylim_works() {
-        let mut inset = InsetAxes::new();
+        let mut inset = InsetAxes::new("zoom");
         inset.set_ylim(3.0, 5.0);
         assert_eq!(inset.options(), ",ylim=(3,5)");
     }
 
     #[test]
     fn set_extra_works() {
-        let mut inset = InsetAxes::new();
+        let mut inset = InsetAxes::new("zoom");
         inset.set_extra("aspect='equal'");
         assert_eq!(inset.options(), ",aspect='equal'");
     }
 
     #[test]
     fn options_combined_works() {
-        let mut inset = InsetAxes::new();
+        let mut inset = InsetAxes::new("zoom");
         inset.set_xlim(1.0, 2.0).set_ylim(3.0, 4.0).set_extra("aspect='equal'");
         assert_eq!(inset.options(), ",xlim=(1,2),ylim=(3,4),aspect='equal'");
     }
 
     #[test]
     fn clear_buffer_works() {
-        let mut inset = InsetAxes::new();
-        inset.draw("inset_ax", 0.1, 0.1, 0.4, 0.4);
+        let mut inset = InsetAxes::new("zoom");
+        inset.draw(0.1, 0.1, 0.4, 0.4);
         inset.clear_buffer();
         assert_eq!(inset.get_buffer(), "");
     }

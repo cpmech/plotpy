@@ -94,7 +94,6 @@ mod super_title_params;
 mod surface;
 mod surface_geometry;
 mod text;
-mod util;
 
 // re-export
 pub use as_matrix::*;
@@ -117,7 +116,6 @@ pub use slope_icon::*;
 pub use super_title_params::*;
 pub use surface::*;
 pub use text::*;
-pub use util::*;
 
 // run code from README file
 #[cfg(doctest)]

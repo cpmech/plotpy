@@ -78,4 +78,14 @@ mod tests {
         let util = Util::new();
         assert_eq!(util.get_buffer(), "");
     }
+
+    #[test]
+    fn get_sample_data_works() {
+        let mut util = Util::new();
+        util.get_sample_data("data", "example.csv", false);
+        assert_eq!(
+            util.get_buffer(),
+            "data = cbook.get_sample_data('example.csv', as_file_obj=false)"
+        );
+    }
 }

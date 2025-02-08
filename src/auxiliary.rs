@@ -127,10 +127,10 @@ pub fn generate3d<F>(
     ymax: f64,
     nx: usize,
     ny: usize,
-    calc_z: F,
+    mut calc_z: F,
 ) -> (Vec<Vec<f64>>, Vec<Vec<f64>>, Vec<Vec<f64>>)
 where
-    F: Fn(f64, f64) -> f64,
+    F: FnMut(f64, f64) -> f64,
 {
     let mut x = vec![vec![0.0; nx]; ny];
     let mut y = vec![vec![0.0; nx]; ny];

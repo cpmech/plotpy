@@ -47,7 +47,7 @@ impl InsetAxes {
         let opt = self.options();
         write!(
             &mut self.buffer,
-            "{} = plt.gca().inset_axes([{}, {}, {}, {}]{})\n",
+            "{} = plt.gca().inset_axes([{},{},{},{}]{})\n",
             handle, x0, y0, width, height, opt
         )
         .unwrap();
@@ -114,15 +114,15 @@ impl InsetAxes {
         let mut opt = String::new();
 
         if let Some((xmin, xmax)) = self.xlim {
-            write!(&mut opt, ", xlim=({}, {})", xmin, xmax).unwrap();
+            write!(&mut opt, ",xlim=({},{})", xmin, xmax).unwrap();
         }
 
         if let Some((ymin, ymax)) = self.ylim {
-            write!(&mut opt, ", ylim=({}, {})", ymin, ymax).unwrap();
+            write!(&mut opt, ",ylim=({},{})", ymin, ymax).unwrap();
         }
 
         if !self.extra.is_empty() {
-            write!(&mut opt, ", {}", self.extra).unwrap();
+            write!(&mut opt, ",{}", self.extra).unwrap();
         }
 
         opt
@@ -155,6 +155,52 @@ mod tests {
     #[test]
     fn new_works() {
         let inset = InsetAxes::new();
+        assert_eq!(inset.get_buffer(), "");
+    }
+
+    #[test]
+    fn draw_works() {
+        let mut inset = InsetAxes::new();
+        inset.draw("inset_ax", 0.1, 0.1, 0.4, 0.4);
+        assert_eq!(
+            inset.get_buffer(),
+            "inset_ax = plt.gca().inset_axes([0.1,0.1,0.4,0.4])\n"
+        );
+    }
+
+    #[test]
+    fn set_xlim_works() {
+        let mut inset = InsetAxes::new();
+        inset.set_xlim(8.0, 9.0);
+        assert_eq!(inset.options(), ",xlim=(8,9)");
+    }
+
+    #[test]
+    fn set_ylim_works() {
+        let mut inset = InsetAxes::new();
+        inset.set_ylim(3.0, 5.0);
+        assert_eq!(inset.options(), ",ylim=(3,5)");
+    }
+
+    #[test]
+    fn set_extra_works() {
+        let mut inset = InsetAxes::new();
+        inset.set_extra("aspect='equal'");
+        assert_eq!(inset.options(), ",aspect='equal'");
+    }
+
+    #[test]
+    fn options_combined_works() {
+        let mut inset = InsetAxes::new();
+        inset.set_xlim(1.0, 2.0).set_ylim(3.0, 4.0).set_extra("aspect='equal'");
+        assert_eq!(inset.options(), ",xlim=(1,2),ylim=(3,4),aspect='equal'");
+    }
+
+    #[test]
+    fn clear_buffer_works() {
+        let mut inset = InsetAxes::new();
+        inset.draw("inset_ax", 0.1, 0.1, 0.4, 0.4);
+        inset.clear_buffer();
         assert_eq!(inset.get_buffer(), "");
     }
 }

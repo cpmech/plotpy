@@ -410,6 +410,8 @@ fn main() -> Result<(), StrError> {
 }
 ```
 
+![inset_axes](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/doc_inset_axes_add.svg)
+
 
 ### Surface
 

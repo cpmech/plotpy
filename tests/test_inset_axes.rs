@@ -281,8 +281,10 @@ fn test_inset_axes_7() -> Result<(), StrError> {
     let mut inset3 = InsetAxes::new();
     inset3
         .set_indicator_disabled(true)
+        .set_visibility(true)
+        .set_extra_for_axes("title='MINIATURE'")
         .add(&curve)
-        .draw(0.6, 0.02, 0.38, 0.38);
+        .draw(0.64, 0.08, 0.34, 0.34);
 
     // add to plot
     let mut plot = Plot::new();
@@ -301,6 +303,6 @@ fn test_inset_axes_7() -> Result<(), StrError> {
     let buffered = BufReader::new(file);
     let lines_iter = buffered.lines();
     let n = lines_iter.count().clone();
-    // assert!(n > 500 && n < 600);
+    assert!(n > 900 && n < 1000);
     Ok(())
 }

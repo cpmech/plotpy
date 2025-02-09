@@ -193,17 +193,23 @@ impl InsetAxes {
     pub fn draw(&mut self, u0: f64, v0: f64, width: f64, height: f64) {
         let opt1 = self.options_for_axes();
         let opt2 = self.options_for_indicator();
-        self.buffer.insert_str(
-            0,
-            &format!(
-                "zoom=plt.gca().inset_axes([{},{},{},{}]{}{})\n",
-                u0, v0, width, height,
-                self.range.map_or(String::new(), |(xmin, xmax, ymin, ymax)| {
-                    format!(",xlim=({},{}),ylim=({},{})", xmin, xmax, ymin, ymax)
-                }),
-                opt1,
-            ),
-        );
+        if let Some((xmin, xmax, ymin, ymax)) = self.range {
+            self.buffer.insert_str(
+                0,
+                &format!(
+                    "zoom=plt.gca().inset_axes([{},{},{},{}],xlim=({},{}),ylim=({},{}){})\n",
+                    u0, v0, width, height, xmin, xmax, ymin, ymax, opt1,
+                ),
+            );
+        } else {
+            self.buffer.insert_str(
+                0,
+                &format!(
+                    "zoom=plt.gca().inset_axes([{},{},{},{}]{})\n",
+                    u0, v0, width, height, opt1,
+                ),
+            );
+        }
         if !self.axes_visible {
             write!(&mut self.buffer, "zoom.set_xticks([])\nzoom.set_yticks([])\n").unwrap();
         }

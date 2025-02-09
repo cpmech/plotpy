@@ -49,7 +49,7 @@ pub struct InsetAxes {
     indicator_hatch: String,
     indicator_alpha: Option<f64>,
     axes_visible: bool,
-    indicator_enabled: bool,
+    indicator_disabled: bool,
     title: String,
     buffer: String,
 }
@@ -90,7 +90,7 @@ impl InsetAxes {
             indicator_hatch: String::new(),
             indicator_alpha: None,
             axes_visible: false,
-            indicator_enabled: true,
+            indicator_disabled: false,
             title: String::new(),
             buffer: String::new(),
         }
@@ -212,7 +212,7 @@ impl InsetAxes {
         if !self.title.is_empty() {
             write!(&mut self.buffer, "zoom.set_title(r'{}')\n", self.title).unwrap();
         }
-        if self.indicator_enabled {
+        if !self.indicator_disabled {
             write!(&mut self.buffer, "plt.gca().indicate_inset_zoom(zoom{})\n", opt2,).unwrap();
         }
     }
@@ -258,13 +258,13 @@ impl InsetAxes {
         self
     }
 
-    /// Sets whether the indicator lines are enabled
+    /// Sets whether the indicator lines are disabled
     ///
     /// # Arguments
     ///
-    /// * `enabled` - If true, shows the indicator lines. If false, hides them.
-    pub fn set_indicator_enabled(&mut self, enabled: bool) -> &mut Self {
-        self.indicator_enabled = enabled;
+    /// * `disabled` - If true, hides the indicator lines. If false, shows them.
+    pub fn set_indicator_disabled(&mut self, disabled: bool) -> &mut Self {
+        self.indicator_disabled = disabled;
         self
     }
 
@@ -390,18 +390,18 @@ mod tests {
 
     #[test]
     #[test]
-    fn test_indicator_enabled() {
+    fn test_indicator_disabled() {
         let mut inset = InsetAxes::new();
-        assert!(inset.indicator_enabled);
+        assert!(!inset.indicator_disabled);
         
-        inset.set_indicator_enabled(false);
-        assert!(!inset.indicator_enabled);
+        inset.set_indicator_disabled(true);
+        assert!(inset.indicator_disabled);
         
         inset.draw(0.5, 0.5, 0.4, 0.3);
         let buffer = inset.get_buffer();
         assert!(!buffer.contains("indicate_inset_zoom"));
         
-        inset.set_indicator_enabled(true);
+        inset.set_indicator_disabled(false);
         inset.clear_buffer();
         inset.draw(0.5, 0.5, 0.4, 0.3);
         let buffer = inset.get_buffer();

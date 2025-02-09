@@ -9,6 +9,11 @@ pub struct InsetAxes {
     ymax: f64,
     extra_for_axes: String,
     extra_for_indicator: String,
+    indicator_line_style: String,
+    indicator_line_color: String,
+    border_line_style: String,
+    border_line_color: String,
+    background_color: String,
     buffer: String,
 }
 
@@ -26,8 +31,43 @@ impl InsetAxes {
             ymax: 1.0,
             extra_for_axes: String::new(),
             extra_for_indicator: String::new(),
+            indicator_line_style: String::new(),
+            indicator_line_color: String::new(),
+            border_line_style: String::new(),
+            border_line_color: String::new(),
+            background_color: String::new(),
             buffer: String::new(),
         }
+    }
+
+    /// Sets the line style for the indicator (e.g. "--", ":", "-.")
+    pub fn set_indicator_line_style(&mut self, style: &str) -> &mut Self {
+        self.indicator_line_style = style.to_string();
+        self
+    }
+
+    /// Sets the line color for the indicator (e.g. "red", "#FF0000")
+    pub fn set_indicator_line_color(&mut self, color: &str) -> &mut Self {
+        self.indicator_line_color = color.to_string();
+        self
+    }
+
+    /// Sets the border line style for the inset axes (e.g. "--", ":", "-.")
+    pub fn set_border_line_style(&mut self, style: &str) -> &mut Self {
+        self.border_line_style = style.to_string();
+        self
+    }
+
+    /// Sets the border line color for the inset axes (e.g. "red", "#FF0000")
+    pub fn set_border_line_color(&mut self, color: &str) -> &mut Self {
+        self.border_line_color = color.to_string();
+        self
+    }
+
+    /// Sets the background color for the inset axes (e.g. "white", "#FFFFFF")
+    pub fn set_background_color(&mut self, color: &str) -> &mut Self {
+        self.background_color = color.to_string();
+        self
     }
 
     /// Adds new graph entity
@@ -90,6 +130,15 @@ impl InsetAxes {
     /// Returns options for the inset Axes
     fn options_for_axes(&self) -> String {
         let mut opt = String::new();
+        if !self.border_line_style.is_empty() {
+            write!(&mut opt, ",linestyle='{}'", self.border_line_style).unwrap();
+        }
+        if !self.border_line_color.is_empty() {
+            write!(&mut opt, ",edgecolor='{}'", self.border_line_color).unwrap();
+        }
+        if !self.background_color.is_empty() {
+            write!(&mut opt, ",facecolor='{}'", self.background_color).unwrap();
+        }
         if !self.extra_for_axes.is_empty() {
             write!(&mut opt, ",{}", self.extra_for_axes).unwrap();
         }
@@ -99,6 +148,12 @@ impl InsetAxes {
     /// Returns options for the indicator
     fn options_for_indicator(&self) -> String {
         let mut opt = String::new();
+        if !self.indicator_line_style.is_empty() {
+            write!(&mut opt, ",linestyle='{}'", self.indicator_line_style).unwrap();
+        }
+        if !self.indicator_line_color.is_empty() {
+            write!(&mut opt, ",edgecolor='{}'", self.indicator_line_color).unwrap();
+        }
         if !self.extra_for_indicator.is_empty() {
             write!(&mut opt, ",{}", self.extra_for_indicator).unwrap();
         }

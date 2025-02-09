@@ -14,6 +14,7 @@ pub struct InsetAxes {
     indicator_line_width: f64,
     indicator_hatch: String,
     indicator_alpha: Option<f64>,
+    axes_visible: bool,
     buffer: String,
 }
 
@@ -36,6 +37,7 @@ impl InsetAxes {
             indicator_line_width: 0.0,
             indicator_hatch: String::new(),
             indicator_alpha: None,
+            axes_visible: false,
             buffer: String::new(),
         }
     }
@@ -144,9 +146,16 @@ impl InsetAxes {
         self
     }
 
-    /// Hides both x and y axis ticks on the inset axes
-    pub fn hide_ticks(&mut self) -> &mut Self {
-        self.buffer.push_str("zoom.set_xticks([])\nzoom.set_yticks([])\n");
+    /// Sets the visibility of the axes ticks
+    /// 
+    /// # Arguments
+    /// 
+    /// * `visible` - If true, shows the axes ticks. If false, hides them.
+    pub fn set_axes_visibility(&mut self, visible: bool) -> &mut Self {
+        self.axes_visible = visible;
+        if !visible {
+            self.buffer.push_str("zoom.set_xticks([])\nzoom.set_yticks([])\n");
+        }
         self
     }
 

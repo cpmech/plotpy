@@ -144,6 +144,12 @@ impl InsetAxes {
         self
     }
 
+    /// Hides both x and y axis ticks on the inset axes
+    pub fn hide_ticks(&mut self) -> &mut Self {
+        self.buffer.push_str("zoom.set_xticks([])\nzoom.set_yticks([])\n");
+        self
+    }
+
     /// Returns options for the inset Axes
     fn options_for_axes(&self) -> String {
         let mut opt = String::new();

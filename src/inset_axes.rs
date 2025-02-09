@@ -15,6 +15,7 @@ pub struct InsetAxes {
     indicator_hatch: String,
     indicator_alpha: Option<f64>,
     axes_visible: bool,
+    title: String,
     buffer: String,
 }
 
@@ -38,6 +39,7 @@ impl InsetAxes {
             indicator_hatch: String::new(),
             indicator_alpha: None,
             axes_visible: false,
+            title: String::new(),
             buffer: String::new(),
         }
     }
@@ -121,6 +123,9 @@ impl InsetAxes {
         if !self.axes_visible {
             write!(&mut self.buffer, "zoom.set_xticks([])\nzoom.set_yticks([])\n").unwrap();
         }
+        if !self.title.is_empty() {
+            write!(&mut self.buffer, "zoom.set_title(r'{}')\n", self.title).unwrap();
+        }
         write!(&mut self.buffer, "plt.gca().indicate_inset_zoom(zoom{})\n", opt2,).unwrap();
     }
 
@@ -156,6 +161,12 @@ impl InsetAxes {
     /// * `visible` - If true, shows the axes ticks. If false, hides them.
     pub fn set_axes_visibility(&mut self, visible: bool) -> &mut Self {
         self.axes_visible = visible;
+        self
+    }
+
+    /// Sets the title of the inset axes
+    pub fn set_title(&mut self, title: &str) -> &mut Self {
+        self.title = title.to_string();
         self
     }
 

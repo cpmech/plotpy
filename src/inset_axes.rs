@@ -153,9 +153,6 @@ impl InsetAxes {
     /// * `visible` - If true, shows the axes ticks. If false, hides them.
     pub fn set_axes_visibility(&mut self, visible: bool) -> &mut Self {
         self.axes_visible = visible;
-        if !visible {
-            self.buffer.push_str("zoom.set_xticks([])\nzoom.set_yticks([])\n");
-        }
         self
     }
 
@@ -164,6 +161,9 @@ impl InsetAxes {
         let mut opt = String::new();
         if !self.extra_for_axes.is_empty() {
             write!(&mut opt, ",{}", self.extra_for_axes).unwrap();
+        }
+        if !self.axes_visible {
+            write!(&mut opt, "\nzoom.set_xticks([])\nzoom.set_yticks([])\n").unwrap();
         }
         opt
     }

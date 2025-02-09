@@ -25,8 +25,10 @@ fn test_inset_axes_1() -> Result<(), StrError> {
     // inset axes
     let mut inset = InsetAxes::new();
     inset
+        .set_indicator_line_color("red")
+        .set_indicator_line_style("--")
         .set_extra_for_axes("xticklabels=[],yticklabels=[]")
-        .set_extra_for_indicator("edgecolor='red',linewidth=2")
+        .set_extra_for_indicator("label='INDICATOR',linewidth=2")
         .set_range(0.0, 1.0, 5.0, 6.0);
     inset.add(&img).draw(0.5, 0.5, 0.4, 0.3);
 

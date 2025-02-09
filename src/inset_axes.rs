@@ -30,9 +30,6 @@ impl InsetAxes {
             extra_for_indicator: String::new(),
             indicator_line_style: String::new(),
             indicator_line_color: String::new(),
-            border_line_style: String::new(),
-            border_line_color: String::new(),
-            background_color: String::new(),
             buffer: String::new(),
         }
     }

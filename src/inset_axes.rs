@@ -37,10 +37,7 @@ use std::fmt::Write;
 /// then the inset must be added after the range has been set. Otherwise, the inset will not be displayed correctly.
 /// Specifically the connector lines will not be drawn if the inset is added before `set_range`.
 pub struct InsetAxes {
-    xmin: f64,
-    xmax: f64,
-    ymin: f64,
-    ymax: f64,
+    range: Option<(f64, f64, f64, f64)>,
     extra_for_axes: String,
     extra_for_indicator: String,
     indicator_line_style: String,
@@ -78,10 +75,7 @@ impl InsetAxes {
     /// ```
     pub fn new() -> Self {
         Self {
-            xmin: 0.0,
-            xmax: 1.0,
-            ymin: 0.0,
-            ymax: 1.0,
+            range: None,
             extra_for_axes: String::new(),
             extra_for_indicator: String::new(),
             indicator_line_style: String::new(),
@@ -202,8 +196,12 @@ impl InsetAxes {
         self.buffer.insert_str(
             0,
             &format!(
-                "zoom=plt.gca().inset_axes([{},{},{},{}],xlim=({},{}),ylim=({},{}){})\n",
-                u0, v0, width, height, self.xmin, self.xmax, self.ymin, self.ymax, opt1,
+                "zoom=plt.gca().inset_axes([{},{},{},{}]{}{})\n",
+                u0, v0, width, height,
+                self.range.map_or(String::new(), |(xmin, xmax, ymin, ymax)| {
+                    format!(",xlim=({},{}),ylim=({},{})", xmin, xmax, ymin, ymax)
+                }),
+                opt1,
             ),
         );
         if !self.axes_visible {
@@ -219,10 +217,7 @@ impl InsetAxes {
 
     /// Sets the limits of axes in the inset.
     pub fn set_range(&mut self, xmin: f64, xmax: f64, ymin: f64, ymax: f64) -> &mut Self {
-        self.xmin = xmin;
-        self.xmax = xmax;
-        self.ymin = ymin;
-        self.ymax = ymax;
+        self.range = Some((xmin, xmax, ymin, ymax));
         self
     }
 
@@ -328,10 +323,7 @@ mod tests {
     #[test]
     fn test_new() {
         let inset = InsetAxes::new();
-        assert_eq!(inset.xmin, 0.0);
-        assert_eq!(inset.xmax, 1.0);
-        assert_eq!(inset.ymin, 0.0);
-        assert_eq!(inset.ymax, 1.0);
+        assert_eq!(inset.range, None);
         assert!(inset.buffer.is_empty());
     }
 
@@ -339,10 +331,7 @@ mod tests {
     fn test_set_range() {
         let mut inset = InsetAxes::new();
         inset.set_range(-1.0, 2.0, -3.0, 4.0);
-        assert_eq!(inset.xmin, -1.0);
-        assert_eq!(inset.xmax, 2.0);
-        assert_eq!(inset.ymin, -3.0);
-        assert_eq!(inset.ymax, 4.0);
+        assert_eq!(inset.range, Some((-1.0, 2.0, -3.0, 4.0)));
     }
 
     #[test]

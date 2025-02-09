@@ -1,4 +1,4 @@
-use plotpy::{generate3d, Barplot, Canvas, Contour, Curve, Image, InsetAxes, Plot, StrError};
+use plotpy::{generate3d, Barplot, Canvas, Contour, Curve, Histogram, Image, InsetAxes, Plot, StrError};
 use std::fs::File;
 use std::io::{BufRead, BufReader};
 use std::path::Path;
@@ -209,5 +209,41 @@ fn test_inset_axes_5() -> Result<(), StrError> {
     let lines_iter = buffered.lines();
     let n = lines_iter.count().clone();
     assert!(n > 2400 && n < 2500);
+    Ok(())
+}
+
+#[test]
+fn test_inset_axes_6() -> Result<(), StrError> {
+    // histogram
+    let mut histogram = Histogram::new();
+    let values = vec![
+        vec![1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 4, 5, 6], // first series
+        vec![-1, -1, 0, 1, 2, 3],                    // second series
+        vec![5, 6, 7, 8],                            // third series
+    ];
+    let labels = ["first", "second", "third"];
+    histogram.draw(&values, &labels);
+
+    // inset axes
+    let mut inset = InsetAxes::new();
+    inset
+        .add(&histogram)
+        .set_range(1.5, 2.5, 0.5, 1.2)
+        .draw(0.6, 0.55, 0.35, 0.4);
+
+    // add to plot
+    let mut plot = Plot::new();
+    plot.add(&histogram);
+
+    // save figure
+    let path = Path::new(OUT_DIR).join("integ_inset_axes_6.svg");
+    plot.add(&inset).set_show_errors(true).save(&path)?;
+
+    // check number of lines
+    let file = File::open(path).map_err(|_| "cannot open file")?;
+    let buffered = BufReader::new(file);
+    let lines_iter = buffered.lines();
+    let n = lines_iter.count().clone();
+    assert!(n > 920 && n < 1010);
     Ok(())
 }

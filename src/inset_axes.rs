@@ -226,4 +226,75 @@ impl GraphMaker for InsetAxes {
 mod tests {
     use super::InsetAxes;
     use crate::GraphMaker;
+
+    #[test]
+    fn test_new() {
+        let inset = InsetAxes::new();
+        assert_eq!(inset.xmin, 0.0);
+        assert_eq!(inset.xmax, 1.0);
+        assert_eq!(inset.ymin, 0.0);
+        assert_eq!(inset.ymax, 1.0);
+        assert!(inset.buffer.is_empty());
+    }
+
+    #[test]
+    fn test_set_range() {
+        let mut inset = InsetAxes::new();
+        inset.set_range(-1.0, 2.0, -3.0, 4.0);
+        assert_eq!(inset.xmin, -1.0);
+        assert_eq!(inset.xmax, 2.0);
+        assert_eq!(inset.ymin, -3.0);
+        assert_eq!(inset.ymax, 4.0);
+    }
+
+    #[test]
+    fn test_set_title() {
+        let mut inset = InsetAxes::new();
+        inset.set_title("Test Title");
+        assert_eq!(inset.title, "Test Title");
+    }
+
+    #[test]
+    fn test_set_visibility() {
+        let mut inset = InsetAxes::new();
+        inset.set_visibility(true);
+        assert!(inset.axes_visible);
+        inset.set_visibility(false);
+        assert!(!inset.axes_visible);
+    }
+
+    #[test]
+    fn test_indicator_options() {
+        let mut inset = InsetAxes::new();
+        inset.set_indicator_line_style("--")
+            .set_indicator_line_color("red")
+            .set_indicator_line_width(2.0)
+            .set_indicator_hatch("/")
+            .set_indicator_alpha(0.5);
+        
+        let options = inset.options_for_indicator();
+        assert!(options.contains("linestyle='--'"));
+        assert!(options.contains("edgecolor='red'"));
+        assert!(options.contains("linewidth=2"));
+        assert!(options.contains("hatch='/'"));
+        assert!(options.contains("alpha=0.5"));
+    }
+
+    #[test]
+    fn test_draw_basic() {
+        let mut inset = InsetAxes::new();
+        inset.draw(0.5, 0.5, 0.4, 0.3);
+        let buffer = inset.get_buffer();
+        assert!(buffer.contains("zoom=plt.gca().inset_axes([0.5,0.5,0.4,0.3]"));
+        assert!(buffer.contains("plt.gca().indicate_inset_zoom(zoom"));
+    }
+
+    #[test]
+    fn test_clear_buffer() {
+        let mut inset = InsetAxes::new();
+        inset.draw(0.5, 0.5, 0.4, 0.3);
+        assert!(!inset.buffer.is_empty());
+        inset.clear_buffer();
+        assert!(inset.buffer.is_empty());
+    }
 }

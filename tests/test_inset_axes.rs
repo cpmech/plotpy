@@ -1,4 +1,4 @@
-use plotpy::{Barplot, Canvas, Image, InsetAxes, Plot, StrError};
+use plotpy::{Barplot, Canvas, Curve, Image, InsetAxes, Plot, StrError};
 use std::fs::File;
 use std::io::{BufRead, BufReader};
 use std::path::Path;
@@ -140,5 +140,40 @@ fn test_inset_axes_3() -> Result<(), StrError> {
     let lines_iter = buffered.lines();
     let n = lines_iter.count().clone();
     assert!(n > 520 && n < 600);
+    Ok(())
+}
+
+#[test]
+fn test_inset_axes_4() -> Result<(), StrError> {
+    // canvas
+    let mut curve = Curve::new();
+    let x = &[1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0];
+    let y = &[1.0, 4.0, 9.0, 16.0, 25.0, 36.0, 49.0, 64.0];
+    curve.draw(x, y);
+
+    // inset axes
+    let mut inset = InsetAxes::new();
+    inset
+        .add(&curve)
+        .set_range(7.0, 9.0, 40.0, 70.0)
+        .draw(0.05, 0.25, 0.4, 0.7);
+
+    // add to plot
+    let mut plot = Plot::new();
+    plot.add(&curve);
+
+    // save figure
+    let path = Path::new(OUT_DIR).join("integ_inset_axes_4.svg");
+    plot.set_range(0.0, 10.0, 0.0, 100.0)
+        .add(&inset) // <<<<<<<<<<<<< IMPORTANT: thus must be after set_range
+        .set_show_errors(true)
+        .save(&path)?;
+
+    // check number of lines
+    let file = File::open(path).map_err(|_| "cannot open file")?;
+    let buffered = BufReader::new(file);
+    let lines_iter = buffered.lines();
+    let n = lines_iter.count().clone();
+    assert!(n > 430 && n < 500);
     Ok(())
 }

@@ -1,4 +1,4 @@
-use plotpy::{Image, InsetAxes, Plot, StrError};
+use plotpy::{Barplot, Image, InsetAxes, Plot, StrError};
 use std::fs::File;
 use std::io::{BufRead, BufReader};
 use std::path::Path;
@@ -50,5 +50,42 @@ fn test_inset_axes_1() -> Result<(), StrError> {
     let lines_iter = buffered.lines();
     let n = lines_iter.count().clone();
     assert!(n > 680 && n < 800);
+    Ok(())
+}
+
+#[test]
+fn test_inset_axes_2() -> Result<(), StrError> {
+    // draw bar plot
+    let x = [0, 1, 2, 3, 4];
+    let y = [5, 4, 3, 2, 1];
+    let mut bar = Barplot::new();
+    let mut plot = Plot::new();
+    bar.set_label("Main Bars")
+        .set_colors(&["red", "green", "blue", "orange", "purple"])
+        .draw(&x, &y);
+    plot.add(&bar);
+
+    // inset axes
+    let mut inset = InsetAxes::new();
+    inset.set_range(0.5, 2.5, 2.0, 4.5);
+
+    // bar plot to the inset
+    let mut inset_bar = Barplot::new();
+    inset_bar.set_colors(&["cyan", "magenta"]).draw(&[0, 1], &[2, 3]);
+    inset.add(&inset_bar).draw(0.65, 0.65, 0.335, 0.33);
+
+    // add entities to plot
+    plot.add(&bar).add(&inset);
+
+    // save figure
+    let path = Path::new(OUT_DIR).join("integ_inset_axes_2.svg");
+    plot.set_show_errors(true).save(&path)?;
+
+    // check number of lines
+    let file = File::open(path).map_err(|_| "cannot open file")?;
+    let buffered = BufReader::new(file);
+    let lines_iter = buffered.lines();
+    let n = lines_iter.count().clone();
+    // assert!(n > 680 && n < 800);
     Ok(())
 }

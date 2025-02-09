@@ -1,4 +1,4 @@
-use plotpy::{Barplot, Canvas, Curve, Image, InsetAxes, Plot, StrError};
+use plotpy::{generate3d, Barplot, Canvas, Contour, Curve, Image, InsetAxes, Plot, StrError};
 use std::fs::File;
 use std::io::{BufRead, BufReader};
 use std::path::Path;
@@ -175,5 +175,39 @@ fn test_inset_axes_4() -> Result<(), StrError> {
     let lines_iter = buffered.lines();
     let n = lines_iter.count().clone();
     assert!(n > 430 && n < 500);
+    Ok(())
+}
+
+#[test]
+fn test_inset_axes_5() -> Result<(), StrError> {
+    // contour
+    let mut contour = Contour::new();
+    contour.set_colorbar_label("TEMPERATURE").set_number_format_cb("%.1f");
+    let n = 9;
+    let (x, y, z) = generate3d(-2.0, 2.0, -2.0, 2.0, n, n, |x, y| x * x + y * y);
+    contour.draw(&x, &y, &z);
+
+    // inset axes
+    let mut inset = InsetAxes::new();
+    inset
+        .set_indicator_line_color("yellow")
+        .add(&contour)
+        .set_range(-1.0, 1.0, -1.0, 1.0)
+        .draw(0.78, 0.78, 0.2, 0.2);
+
+    // add to plot
+    let mut plot = Plot::new();
+    plot.add(&contour);
+
+    // save figure
+    let path = Path::new(OUT_DIR).join("integ_inset_axes_5.svg");
+    plot.add(&inset).set_show_errors(true).save(&path)?;
+
+    // check number of lines
+    let file = File::open(path).map_err(|_| "cannot open file")?;
+    let buffered = BufReader::new(file);
+    let lines_iter = buffered.lines();
+    let n = lines_iter.count().clone();
+    assert!(n > 2400 && n < 2500);
     Ok(())
 }

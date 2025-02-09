@@ -144,11 +144,17 @@ impl InsetAxes {
     ///     .add(&inset); // IMPORTANT: add inset after setting the range
     /// ```
     pub fn add(&mut self, graph: &dyn GraphMaker) -> &mut Self {
+        // Note: the order of replacements is important
         let buf = graph
             .get_buffer()
             .replace("plt.gca()", "zoom")
             .replace("plt.barh", "zoom.barh")
             .replace("plt.bar", "zoom.bar")
+            .replace("plt.contourf", "zoom.contourf")
+            .replace("plt.contour", "zoom.contour")
+            .replace("plt.clabel", "zoom.clabel")
+            .replace("plt.colorbar", "ignore_this")
+            .replace("cb.ax.set_ylabel", "ignore_this")
             .replace("plt.imshow", "zoom.imshow")
             .replace("plt.plot", "zoom.plot");
         self.buffer.push_str(&buf);

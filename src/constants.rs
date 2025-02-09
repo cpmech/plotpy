@@ -103,6 +103,10 @@ def set_equal_axes():
         print('VERSION of MATPLOTLIB = {}'.format(matplotlib.__version__))
         print('ERROR: set_box_aspect is missing in this version of Matplotlib')
 
+# Function to ignore calls to plt such as the colorbar in an inset Axes
+def ignore_this(*args, **kwargs):
+    pass
+
 ################## plotting commands follow after this line ############################
 
 ";
@@ -146,6 +150,6 @@ mod tests {
 
     #[test]
     fn constants_are_correct() {
-        assert_eq!(PYTHON_HEADER.len(), 2770);
+        assert_eq!(PYTHON_HEADER.len(), 2886);
     }
 }

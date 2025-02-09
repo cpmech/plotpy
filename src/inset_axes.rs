@@ -12,6 +12,7 @@ pub struct InsetAxes {
     indicator_line_style: String,
     indicator_line_color: String,
     indicator_line_width: f64,
+    indicator_hatch: String,
     buffer: String,
 }
 
@@ -32,6 +33,7 @@ impl InsetAxes {
             indicator_line_style: String::new(),
             indicator_line_color: String::new(),
             indicator_line_width: 0.0,
+            indicator_hatch: String::new(),
             buffer: String::new(),
         }
     }
@@ -51,6 +53,29 @@ impl InsetAxes {
     /// Sets the line width for the indicator
     pub fn set_indicator_line_width(&mut self, width: f64) -> &mut Self {
         self.indicator_line_width = width;
+        self
+    }
+
+    /// Sets the hatch pattern for the indicator (e.g. "/", "\\", "|", "-", "+", "x", "o", "O", ".", "*")
+    ///
+    /// Common hatch patterns include:                                                                                 
+    ///
+    /// * "/" - diagonal hatching                                                                                     
+    /// * "\" - back diagonal hatching                                                                                
+    /// * "|" - vertical hatching                                                                                     
+    /// * "-" - horizontal hatching                                                                                   
+    /// * "+" - crossed hatching                                                                                      
+    /// * "x" - crossed diagonal hatching                                                                             
+    /// * "o" - small circle hatching                                                                                 
+    /// * "O" - large circle hatching                                                                                 
+    /// * "." - dot hatching                                                                                          
+    /// * "*" - star hatching  
+    ///
+    /// [See options in ](https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.indicate_inset.html#matplotlib.axes.Axes.indicate_inset)
+    ///
+    /// [See Matplotlib's documentation for more hatch patterns](https://matplotlib.org/stable/gallery/shapes_and_collections/hatch_demo.html)
+    pub fn set_indicator_hatch(&mut self, hatch: &str) -> &mut Self {
+        self.indicator_hatch = hatch.to_string();
         self
     }
 
@@ -131,6 +156,9 @@ impl InsetAxes {
         }
         if self.indicator_line_width > 0.0 {
             write!(&mut opt, ",linewidth={}", self.indicator_line_width).unwrap();
+        }
+        if !self.indicator_hatch.is_empty() {
+            write!(&mut opt, ",hatch='{}'", self.indicator_hatch).unwrap();
         }
         if !self.extra_for_indicator.is_empty() {
             write!(&mut opt, ",{}", self.extra_for_indicator).unwrap();

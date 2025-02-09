@@ -11,7 +11,6 @@ pub struct InsetAxes {
     extra_for_indicator: String,
     indicator_line_style: String,
     indicator_line_color: String,
-    background_color: String,
     buffer: String,
 }
 
@@ -47,12 +46,6 @@ impl InsetAxes {
     /// Sets the line color for the indicator (e.g. "red", "#FF0000")
     pub fn set_indicator_line_color(&mut self, color: &str) -> &mut Self {
         self.indicator_line_color = color.to_string();
-        self
-    }
-
-    /// Sets the background color for the inset axes (e.g. "white", "#FFFFFF")
-    pub fn set_background_color(&mut self, color: &str) -> &mut Self {
-        self.background_color = color.to_string();
         self
     }
 
@@ -116,9 +109,6 @@ impl InsetAxes {
     /// Returns options for the inset Axes
     fn options_for_axes(&self) -> String {
         let mut opt = String::new();
-        if !self.background_color.is_empty() {
-            write!(&mut opt, ",facecolor='{}'", self.background_color).unwrap();
-        }
         if !self.extra_for_axes.is_empty() {
             write!(&mut opt, ",{}", self.extra_for_axes).unwrap();
         }

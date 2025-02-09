@@ -11,6 +11,7 @@ pub struct InsetAxes {
     extra_for_indicator: String,
     indicator_line_style: String,
     indicator_line_color: String,
+    indicator_line_width: f64,
     buffer: String,
 }
 
@@ -30,6 +31,7 @@ impl InsetAxes {
             extra_for_indicator: String::new(),
             indicator_line_style: String::new(),
             indicator_line_color: String::new(),
+            indicator_line_width: 0.0,
             buffer: String::new(),
         }
     }
@@ -43,6 +45,12 @@ impl InsetAxes {
     /// Sets the line color for the indicator (e.g. "red", "#FF0000")
     pub fn set_indicator_line_color(&mut self, color: &str) -> &mut Self {
         self.indicator_line_color = color.to_string();
+        self
+    }
+
+    /// Sets the line width for the indicator
+    pub fn set_indicator_line_width(&mut self, width: f64) -> &mut Self {
+        self.indicator_line_width = width;
         self
     }
 
@@ -120,6 +128,9 @@ impl InsetAxes {
         }
         if !self.indicator_line_color.is_empty() {
             write!(&mut opt, ",edgecolor='{}'", self.indicator_line_color).unwrap();
+        }
+        if self.indicator_line_width > 0.0 {
+            write!(&mut opt, ",linewidth={}", self.indicator_line_width).unwrap();
         }
         if !self.extra_for_indicator.is_empty() {
             write!(&mut opt, ",{}", self.extra_for_indicator).unwrap();

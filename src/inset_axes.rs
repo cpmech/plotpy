@@ -49,6 +49,7 @@ pub struct InsetAxes {
     indicator_hatch: String,
     indicator_alpha: Option<f64>,
     axes_visible: bool,
+    indicator_enabled: bool,
     title: String,
     buffer: String,
 }
@@ -89,6 +90,7 @@ impl InsetAxes {
             indicator_hatch: String::new(),
             indicator_alpha: None,
             axes_visible: false,
+            indicator_enabled: true,
             title: String::new(),
             buffer: String::new(),
         }
@@ -210,7 +212,9 @@ impl InsetAxes {
         if !self.title.is_empty() {
             write!(&mut self.buffer, "zoom.set_title(r'{}')\n", self.title).unwrap();
         }
-        write!(&mut self.buffer, "plt.gca().indicate_inset_zoom(zoom{})\n", opt2,).unwrap();
+        if self.indicator_enabled {
+            write!(&mut self.buffer, "plt.gca().indicate_inset_zoom(zoom{})\n", opt2,).unwrap();
+        }
     }
 
     /// Sets the limits of axes in the inset.
@@ -251,6 +255,16 @@ impl InsetAxes {
     /// Sets the title of the inset axes
     pub fn set_title(&mut self, title: &str) -> &mut Self {
         self.title = title.to_string();
+        self
+    }
+
+    /// Sets whether the indicator lines are enabled
+    ///
+    /// # Arguments
+    ///
+    /// * `enabled` - If true, shows the indicator lines. If false, hides them.
+    pub fn set_indicator_enabled(&mut self, enabled: bool) -> &mut Self {
+        self.indicator_enabled = enabled;
         self
     }
 
@@ -372,6 +386,26 @@ mod tests {
         let buffer = inset.get_buffer();
         assert!(buffer.contains("zoom=plt.gca().inset_axes([0.5,0.5,0.4,0.3]"));
         assert!(buffer.contains("plt.gca().indicate_inset_zoom(zoom"));
+    }
+
+    #[test]
+    #[test]
+    fn test_indicator_enabled() {
+        let mut inset = InsetAxes::new();
+        assert!(inset.indicator_enabled);
+        
+        inset.set_indicator_enabled(false);
+        assert!(!inset.indicator_enabled);
+        
+        inset.draw(0.5, 0.5, 0.4, 0.3);
+        let buffer = inset.get_buffer();
+        assert!(!buffer.contains("indicate_inset_zoom"));
+        
+        inset.set_indicator_enabled(true);
+        inset.clear_buffer();
+        inset.draw(0.5, 0.5, 0.4, 0.3);
+        let buffer = inset.get_buffer();
+        assert!(buffer.contains("indicate_inset_zoom"));
     }
 
     #[test]

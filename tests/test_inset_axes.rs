@@ -30,7 +30,8 @@ fn test_inset_axes_1() -> Result<(), StrError> {
         .set_indicator_line_width(2.0)
         .set_indicator_alpha(1.0)
         .set_indicator_hatch("x")
-        .set_extra_for_axes("xticklabels=[],yticklabels=[]")
+        .set_axes_visibility(false)
+        .set_extra_for_axes("title='ZOOM'")
         .set_extra_for_indicator("label='INDICATOR',visible=True")
         .set_range(0.0, 1.0, 5.0, 6.0);
     inset.add(&img).draw(0.5, 0.5, 0.4, 0.3);
@@ -47,6 +48,6 @@ fn test_inset_axes_1() -> Result<(), StrError> {
     let buffered = BufReader::new(file);
     let lines_iter = buffered.lines();
     let n = lines_iter.count().clone();
-    assert!(n > 510 && n < 600);
+    assert!(n > 540 && n < 640);
     Ok(())
 }

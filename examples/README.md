@@ -1,8 +1,25 @@
-# Examples
+# Examples <!-- omit from toc -->
 
 Please check out [the documentation](https://docs.rs/plotpy) and the integration tests in the [tests directory](https://github.com/cpmech/plotpy/tree/main/tests)
 
 Some output of integration tests are shown below.
+
+## Contents <!-- omit from toc --> 
+
+- [Barplot](#barplot)
+- [Boxplot](#boxplot)
+- [Canvas](#canvas)
+- [Contour](#contour)
+- [Curve](#curve)
+- [Histogram](#histogram)
+- [Image](#image)
+- [InsetAxes](#insetaxes)
+- [Legend](#legend)
+- [Plot](#plot)
+- [Subplot and GridSpec](#subplot-and-gridspec)
+- [Slope icon](#slope-icon)
+- [Surface and wireframe](#surface-and-wireframe)
+- [Text](#text)
 
 ## Barplot
 
@@ -80,6 +97,18 @@ Some output of integration tests are shown below.
 [test_image.rs](https://github.com/cpmech/plotpy/tree/main/tests/test_image.rs)
 
 ![image](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_image_1.svg)
+
+## InsetAxes
+
+[test_inset_axes.rs](https://github.com/cpmech/plotpy/tree/main/tests/test_inset_axes.rs)
+
+![inset_axes](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_inset_axes_1.svg)
+![inset_axes](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_inset_axes_2.svg)
+![inset_axes](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_inset_axes_3.svg)
+![inset_axes](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_inset_axes_4.svg)
+![inset_axes](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_inset_axes_5.svg)
+![inset_axes](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_inset_axes_6.svg)
+
 
 ## Legend
 

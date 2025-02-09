@@ -154,6 +154,7 @@ pub struct Canvas {
 }
 
 impl Canvas {
+    /// Creates a new Canvas object
     pub fn new() -> Self {
         Canvas {
             // features

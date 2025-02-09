@@ -389,18 +389,17 @@ mod tests {
     }
 
     #[test]
-    #[test]
     fn test_indicator_disabled() {
         let mut inset = InsetAxes::new();
-        assert!(!inset.indicator_disabled);
-        
+        assert_eq!(inset.indicator_disabled, false);
+
         inset.set_indicator_disabled(true);
-        assert!(inset.indicator_disabled);
-        
+        assert_eq!(inset.indicator_disabled, true);
+
         inset.draw(0.5, 0.5, 0.4, 0.3);
         let buffer = inset.get_buffer();
         assert!(!buffer.contains("indicate_inset_zoom"));
-        
+
         inset.set_indicator_disabled(false);
         inset.clear_buffer();
         inset.draw(0.5, 0.5, 0.4, 0.3);

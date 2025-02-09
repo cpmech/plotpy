@@ -2,6 +2,25 @@ use super::GraphMaker;
 use std::fmt::Write;
 
 /// Implements the capability to add inset Axes to existing Axes.
+///
+/// # Warning
+///
+/// **WARNING:** If the range of axes has been modified in [crate::Plot], e.g. by `plot.set_range(...)`,
+/// then the inset must be added after the range has been set. Otherwise, the inset will not be displayed correctly.
+/// Specifically the connector lines will not be drawn if the inset is added before `set_range`.
+///
+/// For example, below is the correct procedure:
+///
+/// ```
+/// use plotpy::{Plot, InsetAxes};
+///
+/// let mut inset = InsetAxes::new();
+/// inset.draw(0.5, 0.5, 0.4, 0.3);
+///
+/// let mut plot = Plot::new();
+/// plot.set_range(0.0, 10.0, 0.0, 10.0)
+///     .add(&inset); // IMPORTANT: add inset after setting the range
+/// ```
 pub struct InsetAxes {
     xmin: f64,
     xmax: f64,
@@ -25,6 +44,22 @@ impl InsetAxes {
     /// # Returns
     ///
     /// A new instance of `InsetAxes`.
+    ///
+    /// # Warning
+    ///
+    /// **WARNING:** If the range of axes has been modified in [crate::Plot], e.g. by `plot.set_range(...)`,
+    /// then the inset must be added after the range has been set. Otherwise, the inset will not be displayed correctly.
+    /// Specifically the connector lines will not be drawn if the inset is added before `set_range`.
+    ///
+    /// For example, below is the correct procedure:
+    ///
+    /// ```
+    /// use plotpy::{InsetAxes, Plot};
+    /// let mut inset = InsetAxes::new();
+    /// let mut plot = Plot::new();
+    /// plot.set_range(0.0, 10.0, 0.0, 10.0)
+    ///     .add(&inset); // IMPORTANT: add inset after setting the range
+    /// ```
     pub fn new() -> Self {
         Self {
             xmin: 0.0,
@@ -92,13 +127,30 @@ impl InsetAxes {
     }
 
     /// Adds new graph entity
+    ///
+    /// # Warning
+    ///
+    /// **WARNING:** If the range of axes has been modified in [crate::Plot], e.g. by `plot.set_range(...)`,
+    /// then the inset must be added after the range has been set. Otherwise, the inset will not be displayed correctly.
+    /// Specifically the connector lines will not be drawn if the inset is added before `set_range`.
+    ///
+    /// For example, below is the correct procedure:
+    ///
+    /// ```
+    /// use plotpy::{InsetAxes, Plot};
+    /// let mut inset = InsetAxes::new();
+    /// let mut plot = Plot::new();
+    /// plot.set_range(0.0, 10.0, 0.0, 10.0)
+    ///     .add(&inset); // IMPORTANT: add inset after setting the range
+    /// ```
     pub fn add(&mut self, graph: &dyn GraphMaker) -> &mut Self {
         let buf = graph
             .get_buffer()
             .replace("plt.gca()", "zoom")
             .replace("plt.barh", "zoom.barh")
             .replace("plt.bar", "zoom.bar")
-            .replace("plt.imshow", "zoom.imshow");
+            .replace("plt.imshow", "zoom.imshow")
+            .replace("plt.plot", "zoom.plot");
         self.buffer.push_str(&buf);
         self
     }
@@ -113,6 +165,40 @@ impl InsetAxes {
     /// * `v0` -- The normalized (0 to 1) vertical figure coordinate of the lower-left corner of the inset Axes.
     /// * `width` -- The width of the inset Axes.
     /// * `height` -- The height of the inset Axes.
+    ///
+    /// # Warning
+    ///
+    /// **WARNING:** If the range of axes has been modified in [crate::Plot], e.g. by `plot.set_range(...)`,
+    /// then the inset must be added after the range has been set. Otherwise, the inset will not be displayed correctly.
+    /// Specifically the connector lines will not be drawn if the inset is added before `set_range`.
+    ///
+    /// For example, below is the correct procedure:
+    ///
+    /// ```
+    /// use plotpy::{Curve, InsetAxes, Plot, StrError};
+    ///
+    /// fn main() -> Result<(), StrError> {
+    ///     // draw curve
+    ///     let mut curve = Curve::new();
+    ///     curve.draw(&[0.0, 1.0, 2.0], &[0.0, 1.0, 4.0]);
+    ///
+    ///     // allocate inset and add curve to it
+    ///     let mut inset = InsetAxes::new();
+    ///     inset
+    ///         .add(&curve) // add curve to inset
+    ///         .set_range(0.5, 1.5, 0.5, 1.5) // set the range of the inset
+    ///         .draw(0.5, 0.5, 0.4, 0.3);
+    ///
+    ///     // add curve and inset to plot
+    ///     let mut plot = Plot::new();
+    ///     plot.add(&curve)
+    ///         .set_range(0.0, 5.0, 0.0, 5.0)
+    ///         .add(&inset) // IMPORTANT: add inset after setting the range
+    ///         .save("/tmp/plotpy/doc_tests/doc_inset_axes_add.svg")
+    /// }
+    /// ```
+    ///
+    /// ![doc_inset_axes_add.svg](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/doc_inset_axes_add.svg)
     pub fn draw(&mut self, u0: f64, v0: f64, width: f64, height: f64) {
         let opt1 = self.options_for_axes();
         let opt2 = self.options_for_indicator();
@@ -132,7 +218,7 @@ impl InsetAxes {
         write!(&mut self.buffer, "plt.gca().indicate_inset_zoom(zoom{})\n", opt2,).unwrap();
     }
 
-    /// Sets the limits of axes
+    /// Sets the limits of axes in the inset.
     pub fn set_range(&mut self, xmin: f64, xmax: f64, ymin: f64, ymax: f64) -> &mut Self {
         self.xmin = xmin;
         self.xmax = xmax;

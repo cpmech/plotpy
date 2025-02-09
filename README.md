@@ -20,6 +20,7 @@
   - [Curve](#curve)
   - [Histogram](#histogram)
   - [Image](#image)
+  - [InsetAxes](#insetaxes)
   - [Surface](#surface)
   - [Text](#text)
 
@@ -126,8 +127,9 @@ fn main() -> Result<(), StrError> {
     plot.set_inv_y()
         .add(&bar)
         .set_title("Fruits")
-        .set_label_x("price")
-        .save("/tmp/plotpy/doc_tests/doc_barplot_3.svg")?;
+        .set_label_x("price");
+
+    // plot.save("/tmp/plotpy/doc_tests/doc_barplot_3.svg")?;
     Ok(())
 }
 ```
@@ -166,8 +168,9 @@ fn main() -> Result<(), StrError> {
     let mut plot = Plot::new();
     plot.add(&boxes)
         .set_title("boxplot documentation test")
-        .set_ticks_x_labels(&ticks, &labels)
-        .save("/tmp/plotpy/doc_tests/doc_boxplot_2.svg")?;
+        .set_ticks_x_labels(&ticks, &labels);
+
+    // plot.save("/tmp/plotpy/doc_tests/doc_boxplot_2.svg")?;
     Ok(())
 }
 ```
@@ -216,7 +219,8 @@ fn main() -> Result<(), StrError> {
         .set_hide_axes(true)
         .set_equal_axes(true)
         .set_show_errors(true);
-    plot.save("/tmp/plotpy/doc_tests/doc_canvas_polycurve.svg")?;
+
+    // plot.save("/tmp/plotpy/doc_tests/doc_canvas_polycurve.svg")?;
     Ok(())
 }
 ```
@@ -249,11 +253,10 @@ fn main() -> Result<(), StrError> {
 
     // add contour to plot
     let mut plot = Plot::new();
-    plot.add(&contour);
-    plot.set_labels("x", "y");
+    plot.add(&contour)
+        .set_labels("x", "y");
 
-    // save figure
-    plot.save("/tmp/plotpy/readme_contour.svg")?;
+    // plot.save("/tmp/plotpy/readme_contour.svg")?;
     Ok(())
 }
 ```
@@ -294,10 +297,11 @@ fn main() -> Result<(), StrError> {
 
     // add curve to plot
     let mut plot = Plot::new();
-    plot.add(&curve).set_num_ticks_y(11).grid_labels_legend("x", "y");
+    plot.add(&curve)
+        .set_num_ticks_y(11)
+        .grid_labels_legend("x", "y");
 
-    // save figure
-    plot.save("/tmp/plotpy/doc_tests/doc_curve.svg")?;
+    // plot.save("/tmp/plotpy/doc_tests/doc_curve.svg")?;
     Ok(())
 }
 ```
@@ -337,8 +341,7 @@ fn main() -> Result<(), StrError> {
         .set_frame_border(true, false, true, false)
         .grid_labels_legend("values", "count");
 
-    // save figure
-    plot.save("/tmp/plotpy/doc_tests/doc_histogram.svg")?;
+    // plot.save("/tmp/plotpy/doc_tests/doc_histogram.svg")?;
     Ok(())
 }
 ```
@@ -370,13 +373,42 @@ fn main() -> Result<(), StrError> {
     // save figure
     let mut plot = Plot::new();
     plot.add(&img);
-    plot.save("/tmp/plotpy/doc_tests/doc_image_1.svg")?;
+
+    // plot.save("/tmp/plotpy/doc_tests/doc_image_1.svg")?;
     Ok(())
 }
 ```
 
 ![image](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/doc_image_1.svg)
 
+
+### InsetAxes
+
+```rust
+use plotpy::{Curve, InsetAxes, Plot, StrError};
+
+fn main() -> Result<(), StrError> {
+    // draw curve
+    let mut curve = Curve::new();
+    curve.draw(&[0.0, 1.0, 2.0], &[0.0, 1.0, 4.0]);
+
+    // allocate inset and add curve to it
+    let mut inset = InsetAxes::new();
+    inset
+        .add(&curve) // add curve to inset
+        .set_range(0.5, 1.5, 0.5, 1.5) // set the range of the inset
+        .draw(0.5, 0.5, 0.4, 0.3);
+
+    // add curve and inset to plot
+    let mut plot = Plot::new();
+    plot.add(&curve)
+        .set_range(0.0, 5.0, 0.0, 5.0)
+        .add(&inset); // IMPORTANT: add inset after setting the range
+
+    // plot.save("/tmp/plotpy/doc_tests/doc_inset_axes_add.svg")?;
+    Ok(())
+}
+```
 
 
 ### Surface
@@ -432,8 +464,9 @@ fn main() -> Result<(), StrError> {
 
     // save figure
     plot.set_equal_axes(true)
-        .set_figure_size_points(600.0, 600.0)
-        .save("/tmp/plotpy/readme_superquadric.svg")?;
+        .set_figure_size_points(600.0, 600.0);
+
+    // plot.save("/tmp/plotpy/readme_superquadric.svg")?;
     Ok(())
 }
 ```
@@ -467,8 +500,7 @@ fn main() -> Result<(), StrError> {
     let mut plot = Plot::new();
     plot.add(&text);
 
-    // save figure
-    plot.save("/tmp/plotpy/doc_tests/doc_text.svg")?;
+    // plot.save("/tmp/plotpy/doc_tests/doc_text.svg")?;
     Ok(())
 }
 ```

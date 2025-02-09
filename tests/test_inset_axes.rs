@@ -124,11 +124,12 @@ fn test_inset_axes_3() -> Result<(), StrError> {
 
     // add to plot
     let mut plot = Plot::new();
-    plot.add(&canvas).add(&inset);
+    plot.add(&canvas);
 
     // save figure
     let path = Path::new(OUT_DIR).join("integ_inset_axes_3.svg");
     plot.set_range(0.0, 2.0, 0.0, 2.0)
+        .add(&inset) // <<<<<<<<<<<<< IMPORTANT: thus must be after set_range
         .set_equal_axes(true)
         .set_show_errors(true)
         .save(&path)?;
@@ -138,6 +139,6 @@ fn test_inset_axes_3() -> Result<(), StrError> {
     let buffered = BufReader::new(file);
     let lines_iter = buffered.lines();
     let n = lines_iter.count().clone();
-    assert!(n > 680 && n < 800);
+    assert!(n > 520 && n < 600);
     Ok(())
 }

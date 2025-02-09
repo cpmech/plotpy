@@ -28,6 +28,7 @@ fn test_inset_axes_1() -> Result<(), StrError> {
         .set_indicator_line_color("red")
         .set_indicator_line_style("--")
         .set_indicator_line_width(2.0)
+        .set_indicator_alpha(1.0)
         .set_indicator_hatch("x")
         .set_extra_for_axes("xticklabels=[],yticklabels=[]")
         .set_extra_for_indicator("label='INDICATOR',visible=True")

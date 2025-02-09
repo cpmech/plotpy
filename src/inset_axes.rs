@@ -13,6 +13,7 @@ pub struct InsetAxes {
     indicator_line_color: String,
     indicator_line_width: f64,
     indicator_hatch: String,
+    indicator_alpha: Option<f64>,
     buffer: String,
 }
 
@@ -34,6 +35,7 @@ impl InsetAxes {
             indicator_line_color: String::new(),
             indicator_line_width: 0.0,
             indicator_hatch: String::new(),
+            indicator_alpha: None,
             buffer: String::new(),
         }
     }
@@ -53,6 +55,12 @@ impl InsetAxes {
     /// Sets the line width for the indicator
     pub fn set_indicator_line_width(&mut self, width: f64) -> &mut Self {
         self.indicator_line_width = width;
+        self
+    }
+
+    /// Sets the alpha (opacity) for the indicator
+    pub fn set_indicator_alpha(&mut self, alpha: f64) -> &mut Self {
+        self.indicator_alpha = Some(alpha);
         self
     }
 
@@ -159,6 +167,9 @@ impl InsetAxes {
         }
         if !self.indicator_hatch.is_empty() {
             write!(&mut opt, ",hatch='{}'", self.indicator_hatch).unwrap();
+        }
+        if let Some(alpha) = self.indicator_alpha {
+            write!(&mut opt, ",alpha={}", alpha).unwrap();
         }
         if !self.extra_for_indicator.is_empty() {
             write!(&mut opt, ",{}", self.extra_for_indicator).unwrap();

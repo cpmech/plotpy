@@ -93,10 +93,13 @@ impl InsetAxes {
 
     /// Adds new graph entity
     pub fn add(&mut self, graph: &dyn GraphMaker) -> &mut Self {
-        let buf0 = graph.get_buffer();
-        let buf1 = buf0.replace("plt.gca()", "zoom");
-        let buf2 = buf1.replace("plt.imshow", "zoom.imshow");
-        self.buffer.push_str(&buf2);
+        let buf = graph
+            .get_buffer()
+            .replace("plt.gca()", "zoom")
+            .replace("plt.barh", "zoom.barh")
+            .replace("plt.bar", "zoom.bar")
+            .replace("plt.imshow", "zoom.imshow");
+        self.buffer.push_str(&buf);
         self
     }
 
@@ -266,12 +269,13 @@ mod tests {
     #[test]
     fn test_indicator_options() {
         let mut inset = InsetAxes::new();
-        inset.set_indicator_line_style("--")
+        inset
+            .set_indicator_line_style("--")
             .set_indicator_line_color("red")
             .set_indicator_line_width(2.0)
             .set_indicator_hatch("/")
             .set_indicator_alpha(0.5);
-        
+
         let options = inset.options_for_indicator();
         assert!(options.contains("linestyle='--'"));
         assert!(options.contains("edgecolor='red'"));

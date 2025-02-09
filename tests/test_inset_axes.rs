@@ -55,37 +55,51 @@ fn test_inset_axes_1() -> Result<(), StrError> {
 
 #[test]
 fn test_inset_axes_2() -> Result<(), StrError> {
-    // draw bar plot
+    // data
     let x = [0, 1, 2, 3, 4];
     let y = [5, 4, 3, 2, 1];
-    let mut bar = Barplot::new();
+
+    // define a function to draw with vertical and horizontal bars
+    let draw = |plot: &mut Plot, horizontal: bool| {
+        // allocate the Barplot and InsetAxes instances
+        let mut bar = Barplot::new();
+        let mut inset = InsetAxes::new();
+
+        // configure the barplot
+        bar.set_horizontal(horizontal).draw(&x, &y);
+
+        // configure the inset axes
+        inset.set_range(0.5, 2.5, 2.0, 4.5);
+
+        // add barplot to inset
+        inset.add(&bar).draw(0.65, 0.65, 0.335, 0.33);
+
+        // add barplot and inset to plot
+        plot.add(&bar).add(&inset);
+    };
+
+    // allocate plot and add each type of figure to a subplot
     let mut plot = Plot::new();
-    bar.set_label("Main Bars")
-        .set_colors(&["red", "green", "blue", "orange", "purple"])
-        .draw(&x, &y);
-    plot.add(&bar);
 
-    // inset axes
-    let mut inset = InsetAxes::new();
-    inset.set_range(0.5, 2.5, 2.0, 4.5);
+    // vertical bars
+    plot.set_subplot(1, 2, 1);
+    draw(&mut plot, false);
 
-    // bar plot to the inset
-    let mut inset_bar = Barplot::new();
-    inset_bar.set_colors(&["cyan", "magenta"]).draw(&[0, 1], &[2, 3]);
-    inset.add(&inset_bar).draw(0.65, 0.65, 0.335, 0.33);
-
-    // add entities to plot
-    plot.add(&bar).add(&inset);
+    // horizontal bars
+    plot.set_subplot(1, 2, 2);
+    draw(&mut plot, true);
 
     // save figure
     let path = Path::new(OUT_DIR).join("integ_inset_axes_2.svg");
-    plot.set_show_errors(true).save(&path)?;
+    plot.set_figure_size_points(650.0, 250.0)
+        .set_show_errors(true)
+        .save(&path)?;
 
     // check number of lines
     let file = File::open(path).map_err(|_| "cannot open file")?;
     let buffered = BufReader::new(file);
     let lines_iter = buffered.lines();
     let n = lines_iter.count().clone();
-    // assert!(n > 680 && n < 800);
+    assert!(n > 790 && n < 850);
     Ok(())
 }

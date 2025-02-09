@@ -159,7 +159,7 @@ impl InsetAxes {
     /// # Arguments
     ///
     /// * `visible` - If true, shows the axes ticks. If false, hides them.
-    pub fn set_axes_visibility(&mut self, visible: bool) -> &mut Self {
+    pub fn set_visibility(&mut self, visible: bool) -> &mut Self {
         self.axes_visible = visible;
         self
     }

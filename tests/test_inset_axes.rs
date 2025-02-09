@@ -252,3 +252,57 @@ fn test_inset_axes_6() -> Result<(), StrError> {
     assert!(n > 920 && n < 1010);
     Ok(())
 }
+
+#[test]
+fn test_inset_axes_7() -> Result<(), StrError> {
+    // curve
+    let mut curve = Curve::new();
+    let x = &[1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0];
+    let y = &[1.0, 4.0, 9.0, 16.0, 25.0, 36.0, 49.0, 64.0];
+    curve.draw(x, y);
+
+    // first inset axes
+    let mut inset1 = InsetAxes::new();
+    inset1
+        .set_indicator_line_color("red")
+        .add(&curve)
+        .set_range(7.0, 8.2, 55.0, 65.0)
+        .draw(0.02, 0.78, 0.2, 0.2);
+
+    // second inset axes
+    let mut inset2 = InsetAxes::new();
+    inset2
+        .set_indicator_line_color("green")
+        .add(&curve)
+        .set_range(0.8, 2.5, 0.0, 13.0)
+        .draw(0.02, 0.38, 0.3, 0.2);
+
+    // third inset axes
+    let mut inset3 = InsetAxes::new();
+    inset3
+        .set_indicator_disabled(true)
+        .set_visibility(true)
+        .set_extra_for_axes("title='MINIATURE'")
+        .add(&curve)
+        .draw(0.64, 0.08, 0.34, 0.34);
+
+    // add to plot
+    let mut plot = Plot::new();
+    plot.add(&curve);
+
+    // save figure
+    let path = Path::new(OUT_DIR).join("integ_inset_axes_7.svg");
+    plot.add(&inset1)
+        .add(&inset2)
+        .add(&inset3)
+        .set_show_errors(true)
+        .save(&path)?;
+
+    // check number of lines
+    let file = File::open(path).map_err(|_| "cannot open file")?;
+    let buffered = BufReader::new(file);
+    let lines_iter = buffered.lines();
+    let n = lines_iter.count().clone();
+    assert!(n > 900 && n < 1000);
+    Ok(())
+}

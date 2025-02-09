@@ -37,10 +37,7 @@ use std::fmt::Write;
 /// then the inset must be added after the range has been set. Otherwise, the inset will not be displayed correctly.
 /// Specifically the connector lines will not be drawn if the inset is added before `set_range`.
 pub struct InsetAxes {
-    xmin: f64,
-    xmax: f64,
-    ymin: f64,
-    ymax: f64,
+    range: Option<(f64, f64, f64, f64)>,
     extra_for_axes: String,
     extra_for_indicator: String,
     indicator_line_style: String,
@@ -49,6 +46,7 @@ pub struct InsetAxes {
     indicator_hatch: String,
     indicator_alpha: Option<f64>,
     axes_visible: bool,
+    indicator_disabled: bool,
     title: String,
     buffer: String,
 }
@@ -77,10 +75,7 @@ impl InsetAxes {
     /// ```
     pub fn new() -> Self {
         Self {
-            xmin: 0.0,
-            xmax: 1.0,
-            ymin: 0.0,
-            ymax: 1.0,
+            range: None,
             extra_for_axes: String::new(),
             extra_for_indicator: String::new(),
             indicator_line_style: String::new(),
@@ -89,6 +84,7 @@ impl InsetAxes {
             indicator_hatch: String::new(),
             indicator_alpha: None,
             axes_visible: false,
+            indicator_disabled: false,
             title: String::new(),
             buffer: String::new(),
         }
@@ -197,28 +193,37 @@ impl InsetAxes {
     pub fn draw(&mut self, u0: f64, v0: f64, width: f64, height: f64) {
         let opt1 = self.options_for_axes();
         let opt2 = self.options_for_indicator();
-        self.buffer.insert_str(
-            0,
-            &format!(
-                "zoom=plt.gca().inset_axes([{},{},{},{}],xlim=({},{}),ylim=({},{}){})\n",
-                u0, v0, width, height, self.xmin, self.xmax, self.ymin, self.ymax, opt1,
-            ),
-        );
+        if let Some((xmin, xmax, ymin, ymax)) = self.range {
+            self.buffer.insert_str(
+                0,
+                &format!(
+                    "zoom=plt.gca().inset_axes([{},{},{},{}],xlim=({},{}),ylim=({},{}){})\n",
+                    u0, v0, width, height, xmin, xmax, ymin, ymax, opt1,
+                ),
+            );
+        } else {
+            self.buffer.insert_str(
+                0,
+                &format!(
+                    "zoom=plt.gca().inset_axes([{},{},{},{}]{})\n",
+                    u0, v0, width, height, opt1,
+                ),
+            );
+        }
         if !self.axes_visible {
             write!(&mut self.buffer, "zoom.set_xticks([])\nzoom.set_yticks([])\n").unwrap();
         }
         if !self.title.is_empty() {
             write!(&mut self.buffer, "zoom.set_title(r'{}')\n", self.title).unwrap();
         }
-        write!(&mut self.buffer, "plt.gca().indicate_inset_zoom(zoom{})\n", opt2,).unwrap();
+        if !self.indicator_disabled {
+            write!(&mut self.buffer, "plt.gca().indicate_inset_zoom(zoom{})\n", opt2,).unwrap();
+        }
     }
 
     /// Sets the limits of axes in the inset.
     pub fn set_range(&mut self, xmin: f64, xmax: f64, ymin: f64, ymax: f64) -> &mut Self {
-        self.xmin = xmin;
-        self.xmax = xmax;
-        self.ymin = ymin;
-        self.ymax = ymax;
+        self.range = Some((xmin, xmax, ymin, ymax));
         self
     }
 
@@ -251,6 +256,16 @@ impl InsetAxes {
     /// Sets the title of the inset axes
     pub fn set_title(&mut self, title: &str) -> &mut Self {
         self.title = title.to_string();
+        self
+    }
+
+    /// Sets whether the indicator lines are disabled
+    ///
+    /// # Arguments
+    ///
+    /// * `disabled` - If true, hides the indicator lines. If false, shows them.
+    pub fn set_indicator_disabled(&mut self, disabled: bool) -> &mut Self {
+        self.indicator_disabled = disabled;
         self
     }
 
@@ -314,10 +329,7 @@ mod tests {
     #[test]
     fn test_new() {
         let inset = InsetAxes::new();
-        assert_eq!(inset.xmin, 0.0);
-        assert_eq!(inset.xmax, 1.0);
-        assert_eq!(inset.ymin, 0.0);
-        assert_eq!(inset.ymax, 1.0);
+        assert_eq!(inset.range, None);
         assert!(inset.buffer.is_empty());
     }
 
@@ -325,10 +337,7 @@ mod tests {
     fn test_set_range() {
         let mut inset = InsetAxes::new();
         inset.set_range(-1.0, 2.0, -3.0, 4.0);
-        assert_eq!(inset.xmin, -1.0);
-        assert_eq!(inset.xmax, 2.0);
-        assert_eq!(inset.ymin, -3.0);
-        assert_eq!(inset.ymax, 4.0);
+        assert_eq!(inset.range, Some((-1.0, 2.0, -3.0, 4.0)));
     }
 
     #[test]
@@ -372,6 +381,25 @@ mod tests {
         let buffer = inset.get_buffer();
         assert!(buffer.contains("zoom=plt.gca().inset_axes([0.5,0.5,0.4,0.3]"));
         assert!(buffer.contains("plt.gca().indicate_inset_zoom(zoom"));
+    }
+
+    #[test]
+    fn test_indicator_disabled() {
+        let mut inset = InsetAxes::new();
+        assert_eq!(inset.indicator_disabled, false);
+
+        inset.set_indicator_disabled(true);
+        assert_eq!(inset.indicator_disabled, true);
+
+        inset.draw(0.5, 0.5, 0.4, 0.3);
+        let buffer = inset.get_buffer();
+        assert!(!buffer.contains("indicate_inset_zoom"));
+
+        inset.set_indicator_disabled(false);
+        inset.clear_buffer();
+        inset.draw(0.5, 0.5, 0.4, 0.3);
+        let buffer = inset.get_buffer();
+        assert!(buffer.contains("indicate_inset_zoom"));
     }
 
     #[test]

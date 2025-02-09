@@ -108,6 +108,7 @@ Some output of integration tests are shown below.
 ![inset_axes](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_inset_axes_4.svg)
 ![inset_axes](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_inset_axes_5.svg)
 ![inset_axes](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_inset_axes_6.svg)
+![inset_axes](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_inset_axes_7.svg)
 
 
 ## Legend

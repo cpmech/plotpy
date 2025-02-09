@@ -1,4 +1,4 @@
-use plotpy::{generate3d, Barplot, Canvas, Contour, Curve, Histogram, Image, InsetAxes, Plot, StrError};
+use plotpy::{generate3d, Barplot, Canvas, Contour, Curve, Histogram, Image, InsetAxes, Plot, StrError, Text};
 use std::fs::File;
 use std::io::{BufRead, BufReader};
 use std::path::Path;
@@ -145,22 +145,27 @@ fn test_inset_axes_3() -> Result<(), StrError> {
 
 #[test]
 fn test_inset_axes_4() -> Result<(), StrError> {
-    // canvas
+    // curve
     let mut curve = Curve::new();
     let x = &[1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0];
     let y = &[1.0, 4.0, 9.0, 16.0, 25.0, 36.0, 49.0, 64.0];
     curve.draw(x, y);
 
+    // text
+    let mut text = Text::new();
+    text.set_align_horizontal("center").draw(8.0, 64.0, "LOOK!");
+
     // inset axes
     let mut inset = InsetAxes::new();
     inset
+        .add(&text)
         .add(&curve)
         .set_range(7.0, 9.0, 40.0, 70.0)
         .draw(0.05, 0.25, 0.4, 0.7);
 
     // add to plot
     let mut plot = Plot::new();
-    plot.add(&curve);
+    plot.add(&curve).add(&text);
 
     // save figure
     let path = Path::new(OUT_DIR).join("integ_inset_axes_4.svg");
@@ -174,7 +179,7 @@ fn test_inset_axes_4() -> Result<(), StrError> {
     let buffered = BufReader::new(file);
     let lines_iter = buffered.lines();
     let n = lines_iter.count().clone();
-    assert!(n > 430 && n < 500);
+    assert!(n > 500 && n < 600);
     Ok(())
 }
 

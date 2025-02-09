@@ -157,7 +157,8 @@ impl InsetAxes {
             .replace("cb.ax.set_ylabel", "ignore_this")
             .replace("plt.imshow", "zoom.imshow")
             .replace("plt.hist", "zoom.hist")
-            .replace("plt.plot", "zoom.plot");
+            .replace("plt.plot", "zoom.plot")
+            .replace("plt.text", "zoom.text");
         self.buffer.push_str(&buf);
         self
     }

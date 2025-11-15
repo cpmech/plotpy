@@ -443,7 +443,10 @@ impl Canvas {
     }
 
     /// Draws a rectangle
-    pub fn draw_rectangle(&mut self, x: f64, y: f64, width: f64, height: f64) -> &mut Self {
+    pub fn draw_rectangle<T>(&mut self, x: T, y: T, width: T, height: T) -> &mut Self
+    where
+        T: std::fmt::Display + Num,
+    {
         let opt = self.options_shared();
         write!(
             &mut self.buffer,
@@ -456,14 +459,20 @@ impl Canvas {
     }
 
     /// Draws a text in a 2D graph
-    pub fn draw_text(&mut self, x: f64, y: f64, label: &str) -> &mut Self {
-        self.text(2, &[x, y, 0.0], label, false);
+    pub fn draw_text<T>(&mut self, x: T, y: T, label: &str) -> &mut Self
+    where
+        T: std::fmt::Display + Num,
+    {
+        self.text(2, &[x, y, T::zero()], label, false);
         self
     }
 
     /// Draws an alternative text in a 2D graph
-    pub fn draw_alt_text(&mut self, x: f64, y: f64, label: &str) -> &mut Self {
-        self.text(2, &[x, y, 0.0], label, true);
+    pub fn draw_alt_text<T>(&mut self, x: T, y: T, label: &str) -> &mut Self
+    where
+        T: std::fmt::Display + Num,
+    {
+        self.text(2, &[x, y, T::zero()], label, true);
         self
     }
 
@@ -839,7 +848,10 @@ impl Canvas {
     }
 
     /// Draws 2D or 3D line
-    fn line(&mut self, ndim: usize, a: &[f64; 3], b: &[f64; 3]) {
+    fn line<T>(&mut self, ndim: usize, a: &[T; 3], b: &[T; 3])
+    where
+        T: std::fmt::Display,
+    {
         if ndim == 2 {
             write!(
                 &mut self.buffer,
@@ -859,7 +871,10 @@ impl Canvas {
     }
 
     /// Draws 2D or 3D text
-    fn text(&mut self, ndim: usize, a: &[f64; 3], txt: &str, alternative: bool) {
+    fn text<T>(&mut self, ndim: usize, a: &[T; 3], txt: &str, alternative: bool)
+    where
+        T: std::fmt::Display,
+    {
         let opt = if alternative {
             self.options_alt_text()
         } else {

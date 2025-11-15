@@ -1,5 +1,6 @@
 use super::{GraphMaker, StrError};
 use crate::AsMatrix;
+use num_traits::Num;
 use std::fmt::Write;
 
 /// Defines the poly-curve code
@@ -186,7 +187,7 @@ impl Canvas {
     /// Draws arc (2D only)
     pub fn draw_arc<T>(&mut self, xc: T, yc: T, r: T, ini_angle: T, fin_angle: T)
     where
-        T: std::fmt::Display,
+        T: std::fmt::Display + Num,
     {
         let opt = self.options_shared();
         write!(
@@ -201,7 +202,7 @@ impl Canvas {
     /// Draws arrow (2D only)
     pub fn draw_arrow<T>(&mut self, xi: T, yi: T, xf: T, yf: T)
     where
-        T: std::fmt::Display,
+        T: std::fmt::Display + Num,
     {
         let opt_shared = self.options_shared();
         let opt_arrow = self.options_arrow();
@@ -220,7 +221,7 @@ impl Canvas {
     /// Draws circle (2D only)
     pub fn draw_circle<T>(&mut self, xc: T, yc: T, r: T)
     where
-        T: std::fmt::Display,
+        T: std::fmt::Display + Num,
     {
         let opt = self.options_shared();
         write!(
@@ -251,7 +252,7 @@ impl Canvas {
     /// Afterwards, you must call [Canvas::polycurve_end] when finishing adding points.
     pub fn polycurve_add<T>(&mut self, x: T, y: T, code: PolyCode) -> &mut Self
     where
-        T: std::fmt::Display,
+        T: std::fmt::Display + Num,
     {
         let keyword = match code {
             PolyCode::MoveTo => "MOVETO",
@@ -364,7 +365,7 @@ impl Canvas {
     /// otherwise Python/Matplotlib will fail.
     pub fn polyline_3d_add<T>(&mut self, x: T, y: T, z: T) -> &mut Self
     where
-        T: std::fmt::Display,
+        T: std::fmt::Display + Num,
     {
         write!(&mut self.buffer, "[{},{},{}],", x, y, z).unwrap();
         self
@@ -391,7 +392,7 @@ impl Canvas {
     pub fn draw_polyline<'a, T, U>(&mut self, points: &'a T, closed: bool)
     where
         T: AsMatrix<'a, U>,
-        U: 'a + std::fmt::Display,
+        U: 'a + std::fmt::Display + Num,
     {
         let (npoint, ndim) = points.size();
         if npoint < 2 {

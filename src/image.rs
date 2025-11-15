@@ -143,7 +143,7 @@ mod tests {
         let xx = [[1, 2], [3, 2]];
         let mut img = Image::new();
         img.set_colormap_index(0).set_colormap_name("terrain").draw(&xx);
-        let b: &str = "data=np.array([[1,2,],[3,2,],],dtype=float)\n\
+        let b: &str = "data=np.array([[1,2,],[3,2,],])\n\
                        plt.imshow(data,cmap=plt.get_cmap('terrain'))\n";
         assert_eq!(img.buffer, b);
         img.clear_buffer();

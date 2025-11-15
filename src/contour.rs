@@ -536,11 +536,11 @@ mod tests {
         let y = vec![vec![-0.5, -0.5, -0.5], vec![0.0, 0.0, 0.0], vec![0.5, 0.5, 0.5]];
         let z = vec![vec![0.50, 0.25, 0.50], vec![0.25, 0.00, 0.25], vec![0.50, 0.25, 0.50]];
         contour.draw(&x, &y, &z);
-        let b: &str = "x=np.array([[-0.5,0,0.5,],[-0.5,0,0.5,],[-0.5,0,0.5,],],dtype=float)\n\
-                       y=np.array([[-0.5,-0.5,-0.5,],[0,0,0,],[0.5,0.5,0.5,],],dtype=float)\n\
-                       z=np.array([[0.5,0.25,0.5,],[0.25,0,0.25,],[0.5,0.25,0.5,],],dtype=float)\n\
+        let b: &str = "x=np.array([[-0.5,0,0.5,],[-0.5,0,0.5,],[-0.5,0,0.5,],])\n\
+                       y=np.array([[-0.5,-0.5,-0.5,],[0,0,0,],[0.5,0.5,0.5,],])\n\
+                       z=np.array([[0.5,0.25,0.5,],[0.25,0,0.25,],[0.5,0.25,0.5,],])\n\
                        colors=['#f00','#0f0','#00f',]\n\
-                       levels=np.array([0.25,0.5,1,],dtype=float)\n\
+                       levels=np.array([0.25,0.5,1,])\n\
                        cf=plt.contourf(x,y,z,colors=colors,levels=levels)\n\
                        cl=plt.contour(x,y,z,colors=['black'],levels=levels)\n\
                        plt.clabel(cl,inline=True)\n\

@@ -365,7 +365,7 @@ mod tests {
         ];
         let mut boxes = Boxplot::new();
         boxes.draw_mat(&x);
-        let b: &str = "x=np.array([[1,2,3,4,5,],[2,3,4,5,6,],[3,4,5,6,7,],[4,5,6,7,8,],[5,6,7,8,9,],[6,7,8,9,10,],],dtype=float)\n\
+        let b: &str = "x=np.array([[1,2,3,4,5,],[2,3,4,5,6,],[3,4,5,6,7,],[4,5,6,7,8,],[5,6,7,8,9,],[6,7,8,9,10,],])\n\
                        p=plt.boxplot(x)\n";
         assert_eq!(boxes.buffer, b);
         boxes.clear_buffer();
@@ -392,7 +392,7 @@ mod tests {
             .set_positions(&[1.0, 2.0, 3.0, 4.0, 5.0])
             .set_width(0.5)
             .draw_mat(&x);
-        let b: &str = "x=np.array([[1,2,3,4,5,],[2,3,4,5,6,],[3,4,5,6,7,],[4,5,6,7,8,],[5,6,7,8,9,],[6,7,8,9,10,],],dtype=float)\n\
+        let b: &str = "x=np.array([[1,2,3,4,5,],[2,3,4,5,6,],[3,4,5,6,7,],[4,5,6,7,8,],[5,6,7,8,9,],[6,7,8,9,10,],])\n\
                        positions=[1,2,3,4,5,]\n\
                        p=plt.boxplot(x,sym=r'b+',vert=False,whis=1.5,positions=positions,widths=0.5,showfliers=False)\n";
         assert_eq!(boxes.buffer, b);

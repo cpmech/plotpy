@@ -1,4 +1,5 @@
 use super::GraphMaker;
+use num_traits::Num;
 use std::fmt::Write;
 
 /// Creates text to be added to a plot
@@ -79,7 +80,10 @@ impl Text {
     }
 
     /// Draws text
-    pub fn draw(&mut self, x: f64, y: f64, message: &str) {
+    pub fn draw<T>(&mut self, x: T, y: T, message: &str)
+    where
+        T: std::fmt::Display + Num,
+    {
         let opt = self.options();
         write!(&mut self.buffer, "t=plt.text({},{},r'{}'{})\n", x, y, message, &opt).unwrap();
         if self.bbox {
@@ -89,7 +93,10 @@ impl Text {
     }
 
     /// Draws text in 3D plot
-    pub fn draw_3d(&mut self, x: f64, y: f64, z: f64, message: &str) {
+    pub fn draw_3d<T>(&mut self, x: T, y: T, z: T, message: &str)
+    where
+        T: std::fmt::Display + Num,
+    {
         let opt = self.options();
         write!(
             &mut self.buffer,

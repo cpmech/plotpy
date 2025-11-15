@@ -216,7 +216,7 @@ impl Curve {
     /// otherwise Python/Matplotlib will fail.
     pub fn points_add<T>(&mut self, x: T, y: T) -> &mut Self
     where
-        T: std::fmt::Display,
+        T: std::fmt::Display + Num,
     {
         write!(&mut self.buffer, "[{},{}],", x, y).unwrap();
         self
@@ -253,7 +253,7 @@ impl Curve {
     /// otherwise Python/Matplotlib will fail.
     pub fn points_3d_add<T>(&mut self, x: T, y: T, z: T) -> &mut Self
     where
-        T: std::fmt::Display,
+        T: std::fmt::Display + Num,
     {
         write!(&mut self.buffer, "[{},{},{}],", x, y, z).unwrap();
         self

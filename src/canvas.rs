@@ -236,6 +236,23 @@ impl Canvas {
         .unwrap();
     }
 
+    /// Draws triangles (2D only)
+    ///
+    /// Using <https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.triplot.html>
+    pub fn draw_triangles<'a, T, U, C>(&mut self, xx: &'a T, yy: &'a T, connectivity: &'a C) -> &mut Self
+    where
+        T: AsVector<'a, U>,
+        U: 'a + std::fmt::Display + Num,
+        C: AsMatrix<'a, usize>,
+    {
+        vector_to_array(&mut self.buffer, "xx", xx);
+        vector_to_array(&mut self.buffer, "yy", yy);
+        matrix_to_array(&mut self.buffer, "triangles", connectivity);
+        let opt = self.options_triangles();
+        write!(&mut self.buffer, "plt.triplot(xx,yy,triangles{})\n", &opt).unwrap();
+        self
+    }
+
     /// Draws triangles (3D only)
     ///
     /// Using <https://matplotlib.org/stable/api/_as_gen/mpl_toolkits.mplot3d.axes3d.Axes3D.plot_trisurf.html#mpl_toolkits.mplot3d.axes3d.Axes3D.plot_trisurf>
@@ -262,12 +279,8 @@ impl Canvas {
         //
         // Also, there is no way to set shading and facecolor at the same time.
 
-        // disable facecolor temporarily
-        let prev_facecolor = self.face_color.clone();
-        self.face_color = String::new();
-
         // get options without facecolor
-        let opt = self.options_shared();
+        let opt = self.options_triangles_3d();
 
         // write Python command
         let shade = if self.shading { "True" } else { "False" };
@@ -279,18 +292,15 @@ impl Canvas {
         .unwrap();
 
         // set facecolor if specified
-        if prev_facecolor != "" {
+        if self.face_color != "" {
             write!(
                 &mut self.buffer,
                 "colors=np.array(['{}']*len(triangles))\n\
                 poly_collection.set_facecolor(colors)\n",
-                prev_facecolor
+                self.face_color
             )
             .unwrap();
         }
-
-        // restore facecolor
-        self.face_color = prev_facecolor;
 
         // done
         self
@@ -828,6 +838,42 @@ impl Canvas {
     pub fn set_shading(&mut self, flag: bool) -> &mut Self {
         self.shading = flag;
         self
+    }
+
+    /// Returns options for triangles (2D only)
+    fn options_triangles(&self) -> String {
+        let mut opt = String::new();
+        if self.edge_color != "" {
+            write!(&mut opt, ",color='{}'", self.edge_color).unwrap();
+        }
+        if self.line_width > 0.0 {
+            write!(&mut opt, ",linewidth={}", self.line_width).unwrap();
+        }
+        if self.line_style != "" {
+            write!(&mut opt, ",linestyle='{}'", self.line_style).unwrap();
+        }
+        if self.stop_clip {
+            write!(&mut opt, ",clip_on=False").unwrap();
+        }
+        opt
+    }
+
+    /// Returns shared options
+    fn options_triangles_3d(&self) -> String {
+        let mut opt = String::new();
+        if self.edge_color != "" {
+            write!(&mut opt, ",edgecolor='{}'", self.edge_color).unwrap();
+        }
+        if self.line_width > 0.0 {
+            write!(&mut opt, ",linewidth={}", self.line_width).unwrap();
+        }
+        if self.line_style != "" {
+            write!(&mut opt, ",linestyle='{}'", self.line_style).unwrap();
+        }
+        if self.stop_clip {
+            write!(&mut opt, ",clip_on=False").unwrap();
+        }
+        opt
     }
 
     /// Returns shared options

@@ -1,5 +1,6 @@
 use super::{GraphMaker, StrError};
-use crate::AsMatrix;
+use crate::conversions::{matrix_to_array, vector_to_array};
+use crate::{AsMatrix, AsVector};
 use num_traits::Num;
 use std::fmt::Write;
 
@@ -149,6 +150,7 @@ pub struct Canvas {
 
     // options
     stop_clip: bool, // Stop clipping features within margins
+    shading: bool,   // Shading for 3D surfaces (currently used only in draw_triangles_3d). Default = true
 
     // buffer
     buffer: String, // buffer
@@ -179,6 +181,7 @@ impl Canvas {
             alt_text_rotation: 45.0,
             // options
             stop_clip: false,
+            shading: true,
             // buffer
             buffer: String::new(),
         }
@@ -231,6 +234,66 @@ impl Canvas {
             xc, yc, r, &opt
         )
         .unwrap();
+    }
+
+    /// Draws triangles (3D only)
+    ///
+    /// Using <https://matplotlib.org/stable/api/_as_gen/mpl_toolkits.mplot3d.axes3d.Axes3D.plot_trisurf.html#mpl_toolkits.mplot3d.axes3d.Axes3D.plot_trisurf>
+    ///
+    /// Note: There is no way to set shading and facecolor at the same time.
+    pub fn draw_triangles_3d<'a, T, U, C>(&mut self, xx: &'a T, yy: &'a T, zz: &'a T, connectivity: &'a C) -> &mut Self
+    where
+        T: AsVector<'a, U>,
+        U: 'a + std::fmt::Display + Num,
+        C: AsMatrix<'a, usize>,
+    {
+        // write arrays
+        vector_to_array(&mut self.buffer, "xx", xx);
+        vector_to_array(&mut self.buffer, "yy", yy);
+        vector_to_array(&mut self.buffer, "zz", zz);
+        matrix_to_array(&mut self.buffer, "triangles", connectivity);
+
+        // Issue when setting facecolor directly:
+        //
+        // In matplotlib 3.6+, passing facecolors as a parameter directly to plot_trisurf() doesn't work.
+        // The solution is:
+        // * Create the surface first with shade=False
+        // * Then use set_facecolor() to apply the colors after the surface is created
+        //
+        // Also, there is no way to set shading and facecolor at the same time.
+
+        // disable facecolor temporarily
+        let prev_facecolor = self.face_color.clone();
+        self.face_color = String::new();
+
+        // get options without facecolor
+        let opt = self.options_shared();
+
+        // write Python command
+        let shade = if self.shading { "True" } else { "False" };
+        write!(
+            &mut self.buffer,
+            "poly_collection=ax3d().plot_trisurf(xx,yy,zz,triangles=triangles,shade={}{})\n",
+            shade, &opt
+        )
+        .unwrap();
+
+        // set facecolor if specified
+        if prev_facecolor != "" {
+            write!(
+                &mut self.buffer,
+                "colors=np.array(['{}']*len(triangles))\n\
+                poly_collection.set_facecolor(colors)\n",
+                prev_facecolor
+            )
+            .unwrap();
+        }
+
+        // restore facecolor
+        self.face_color = prev_facecolor;
+
+        // done
+        self
     }
 
     /// Begins drawing a polycurve (straight segments, quadratic Bezier, and cubic Bezier) (2D only)
@@ -754,6 +817,16 @@ impl Canvas {
     /// Sets the flag to stop clipping features within margins
     pub fn set_stop_clip(&mut self, flag: bool) -> &mut Self {
         self.stop_clip = flag;
+        self
+    }
+
+    /// Sets shading for 3D surfaces (currently used only in draw_triangles_3d)
+    ///
+    /// Note: Shading is disabled if facecolor is non-empty.
+    ///
+    /// Default = true
+    pub fn set_shading(&mut self, flag: bool) -> &mut Self {
+        self.shading = flag;
         self
     }
 

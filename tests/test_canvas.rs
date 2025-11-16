@@ -427,3 +427,47 @@ fn test_canvas_rectangle_and_text() -> Result<(), StrError> {
     assert!(n > 530 && n < 600);
     Ok(())
 }
+
+#[test]
+fn test_canvas_draw_triangles_3d() -> Result<(), StrError> {
+    // point coordinates (one tetrahedron)
+    let xx = &[0.0, 1.0, 0.0, 0.0];
+    let yy = &[0.0, 0.0, 1.0, 0.0];
+    let zz = &[0.0, 0.0, 0.0, 1.0];
+    let triangles = &[[0, 1, 2], [0, 1, 3], [0, 2, 3], [1, 2, 3]];
+
+    // canvas
+    let mut canvas_shading = Canvas::new();
+    let mut canvas_facecolor = Canvas::new();
+
+    // configurations
+    canvas_shading.set_edge_color("#17d8e9ff").set_line_width(4.0);
+    canvas_facecolor
+        .set_face_color("#de3163")
+        .set_edge_color("#17d8e9ff")
+        .set_line_width(4.0);
+
+    // draw triangles
+    canvas_shading.draw_triangles_3d(xx, yy, zz, triangles);
+    canvas_facecolor.draw_triangles_3d(xx, yy, zz, triangles);
+
+    // add canvas to plot
+    let mut plot = Plot::new();
+    plot.set_subplot_3d(1, 2, 1).add(&canvas_shading);
+    plot.set_subplot_3d(1, 2, 2).add(&canvas_facecolor);
+
+    // save figure
+    let path = Path::new(OUT_DIR).join("integ_canvas_draw_triangles_3d.svg");
+    plot.set_equal_axes(true)
+        .set_show_errors(true)
+        .set_figure_size_points(800.0, 400.0)
+        .save(&path)?;
+
+    // check number of lines
+    let file = File::open(path).map_err(|_| "cannot open file")?;
+    let buffered = BufReader::new(file);
+    let lines_iter = buffered.lines();
+    let n = lines_iter.count();
+    assert!(n > 1120 && n < 1180);
+    Ok(())
+}

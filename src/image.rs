@@ -1,4 +1,4 @@
-use super::{matrix_to_array, AsMatrix, GraphMaker};
+use super::{generate_nested_list_3, matrix_to_array, AsMatrix, GraphMaker};
 use num_traits::Num;
 use std::fmt::Write;
 
@@ -55,12 +55,35 @@ impl Image {
     }
 
     /// (imshow) Displays data as an image
+    ///
+    /// # Arguments
+    ///
+    /// * `data` - 2D matrix-like data structure
+    ///
+    /// See <https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.imshow.html>
     pub fn draw<'a, T, U>(&mut self, data: &'a T)
     where
         T: AsMatrix<'a, U>,
         U: 'a + std::fmt::Display + Num,
     {
         matrix_to_array(&mut self.buffer, "data", data);
+        let opt = self.options();
+        write!(&mut self.buffer, "plt.imshow(data{})\n", &opt).unwrap();
+    }
+
+    /// (imshow) Displays data as an image with RGB or RGB(A) values
+    ///
+    /// # Arguments
+    ///
+    /// * `data` - 3D vector with shape (height, width, 3) for RGB or (height, width, 4) for RGBA
+    ///   The inner-most vector contains the color channels.
+    ///
+    /// See <https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.imshow.html>
+    pub fn draw_rgb_or_rgba<T>(&mut self, data: &Vec<Vec<Vec<T>>>)
+    where
+        T: std::fmt::Display + Num,
+    {
+        generate_nested_list_3(&mut self.buffer, "data", data);
         let opt = self.options();
         write!(&mut self.buffer, "plt.imshow(data{})\n", &opt).unwrap();
     }

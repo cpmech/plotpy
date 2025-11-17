@@ -56,6 +56,26 @@ where
     write!(buf, "]\n").unwrap();
 }
 
+/// Generates a 3-deep nested Python list
+pub(crate) fn generate_nested_list_3<T>(buf: &mut String, name: &str, data: &Vec<Vec<Vec<T>>>)
+where
+    T: std::fmt::Display + Num,
+{
+    write!(buf, "{}=[", name).unwrap();
+    for row in data.into_iter() {
+        write!(buf, "[").unwrap();
+        for val in row.into_iter() {
+            write!(buf, "[",).unwrap();
+            for v in val.into_iter() {
+                write!(buf, "{},", v).unwrap();
+            }
+            write!(buf, "],").unwrap();
+        }
+        write!(buf, "],").unwrap();
+    }
+    write!(buf, "]\n").unwrap();
+}
+
 /// Converts a matrix to a 2D NumPy array
 pub(crate) fn matrix_to_array<'a, T, U>(buf: &mut String, name: &str, matrix: &'a T)
 where
@@ -78,7 +98,7 @@ where
 
 #[cfg(test)]
 mod tests {
-    use super::{generate_list, generate_list_quoted, generate_nested_list, matrix_to_array, vector_to_array};
+    use super::*;
 
     #[test]
     fn generate_list_works() {
@@ -137,6 +157,17 @@ mod tests {
         let a = vec![vec![1.0, 2.0, 3.0], vec![4.0, 5.0], vec![6.0, 7.0, 8.0, 9.0]];
         generate_nested_list(&mut buf, "a", &a);
         assert_eq!(buf, "a=[[1,2,3,],[4,5,],[6,7,8,9,],]\n");
+    }
+
+    #[test]
+    fn generate_nested_list_3_works() {
+        let mut buf = String::new();
+        let a = vec![
+            vec![vec![1.0, 0.0, 0.0, 1.0], vec![0.0, 1.0, 0.0, 1.0]], // Row 0: Red, Green
+            vec![vec![0.0, 0.0, 1.0, 1.0], vec![1.0, 1.0, 1.0, 0.5]], // Row 1: Blue, White (semi-transparent)
+        ];
+        generate_nested_list_3(&mut buf, "a", &a);
+        assert_eq!(buf, "a=[[[1,0,0,1,],[0,1,0,1,],],[[0,0,1,1,],[1,1,1,0.5,],],]\n");
     }
 
     #[test]

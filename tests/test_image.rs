@@ -37,3 +37,93 @@ fn test_image_1() -> Result<(), StrError> {
     assert!(c > 420 && c < 500);
     Ok(())
 }
+
+#[test]
+fn test_image_with_rgb() -> Result<(), StrError> {
+    let data = vec![
+        // --- Row 0 ---
+        vec![
+            vec![1.0, 0.0, 0.0], // Pixel 0,0: Red
+            vec![0.0, 1.0, 0.0], // Pixel 0,1: Green
+            vec![0.0, 0.0, 1.0], // Pixel 0,2: Blue
+        ],
+        // --- Row 1 ---
+        vec![
+            vec![1.0, 1.0, 0.0], // Pixel 1,0: Yellow
+            vec![1.0, 0.0, 1.0], // Pixel 1,1: Magenta
+            vec![0.0, 1.0, 1.0], // Pixel 1,2: Cyan
+        ],
+        // --- Row 2 ---
+        vec![
+            vec![0.5, 0.5, 0.5], // Pixel 2,0: Gray
+            vec![1.0, 1.0, 1.0], // Pixel 2,1: White
+            vec![0.0, 0.0, 0.0], // Pixel 2,2: Black
+        ],
+    ];
+
+    // image plot and options
+    let mut img = Image::new();
+    img.set_colormap_name("terrain")
+        .set_extra("alpha=0.8")
+        .draw_rgb_or_rgba(&data);
+
+    let mut plot = Plot::new();
+    plot.add(&img);
+
+    // save figure
+    let path = Path::new(OUT_DIR).join("integ_image_with_rgb.svg");
+    plot.set_show_errors(true).save(&path)?;
+
+    // check number of lines
+    let file = File::open(path).map_err(|_| "cannot open file")?;
+    let buffered = BufReader::new(file);
+    let lines_iter = buffered.lines();
+    let c = lines_iter.count();
+    assert!(c > 400 && c < 430);
+    Ok(())
+}
+
+#[test]
+fn test_image_with_rgba() -> Result<(), StrError> {
+    let data = vec![
+        // --- Row 0 ---
+        vec![
+            vec![1.0, 0.0, 0.0, 0.5], // Pixel 0,0: Red
+            vec![0.0, 1.0, 0.0, 0.5], // Pixel 0,1: Green
+            vec![0.0, 0.0, 1.0, 0.5], // Pixel 0,2: Blue
+        ],
+        // --- Row 1 ---
+        vec![
+            vec![1.0, 1.0, 0.0, 0.8], // Pixel 1,0: Yellow
+            vec![1.0, 0.0, 1.0, 0.8], // Pixel 1,1: Magenta
+            vec![0.0, 1.0, 1.0, 0.8], // Pixel 1,2: Cyan
+        ],
+        // --- Row 2 ---
+        vec![
+            vec![0.5, 0.5, 0.5, 0.2], // Pixel 2,0: Gray
+            vec![1.0, 1.0, 1.0, 0.2], // Pixel 2,1: White
+            vec![0.0, 0.0, 0.0, 0.2], // Pixel 2,2: Black
+        ],
+    ];
+
+    // image plot and options
+    let mut img = Image::new();
+    img.set_colormap_name("terrain")
+        .set_extra("alpha=0.8")
+        .draw_rgb_or_rgba(&data);
+
+    let mut plot = Plot::new();
+    plot.add(&img);
+
+    // save figure
+    let path = Path::new(OUT_DIR).join("integ_image_with_rgba.svg");
+    plot.set_show_errors(true).save(&path)?;
+
+    // check number of lines
+    let file = File::open(path).map_err(|_| "cannot open file")?;
+    let buffered = BufReader::new(file);
+    let lines_iter = buffered.lines();
+    let c = lines_iter.count();
+    assert!(c > 400 && c < 430);
+    Ok(())
+}

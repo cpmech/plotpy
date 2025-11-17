@@ -514,6 +514,23 @@ impl Plot {
         self
     }
 
+    /// Sets an option to hide/show the 3D grid and panes (make them transparent)
+    ///
+    /// **Important:** This function must be called after adding all 3D surfaces/curves to the plot.
+    pub fn set_hide_3d_grid(&mut self, hide: bool) -> &mut Self {
+        if hide {
+            self.buffer.push_str(
+                "plt.gca().xaxis.pane.set_color((1.0, 1.0, 1.0, 0.0))\n\
+                 plt.gca().yaxis.pane.set_color((1.0, 1.0, 1.0, 0.0))\n\
+                 plt.gca().zaxis.pane.set_color((1.0, 1.0, 1.0, 0.0))\n\
+                 plt.gca().grid(False)\n",
+            );
+        } else {
+            self.buffer.push_str("plt.gca().grid(True)\n");
+        }
+        self
+    }
+
     /// Sets axes limits
     pub fn set_range_3d(&mut self, xmin: f64, xmax: f64, ymin: f64, ymax: f64, zmin: f64, zmax: f64) -> &mut Self {
         write!(

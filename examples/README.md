@@ -95,6 +95,8 @@ Some output of integration tests are shown below.
 ## Image
 
 [test_image.rs](https://github.com/cpmech/plotpy/tree/main/tests/test_image.rs)
+[test_image_with_rgb.rs](https://github.com/cpmech/plotpy/tree/main/tests/test_image_with_rgb.rs)
+[test_image_with_rgba.rs](https://github.com/cpmech/plotpy/tree/main/tests/test_image_with_rgba.rs)
 
 ![image](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_image_1.svg)
 

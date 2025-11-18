@@ -1060,13 +1060,24 @@ impl Plot {
     ///
     /// # Input
     ///
-    /// * `elev` -- is the elevation angle in the z plane
+    /// * `elevation` -- is the elevation angle in the z plane
     /// * `azimuth` -- is the azimuth angle in the x,y plane
-    pub fn set_camera(&mut self, elev: f64, azimuth: f64) -> &mut Self {
+    ///
+    /// | view plane | elev | azim |
+    /// |------------|------|------|
+    /// | XY         | 90   | -90  |
+    /// | XZ         | 0    | -90  |
+    /// | YZ         | 0    | 0    |
+    /// | -XY        | -90  | 90   |
+    /// | -XZ        | 0    | 90   |
+    /// | -YZ        | 0    | 180  |
+    ///
+    /// See <https://matplotlib.org/stable/api/_as_gen/mpl_toolkits.mplot3d.axes3d.Axes3D.view_init.html>
+    pub fn set_camera(&mut self, elevation: f64, azimuth: f64) -> &mut Self {
         write!(
             &mut self.buffer,
             "plt.gca().view_init(elev={},azim={})\n",
-            elev, azimuth
+            elevation, azimuth
         )
         .unwrap();
         self

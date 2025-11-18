@@ -510,3 +510,54 @@ fn test_canvas_draw_triangles_3d() -> Result<(), StrError> {
     assert!(n > 1120 && n < 1180);
     Ok(())
 }
+
+#[test]
+fn test_canvas_glyph_3d_and_hide_3d_grid() -> Result<(), StrError> {
+    let y = 0.5;
+    const W: f64 = 2.0;
+    const H: f64 = 1.0;
+    let mut canvas = Canvas::new();
+    canvas.set_edge_color("orange").set_line_width(5.0);
+    canvas
+        .polyline_3d_begin()
+        .polyline_3d_add(W, y, 0.0)
+        .polyline_3d_add(0.0, y, 0.0)
+        .polyline_3d_add(0.0, y, H)
+        .polyline_3d_add(W, y, H)
+        .polyline_3d_add(W, y, 0.0) // close
+        .polyline_3d_end();
+
+    canvas.set_glyph_line_width(4.0).draw_glyph_3d(1.5, -2.5, -1.0);
+
+    canvas
+        .set_glyph_label_color("black")
+        .set_glyph_line_width(4.0)
+        .draw_glyph_3d(1.5, -0.5, -1.0);
+
+    canvas
+        .set_glyph_label_color("")
+        .set_glyph_color_x("#7a1581ff")
+        .set_glyph_color_y("#c87208ff")
+        .set_glyph_color_z("#12827cff")
+        .set_glyph_line_width(4.0)
+        .set_glyph_bbox("boxstyle='circle,pad=0.2',facecolor='white',edgecolor='black'")
+        .draw_glyph_3d(-1.0, -2.5, -1.0);
+
+    // add canvas to plot
+    let mut plot = Plot::new();
+    plot.add(&canvas).set_hide_3d_grid(true).set_camera(30.0, 30.0);
+
+    // save figure
+    let path = Path::new(OUT_DIR).join("integ_canvas_glyph_3d_and_hide_3d_grid.svg");
+    plot.set_equal_axes(true).set_show_errors(true);
+    plot.save(&path)?;
+    // plot.save_and_show(&path)?;
+
+    // check number of lines
+    let file = File::open(path).map_err(|_| "cannot open file")?;
+    let buffered = BufReader::new(file);
+    let lines_iter = buffered.lines();
+    let n = lines_iter.count();
+    assert!(n > 850 && n < 910);
+    Ok(())
+}

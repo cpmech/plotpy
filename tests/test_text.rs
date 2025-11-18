@@ -49,6 +49,35 @@ fn test_text() -> Result<(), StrError> {
 }
 
 #[test]
+fn test_text_negative_rotation() -> Result<(), StrError> {
+    // text object and options
+    let mut text = Text::new();
+
+    // draw text
+    text.set_align_horizontal("center")
+        .set_align_vertical("center")
+        .set_fontsize(20.0)
+        .set_rotation(-30.0)
+        .draw(0.5, 0.5, "NEGATIVE ROTATION");
+
+    // add text to plot
+    let mut plot = Plot::new();
+    plot.add(&text).set_range(0.0, 1.0, 0.0, 1.0);
+
+    // save figure
+    let path = Path::new(OUT_DIR).join("integ_text_negative_rotation.svg");
+    plot.set_show_errors(true).save(&path)?;
+
+    // check number of lines
+    let file = File::open(path).map_err(|_| "cannot open file")?;
+    let buffered = BufReader::new(file);
+    let lines_iter = buffered.lines();
+    let n = lines_iter.count();
+    assert!(n > 570 && n < 620);
+    Ok(())
+}
+
+#[test]
 fn test_text_3d() -> Result<(), StrError> {
     // text object and options
     let mut text = Text::new();

@@ -46,7 +46,7 @@ pub struct Text {
     align_horizontal: String, // Horizontal alignment
     align_vertical: String,   // Vertical alignment
     fontsize: f64,            // Font size
-    rotation: f64,            // Text rotation
+    rotation: Option<f64>,    // Text rotation
 
     // bounding box
     bbox: bool,             // Use bounding box
@@ -68,7 +68,7 @@ impl Text {
             align_horizontal: String::new(),
             align_vertical: String::new(),
             fontsize: 0.0,
-            rotation: 0.0,
+            rotation: None,
             bbox: false,
             bbox_facecolor: String::new(),
             bbox_edgecolor: String::new(),
@@ -138,9 +138,11 @@ impl Text {
         self
     }
 
-    /// Sets the text rotation (2D only)
+    /// Sets the text rotation angle in degrees (2D only)
+    ///
+    /// See <https://matplotlib.org/stable/api/text_api.html#matplotlib.text.Text.set_rotation>
     pub fn set_rotation(&mut self, rotation: f64) -> &mut Self {
-        self.rotation = rotation;
+        self.rotation = Some(rotation);
         self
     }
 
@@ -217,8 +219,8 @@ impl Text {
         if self.fontsize > 0.0 {
             write!(&mut opt, ",fontsize={}", self.fontsize).unwrap();
         }
-        if self.rotation > 0.0 {
-            write!(&mut opt, ",rotation={}", self.rotation).unwrap();
+        if let Some(rotation) = self.rotation {
+            write!(&mut opt, ",rotation={}", rotation).unwrap();
         }
         if self.extra != "" {
             write!(&mut opt, ",{}", self.extra).unwrap();
@@ -266,7 +268,7 @@ mod tests {
         assert_eq!(text.align_horizontal.len(), 0);
         assert_eq!(text.align_vertical.len(), 0);
         assert_eq!(text.fontsize, 0.0);
-        assert_eq!(text.rotation, 0.0);
+        assert_eq!(text.rotation, None);
         assert_eq!(text.buffer.len(), 0);
     }
 

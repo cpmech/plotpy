@@ -11,6 +11,7 @@ Some output of integration tests are shown below.
 - [Canvas](#canvas)
 - [Contour](#contour)
 - [Curve](#curve)
+- [FillBetween](#fillbetween)
 - [Histogram](#histogram)
 - [Image](#image)
 - [InsetAxes](#insetaxes)
@@ -44,6 +45,9 @@ Some output of integration tests are shown below.
 
 [test_canvas.rs](https://github.com/cpmech/plotpy/tree/main/tests/test_canvas.rs)
 
+![canvas](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_canvas_draw_triangles_3d.svg)
+![canvas](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_canvas_draw_triangles.svg)
+![canvas](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_canvas_glyph_3d_and_hide_3d_grid.svg)
 ![canvas](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_canvas_grid_2d.svg)
 ![canvas](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_canvas_grid_3d.svg)
 ![canvas](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_canvas_polycurve_cubic.svg)
@@ -84,6 +88,14 @@ Some output of integration tests are shown below.
 ![curve](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_curve_points_methods.svg)
 ![curve](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_curve_twinx.svg)
 ![curve](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_curve.svg)
+
+## FillBetween
+
+[test_fill_between.rs](https://github.com/cpmech/plotpy/tree/main/tests/test_fill_between.rs)
+
+![curve](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_fill_between_1.svg)
+![curve](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_fill_between_2.svg)
+![curve](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_fill_between_3.svg)
 
 ## Histogram
 

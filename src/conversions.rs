@@ -37,7 +37,7 @@ where
     for i in 0..m {
         write!(buf, "{},", vector.vec_at(i)).unwrap();
     }
-    write!(buf, "],dtype=float)\n").unwrap();
+    write!(buf, "])\n").unwrap();
 }
 
 /// Generates a nested Python list
@@ -91,7 +91,7 @@ where
         }
         write!(buf, "],").unwrap();
     }
-    write!(buf, "],dtype=float)\n").unwrap();
+    write!(buf, "])\n").unwrap();
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -145,9 +145,9 @@ mod tests {
         vector_to_array(&mut buf, "z", &z);
         assert_eq!(
             buf,
-            "x=np.array([0.1,0.2,0.3,],dtype=float)\n\
-             y=np.array([1,2,3,],dtype=float)\n\
-             z=np.array([10,20,30,],dtype=float)\n"
+            "x=np.array([0.1,0.2,0.3,])\n\
+             y=np.array([1,2,3,])\n\
+             z=np.array([10,20,30,])\n"
         );
     }
 
@@ -181,9 +181,9 @@ mod tests {
         matrix_to_array(&mut buf, "c", &c);
         assert_eq!(
             buf,
-            "a=np.array([[1,2,3,],[4,5,6,],[7,8,9,],],dtype=float)\n\
-             b=np.array([[1,2,3,],[4,5,6,],[7,8,9,],],dtype=float)\n\
-             c=np.array([[1,2,3,],[4,5,6,],[7,8,9,],],dtype=float)\n"
+            "a=np.array([[1,2,3,],[4,5,6,],[7,8,9,],])\n\
+             b=np.array([[1,2,3,],[4,5,6,],[7,8,9,],])\n\
+             c=np.array([[1,2,3,],[4,5,6,],[7,8,9,],])\n"
         );
     }
 }

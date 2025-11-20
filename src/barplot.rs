@@ -322,8 +322,8 @@ mod tests {
         let yy = [5, 4, 3, 2, 1, 0, 1, 2, 3, 4];
         let mut bar = Barplot::new();
         bar.draw(&xx, &yy);
-        let b: &str = "x=np.array([0,1,2,3,4,5,6,7,8,9,],dtype=float)\n\
-                       y=np.array([5,4,3,2,1,0,1,2,3,4,],dtype=float)\n\
+        let b: &str = "x=np.array([0,1,2,3,4,5,6,7,8,9,])\n\
+                       y=np.array([5,4,3,2,1,0,1,2,3,4,])\n\
                        p=plt.bar(x,y)\n";
         assert_eq!(bar.buffer, b);
         bar.clear_buffer();
@@ -342,10 +342,10 @@ mod tests {
             .set_with_text("center")
             .set_extra("edgecolor='black'")
             .draw(&xx, &yy);
-        let b: &str = "x=np.array([0,1,2,3,4,5,6,7,8,9,],dtype=float)\n\
-                       y=np.array([5,4,3,2,1,0,1,2,3,4,],dtype=float)\n\
+        let b: &str = "x=np.array([0,1,2,3,4,5,6,7,8,9,])\n\
+                       y=np.array([5,4,3,2,1,0,1,2,3,4,])\n\
                        colors=['red','green',]\n\
-                       bottom=np.array([1,2,3,],dtype=float)\n\
+                       bottom=np.array([1,2,3,])\n\
                        p=plt.bar(x,y\
                        ,label=r'LABEL'\
                        ,color=colors\
@@ -366,7 +366,7 @@ mod tests {
         let mut bar = Barplot::new();
         bar.draw_with_str(&xx, &yy);
         let b: &str = "x=['one','two','three',]\n\
-                       y=np.array([1,2,3,],dtype=float)\n\
+                       y=np.array([1,2,3,])\n\
                        p=plt.bar(x,y)\n";
         assert_eq!(bar.buffer, b);
     }
@@ -384,9 +384,9 @@ mod tests {
             .set_extra("edgecolor='black'")
             .draw_with_str(&xx, &yy);
         let b: &str = "x=['one','two','three',]\n\
-                       y=np.array([1,2,3,],dtype=float)\n\
+                       y=np.array([1,2,3,])\n\
                        colors=['red','green',]\n\
-                       bottom=np.array([1,2,3,],dtype=float)\n\
+                       bottom=np.array([1,2,3,])\n\
                        p=plt.bar(x,y\
                        ,label=r'LABEL'\
                        ,color=colors\

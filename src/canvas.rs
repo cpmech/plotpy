@@ -1,5 +1,7 @@
 use super::{GraphMaker, StrError};
-use crate::AsMatrix;
+use crate::conversions::{matrix_to_array, vector_to_array};
+use crate::{AsMatrix, AsVector};
+use num_traits::Num;
 use std::fmt::Write;
 
 /// Defines the poly-curve code
@@ -148,6 +150,19 @@ pub struct Canvas {
 
     // options
     stop_clip: bool, // Stop clipping features within margins
+    shading: bool,   // Shading for 3D surfaces (currently used only in draw_triangles_3d). Default = true
+
+    // options for glyph 3D
+    glyph_line_width: f64,     // Line width for 3D glyphs
+    glyph_size: f64,           // Size for 3D glyphs
+    glyph_color_x: String,     // Color for X axis of 3D glyphs
+    glyph_color_y: String,     // Color for X axis of 3D glyphs
+    glyph_color_z: String,     // Color for X axis of 3D glyphs
+    glyph_label_x: String,     // Label for X axis of 3D glyphs
+    glyph_label_y: String,     // Label for X axis of 3D glyphs
+    glyph_label_z: String,     // Label for X axis of 3D glyphs
+    glyph_label_color: String, // Color for labels of 3D glyphs (overrides individual axis colors)
+    glyph_bbox_opt: String,    // Python options for the dictionary setting the bounding box of 3D glyphs' text
 
     // buffer
     buffer: String, // buffer
@@ -178,6 +193,18 @@ impl Canvas {
             alt_text_rotation: 45.0,
             // options
             stop_clip: false,
+            shading: true,
+            // options for glyph 3D
+            glyph_line_width: 2.0,
+            glyph_size: 1.0,
+            glyph_color_x: "red".to_string(),
+            glyph_color_y: "green".to_string(),
+            glyph_color_z: "blue".to_string(),
+            glyph_label_x: "X".to_string(),
+            glyph_label_y: "Y".to_string(),
+            glyph_label_z: "Z".to_string(),
+            glyph_label_color: String::new(),
+            glyph_bbox_opt: "boxstyle='circle,pad=0.1',facecolor='white',edgecolor='None'".to_string(),
             // buffer
             buffer: String::new(),
         }
@@ -186,7 +213,7 @@ impl Canvas {
     /// Draws arc (2D only)
     pub fn draw_arc<T>(&mut self, xc: T, yc: T, r: T, ini_angle: T, fin_angle: T)
     where
-        T: std::fmt::Display,
+        T: std::fmt::Display + Num,
     {
         let opt = self.options_shared();
         write!(
@@ -201,7 +228,7 @@ impl Canvas {
     /// Draws arrow (2D only)
     pub fn draw_arrow<T>(&mut self, xi: T, yi: T, xf: T, yf: T)
     where
-        T: std::fmt::Display,
+        T: std::fmt::Display + Num,
     {
         let opt_shared = self.options_shared();
         let opt_arrow = self.options_arrow();
@@ -220,7 +247,7 @@ impl Canvas {
     /// Draws circle (2D only)
     pub fn draw_circle<T>(&mut self, xc: T, yc: T, r: T)
     where
-        T: std::fmt::Display,
+        T: std::fmt::Display + Num,
     {
         let opt = self.options_shared();
         write!(
@@ -230,6 +257,76 @@ impl Canvas {
             xc, yc, r, &opt
         )
         .unwrap();
+    }
+
+    /// Draws triangles (2D only)
+    ///
+    /// Using <https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.triplot.html>
+    pub fn draw_triangles<'a, T, U, C>(&mut self, xx: &'a T, yy: &'a T, connectivity: &'a C) -> &mut Self
+    where
+        T: AsVector<'a, U>,
+        U: 'a + std::fmt::Display + Num,
+        C: AsMatrix<'a, usize>,
+    {
+        vector_to_array(&mut self.buffer, "xx", xx);
+        vector_to_array(&mut self.buffer, "yy", yy);
+        matrix_to_array(&mut self.buffer, "triangles", connectivity);
+        let opt = self.options_triangles();
+        write!(&mut self.buffer, "plt.triplot(xx,yy,triangles{})\n", &opt).unwrap();
+        self
+    }
+
+    /// Draws triangles (3D only)
+    ///
+    /// Using <https://matplotlib.org/stable/api/_as_gen/mpl_toolkits.mplot3d.axes3d.Axes3D.plot_trisurf.html#mpl_toolkits.mplot3d.axes3d.Axes3D.plot_trisurf>
+    ///
+    /// Note: There is no way to set shading and facecolor at the same time.
+    pub fn draw_triangles_3d<'a, T, U, C>(&mut self, xx: &'a T, yy: &'a T, zz: &'a T, connectivity: &'a C) -> &mut Self
+    where
+        T: AsVector<'a, U>,
+        U: 'a + std::fmt::Display + Num,
+        C: AsMatrix<'a, usize>,
+    {
+        // write arrays
+        vector_to_array(&mut self.buffer, "xx", xx);
+        vector_to_array(&mut self.buffer, "yy", yy);
+        vector_to_array(&mut self.buffer, "zz", zz);
+        matrix_to_array(&mut self.buffer, "triangles", connectivity);
+
+        // Issue when setting facecolor directly:
+        //
+        // In matplotlib 3.6+, passing facecolors as a parameter directly to plot_trisurf() doesn't work.
+        // The solution is:
+        // * Create the surface first with shade=False
+        // * Then use set_facecolor() to apply the colors after the surface is created
+        //
+        // Also, there is no way to set shading and facecolor at the same time.
+
+        // get options without facecolor
+        let opt = self.options_triangles_3d();
+
+        // write Python command
+        let shade = if self.shading { "True" } else { "False" };
+        write!(
+            &mut self.buffer,
+            "poly_collection=ax3d().plot_trisurf(xx,yy,zz,triangles=triangles,shade={}{})\n",
+            shade, &opt
+        )
+        .unwrap();
+
+        // set facecolor if specified
+        if self.face_color != "" {
+            write!(
+                &mut self.buffer,
+                "colors=np.array(['{}']*len(triangles))\n\
+                poly_collection.set_facecolor(colors)\n",
+                self.face_color
+            )
+            .unwrap();
+        }
+
+        // done
+        self
     }
 
     /// Begins drawing a polycurve (straight segments, quadratic Bezier, and cubic Bezier) (2D only)
@@ -251,7 +348,7 @@ impl Canvas {
     /// Afterwards, you must call [Canvas::polycurve_end] when finishing adding points.
     pub fn polycurve_add<T>(&mut self, x: T, y: T, code: PolyCode) -> &mut Self
     where
-        T: std::fmt::Display,
+        T: std::fmt::Display + Num,
     {
         let keyword = match code {
             PolyCode::MoveTo => "MOVETO",
@@ -364,7 +461,7 @@ impl Canvas {
     /// otherwise Python/Matplotlib will fail.
     pub fn polyline_3d_add<T>(&mut self, x: T, y: T, z: T) -> &mut Self
     where
-        T: std::fmt::Display,
+        T: std::fmt::Display + Num,
     {
         write!(&mut self.buffer, "[{},{},{}],", x, y, z).unwrap();
         self
@@ -391,7 +488,7 @@ impl Canvas {
     pub fn draw_polyline<'a, T, U>(&mut self, points: &'a T, closed: bool)
     where
         T: AsMatrix<'a, U>,
-        U: 'a + std::fmt::Display,
+        U: 'a + std::fmt::Display + Num,
     {
         let (npoint, ndim) = points.size();
         if npoint < 2 {
@@ -442,7 +539,10 @@ impl Canvas {
     }
 
     /// Draws a rectangle
-    pub fn draw_rectangle(&mut self, x: f64, y: f64, width: f64, height: f64) -> &mut Self {
+    pub fn draw_rectangle<T>(&mut self, x: T, y: T, width: T, height: T) -> &mut Self
+    where
+        T: std::fmt::Display + Num,
+    {
         let opt = self.options_shared();
         write!(
             &mut self.buffer,
@@ -455,14 +555,71 @@ impl Canvas {
     }
 
     /// Draws a text in a 2D graph
-    pub fn draw_text(&mut self, x: f64, y: f64, label: &str) -> &mut Self {
-        self.text(2, &[x, y, 0.0], label, false);
+    pub fn draw_text<T>(&mut self, x: T, y: T, label: &str) -> &mut Self
+    where
+        T: std::fmt::Display + Num,
+    {
+        self.text(2, &[x, y, T::zero()], label, false);
         self
     }
 
     /// Draws an alternative text in a 2D graph
-    pub fn draw_alt_text(&mut self, x: f64, y: f64, label: &str) -> &mut Self {
-        self.text(2, &[x, y, 0.0], label, true);
+    pub fn draw_alt_text<T>(&mut self, x: T, y: T, label: &str) -> &mut Self
+    where
+        T: std::fmt::Display + Num,
+    {
+        self.text(2, &[x, y, T::zero()], label, true);
+        self
+    }
+
+    /// Draws a 3D glyph at position (x,y,z) to indicate the direction of the X-Y-Z axes
+    pub fn draw_glyph_3d<T>(&mut self, x: T, y: T, z: T) -> &mut Self
+    where
+        T: std::fmt::Display + Num,
+    {
+        let size = self.glyph_size;
+        let lx = &self.glyph_label_x;
+        let ly = &self.glyph_label_y;
+        let lz = &self.glyph_label_z;
+        let lw = self.glyph_line_width;
+        let r = &self.glyph_color_x;
+        let g = &self.glyph_color_y;
+        let b = &self.glyph_color_z;
+        let tr = if self.glyph_label_color == "" {
+            &self.glyph_color_x
+        } else {
+            &self.glyph_label_color
+        };
+        let tg = if self.glyph_label_color == "" {
+            &self.glyph_color_y
+        } else {
+            &self.glyph_label_color
+        };
+        let tb = if self.glyph_label_color == "" {
+            &self.glyph_color_z
+        } else {
+            &self.glyph_label_color
+        };
+        write!(
+            &mut self.buffer,
+            "plt.gca().plot([{x},{x}+{size}],[{y},{y}],[{z},{z}],color='{r}',linewidth={lw})\n\
+             plt.gca().plot([{x},{x}],[{y},{y}+{size}],[{z},{z}],color='{g}',linewidth={lw})\n\
+             plt.gca().plot([{x},{x}],[{y},{y}],[{z},{z}+{size}],color='{b}',linewidth={lw})\n\
+             tx=plt.gca().text({x}+{size},{y},{z},'{lx}',color='{tr}',ha='center',va='center')\n\
+             ty=plt.gca().text({x},{y}+{size},{z},'{ly}',color='{tg}',ha='center',va='center')\n\
+             tz=plt.gca().text({x},{y},{z}+{size},'{lz}',color='{tb}',ha='center',va='center')\n"
+        )
+        .unwrap();
+        if self.glyph_bbox_opt != "" {
+            write!(
+                &mut self.buffer,
+                "tx.set_bbox(dict({}))\n\
+                 ty.set_bbox(dict({}))\n\
+                 tz.set_bbox(dict({}))\n",
+                self.glyph_bbox_opt, self.glyph_bbox_opt, self.glyph_bbox_opt
+            )
+            .unwrap();
+        }
         self
     }
 
@@ -747,6 +904,122 @@ impl Canvas {
         self
     }
 
+    /// Sets shading for 3D surfaces (currently used only in draw_triangles_3d)
+    ///
+    /// Note: Shading is disabled if facecolor is non-empty.
+    ///
+    /// Default = true
+    pub fn set_shading(&mut self, flag: bool) -> &mut Self {
+        self.shading = flag;
+        self
+    }
+
+    /// Sets the line width used when drawing 3D glyphs
+    pub fn set_glyph_line_width(&mut self, width: f64) -> &mut Self {
+        self.glyph_line_width = width;
+        self
+    }
+
+    /// Sets the size (axis length) of 3D glyphs
+    pub fn set_glyph_size(&mut self, size: f64) -> &mut Self {
+        self.glyph_size = size;
+        self
+    }
+
+    /// Sets the color of the X axis in 3D glyphs
+    pub fn set_glyph_color_x(&mut self, color: &str) -> &mut Self {
+        self.glyph_color_x = String::from(color);
+        self
+    }
+
+    /// Sets the color of the Y axis in 3D glyphs
+    pub fn set_glyph_color_y(&mut self, color: &str) -> &mut Self {
+        self.glyph_color_y = String::from(color);
+        self
+    }
+
+    /// Sets the color of the Z axis in 3D glyphs
+    pub fn set_glyph_color_z(&mut self, color: &str) -> &mut Self {
+        self.glyph_color_z = String::from(color);
+        self
+    }
+
+    /// Sets the label used for the X axis in 3D glyphs
+    pub fn set_glyph_label_x(&mut self, label: &str) -> &mut Self {
+        self.glyph_label_x = String::from(label);
+        self
+    }
+
+    /// Sets the label used for the Y axis in 3D glyphs
+    pub fn set_glyph_label_y(&mut self, label: &str) -> &mut Self {
+        self.glyph_label_y = String::from(label);
+        self
+    }
+
+    /// Sets the label used for the Z axis in 3D glyphs
+    pub fn set_glyph_label_z(&mut self, label: &str) -> &mut Self {
+        self.glyph_label_z = String::from(label);
+        self
+    }
+
+    /// Sets a color to override the default label colors in 3D glyphs
+    ///
+    /// The default colors are the same as the axis colors.
+    pub fn set_glyph_label_color(&mut self, label_clr: &str) -> &mut Self {
+        self.glyph_label_color = String::from(label_clr);
+        self
+    }
+
+    /// Sets the Python dictionary string defining the bounding box of 3D glyphs
+    ///
+    /// Note: The setting of the bounding box here is different than the on implement in `Text`.
+    /// Here, all options for the Python whole dictionary must be provided, for example
+    /// (default string):
+    ///
+    /// ```text
+    /// "boxstyle='circle,pad=0.1',facecolor='white',edgecolor='None'"
+    /// ```
+    pub fn set_glyph_bbox(&mut self, bbox_dict: &str) -> &mut Self {
+        self.glyph_bbox_opt = String::from(bbox_dict);
+        self
+    }
+
+    /// Returns options for triangles (2D only)
+    fn options_triangles(&self) -> String {
+        let mut opt = String::new();
+        if self.edge_color != "" {
+            write!(&mut opt, ",color='{}'", self.edge_color).unwrap();
+        }
+        if self.line_width > 0.0 {
+            write!(&mut opt, ",linewidth={}", self.line_width).unwrap();
+        }
+        if self.line_style != "" {
+            write!(&mut opt, ",linestyle='{}'", self.line_style).unwrap();
+        }
+        if self.stop_clip {
+            write!(&mut opt, ",clip_on=False").unwrap();
+        }
+        opt
+    }
+
+    /// Returns shared options
+    fn options_triangles_3d(&self) -> String {
+        let mut opt = String::new();
+        if self.edge_color != "" {
+            write!(&mut opt, ",edgecolor='{}'", self.edge_color).unwrap();
+        }
+        if self.line_width > 0.0 {
+            write!(&mut opt, ",linewidth={}", self.line_width).unwrap();
+        }
+        if self.line_style != "" {
+            write!(&mut opt, ",linestyle='{}'", self.line_style).unwrap();
+        }
+        if self.stop_clip {
+            write!(&mut opt, ",clip_on=False").unwrap();
+        }
+        opt
+    }
+
     /// Returns shared options
     fn options_shared(&self) -> String {
         let mut opt = String::new();
@@ -838,7 +1111,10 @@ impl Canvas {
     }
 
     /// Draws 2D or 3D line
-    fn line(&mut self, ndim: usize, a: &[f64; 3], b: &[f64; 3]) {
+    fn line<T>(&mut self, ndim: usize, a: &[T; 3], b: &[T; 3])
+    where
+        T: std::fmt::Display,
+    {
         if ndim == 2 {
             write!(
                 &mut self.buffer,
@@ -858,7 +1134,10 @@ impl Canvas {
     }
 
     /// Draws 2D or 3D text
-    fn text(&mut self, ndim: usize, a: &[f64; 3], txt: &str, alternative: bool) {
+    fn text<T>(&mut self, ndim: usize, a: &[T; 3], txt: &str, alternative: bool)
+    where
+        T: std::fmt::Display,
+    {
         let opt = if alternative {
             self.options_alt_text()
         } else {
@@ -1031,6 +1310,28 @@ mod tests {
         canvas.set_edge_color("red").set_line_width(5.0).set_line_style(":");
         let opt = canvas.options_line_3d();
         assert_eq!(opt, ",color='red',linewidth=5,linestyle=':'");
+    }
+
+    #[test]
+    fn glyph_setters_work() {
+        let mut canvas = Canvas::new();
+        canvas
+            .set_glyph_line_width(4.5)
+            .set_glyph_size(2.0)
+            .set_glyph_color_x("orange")
+            .set_glyph_color_y("cyan")
+            .set_glyph_color_z("magenta")
+            .set_glyph_label_x("Ux")
+            .set_glyph_label_y("Uy")
+            .set_glyph_label_z("Uz");
+        assert_eq!(canvas.glyph_line_width, 4.5);
+        assert_eq!(canvas.glyph_size, 2.0);
+        assert_eq!(canvas.glyph_color_x, "orange");
+        assert_eq!(canvas.glyph_color_y, "cyan");
+        assert_eq!(canvas.glyph_color_z, "magenta");
+        assert_eq!(canvas.glyph_label_x, "Ux");
+        assert_eq!(canvas.glyph_label_y, "Uy");
+        assert_eq!(canvas.glyph_label_z, "Uz");
     }
 
     #[test]

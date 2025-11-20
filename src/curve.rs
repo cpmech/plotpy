@@ -216,7 +216,7 @@ impl Curve {
     /// otherwise Python/Matplotlib will fail.
     pub fn points_add<T>(&mut self, x: T, y: T) -> &mut Self
     where
-        T: std::fmt::Display,
+        T: std::fmt::Display + Num,
     {
         write!(&mut self.buffer, "[{},{}],", x, y).unwrap();
         self
@@ -253,7 +253,7 @@ impl Curve {
     /// otherwise Python/Matplotlib will fail.
     pub fn points_3d_add<T>(&mut self, x: T, y: T, z: T) -> &mut Self
     where
-        T: std::fmt::Display,
+        T: std::fmt::Display + Num,
     {
         write!(&mut self.buffer, "[{},{},{}],", x, y, z).unwrap();
         self
@@ -624,8 +624,8 @@ mod tests {
         let mut curve = Curve::new();
         curve.set_label("the-curve");
         curve.draw(x, y);
-        let b: &str = "x=np.array([1,2,3,4,5,],dtype=float)\n\
-                       y=np.array([1,4,9,16,25,],dtype=float)\n\
+        let b: &str = "x=np.array([1,2,3,4,5,])\n\
+                       y=np.array([1,4,9,16,25,])\n\
                        plt.plot(x,y,label=r'the-curve')\n";
         assert_eq!(curve.buffer, b);
         curve.clear_buffer();
@@ -640,9 +640,9 @@ mod tests {
         let mut curve = Curve::new();
         curve.set_label("the-curve");
         curve.draw_3d(x, y, z);
-        let b: &str = "x=np.array([1,2,3,4,5,],dtype=float)\n\
-                       y=np.array([1,4,9,16,25,],dtype=float)\n\
-                       z=np.array([0,0,0,1,1,],dtype=float)\n\
+        let b: &str = "x=np.array([1,2,3,4,5,])\n\
+                       y=np.array([1,4,9,16,25,])\n\
+                       z=np.array([0,0,0,1,1,])\n\
                        ax3d().plot(x,y,z,label=r'the-curve')\n";
         assert_eq!(curve.buffer, b);
     }

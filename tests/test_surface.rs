@@ -31,7 +31,7 @@ fn test_surface() -> Result<(), StrError> {
 
     // save figure
     let path = Path::new(OUT_DIR).join("integ_surface.svg");
-    plot.save(&path)?;
+    plot.set_hide_3d_grid(true).save(&path)?;
 
     // check number of lines
     let file = File::open(path).map_err(|_| "cannot open file")?;

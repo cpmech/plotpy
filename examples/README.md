@@ -78,6 +78,7 @@ Some output of integration tests are shown below.
 ![contour](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_contour_colormap_tab20c.svg)
 ![contour](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_contour_colors.svg)
 ![contour](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_contour.svg)
+![contour](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_contour_draw_tri.svg)
 
 ## Curve
 

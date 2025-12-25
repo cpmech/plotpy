@@ -1,4 +1,5 @@
 use super::{generate_list_quoted, matrix_to_array, vector_to_array, AsMatrix, GraphMaker};
+use crate::AsVector;
 use num_traits::Num;
 use std::fmt::Write;
 
@@ -47,27 +48,32 @@ use std::fmt::Write;
 ///
 /// ![integ_contour.svg](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_contour.svg)
 pub struct Contour {
-    colors: Vec<String>,         // Colors to be used instead of colormap
-    levels: Vec<f64>,            // Pre-defined levels
-    colormap_name: String,       // Colormap name
-    no_lines: bool,              // Skip drawing a lines contour
-    no_labels: bool,             // Skip adding labels to the lines contour
-    no_inline_labels: bool,      // Do not draw labels inline
-    no_colorbar: bool,           // Skip drawing a colorbar
-    colorbar_label: String,      // Colorbar label
-    number_format_cb: String,    // Number format for the labels in lines contour
-    line_color: String,          // Line color for the lines contour
-    line_style: String,          // Line style for the lines contour
-    line_width: f64,             // Line width for the lines contour
-    fontsize_labels: f64,        // Font size for labels
-    with_selected: bool,         // Draw a line contour with a selected level
-    selected_level: f64,         // Selected level (e.g., 0.0)
-    selected_line_color: String, // Color to mark the selected level
-    selected_line_style: String, // Line style for the selected level
-    selected_line_width: f64,    // Line width for the selected level
-    extra_filled: String,        // Extra commands (comma separated) for the filled contour
-    extra_line: String,          // Extra commands (comma separated) for the line contour
-    buffer: String,              // buffer
+    colors: Vec<String>,          // Colors to be used instead of colormap
+    levels: Vec<f64>,             // Pre-defined levels
+    colormap_name: String,        // Colormap name
+    no_fill: bool,                // Skip drawing filled contour
+    no_lines: bool,               // Skip drawing a lines contour
+    no_labels: bool,              // Skip adding labels to the lines contour
+    no_inline_labels: bool,       // Do not draw labels inline
+    no_colorbar: bool,            // Skip drawing a colorbar
+    colorbar_label: String,       // Colorbar label
+    number_format_cb: String,     // Number format for the labels in lines contour
+    line_color: String,           // Line color for the lines contour
+    line_style: String,           // Line style for the lines contour
+    line_width: f64,              // Line width for the lines contour
+    fontsize_labels: f64,         // Font size for labels
+    with_selected: bool,          // Draw a line contour with a selected level
+    selected_level: f64,          // Selected level (e.g., 0.0)
+    selected_line_color: String,  // Color to mark the selected level
+    selected_line_style: String,  // Line style for the selected level
+    selected_line_width: f64,     // Line width for the selected level
+    extra_filled: String,         // Extra commands (comma separated) for the filled contour
+    extra_line: String,           // Extra commands (comma separated) for the line contour
+    tri_show_edges: bool,         // Show triangulation edges
+    tri_edges_color: String,      // Triangulation edges color
+    tri_edges_line_width: f64,    // Triangulation edges line width
+    tri_edges_line_style: String, // Triangulation edges line style
+    buffer: String,               // buffer
 }
 
 impl Contour {
@@ -77,6 +83,7 @@ impl Contour {
             colors: Vec::new(),
             levels: Vec::new(),
             colormap_name: "bwr".to_string(),
+            no_fill: false,
             no_lines: false,
             no_labels: false,
             no_inline_labels: false,
@@ -94,6 +101,10 @@ impl Contour {
             selected_line_width: 2.0,
             extra_filled: String::new(),
             extra_line: String::new(),
+            tri_show_edges: false,
+            tri_edges_color: "black".to_string(),
+            tri_edges_line_width: 0.5,
+            tri_edges_line_style: "-".to_string(),
             buffer: String::new(),
         }
     }
@@ -110,6 +121,7 @@ impl Contour {
     ///
     /// The following flags control what features are not to be drawn:
     ///
+    /// * `no_fill` -- skip drawing filled contour
     /// * `no_lines` -- skip drawing a lines contour on top of the filled contour
     /// * `no_labels` -- skip adding labels to the lines contour (if enabled)
     /// * `no_colorbar` -- skip drawing a colorbar
@@ -122,6 +134,53 @@ impl Contour {
         matrix_to_array(&mut self.buffer, "x", x);
         matrix_to_array(&mut self.buffer, "y", y);
         matrix_to_array(&mut self.buffer, "z", z);
+        self.contour_or_tricontour(false);
+    }
+
+    /// Draws a fancy contour using a triangulation: filled contour with a line contour and a colorbar
+    ///
+    /// # Input
+    ///
+    /// * `x` -- list of x coordinates
+    /// * `y` -- list of y coordinates
+    /// * `z` -- list of elevations at each coordinate
+    /// * `connectivity` -- triangulation/connectivity
+    ///
+    /// # Flags
+    ///
+    /// The following flags control what features are not to be drawn:
+    ///
+    /// * `no_fill` -- skip drawing filled contour
+    /// * `no_lines` -- skip drawing a lines contour on top of the filled contour
+    /// * `no_labels` -- skip adding labels to the lines contour (if enabled)
+    /// * `no_colorbar` -- skip drawing a colorbar
+    /// * `with_selected` -- draw a line contour with a selected level (e.g., 0.0) on top of everything
+    pub fn draw_tri<'a, T, U, C>(&mut self, x: &'a T, y: &'a T, z: &'a T, connectivity: &'a C)
+    where
+        T: AsVector<'a, U>,
+        U: 'a + std::fmt::Display + Num,
+        C: AsMatrix<'a, usize>,
+    {
+        vector_to_array(&mut self.buffer, "x", x);
+        vector_to_array(&mut self.buffer, "y", y);
+        vector_to_array(&mut self.buffer, "z", z);
+        matrix_to_array(&mut self.buffer, "con", connectivity);
+        write!(&mut self.buffer, "tri=plt_tri.Triangulation(x,y,triangles=con)\n").unwrap();
+        self.contour_or_tricontour(true);
+        if self.tri_show_edges {
+            write!(
+                &mut self.buffer,
+                "plt.triplot(tri,color='{}',lw={},ls='{}')\n",
+                self.tri_edges_color, self.tri_edges_line_width, self.tri_edges_line_style
+            )
+            .unwrap();
+        }
+    }
+
+    /// Draw contour or tricontour
+    fn contour_or_tricontour(&mut self, tricontour: bool) {
+        let contour = if tricontour { "tricontour(tri" } else { "contour(x,y" };
+        let contourf = if tricontour { "tricontourf(tri" } else { "contourf(x,y" };
         if self.colors.len() > 0 {
             generate_list_quoted(&mut self.buffer, "colors", &self.colors);
         }
@@ -129,16 +188,18 @@ impl Contour {
             vector_to_array(&mut self.buffer, "levels", &self.levels);
         }
         let opt = self.options_filled();
-        write!(&mut self.buffer, "cf=plt.contourf(x,y,z{})\n", &opt).unwrap();
+        if !self.no_fill {
+            write!(&mut self.buffer, "cf=plt.{},z{})\n", contourf, &opt).unwrap();
+        }
         if !self.no_lines {
             let opt_line = self.options_line();
-            write!(&mut self.buffer, "cl=plt.contour(x,y,z{})\n", &opt_line).unwrap();
+            write!(&mut self.buffer, "cl=plt.{},z{})\n", contour, &opt_line).unwrap();
             if !self.no_labels {
                 let opt_label = self.options_label();
                 write!(&mut self.buffer, "plt.clabel(cl{})\n", &opt_label).unwrap();
             }
         }
-        if !self.no_colorbar {
+        if !self.no_colorbar && !self.no_fill {
             let opt_colorbar = self.options_colorbar();
             write!(&mut self.buffer, "cb=plt.colorbar(cf{})\n", &opt_colorbar).unwrap();
             if self.colorbar_label != "" {
@@ -147,7 +208,7 @@ impl Contour {
         }
         if self.with_selected {
             let opt_selected = self.options_selected();
-            write!(&mut self.buffer, "plt.contour(x,y,z{})\n", &opt_selected).unwrap();
+            write!(&mut self.buffer, "plt.{},z{})\n", contour, &opt_selected).unwrap();
         }
     }
 
@@ -194,6 +255,12 @@ impl Contour {
     pub fn set_colormap_name(&mut self, name: &str) -> &mut Self {
         self.colormap_name = String::from(name);
         self.colors = Vec::new();
+        self
+    }
+
+    /// Sets option to skip drawing filled contour
+    pub fn set_no_fill(&mut self, flag: bool) -> &mut Self {
+        self.no_fill = flag;
         self
     }
 
@@ -317,6 +384,30 @@ impl Contour {
     /// [See Matplotlib's documentation for extra parameters](https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.contour.html)
     pub fn set_extra_line(&mut self, extra: &str) -> &mut Self {
         self.extra_line = extra.to_string();
+        self
+    }
+
+    /// Sets option to show triangulation edges (only for draw_tri)
+    pub fn set_tri_show_edges(&mut self, flag: bool) -> &mut Self {
+        self.tri_show_edges = flag;
+        self
+    }
+
+    /// Sets triangulation edges color (only for draw_tri)
+    pub fn set_tri_edges_color(&mut self, color: &str) -> &mut Self {
+        self.tri_edges_color = color.to_string();
+        self
+    }
+
+    /// Sets triangulation edges line width (only for draw_tri)
+    pub fn set_tri_edges_line_width(&mut self, width: f64) -> &mut Self {
+        self.tri_edges_line_width = width;
+        self
+    }
+
+    /// Sets triangulation edges line style (only for draw_tri)
+    pub fn set_tri_edges_line_style(&mut self, style: &str) -> &mut Self {
+        self.tri_edges_line_style = style.to_string();
         self
     }
 

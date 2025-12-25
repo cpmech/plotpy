@@ -34,6 +34,7 @@ import matplotlib.patheffects as pff
 import matplotlib.lines as lns
 import matplotlib.transforms as tra
 import mpl_toolkits.mplot3d
+import matplotlib.tri as plt_tri
 
 # Variable to handle NaN values coming from Rust
 NaN = np.nan
@@ -150,6 +151,6 @@ mod tests {
 
     #[test]
     fn constants_are_correct() {
-        assert_eq!(PYTHON_HEADER.len(), 2886);
+        assert_eq!(PYTHON_HEADER.len(), 2919);
     }
 }

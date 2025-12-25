@@ -146,3 +146,60 @@ fn test_contour_colormap_name() -> Result<(), StrError> {
     }
     Ok(())
 }
+
+#[test]
+fn test_contour_draw_tri() -> Result<(), StrError> {
+    // point coordinates (two triangles in a square)
+
+    let x = vec![0.0, 1.0, 2.0, 3.0, 0.5, 1.5, 2.5, 1.0, 2.0, 1.5];
+    let y = vec![0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 2.0, 2.0, 3.0];
+    let connectivity = vec![
+        vec![0, 1, 4],
+        vec![1, 5, 4],
+        vec![2, 6, 5],
+        vec![4, 5, 7],
+        vec![5, 8, 7],
+        vec![7, 8, 9],
+        vec![1, 2, 5],
+        vec![2, 3, 6],
+    ];
+
+    // elevations
+    let mut z = vec![0.0; x.len()];
+    for i in 0..x.len() {
+        z[i] = x[i] + y[i];
+    }
+
+    // canvas
+    let mut contour = Contour::new();
+    contour
+        .set_no_fill(false)
+        .set_colors(&vec!["#fcaeae", "#da98d1", "#c45178", "#5594d2", "#e6af69", "#e6d969"])
+        .set_colorbar_label("x + y")
+        .set_line_color("black")
+        .set_line_style("-")
+        .set_line_width(1.5)
+        .set_tri_show_edges(true)
+        .set_tri_edges_color("green")
+        .set_tri_edges_line_width(1.0)
+        .set_tri_edges_line_style("--");
+
+    // draw contour
+    contour.draw_tri(&x, &y, &z, &connectivity);
+
+    // add contour to plot
+    let mut plot = Plot::new();
+    plot.add(&contour);
+
+    // save figure
+    let path = Path::new(OUT_DIR).join("integ_contour_draw_tri.svg");
+    plot.set_equal_axes(true).set_show_errors(true).save(&path)?;
+
+    // check number of lines
+    let file = File::open(path).map_err(|_| "cannot open file")?;
+    let buffered = BufReader::new(file);
+    let lines_iter = buffered.lines();
+    let n = lines_iter.count();
+    assert!(n > 1030 && n < 1090);
+    Ok(())
+}

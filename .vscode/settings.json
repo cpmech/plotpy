@@ -89,6 +89,8 @@
     "TICKRIGHT",
     "TICKUP",
     "toolkits",
+    "tricontour",
+    "tricontourf",
     "triplot",
     "trisurf",
     "twinx",

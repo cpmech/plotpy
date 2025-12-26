@@ -19,6 +19,7 @@ Some output of integration tests are shown below.
 - [Plot](#plot)
 - [Subplot and GridSpec](#subplot-and-gridspec)
 - [Slope icon](#slope-icon)
+- [Streamplot and quiver](#streamplot-and-quiver)
 - [Surface and wireframe](#surface-and-wireframe)
 - [Text](#text)
 
@@ -167,6 +168,12 @@ Some output of integration tests are shown below.
 ![slope_icon](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_slope_icon_linx_logy.svg)
 ![slope_icon](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_slope_icon_example.svg)
 ![slope_icon](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_slope_icon_logx_liny.svg)
+
+## Streamplot and quiver
+
+[test_stream.rs](https://github.com/cpmech/plotpy/tree/main/tests/test_stream.rs)
+
+![streamplot_quiver](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_stream_arrows_1.svg)
 
 ## Surface and wireframe
 

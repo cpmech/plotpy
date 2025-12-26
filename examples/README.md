@@ -174,6 +174,7 @@ Some output of integration tests are shown below.
 [test_stream.rs](https://github.com/cpmech/plotpy/tree/main/tests/test_stream.rs)
 
 ![streamplot_quiver](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_stream_arrows_1.svg)
+![streamplot_quiver](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_stream_arrows_2.svg)
 
 ## Surface and wireframe
 

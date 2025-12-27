@@ -150,7 +150,6 @@ fn test_contour_colormap_name() -> Result<(), StrError> {
 #[test]
 fn test_contour_draw_tri() -> Result<(), StrError> {
     // point coordinates (two triangles in a square)
-
     let x = vec![0.0, 1.0, 2.0, 3.0, 0.5, 1.5, 2.5, 1.0, 2.0, 1.5];
     let y = vec![0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 2.0, 2.0, 3.0];
     let connectivity = vec![
@@ -170,7 +169,7 @@ fn test_contour_draw_tri() -> Result<(), StrError> {
         z[i] = x[i] + y[i];
     }
 
-    // canvas
+    // contour
     let mut contour = Contour::new();
     contour
         .set_no_fill(false)
@@ -201,5 +200,49 @@ fn test_contour_draw_tri() -> Result<(), StrError> {
     let lines_iter = buffered.lines();
     let n = lines_iter.count();
     assert!(n > 1030 && n < 1090);
+    Ok(())
+}
+
+#[test]
+fn test_contour_colorbar_options() -> Result<(), StrError> {
+    // data
+    let n = 9;
+    let (x, y, z) = generate3d(-2.0, 2.0, 0.0, 2.0, n, n, |x, y| x * x + y * y);
+
+    // contour A
+    let mut contour_a = Contour::new();
+    contour_a
+        .set_colorbar_axes("right", 5.0, 0.1)
+        .set_colorbar_label("x² + y²")
+        .draw(&x, &y, &z);
+
+    // contour B
+    let mut contour_b = Contour::new();
+    contour_b
+        .set_colorbar_extra("fraction=0.12,pad=0.12")
+        .set_colorbar_location("bottom")
+        .set_colorbar_label("x² + y²")
+        .set_colors(&vec!["#fcaeae", "#da98d1", "#c45178", "#5594d2", "#e6af69", "#e6d969"])
+        .draw(&x, &y, &z);
+
+    // add contour to plot
+    let mut plot = Plot::new();
+    plot.set_gaps(0.3, 0.0);
+    plot.set_subplot(1, 2, 1).set_equal_axes(true).add(&contour_a);
+    plot.set_subplot(1, 2, 2).set_equal_axes(true).add(&contour_b);
+
+    // save figure
+    let path = Path::new(OUT_DIR).join("integ_contour_colorbar_options.svg");
+    plot.set_figure_size_points(600.0, 300.0)
+        .set_equal_axes(true)
+        .set_show_errors(true)
+        .save(&path)?;
+
+    // check number of lines
+    let file = File::open(path).map_err(|_| "cannot open file")?;
+    let buffered = BufReader::new(file);
+    let lines_iter = buffered.lines();
+    let n = lines_iter.count();
+    assert!(n > 2150 && n < 2200);
     Ok(())
 }

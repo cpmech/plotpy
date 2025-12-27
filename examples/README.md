@@ -64,6 +64,7 @@ Some output of integration tests are shown below.
 
 [test_contour.rs](https://github.com/cpmech/plotpy/tree/main/tests/test_contour.rs)
 
+![contour](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_contour_colorbar_options.svg)
 ![contour](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_contour_colormap_0.svg)
 ![contour](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_contour_colormap_1.svg)
 ![contour](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_contour_colormap_2.svg)

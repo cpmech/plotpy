@@ -57,6 +57,9 @@ pub struct Contour {
     no_inline_labels: bool,       // Do not draw labels inline
     no_colorbar: bool,            // Skip drawing a colorbar
     colorbar_label: String,       // Colorbar label
+    colorbar_axes: String,        // Axes into which the colorbar will be drawn
+    colorbar_location: String,    // Colorbar location
+    colorbar_extra: String,       // Extra options for the colorbar
     number_format_cb: String,     // Number format for the labels in lines contour
     line_color: String,           // Line color for the lines contour
     line_style: String,           // Line style for the lines contour
@@ -89,6 +92,9 @@ impl Contour {
             no_inline_labels: false,
             no_colorbar: false,
             colorbar_label: String::new(),
+            colorbar_axes: String::new(),
+            colorbar_location: String::new(),
+            colorbar_extra: String::new(),
             number_format_cb: String::new(),
             line_color: "black".to_string(),
             line_style: String::new(),
@@ -201,7 +207,12 @@ impl Contour {
         }
         if !self.no_colorbar && !self.no_fill {
             let opt_colorbar = self.options_colorbar();
-            write!(&mut self.buffer, "cb=plt.colorbar(cf{})\n", &opt_colorbar).unwrap();
+            if self.colorbar_axes != "" {
+                write!(&mut self.buffer, "{}", self.colorbar_axes).unwrap();
+                write!(&mut self.buffer, "cb=plt.colorbar(cf,cax=cax{})\n", &opt_colorbar).unwrap();
+            } else {
+                write!(&mut self.buffer, "cb=plt.colorbar(cf{})\n", &opt_colorbar).unwrap();
+            }
             if self.colorbar_label != "" {
                 write!(&mut self.buffer, "cb.ax.set_ylabel(r'{}')\n", self.colorbar_label).unwrap();
             }
@@ -291,6 +302,42 @@ impl Contour {
     /// Sets the colorbar label
     pub fn set_colorbar_label(&mut self, label: &str) -> &mut Self {
         self.colorbar_label = String::from(label);
+        self
+    }
+
+    /// Configure the axes into which the colorbar will be drawn
+    ///
+    /// # Arguments
+    ///
+    /// * `location` -- location of the colorbar axes (e.g., 'right', 'top', 'left', 'bottom')
+    /// * `width_pct` -- width percentage of the colorbar axes (e.g., 5.0, 10.0, 15.0)
+    /// * `pad` -- padding between the main plot and the colorbar axes (e.g., 0.1, 0.2)
+    pub fn set_colorbar_axes(&mut self, location: &str, width_pct: f64, pad: f64) -> &mut Self {
+        self.colorbar_axes = format!(
+            "ax=plt.gca()\n\
+             divider=make_axes_locatable(ax)\n\
+             cax=divider.append_axes('{}',size='{}%',pad={})\n\
+             plt.sca(ax)\n",
+            location, width_pct, pad
+        );
+        self
+    }
+
+    /// Sets the colorbar location
+    ///
+    /// Options: 'right', 'left', 'top', 'bottom'
+    ///
+    /// See: <https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.colorbar.html>
+    pub fn set_colorbar_location(&mut self, location: &str) -> &mut Self {
+        self.colorbar_location = location.to_string();
+        self
+    }
+
+    /// Sets extra options for the colorbar
+    ///
+    /// Example `extra = "fraction=0.046, pad=0.04"`
+    pub fn set_colorbar_extra(&mut self, extra: &str) -> &mut Self {
+        self.colorbar_extra = String::from(extra);
         self
     }
 
@@ -470,6 +517,12 @@ impl Contour {
         let mut opt = String::new();
         if self.number_format_cb != "" {
             write!(&mut opt, ",format='{}'", self.number_format_cb).unwrap();
+        }
+        if self.colorbar_location != "" {
+            write!(&mut opt, ",location='{}'", self.colorbar_location).unwrap();
+        }
+        if self.colorbar_extra != "" {
+            write!(&mut opt, ",{}", self.colorbar_extra).unwrap();
         }
         opt
     }

@@ -35,6 +35,7 @@ import matplotlib.lines as lns
 import matplotlib.transforms as tra
 import mpl_toolkits.mplot3d
 import matplotlib.tri as plt_tri
+from mpl_toolkits.axes_grid1 import make_axes_locatable
 
 # Variable to handle NaN values coming from Rust
 NaN = np.nan
@@ -151,6 +152,6 @@ mod tests {
 
     #[test]
     fn constants_are_correct() {
-        assert_eq!(PYTHON_HEADER.len(), 2919);
+        assert_eq!(PYTHON_HEADER.len(), 2975);
     }
 }

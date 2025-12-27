@@ -161,15 +161,23 @@ impl InsetAxes {
             .replace("plt.gca()", "zoom")
             .replace("plt.barh", "zoom.barh")
             .replace("plt.bar", "zoom.bar")
+            .replace("plt.boxplot", "zoom.boxplot")
             .replace("plt.contourf", "zoom.contourf")
             .replace("plt.contour", "zoom.contour")
             .replace("plt.clabel", "zoom.clabel")
             .replace("plt.colorbar", "ignore_this")
             .replace("cb.ax.set_ylabel", "ignore_this")
+            .replace("plt.fill_between", "zoom.fill_between")
             .replace("plt.imshow", "zoom.imshow")
+            .replace("plt.legend", "zoom.legend")
             .replace("plt.hist", "zoom.hist")
             .replace("plt.plot", "zoom.plot")
-            .replace("plt.text", "zoom.text");
+            .replace("plt.quiver", "zoom.quiver")
+            .replace("plt.text", "zoom.text")
+            .replace("plt.streamplot", "zoom.streamplot")
+            .replace("plt.tricontour", "zoom.tricontour")
+            .replace("plt.tricontourf", "zoom.tricontourf")
+            .replace("plt.triplot", "zoom.triplot");
         self.buffer.push_str(&buf);
         self
     }

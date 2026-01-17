@@ -603,14 +603,16 @@ mod tests {
         assert_eq!(
             opt,
             ",colors=colors\
-             ,levels=levels"
+             ,levels=levels\
+             ,alpha=1"
         );
         contour.set_colormap_index(4);
         let opt = contour.options_filled();
         assert_eq!(
             opt,
             ",cmap=plt.get_cmap('terrain')\
-             ,levels=levels"
+             ,levels=levels\
+             ,alpha=1"
         );
     }
 
@@ -694,7 +696,7 @@ mod tests {
                        z=np.array([[0.5,0.25,0.5,],[0.25,0,0.25,],[0.5,0.25,0.5,],])\n\
                        colors=['#f00','#0f0','#00f',]\n\
                        levels=np.array([0.25,0.5,1,])\n\
-                       cf=plt.contourf(x,y,z,colors=colors,levels=levels)\n\
+                       cf=plt.contourf(x,y,z,colors=colors,levels=levels,alpha=1)\n\
                        cl=plt.contour(x,y,z,colors=['black'],levels=levels)\n\
                        plt.clabel(cl,inline=True)\n\
                        cb=plt.colorbar(cf)\n\

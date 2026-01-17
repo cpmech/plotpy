@@ -48,6 +48,7 @@ use std::fmt::Write;
 ///
 /// ![integ_contour.svg](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_contour.svg)
 pub struct Contour {
+    alpha: f64,                   // Alpha (transparacy) of the plot
     colors: Vec<String>,          // Colors to be used instead of colormap
     levels: Vec<f64>,             // Pre-defined levels
     colormap_name: String,        // Colormap name
@@ -83,6 +84,7 @@ impl Contour {
     /// Creates a new Contour object
     pub fn new() -> Self {
         Contour {
+            alpha: 1.0,
             colors: Vec::new(),
             levels: Vec::new(),
             colormap_name: "bwr".to_string(),
@@ -221,6 +223,12 @@ impl Contour {
             let opt_selected = self.options_selected();
             write!(&mut self.buffer, "plt.{},z{})\n", contour, &opt_selected).unwrap();
         }
+    }
+
+    /// Sets the alpha value to alpha instead of the pre-defined alpha
+    pub fn set_alpha(&mut self, alpha: f64) -> &mut Self {
+        self.alpha = alpha;
+        self
     }
 
     /// Sets the colors to be used instead of a pre-defined colormap
@@ -474,6 +482,7 @@ impl Contour {
         if self.extra_filled != "" {
             write!(&mut opt, ",{}", self.extra_filled).unwrap();
         }
+        write!(&mut opt, ",alpha={}", self.alpha).unwrap();
         opt
     }
 

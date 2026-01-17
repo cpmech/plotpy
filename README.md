@@ -27,17 +27,15 @@
 
 ## Introduction
 
-This crate implements high-level functions to generate plots and drawings. Although we use Python/Matplotlib, the goal is to provide a convenient Rust library that is **different** than Matplotlib. The difference happens because we want **convenience** for the Rust developer while getting the **fantastic quality of Matplotlib** 😀.
+This crate implements functions for generating plots and drawings in Rust. It uses Python/Matplotlib but is designed specifically for Rust developers, combining the convenience of a Rust-native API with the exceptional quality of Matplotlib 😀.
 
-Plotpy is more verbose than Matplotlib because we aim to minimize the need to memorize the functionality by taking advantage of the intelligence of the IDE (e.g., VS Code) on auto-completing the code.
+Plotpy is more verbose than native Matplotlib because the aim here is to take advantage of the intelligence of the IDE (e.g., VS Code) to auto-complete the code while developing in Rust.
 
-Internally, we use [Matplotlib](https://matplotlib.org/) via a Python 3 script. First, we generate a python code in a directory of your choice (e.g., `/tmp/plotpy`), and then we call **python3** using Rust's `std::process::Command`.
+Plotpy generates Python code in a temporary directory (e.g., `/tmp/plotpy`). It then runs the code via `Python 3` using Rust's `std::process::Command`. The result is an image file such as `SVG`.
 
 For more information (and examples), check out the [plotpy documentation on docs.rs](https://docs.rs/plotpy).
 
 See also the [examples directory](https://github.com/cpmech/plotpy/tree/main/examples) with the output of the [integration tests](https://github.com/cpmech/plotpy/tree/main/tests).
-
-
 
 ## Installation
 

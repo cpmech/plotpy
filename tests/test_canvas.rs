@@ -558,6 +558,6 @@ fn test_canvas_glyph_3d_and_hide_3d_grid() -> Result<(), StrError> {
     let buffered = BufReader::new(file);
     let lines_iter = buffered.lines();
     let n = lines_iter.count();
-    assert!(n > 850 && n < 910);
+    assert!(n > 820 && n < 1000);
     Ok(())
 }

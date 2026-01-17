@@ -178,6 +178,8 @@ fn test_contour_draw_tri() -> Result<(), StrError> {
         .set_line_color("black")
         .set_line_style("-")
         .set_line_width(1.5)
+        .set_fill_alpha(1.0)
+        .set_line_alpha(1.0)
         .set_tri_show_edges(true)
         .set_tri_edges_color("green")
         .set_tri_edges_line_width(1.0)

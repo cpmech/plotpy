@@ -48,7 +48,6 @@ use std::fmt::Write;
 ///
 /// ![integ_contour.svg](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_contour.svg)
 pub struct Contour {
-    alpha: f64,                   // Alpha (transparacy) of the plot
     colors: Vec<String>,          // Colors to be used instead of colormap
     levels: Vec<f64>,             // Pre-defined levels
     colormap_name: String,        // Colormap name
@@ -62,6 +61,8 @@ pub struct Contour {
     colorbar_location: String,    // Colorbar location
     colorbar_extra: String,       // Extra options for the colorbar
     number_format_cb: String,     // Number format for the labels in lines contour
+    fill_alpha: Option<f64>,      // Transparency of the filled contour
+    line_alpha: Option<f64>,      // Transparency of the line contour
     line_color: String,           // Line color for the lines contour
     line_style: String,           // Line style for the lines contour
     line_width: f64,              // Line width for the lines contour
@@ -84,7 +85,6 @@ impl Contour {
     /// Creates a new Contour object
     pub fn new() -> Self {
         Contour {
-            alpha: 1.0,
             colors: Vec::new(),
             levels: Vec::new(),
             colormap_name: "bwr".to_string(),
@@ -98,6 +98,8 @@ impl Contour {
             colorbar_location: String::new(),
             colorbar_extra: String::new(),
             number_format_cb: String::new(),
+            fill_alpha: None,
+            line_alpha: None,
             line_color: "black".to_string(),
             line_style: String::new(),
             line_width: 0.0,
@@ -225,12 +227,6 @@ impl Contour {
         }
     }
 
-    /// Sets the alpha value to alpha instead of the pre-defined alpha
-    pub fn set_alpha(&mut self, alpha: f64) -> &mut Self {
-        self.alpha = alpha;
-        self
-    }
-
     /// Sets the colors to be used instead of a pre-defined colormap
     ///
     /// Will use `colormap_index` instead if its empty.
@@ -355,6 +351,18 @@ impl Contour {
         self
     }
 
+    /// Sets the transparency of the filled contour
+    pub fn set_fill_alpha(&mut self, alpha: f64) -> &mut Self {
+        self.fill_alpha = Some(alpha);
+        self
+    }
+
+    /// Sets the transparency of the line contour
+    pub fn set_line_alpha(&mut self, alpha: f64) -> &mut Self {
+        self.line_alpha = Some(alpha);
+        self
+    }
+
     /// Sets the line color for the lines contour (default is black)
     pub fn set_line_color(&mut self, color: &str) -> &mut Self {
         self.line_color = String::from(color);
@@ -469,6 +477,9 @@ impl Contour {
     /// Returns options for filled contour
     fn options_filled(&self) -> String {
         let mut opt = String::new();
+        if let Some(a) = self.fill_alpha {
+            write!(&mut opt, ",alpha={}", a).unwrap();
+        }
         if self.colors.len() > 0 {
             write!(&mut opt, ",colors=colors",).unwrap();
         } else {
@@ -482,13 +493,15 @@ impl Contour {
         if self.extra_filled != "" {
             write!(&mut opt, ",{}", self.extra_filled).unwrap();
         }
-        write!(&mut opt, ",alpha={}", self.alpha).unwrap();
         opt
     }
 
     /// Returns options for line contour
     fn options_line(&self) -> String {
         let mut opt = String::new();
+        if let Some(a) = self.line_alpha {
+            write!(&mut opt, ",alpha={}", a).unwrap();
+        }
         if self.line_color != "" {
             write!(&mut opt, ",colors=['{}']", self.line_color).unwrap();
         }

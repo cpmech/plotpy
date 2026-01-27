@@ -11,6 +11,7 @@ Some output of integration tests are shown below.
 - [Canvas](#canvas)
 - [Contour](#contour)
 - [Curve](#curve)
+- [DarkMode](#darkmode)
 - [FillBetween](#fillbetween)
 - [Histogram](#histogram)
 - [Image](#image)
@@ -91,6 +92,15 @@ Some output of integration tests are shown below.
 ![curve](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_curve_points_methods.svg)
 ![curve](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_curve_twinx.svg)
 ![curve](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_curve.svg)
+
+## DarkMode
+
+[test_dark_mode.rs](https://github.com/cpmech/plotpy/tree/main/tests/test_dark_mode.rs)
+
+![default](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_dark_mode_default.svg)
+![mathematica](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_dark_mode_mathematica.svg)
+![mocha](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_dark_mode_mocha.svg)
+![nordic](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/integ_dark_mode_nordic.svg)
 
 ## FillBetween
 

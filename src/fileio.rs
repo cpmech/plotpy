@@ -1,4 +1,4 @@
-use super::{StrError, PYTHON_HEADER};
+use super::StrError;
 use std::fs;
 use std::fs::File;
 use std::io::Write;
@@ -12,10 +12,6 @@ use std::process::Command;
 /// * `python_commands` - Python commands to be written to file
 /// * `output_dir` - Output directory to be created
 /// * `filename_py` - Filename with extension .py
-///
-/// # Note
-///
-/// The contents of [PYTHON_HEADER] are added at the beginning of the file.
 pub(crate) fn call_python3(python_exe: &str, python_commands: &String, path: &Path) -> Result<String, StrError> {
     // create directory
     if let Some(p) = path.parent() {
@@ -24,7 +20,6 @@ pub(crate) fn call_python3(python_exe: &str, python_commands: &String, path: &Pa
 
     // combine header with commands
     let mut contents = String::new();
-    contents.push_str(PYTHON_HEADER);
     contents.push_str(python_commands);
 
     // write file
@@ -59,7 +54,7 @@ pub(crate) fn call_python3(python_exe: &str, python_commands: &String, path: &Pa
 
 #[cfg(test)]
 mod tests {
-    use super::{call_python3, PYTHON_HEADER};
+    use super::call_python3;
     use std::fs;
     use std::path::Path;
 
@@ -71,8 +66,7 @@ mod tests {
         let path = Path::new("call_python3_works.py");
         let output = call_python3("python3", &commands, &path).unwrap();
         let data = fs::read_to_string(&path).map_err(|_| "cannot read test file").unwrap();
-        let mut correct = String::from(PYTHON_HEADER);
-        correct.push_str(&commands);
+        let correct = "print(\"Python says: Hello World!\")".to_string();
         assert_eq!(data, correct);
         assert_eq!(output, "Python says: Hello World!\n");
     }
@@ -83,8 +77,7 @@ mod tests {
         let path = Path::new(OUT_DIR).join("call_python3_works.py");
         let output = call_python3("python3", &commands, &path).unwrap();
         let data = fs::read_to_string(&path).map_err(|_| "cannot read test file").unwrap();
-        let mut correct = String::from(PYTHON_HEADER);
-        correct.push_str(&commands);
+        let correct = "print(\"Python says: Hello World!\")".to_string();
         assert_eq!(data, correct);
         assert_eq!(output, "Python says: Hello World!\n");
     }
@@ -96,16 +89,14 @@ mod tests {
         let commands_first = "print(\"Python says: Hello World!\")".to_string();
         let output_first = call_python3("python3", &commands_first, &path).unwrap();
         let data_first = fs::read_to_string(&path).map_err(|_| "cannot read test file").unwrap();
-        let mut correct_first = String::from(PYTHON_HEADER);
-        correct_first.push_str(&commands_first);
+        let correct_first = "print(\"Python says: Hello World!\")".to_string();
         assert_eq!(data_first, correct_first);
         assert_eq!(output_first, "Python says: Hello World!\n");
         // second
         let commands_second = "print(\"Python says: Hello World! again\")".to_string();
         let output_second = call_python3("python3", &commands_second, &path).unwrap();
         let data_second = fs::read_to_string(&path).map_err(|_| "cannot read test file").unwrap();
-        let mut correct_second = String::from(PYTHON_HEADER);
-        correct_second.push_str(&commands_second);
+        let correct_second = "print(\"Python says: Hello World! again\")".to_string();
         assert_eq!(data_second, correct_second);
         assert_eq!(output_second, "Python says: Hello World! again\n");
     }

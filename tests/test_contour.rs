@@ -245,6 +245,6 @@ fn test_contour_colorbar_options() -> Result<(), StrError> {
     let buffered = BufReader::new(file);
     let lines_iter = buffered.lines();
     let n = lines_iter.count();
-    assert!(n > 2150 && n < 2200);
+    assert!(n > 2050 && n < 2200);
     Ok(())
 }

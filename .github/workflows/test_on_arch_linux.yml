@@ -1,0 +1,15 @@
+name: Test
+on: [pull_request]
+jobs:
+  test_on_arch_linux:
+    runs-on: ubuntu-latest
+    container:
+      image: archlinux:latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Libraries and Rust
+        run: |
+          pacman -Syu --noconfirm python-matplotlib rust cargo
+      - name: Run tests
+        run: |
+          cargo test -- --nocapture

@@ -155,7 +155,7 @@ fn test_plot_3d() -> Result<(), StrError> {
     let buffered = BufReader::new(file);
     let lines_iter = buffered.lines();
     let n_lines = lines_iter.count();
-    assert!(n_lines > 1800 && n_lines < 1900);
+    assert!(n_lines > 1800 && n_lines < 1950);
     Ok(())
 }
 

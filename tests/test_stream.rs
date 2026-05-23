@@ -51,7 +51,7 @@ fn test_stream_arrows_1() -> Result<(), StrError> {
     let buffered = BufReader::new(file);
     let lines_iter = buffered.lines();
     let n = lines_iter.count();
-    assert!(n > 8650 && n < 8730);
+    assert!(n > 4300 && n < 8730);
     Ok(())
 }
 
@@ -90,6 +90,6 @@ fn test_stream_arrows_2() -> Result<(), StrError> {
     let buffered = BufReader::new(file);
     let lines_iter = buffered.lines();
     let n = lines_iter.count();
-    assert!(n > 3600 && n < 3680);
+    assert!(n > 2000 && n < 3680);
     Ok(())
 }

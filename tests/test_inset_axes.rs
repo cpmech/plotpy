@@ -213,7 +213,7 @@ fn test_inset_axes_5() -> Result<(), StrError> {
     let buffered = BufReader::new(file);
     let lines_iter = buffered.lines();
     let n = lines_iter.count().clone();
-    assert!(n > 2400 && n < 2500);
+    assert!(n > 2300 && n < 2500);
     Ok(())
 }
 

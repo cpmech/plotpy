@@ -133,7 +133,7 @@ impl InsetAxes {
     /// * "." - dot hatching                                                                                          
     /// * "*" - star hatching  
     ///
-    /// [See options in ](https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.indicate_inset.html#matplotlib.axes.Axes.indicate_inset)
+    /// [See Matplotlib's documentation](https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.indicate_inset.html#matplotlib.axes.Axes.indicate_inset)
     ///
     /// [See Matplotlib's documentation for more hatch patterns](https://matplotlib.org/stable/gallery/shapes_and_collections/hatch_demo.html)
     pub fn set_indicator_hatch(&mut self, hatch: &str) -> &mut Self {
@@ -190,7 +190,7 @@ impl InsetAxes {
     ///
     /// Example of normalized coordinates: `(0.5, 0.5, 0.4, 0.3)`.
     ///
-    /// # Arguments
+    /// # Input
     ///
     /// * `u0` -- The normalized (0 to 1) horizontal figure coordinate of the lower-left corner of the inset Axes.
     /// * `v0` -- The normalized (0 to 1) vertical figure coordinate of the lower-left corner of the inset Axes.
@@ -284,7 +284,7 @@ impl InsetAxes {
 
     /// Sets whether the indicator lines are disabled
     ///
-    /// # Arguments
+    /// # Input
     ///
     /// * `disabled` - If true, hides the indicator lines. If false, shows them.
     pub fn set_indicator_disabled(&mut self, disabled: bool) -> &mut Self {

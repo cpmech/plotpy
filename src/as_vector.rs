@@ -108,7 +108,7 @@ mod tests {
         let y: &[f64] = &[10.0, 20.0, 30.0];
         assert_eq!(vector_str(&y), "10,20,30,\n");
 
-        // stack-allocated (fixed-size) 2D array
+        // stack-allocated (fixed-size) 1D array
         let z = [100.0, 200.0, 300.0];
         assert_eq!(vector_str(&z), "100,200,300,\n");
     }

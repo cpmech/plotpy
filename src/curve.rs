@@ -300,6 +300,8 @@ impl Curve {
     /// Configure the twin-x label and color via [`Plot::set_label_y_twinx`](crate::Plot::set_label_y_twinx)
     /// and [`Plot::set_label_y_twinx_color`](crate::Plot::set_label_y_twinx_color).
     ///
+    /// # Input
+    ///
     /// * `y` -- ordinate values for the right-hand side axis
     pub fn draw_with_twin_x<'a, T, U>(&mut self, y: &'a T)
     where
@@ -394,7 +396,7 @@ impl Curve {
     ///
     /// Options:
     ///
-    /// * "`-`", `:`", "`--`", "`-.`", or "`None`"
+    /// * "`-`", "`:`", "`--`", "`-.`", or "`None`"
     /// * As defined in <https://matplotlib.org/stable/gallery/lines_bars_and_markers/linestyles.html>
     pub fn set_line_style(&mut self, style: &str) -> &mut Self {
         self.line_style = String::from(style);

@@ -323,7 +323,7 @@ impl Contour {
 
     /// Configure the axes into which the colorbar will be drawn
     ///
-    /// # Arguments
+    /// # Input
     ///
     /// * `location` -- location of the colorbar axes (e.g., 'right', 'top', 'left', 'bottom')
     /// * `width_pct` -- width percentage of the colorbar axes (e.g., 5.0, 10.0, 15.0)
@@ -349,9 +349,15 @@ impl Contour {
         self
     }
 
-    /// Sets extra options for the colorbar
+    /// Sets extra matplotlib commands (comma separated) for the colorbar
     ///
-    /// Example `extra = "fraction=0.046, pad=0.04"`
+    /// **Important:** The extra commands must be comma separated. For example:
+    ///
+    /// ```text
+    /// fraction=0.046,pad=0.04
+    /// ```
+    ///
+    /// [See Matplotlib's documentation](https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.colorbar.html)
     pub fn set_colorbar_extra(&mut self, extra: &str) -> &mut Self {
         self.colorbar_extra = String::from(extra);
         self

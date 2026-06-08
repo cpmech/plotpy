@@ -684,7 +684,7 @@ impl Plot {
     /// # Input
     ///
     /// * `major_every` -- step for major ticks (ignored if ≤ 0.0)
-    /// * `minor_every` -- step for major ticks (ignored if ≤ 0.0)
+    /// * `minor_every` -- step for minor ticks (ignored if ≤ 0.0)
     /// * `major_number_format` -- C-style number format for major ticks; e.g. "%.2f" (ignored if empty "")
     ///    See [matplotlib FormatStrFormatter](https://matplotlib.org/stable/api/ticker_api.html#matplotlib.ticker.FormatStrFormatter)
     #[rustfmt::skip]
@@ -713,7 +713,7 @@ impl Plot {
     /// # Input
     ///
     /// * `major_every` -- step for major ticks (ignored if ≤ 0.0)
-    /// * `minor_every` -- step for major ticks (ignored if ≤ 0.0)
+    /// * `minor_every` -- step for minor ticks (ignored if ≤ 0.0)
     /// * `major_number_format` -- C-style number format for major ticks; e.g. "%.2f" (ignored if empty "")
     ///    See [matplotlib FormatStrFormatter](https://matplotlib.org/stable/api/ticker_api.html#matplotlib.ticker.FormatStrFormatter)
     #[rustfmt::skip]
@@ -833,7 +833,7 @@ impl Plot {
     ///
     /// # Input
     ///
-    /// * `minor_every` -- step for major ticks (ignored if ≤ 0.0). Example `PI / 12.0`
+    /// * `minor_every` -- step for minor ticks (ignored if ≤ 0.0). Example `PI / 12.0`
     ///
     /// **Note:** This function sets the major ticks as `PI / 2.0`.
     #[rustfmt::skip]
@@ -858,7 +858,7 @@ impl Plot {
     ///
     /// # Input
     ///
-    /// * `minor_every` -- step for major ticks (ignored if ≤ 0.0). Example `PI / 12.0`
+    /// * `minor_every` -- step for minor ticks (ignored if ≤ 0.0). Example `PI / 12.0`
     ///
     /// **Note:** This function sets the major ticks as `PI / 2.0`.
     #[rustfmt::skip]

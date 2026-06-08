@@ -156,11 +156,11 @@ pub struct Canvas {
     glyph_line_width: f64,     // Line width for 3D glyphs
     glyph_size: f64,           // Size for 3D glyphs
     glyph_color_x: String,     // Color for X axis of 3D glyphs
-    glyph_color_y: String,     // Color for X axis of 3D glyphs
-    glyph_color_z: String,     // Color for X axis of 3D glyphs
+    glyph_color_y: String,     // Color for Y axis of 3D glyphs
+    glyph_color_z: String,     // Color for Z axis of 3D glyphs
     glyph_label_x: String,     // Label for X axis of 3D glyphs
-    glyph_label_y: String,     // Label for X axis of 3D glyphs
-    glyph_label_z: String,     // Label for X axis of 3D glyphs
+    glyph_label_y: String,     // Label for Y axis of 3D glyphs
+    glyph_label_z: String,     // Label for Z axis of 3D glyphs
     glyph_label_color: String, // Color for labels of 3D glyphs (overrides individual axis colors)
     glyph_bbox_opt: String,    // Python options for the dictionary setting the bounding box of 3D glyphs' text
 
@@ -279,6 +279,11 @@ impl Canvas {
 
     /// Draws triangles (2D only)
     ///
+    /// # Input
+    ///
+    /// * `xx`, `yy` -- point coordinates (1D arrays)
+    /// * `connectivity` -- triangulation connectivity matrix (n_triangles × 3)
+    ///
     /// Using <https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.triplot.html>
     pub fn draw_triangles<'a, T, U, C>(&mut self, xx: &'a T, yy: &'a T, connectivity: &'a C) -> &mut Self
     where
@@ -296,9 +301,14 @@ impl Canvas {
 
     /// Draws triangles (3D only)
     ///
-    /// Using <https://matplotlib.org/stable/api/_as_gen/mpl_toolkits.mplot3d.axes3d.Axes3D.plot_trisurf.html#mpl_toolkits.mplot3d.axes3d.Axes3D.plot_trisurf>
+    /// # Input
+    ///
+    /// * `xx`, `yy`, `zz` -- point coordinates (1D arrays)
+    /// * `connectivity` -- triangulation connectivity matrix (n_triangles × 3)
     ///
     /// Note: There is no way to set shading and facecolor at the same time.
+    ///
+    /// Using <https://matplotlib.org/stable/api/_as_gen/mpl_toolkits.mplot3d.axes3d.Axes3D.plot_trisurf.html>
     pub fn draw_triangles_3d<'a, T, U, C>(&mut self, xx: &'a T, yy: &'a T, zz: &'a T, connectivity: &'a C) -> &mut Self
     where
         T: AsVector<'a, U>,
@@ -404,6 +414,12 @@ impl Canvas {
 
     /// Draws polyline with straight segments, quadratic Bezier, or cubic Bezier (2D only)
     ///
+    /// # Input
+    ///
+    /// * `points` -- (n × 2) matrix of `(x, y)` coordinates
+    /// * `codes` -- slice of [`PolyCode`] values, one per point
+    /// * `closed` -- if `true`, closes the path back to the first point
+    ///
     /// **Note:** The first and last commands are ignored.
     pub fn draw_polycurve<'a, T, U>(&mut self, points: &'a T, codes: &[PolyCode], closed: bool) -> Result<(), StrError>
     where
@@ -503,6 +519,11 @@ impl Canvas {
     }
 
     /// Draws polyline (2D or 3D, auto-detected from point dimensions)
+    ///
+    /// # Input
+    ///
+    /// * `points` -- (n × 2) or (n × 3) matrix of coordinates
+    /// * `closed` -- if `true`, connects the last point back to the first
     ///
     /// If points are `2D` (`ndim == 2`), uses 2D path patches (supporting
     /// `face_color` and `edge_color` fills). If `3D` (`ndim == 3`), draws as
@@ -831,7 +852,7 @@ impl Canvas {
     ///
     /// Options:
     ///
-    /// * "`-`", `:`", "`--`", "`-.`", or "`None`"
+    /// * "`-`", "`:`", "`--`", "`-.`", or "`None`"
     /// * As defined in <https://matplotlib.org/stable/gallery/lines_bars_and_markers/linestyles.html>
     pub fn set_line_style(&mut self, style: &str) -> &mut Self {
         self.line_style = String::from(style);
@@ -1040,7 +1061,7 @@ impl Canvas {
         opt
     }
 
-    /// Returns shared options
+    /// Returns options for triangles (3D only)
     fn options_triangles_3d(&self) -> String {
         let mut opt = String::new();
         if self.edge_color != "" {

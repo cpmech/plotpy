@@ -77,7 +77,7 @@ impl Image {
 
     /// (imshow) Displays data as an image with RGB or RGB(A) values
     ///
-    /// # Arguments
+    /// # Input
     ///
     /// * `data` - 3D vector with shape (height, width, 3) for RGB or (height, width, 4) for RGBA
     ///   The inner-most vector contains the color channels.
@@ -138,7 +138,7 @@ impl Image {
         self
     }
 
-    /// Returns options for barplot
+    /// Returns options for image
     fn options(&self) -> String {
         let mut opt = String::new();
         if self.colormap_name != "" {

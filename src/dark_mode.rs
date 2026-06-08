@@ -26,7 +26,7 @@ impl DarkMode {
         dm
     }
 
-    /// Sets the Matplotlib native dark mode (dark_background)
+    /// Applies Matplotlib's built-in `dark_background` style
     pub fn set_dark_background(&mut self) {
         self.buffer.clear();
         self.buffer.push_str("plt.style.use('dark_background')\n");
@@ -81,6 +81,8 @@ plt.rcParams.update({
         );
     }
 
+    /// Sets the Catppuccin Mocha dark color scheme
+    ///
     /// **Important:** This mode requires `cycler` package in Python environment.
     pub fn set_mocha(&mut self) {
         self.buffer.clear();

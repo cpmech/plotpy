@@ -211,7 +211,7 @@ impl Surface {
     /// * `terrain`
     /// * `pink`
     /// * `Greys`
-    /// * see more here <https://matplotlib.org/stable/tutorials/colors/colormaps.html>
+    /// * See the [Matplotlib colormap reference](https://matplotlib.org/stable/tutorials/colors/colormaps.html) for all available options
     pub fn set_colormap_name(&mut self, name: &str) -> &mut Self {
         self.colormap_name = String::from(name);
         self

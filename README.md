@@ -3,7 +3,8 @@
 [![documentation](https://img.shields.io/badge/plotpy-documentation-blue)](https://docs.rs/plotpy)
 [![Track Awesome List](https://www.trackawesomelist.com/badge.svg)](https://www.trackawesomelist.com/rust-unofficial/awesome-rust/)
 
-[![Test & Coverage](https://github.com/cpmech/plotpy/actions/workflows/test_and_coverage.yml/badge.svg)](https://github.com/cpmech/plotpy/actions/workflows/test_and_coverage.yml)
+[![Arch](https://github.com/cpmech/plotpy/actions/workflows/arch.yml/badge.svg)](https://github.com/cpmech/plotpy/actions/workflows/arch.yml)
+[![Ubuntu](https://github.com/cpmech/plotpy/actions/workflows/ubuntu.yml/badge.svg)](https://github.com/cpmech/plotpy/actions/workflows/ubuntu.yml)
 
 
 ## Contents <!-- omit from toc --> 

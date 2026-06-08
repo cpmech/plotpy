@@ -2,15 +2,24 @@ use super::GraphMaker;
 
 /// Implements a dark mode enabler for plots
 ///
-/// **Warning;** This instance must be the **first** to be added to the `Plot` object,
+/// **Warning:** This instance must be the **first** added to the `Plot` object
+/// (before any curves, surfaces, etc.) so that the style is applied before any
+/// drawing commands.
+///
+/// Available themes:
+/// - `set_dark_background()` — Matplotlib's built-in dark theme (default)
+/// - `set_mathematica()` — Mathematica-like color scheme
+/// - `set_mocha()` — Catppuccin Mocha color scheme
+/// - `set_nordic()` — Nordic Night color scheme
+///
+/// **Note:** `set_mathematica`, `set_mocha`, and `set_nordic` require the `cycler`
+/// package in your Python environment.
 pub struct DarkMode {
     buffer: String,
 }
 
 impl DarkMode {
-    /// Allocates a new instance
-    ///
-    /// **Warning;** This instance must be the **first** to be added to the `Plot` object,
+    /// Allocates a new instance with the default `dark_background` theme
     pub fn new() -> Self {
         let mut dm = DarkMode { buffer: String::new() };
         dm.set_dark_background();

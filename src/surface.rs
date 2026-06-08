@@ -3,7 +3,12 @@ use crate::quote_marker;
 use num_traits::Num;
 use std::fmt::Write;
 
-/// Generates a 3D a surface (or wireframe, or both)
+/// Generates a 3D surface (or wireframe, or both)
+///
+/// Can render a surface, a wireframe overlay, scatter points, and a colorbar
+/// from the same (x, y, z) matrix data. Higher-level geometry primitives
+/// (cylinder, sphere, plane, etc.) are available via [`Surface::draw_cylinder`],
+/// [`Surface::draw_sphere`], and related methods.
 ///
 /// [See Matplotlib's documentation](https://matplotlib.org/stable/api/_as_gen/mpl_toolkits.mplot3d.axes3d.Axes3D.plot_surface.html)
 ///

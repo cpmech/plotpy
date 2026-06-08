@@ -23,29 +23,59 @@ pub fn sign(x: f64) -> f64 {
     }
 }
 
-/// Implements the superquadric function involving sin(x)
+/// Implements the superquadric auxiliary function involving sin(x)
 ///
 /// ```text
 /// suq_sin(x;k) = sign(sin(x)) · |sin(x)|ᵏ
 /// ```
 ///
-/// `suq_sin(x;k)` is the `f(ω;m)` function from <https://en.wikipedia.org/wiki/Superquadrics>
+/// This is the angular shaping function for [superquadrics](https://en.wikipedia.org/wiki/Superquadrics).
+/// When `k = 2` the result is the standard parametric form of a sphere/ellipsoid.
+/// Values `k < 1` produce a "pinched" shape; `k > 2` produces a "squared" shape.
+///
+/// `suq_sin(x;k)` corresponds to `f(ω;m)` in the superquadric literature.
+///
+/// See also: [`suq_cos`]
 pub fn suq_sin(x: f64, k: f64) -> f64 {
     sign(f64::sin(x)) * f64::powf(f64::abs(f64::sin(x)), k)
 }
 
-/// Implements the superquadric auxiliary involving cos(x)
+/// Implements the superquadric auxiliary function involving cos(x)
 ///
 /// ```text
 /// suq_cos(x;k) = sign(cos(x)) · |cos(x)|ᵏ
 /// ```
 ///
-/// `suq_cos(x;k)` is the `g(ω;m)` function from <https://en.wikipedia.org/wiki/Superquadrics>
+/// This is the angular shaping function for [superquadrics](https://en.wikipedia.org/wiki/Superquadrics).
+/// When `k = 2` the result is the standard parametric form of a sphere/ellipsoid.
+/// Values `k < 1` produce a "pinched" shape; `k > 2` produces a "squared" shape.
+///
+/// `suq_cos(x;k)` corresponds to `g(ω;m)` in the superquadric literature.
+///
+/// See also: [`suq_sin`]
 pub fn suq_cos(x: f64, k: f64) -> f64 {
     sign(f64::cos(x)) * f64::powf(f64::abs(f64::cos(x)), k)
 }
 
 /// Returns evenly spaced numbers over a specified closed interval
+///
+/// Analogous to [numpy.linspace](https://numpy.org/doc/stable/reference/generated/numpy.linspace.html).
+/// Both `start` and `stop` are included in the output (closed interval).
+///
+/// # Examples
+///
+/// ```
+/// use plotpy::linspace;
+///
+/// assert_eq!(linspace(0.0, 1.0, 3), vec![0.0, 0.5, 1.0]);
+/// assert_eq!(linspace(0.0, 1.0, 5), vec![0.0, 0.25, 0.5, 0.75, 1.0]);
+/// ```
+///
+/// # Edge cases
+///
+/// - `count == 0` returns an empty vector
+/// - `count == 1` returns `[start]`
+/// - `count == 2` returns `[start, stop]`
 pub fn linspace(start: f64, stop: f64, count: usize) -> Vec<f64> {
     if count == 0 {
         return Vec::new();
@@ -68,18 +98,34 @@ pub fn linspace(start: f64, stop: f64, count: usize) -> Vec<f64> {
     res
 }
 
-/// Generates 2d points (meshgrid)
+/// Generates 2d meshgrid points
+///
+/// This is analogous to [numpy.meshgrid](https://numpy.org/doc/stable/reference/generated/numpy.meshgrid.html)
+/// with `indexing='ij'`. Produces two (`ny` × `nx`) matrices where each row has the same `y`
+/// value and each column has the same `x` value.
 ///
 /// # Input
 ///
 /// * `xmin`, `xmax` -- range along x
 /// * `ymin`, `ymax` -- range along y
-/// * `nx` -- is the number of points along x (must be `>= 2`)
-/// * `ny` -- is the number of points along y (must be `>= 2`)
+/// * `nx` -- number of points along x (must be `>= 2`)
+/// * `ny` -- number of points along y (must be `>= 2`)
 ///
 /// # Output
 ///
-/// * `x`, `y` -- (`ny` by `nx`) 2D arrays
+/// * `x`, `y` -- (`ny` by `nx`) 2D arrays such that `x[i][j] = xmin + j·dx` and `y[i][j] = ymin + i·dy`
+///
+/// # Example
+///
+/// ```
+/// use plotpy::generate2d;
+///
+/// let (x, y) = generate2d(-1.0, 1.0, -3.0, 3.0, 2, 3);
+/// assert_eq!(x, vec![vec![-1.0, 1.0], vec![-1.0, 1.0], vec![-1.0, 1.0]]);
+/// assert_eq!(y, vec![vec![-3.0, -3.0], vec![0.0, 0.0], vec![3.0, 3.0]]);
+/// ```
+///
+/// See also: [`generate3d`]
 pub fn generate2d(xmin: f64, xmax: f64, ymin: f64, ymax: f64, nx: usize, ny: usize) -> (Vec<Vec<f64>>, Vec<Vec<f64>>) {
     let mut x = vec![vec![0.0; nx]; ny];
     let mut y = vec![vec![0.0; nx]; ny];
@@ -107,19 +153,38 @@ pub fn generate2d(xmin: f64, xmax: f64, ymin: f64, ymax: f64, nx: usize, ny: usi
     (x, y)
 }
 
-/// Generates 3d points (function over meshgrid)
+/// Generates 3d points by evaluating a function over a 2d meshgrid
+///
+/// Creates the same `(x, y)` grid as [`generate2d`], then evaluates `calc_z(x, y)` at each
+/// grid point to produce the `z` matrix. This is the typical input for [`Surface::draw`](crate::Surface::draw)
+/// and [`Contour::draw`](crate::Contour::draw).
 ///
 /// # Input
 ///
 /// * `xmin`, `xmax` -- range along x
 /// * `ymin`, `ymax` -- range along y
-/// * `nx` -- is the number of points along x (must be `>= 2`)
-/// * `ny` -- is the number of points along y (must be `>= 2`)
-/// * `calc_z` -- is a function of (xij, yij) that calculates zij
+/// * `nx` -- number of points along x (must be `>= 2`)
+/// * `ny` -- number of points along y (must be `>= 2`)
+/// * `calc_z` -- function `f(x, y)` that returns `z` at each grid point
 ///
 /// # Output
 ///
 /// * `x`, `y`, `z` -- (`ny` by `nx`) 2D arrays
+///
+/// # Example
+///
+/// ```
+/// use plotpy::generate3d;
+///
+/// let (x, y, z) = generate3d(-1.0, 1.0, -1.0, 1.0, 3, 3, |x, y| x * x + y * y);
+/// assert_eq!(z, vec![
+///     vec![2.0, 1.0, 2.0],
+///     vec![1.0, 0.0, 1.0],
+///     vec![2.0, 1.0, 2.0],
+/// ]);
+/// ```
+///
+/// See also: [`generate2d`]
 pub fn generate3d<F>(
     xmin: f64,
     xmax: f64,

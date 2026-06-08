@@ -529,7 +529,7 @@ fn main() -> Result<(), StrError> {
 The entire library follows `something.method1().method2().method3()` pervasively.
 
 **Graph entities** — setters return `&mut Self`:
-```rust
+```text
 curve.set_label("logistic")
      .set_line_color("#5f9cd8")
      .set_line_style("-")
@@ -539,7 +539,7 @@ curve.draw(&x, &y);
 Note: `draw()` methods don't return `&mut Self` (they finalize by writing Python code). But `points_begin()`/`points_add()`/`points_end()` do chain.
 
 **Plot** — everything returns `&mut Self`:
-```rust
+```text
 plot.set_subplot(2, 2, 1)
     .set_title("first")
     .add(&curve1)

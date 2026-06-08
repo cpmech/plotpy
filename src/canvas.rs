@@ -156,11 +156,11 @@ pub struct Canvas {
     glyph_line_width: f64,     // Line width for 3D glyphs
     glyph_size: f64,           // Size for 3D glyphs
     glyph_color_x: String,     // Color for X axis of 3D glyphs
-    glyph_color_y: String,     // Color for X axis of 3D glyphs
-    glyph_color_z: String,     // Color for X axis of 3D glyphs
+    glyph_color_y: String,     // Color for Y axis of 3D glyphs
+    glyph_color_z: String,     // Color for Z axis of 3D glyphs
     glyph_label_x: String,     // Label for X axis of 3D glyphs
-    glyph_label_y: String,     // Label for X axis of 3D glyphs
-    glyph_label_z: String,     // Label for X axis of 3D glyphs
+    glyph_label_y: String,     // Label for Y axis of 3D glyphs
+    glyph_label_z: String,     // Label for Z axis of 3D glyphs
     glyph_label_color: String, // Color for labels of 3D glyphs (overrides individual axis colors)
     glyph_bbox_opt: String,    // Python options for the dictionary setting the bounding box of 3D glyphs' text
 
@@ -211,6 +211,12 @@ impl Canvas {
     }
 
     /// Draws arc (2D only)
+    ///
+    /// # Input
+    ///
+    /// * `xc`, `yc` -- center coordinates
+    /// * `r` -- radius
+    /// * `ini_angle`, `fin_angle` -- arc angles in degrees (counter-clockwise)
     pub fn draw_arc<T>(&mut self, xc: T, yc: T, r: T, ini_angle: T, fin_angle: T)
     where
         T: std::fmt::Display + Num,
@@ -226,6 +232,13 @@ impl Canvas {
     }
 
     /// Draws arrow (2D only)
+    ///
+    /// # Input
+    ///
+    /// * `xi`, `yi` -- start point
+    /// * `xf`, `yf` -- end point
+    ///
+    /// Use [`set_arrow_style`](Self::set_arrow_style) and [`set_arrow_scale`](Self::set_arrow_scale) to configure.
     pub fn draw_arrow<T>(&mut self, xi: T, yi: T, xf: T, yf: T)
     where
         T: std::fmt::Display + Num,
@@ -245,6 +258,11 @@ impl Canvas {
     }
 
     /// Draws circle (2D only)
+    ///
+    /// # Input
+    ///
+    /// * `xc`, `yc` -- center coordinates
+    /// * `r` -- radius
     pub fn draw_circle<T>(&mut self, xc: T, yc: T, r: T)
     where
         T: std::fmt::Display + Num,
@@ -260,6 +278,11 @@ impl Canvas {
     }
 
     /// Draws triangles (2D only)
+    ///
+    /// # Input
+    ///
+    /// * `xx`, `yy` -- point coordinates (1D arrays)
+    /// * `connectivity` -- triangulation connectivity matrix (n_triangles × 3)
     ///
     /// Using <https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.triplot.html>
     pub fn draw_triangles<'a, T, U, C>(&mut self, xx: &'a T, yy: &'a T, connectivity: &'a C) -> &mut Self
@@ -278,9 +301,14 @@ impl Canvas {
 
     /// Draws triangles (3D only)
     ///
-    /// Using <https://matplotlib.org/stable/api/_as_gen/mpl_toolkits.mplot3d.axes3d.Axes3D.plot_trisurf.html#mpl_toolkits.mplot3d.axes3d.Axes3D.plot_trisurf>
+    /// # Input
+    ///
+    /// * `xx`, `yy`, `zz` -- point coordinates (1D arrays)
+    /// * `connectivity` -- triangulation connectivity matrix (n_triangles × 3)
     ///
     /// Note: There is no way to set shading and facecolor at the same time.
+    ///
+    /// Using <https://matplotlib.org/stable/api/_as_gen/mpl_toolkits.mplot3d.axes3d.Axes3D.plot_trisurf.html>
     pub fn draw_triangles_3d<'a, T, U, C>(&mut self, xx: &'a T, yy: &'a T, zz: &'a T, connectivity: &'a C) -> &mut Self
     where
         T: AsVector<'a, U>,
@@ -386,6 +414,12 @@ impl Canvas {
 
     /// Draws polyline with straight segments, quadratic Bezier, or cubic Bezier (2D only)
     ///
+    /// # Input
+    ///
+    /// * `points` -- (n × 2) matrix of `(x, y)` coordinates
+    /// * `codes` -- slice of [`PolyCode`] values, one per point
+    /// * `closed` -- if `true`, closes the path back to the first point
+    ///
     /// **Note:** The first and last commands are ignored.
     pub fn draw_polycurve<'a, T, U>(&mut self, points: &'a T, codes: &[PolyCode], closed: bool) -> Result<(), StrError>
     where
@@ -484,7 +518,16 @@ impl Canvas {
         self
     }
 
-    /// Draws polyline (2D or 3D)
+    /// Draws polyline (2D or 3D, auto-detected from point dimensions)
+    ///
+    /// # Input
+    ///
+    /// * `points` -- (n × 2) or (n × 3) matrix of coordinates
+    /// * `closed` -- if `true`, connects the last point back to the first
+    ///
+    /// If points are `2D` (`ndim == 2`), uses 2D path patches (supporting
+    /// `face_color` and `edge_color` fills). If `3D` (`ndim == 3`), draws as
+    /// a 3D line plot.
     pub fn draw_polyline<'a, T, U>(&mut self, points: &'a T, closed: bool)
     where
         T: AsMatrix<'a, U>,
@@ -538,7 +581,13 @@ impl Canvas {
         }
     }
 
-    /// Draws a rectangle
+    /// Draws a rectangle (2D only)
+    ///
+    /// # Input
+    ///
+    /// * `x`, `y` -- bottom-left corner coordinates
+    /// * `width` -- rectangle width
+    /// * `height` -- rectangle height
     pub fn draw_rectangle<T>(&mut self, x: T, y: T, width: T, height: T) -> &mut Self
     where
         T: std::fmt::Display + Num,
@@ -554,7 +603,11 @@ impl Canvas {
         self
     }
 
-    /// Draws a text in a 2D graph
+    /// Draws text at (x, y) in a 2D graph using the primary text style
+    ///
+    /// Configure via `set_text_*` methods (color, alignment, fontsize, rotation).
+    ///
+    /// See also: [`draw_alt_text`](Self::draw_alt_text) for the alternative text style
     pub fn draw_text<T>(&mut self, x: T, y: T, label: &str) -> &mut Self
     where
         T: std::fmt::Display + Num,
@@ -563,7 +616,13 @@ impl Canvas {
         self
     }
 
-    /// Draws an alternative text in a 2D graph
+    /// Draws text at (x, y) in a 2D graph using the alternative text style
+    ///
+    /// The alternative style has distinct default values (red color, smaller font,
+    /// rotated 45°) designed for point/cell ID labels in grid drawings.
+    /// Configure via `set_alt_text_*` methods.
+    ///
+    /// See also: [`draw_text`](Self::draw_text) for the primary text style
     pub fn draw_alt_text<T>(&mut self, x: T, y: T, label: &str) -> &mut Self
     where
         T: std::fmt::Display + Num,
@@ -771,13 +830,13 @@ impl Canvas {
         Ok(())
     }
 
-    /// Sets the edge color (shared among features)
+    /// Sets the edge color for the border of shapes (shared among all draw methods)
     pub fn set_edge_color(&mut self, color: &str) -> &mut Self {
         self.edge_color = String::from(color);
         self
     }
 
-    /// Sets the face color (shared among features)
+    /// Sets the fill color for the interior of shapes (shared among all draw methods)
     pub fn set_face_color(&mut self, color: &str) -> &mut Self {
         self.face_color = String::from(color);
         self
@@ -789,11 +848,11 @@ impl Canvas {
         self
     }
 
-    /// Sets the line width of edge (shared among features)
+    /// Sets the line style for edges (shared among features)
     ///
     /// Options:
     ///
-    /// * "`-`", `:`", "`--`", "`-.`", or "`None`"
+    /// * "`-`", "`:`", "`--`", "`-.`", or "`None`"
     /// * As defined in <https://matplotlib.org/stable/gallery/lines_bars_and_markers/linestyles.html>
     pub fn set_line_style(&mut self, style: &str) -> &mut Self {
         self.line_style = String::from(style);
@@ -1002,7 +1061,7 @@ impl Canvas {
         opt
     }
 
-    /// Returns shared options
+    /// Returns options for triangles (3D only)
     fn options_triangles_3d(&self) -> String {
         let mut opt = String::new();
         if self.edge_color != "" {

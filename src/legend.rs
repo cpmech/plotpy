@@ -1,7 +1,11 @@
 use super::{generate_list, GraphMaker};
 use std::fmt::Write;
 
-/// Generates a Legend
+/// Generates a Legend from all labelled graph entities in the current axes
+///
+/// The legend automatically collects labels from preceding entities (e.g., curves with
+/// [`set_label`](crate::Curve::set_label)). It can be placed inside or outside
+/// the plot area and supports multi-column layout.
 ///
 /// [See Matplotlib's documentation](https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.legend.html)
 ///
@@ -95,7 +99,10 @@ impl Legend {
         }
     }
 
-    /// Draws legend
+    /// Draws the legend, collecting labels from all preceding graph entities
+    ///
+    /// Call this after adding all labelled curves/surfaces/etc. to the plot buffer.
+    /// The legend only appears if at least one entity has a label set.
     pub fn draw(&mut self) {
         let opt = self.options();
         if self.outside {
@@ -110,19 +117,19 @@ impl Legend {
         }
     }
 
-    /// Sets the fontsize
+    /// Sets the font size for legend text
     pub fn set_fontsize(&mut self, fontsize: f64) -> &mut Self {
         self.fontsize = fontsize;
         self
     }
 
-    /// Sets the length of legend's indicator line
+    /// Sets the length of the indicator line next to each legend entry
     pub fn set_handle_len(&mut self, length: f64) -> &mut Self {
         self.handle_len = length;
         self
     }
 
-    /// Sets the number of columns
+    /// Arranges legend entries in multiple columns instead of a single column
     pub fn set_num_col(&mut self, num_columns: usize) -> &mut Self {
         self.num_col = num_columns;
         self
@@ -139,7 +146,10 @@ impl Legend {
         self
     }
 
-    /// Sets option to put legend outside of plot area
+    /// Places the legend outside the plot area (to the right)
+    ///
+    /// The positioning is controlled by [`set_x_coords`](Self::set_x_coords).
+    /// Default coordinates place it just outside the right edge.
     pub fn set_outside(&mut self, flag: bool) -> &mut Self {
         self.outside = flag;
         self
@@ -151,9 +161,11 @@ impl Legend {
         self
     }
 
-    /// Sets the normalized coordinates when drawing an outside legend
+    /// Sets the anchor coordinates for an outside legend
     ///
-    /// Example: `[0.0, 1.02, 1.0, 0.102]`
+    /// Uses `[anchor_x0, anchor_y0, size_x, size_y]` in normalized figure units.
+    ///
+    /// Default: `[0.0, 1.02, 1.0, 0.102]`
     pub fn set_x_coords(&mut self, coords: &[f64]) -> &mut Self {
         self.x_coords = coords.to_vec();
         self

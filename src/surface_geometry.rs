@@ -358,7 +358,7 @@ impl Surface {
     /// * `n_alpha` -- number of divisions along α (must be ≥ 2)
     /// * `n_theta` -- number of divisions along θ (must be ≥ 2)
     ///
-    /// # Output:
+    /// # Output
     ///
     /// * `x`, `y`, `z` -- the coordinates of all points as in a meshgrid
     ///

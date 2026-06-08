@@ -2,22 +2,31 @@ use super::GraphMaker;
 
 /// Implements a dark mode enabler for plots
 ///
-/// **Warning;** This instance must be the **first** to be added to the `Plot` object,
+/// **Warning:** This instance must be the **first** added to the `Plot` object
+/// (before any curves, surfaces, etc.) so that the style is applied before any
+/// drawing commands.
+///
+/// Available themes:
+/// - `set_dark_background()` — Matplotlib's built-in dark theme (default)
+/// - `set_mathematica()` — Mathematica-like color scheme
+/// - `set_mocha()` — Catppuccin Mocha color scheme
+/// - `set_nordic()` — Nordic Night color scheme
+///
+/// **Note:** `set_mathematica`, `set_mocha`, and `set_nordic` require the `cycler`
+/// package in your Python environment.
 pub struct DarkMode {
     buffer: String,
 }
 
 impl DarkMode {
-    /// Allocates a new instance
-    ///
-    /// **Warning;** This instance must be the **first** to be added to the `Plot` object,
+    /// Allocates a new instance with the default `dark_background` theme
     pub fn new() -> Self {
         let mut dm = DarkMode { buffer: String::new() };
         dm.set_dark_background();
         dm
     }
 
-    /// Sets the Matplotlib native dark mode (dark_background)
+    /// Applies Matplotlib's built-in `dark_background` style
     pub fn set_dark_background(&mut self) {
         self.buffer.clear();
         self.buffer.push_str("plt.style.use('dark_background')\n");
@@ -72,6 +81,8 @@ plt.rcParams.update({
         );
     }
 
+    /// Sets the Catppuccin Mocha dark color scheme
+    ///
     /// **Important:** This mode requires `cycler` package in Python environment.
     pub fn set_mocha(&mut self) {
         self.buffer.clear();

@@ -4,6 +4,13 @@ use std::fmt::Write;
 
 /// Draw a box and whisker plot
 ///
+/// Each box shows the median, quartiles (Q1/Q3), and whiskers (default: 1.5 × IQR).
+/// Outlier points (fliers) are drawn beyond the whiskers.
+///
+/// Two data formats are supported:
+/// - **Nested list** (via [`draw`](Self::draw)): one box per sub-array (variable group sizes)
+/// - **2D matrix** (via [`draw_mat`](Self::draw_mat)): one box per column (equal group sizes)
+///
 /// [See Matplotlib's documentation](https://matplotlib.org/3.6.3/api/_as_gen/matplotlib.pyplot.boxplot.html)
 ///
 /// # Examples
@@ -120,12 +127,15 @@ impl Boxplot {
         }
     }
 
-    /// Draws the box plot given a nested list
+    /// Draws the box plot given a nested list of values
+    ///
+    /// Each inner `Vec` produces one box. Groups can have different sizes.
     ///
     /// # Input
     ///
-    /// * `data` -- Is a sequence of 1D arrays such that a boxplot is drawn for each array in the sequence.
-    ///   [From Matplotlib](https://matplotlib.org/3.6.3/api/_as_gen/matplotlib.pyplot.boxplot.html)
+    /// * `data` -- a sequence of 1D arrays; one box is drawn per sub-array
+    ///
+    /// See also: [`draw_mat`](Self::draw_mat) for matrix-oriented data
     pub fn draw<T>(&mut self, data: &Vec<Vec<T>>)
     where
         T: std::fmt::Display + Num,
@@ -138,12 +148,14 @@ impl Boxplot {
         write!(&mut self.buffer, "p=plt.boxplot(x{})\n", &opt).unwrap();
     }
 
-    /// Draws the box plot given a 2D array (matrix)
+    /// Draws the box plot given a 2D matrix of values
+    ///
+    /// Each **column** of the matrix produces one box. All groups must have
+    /// the same number of rows (unlike [`draw`](Self::draw) which allows variable sizes).
     ///
     /// # Input
     ///
-    /// * `data` -- Is a 2D array (matrix) such that a boxplot is drawn for each column in the matrix.
-    ///   [From Matplotlib](https://matplotlib.org/3.6.3/api/_as_gen/matplotlib.pyplot.boxplot.html)
+    /// * `data` -- a 2D matrix (rows = observations, columns = groups)
     pub fn draw_mat<'a, T, U>(&mut self, data: &'a T)
     where
         T: AsMatrix<'a, U>,
@@ -157,13 +169,18 @@ impl Boxplot {
         write!(&mut self.buffer, "p=plt.boxplot(x{})\n", &opt).unwrap();
     }
 
-    /// Sets the symbol for the fliers
+    /// Sets the [marker symbol](https://matplotlib.org/stable/api/markers_api.html) for outlier points (fliers)
+    ///
+    /// Example: `"b+"` for blue crosses, `"rx"` for red x-marks.
     pub fn set_symbol(&mut self, symbol: &str) -> &mut Self {
         self.symbol = symbol.to_string();
         self
     }
 
-    /// Enables drawing horizontal boxes
+    /// Enables drawing horizontal boxes instead of vertical
+    ///
+    /// When `true`, the boxplot is rotated 90° clockwise so categories
+    /// appear on the y-axis.
     pub fn set_horizontal(&mut self, flag: bool) -> &mut Self {
         self.horizontal = flag;
         self
@@ -179,31 +196,41 @@ impl Boxplot {
         self
     }
 
-    /// Sets the positions of the boxes
+    /// Overrides the default x-axis positions of the boxes
+    ///
+    /// By default boxes are placed at sequential integer positions (1, 2, 3, …).
+    /// Use this to spread or group boxes at custom locations.
     pub fn set_positions(&mut self, positions: &[f64]) -> &mut Self {
         self.positions = positions.to_vec();
         self
     }
 
-    /// Sets the width of the boxes
+    /// Sets the width of each box (default: 0.5)
     pub fn set_width(&mut self, width: f64) -> &mut Self {
         self.width = Some(width);
         self
     }
 
-    /// Disables the fliers
+    /// Hides outlier points (fliers) when `true`
+    ///
+    /// Outliers are data points beyond 1.5 × IQR from the quartiles.
     pub fn set_no_fliers(&mut self, flag: bool) -> &mut Self {
         self.no_fliers = flag;
         self
     }
 
-    /// Enables the use of Patch artist to draw boxes instead of Line2D artist
+    /// Enables Patch artist drawing so boxes can be filled with color
+    ///
+    /// By default Matplotlib uses Line2D to draw boxes. Setting this to `true`
+    /// allows [`set_boxprops`](Self::set_boxprops) to fill boxes with color.
     pub fn set_patch_artist(&mut self, flag: bool) -> &mut Self {
         self.patch_artist = flag;
         self
     }
 
-    /// Set the median properties.
+    /// Sets the median line properties as a Python dict string
+    ///
+    /// Example: `"{'color': 'red', 'linewidth': 2}"`
     ///
     /// [See Matplotlib's documentation](https://matplotlib.org/3.6.3/api/_as_gen/matplotlib.pyplot.boxplot.html)
     pub fn set_medianprops(&mut self, props: &str) -> &mut Self {
@@ -211,13 +238,18 @@ impl Boxplot {
         self
     }
 
-    /// Set the properties of the box
+    /// Sets the box body properties as a Python dict string
+    ///
+    /// Requires [`set_patch_artist(true)`](Self::set_patch_artist).
+    /// Example: `"{'facecolor': 'lightblue', 'edgecolor': 'black'}"`
     pub fn set_boxprops(&mut self, props: &str) -> &mut Self {
         self.box_props = props.to_string();
         self
     }
 
-    /// Set the properties of the whisker
+    /// Sets the whisker line properties as a Python dict string
+    ///
+    /// Example: `"{'linestyle': '--', 'color': 'gray'}"`
     pub fn set_whiskerprops(&mut self, props: &str) -> &mut Self {
         self.whisker_props = props.to_string();
         self

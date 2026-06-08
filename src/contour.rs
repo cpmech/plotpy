@@ -5,6 +5,14 @@ use std::fmt::Write;
 
 /// Generates a contour plot
 ///
+/// By default, draws a **filled contour** with a **line contour** overlay,
+/// a **colorbar**, and optional **selected-level** highlighting.
+/// Individual layers can be disabled via the `set_no_*` methods.
+///
+/// Two drawing modes are supported:
+/// - **Grid data** via [`draw`](Self::draw) -- uses matrices `(x, y, z)` on a regular grid
+/// - **Triangulated data** via [`draw_tri`](Self::draw_tri) -- uses scattered `(x, y, z)` points with a connectivity matrix
+///
 /// [See Matplotlib's documentation](https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.contour.html)
 ///
 /// # Example
@@ -241,18 +249,22 @@ impl Contour {
         self
     }
 
-    /// Sets the colormap index
+    /// Sets a colormap by index from a built-in list
     ///
-    /// Options:
+    /// Indices wrap around:
     ///
-    /// * 0 -- bwr
-    /// * 1 -- RdBu
-    /// * 2 -- hsv
-    /// * 3 -- jet
-    /// * 4 -- terrain
-    /// * 5 -- pink
-    /// * 6 -- Greys
-    /// * `>`6 -- starts over from 0
+    /// | Index | Colormap |
+    /// |-------|----------|
+    /// | 0     | bwr      |
+    /// | 1     | RdBu     |
+    /// | 2     | hsv      |
+    /// | 3     | jet      |
+    /// | 4     | terrain  |
+    /// | 5     | pink     |
+    /// | 6     | Greys    |
+    ///
+    /// Calling this clears any colors set via [`set_colors`](Self::set_colors).
+    /// See also: [`set_colormap_name`](Self::set_colormap_name)
     pub fn set_colormap_index(&mut self, index: usize) -> &mut Self {
         const CMAP: [&str; 7] = ["bwr", "RdBu", "hsv", "jet", "terrain", "pink", "Greys"];
         self.colormap_name = CMAP[index % 7].to_string();
@@ -260,13 +272,13 @@ impl Contour {
         self
     }
 
-    /// Sets the colormap name
+    /// Sets the colormap by name (e.g., `"terrain"`, `"jet"`, `"viridis"`)
     ///
-    /// Colormap names:
+    /// See the [Matplotlib colormap reference](https://matplotlib.org/stable/tutorials/colors/colormaps.html)
+    /// for all available options.
     ///
-    /// * see <https://matplotlib.org/stable/tutorials/colors/colormaps.html>
-    ///
-    /// Will use `colormap_index` instead if `colormap_name` is empty.
+    /// Calling this clears any colors set via [`set_colors`](Self::set_colors).
+    /// See also: [`set_colormap_index`](Self::set_colormap_index)
     pub fn set_colormap_name(&mut self, name: &str) -> &mut Self {
         self.colormap_name = String::from(name);
         self.colors = Vec::new();
@@ -311,7 +323,7 @@ impl Contour {
 
     /// Configure the axes into which the colorbar will be drawn
     ///
-    /// # Arguments
+    /// # Input
     ///
     /// * `location` -- location of the colorbar axes (e.g., 'right', 'top', 'left', 'bottom')
     /// * `width_pct` -- width percentage of the colorbar axes (e.g., 5.0, 10.0, 15.0)
@@ -327,25 +339,33 @@ impl Contour {
         self
     }
 
-    /// Sets the colorbar location
+    /// Sets the colorbar location (default: Matplotlib's "best" placement)
     ///
-    /// Options: 'right', 'left', 'top', 'bottom'
+    /// Options: `"right"`, `"left"`, `"top"`, `"bottom"`
     ///
-    /// See: <https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.colorbar.html>
+    /// See also: [`set_colorbar_axes`](Self::set_colorbar_axes) for fine-grained control
     pub fn set_colorbar_location(&mut self, location: &str) -> &mut Self {
         self.colorbar_location = location.to_string();
         self
     }
 
-    /// Sets extra options for the colorbar
+    /// Sets extra matplotlib commands (comma separated) for the colorbar
     ///
-    /// Example `extra = "fraction=0.046, pad=0.04"`
+    /// **Important:** The extra commands must be comma separated. For example:
+    ///
+    /// ```text
+    /// fraction=0.046,pad=0.04
+    /// ```
+    ///
+    /// [See Matplotlib's documentation](https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.colorbar.html)
     pub fn set_colorbar_extra(&mut self, extra: &str) -> &mut Self {
         self.colorbar_extra = String::from(extra);
         self
     }
 
-    /// Sets the number format for the labels in the colorbar (cb)
+    /// Sets the number format for the colorbar tick labels
+    ///
+    /// Example: `"%.2f"` for two decimal places, `"%.4e"` for scientific notation
     pub fn set_number_format_cb(&mut self, format: &str) -> &mut Self {
         self.number_format_cb = String::from(format);
         self

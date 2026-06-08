@@ -2,7 +2,10 @@ use super::GraphMaker;
 use num_traits::Num;
 use std::fmt::Write;
 
-/// Creates text to be added to a plot
+/// Creates text annotations for 2D or 3D plots with optional bounding boxes
+///
+/// Supports [`draw`](Self::draw) for 2D and [`draw_3d`](Self::draw_3d) for 3D placement.
+/// Optional bounding boxes can be styled via the `set_bbox_*` methods.
 ///
 /// [See Matplotlib's documentation](https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.text.html)
 ///
@@ -79,7 +82,14 @@ impl Text {
         }
     }
 
-    /// Draws text
+    /// Draws text at (x, y) in a 2D plot
+    ///
+    /// # Input
+    ///
+    /// * `x`, `y` -- coordinates (data coordinates)
+    /// * `message` -- text string to display
+    ///
+    /// See also: [`draw_3d`](Self::draw_3d) for 3D text
     pub fn draw<T>(&mut self, x: T, y: T, message: &str)
     where
         T: std::fmt::Display + Num,
@@ -92,7 +102,16 @@ impl Text {
         }
     }
 
-    /// Draws text in 3D plot
+    /// Draws text at (x, y, z) in a 3D plot
+    ///
+    /// Requires [`Plot::set_subplot_3d`](crate::Plot::set_subplot_3d) to be called first.
+    ///
+    /// # Input
+    ///
+    /// * `x`, `y`, `z` -- coordinates (data coordinates)
+    /// * `message` -- text string to display
+    ///
+    /// See also: [`draw`](Self::draw) for 2D text
     pub fn draw_3d<T>(&mut self, x: T, y: T, z: T, message: &str)
     where
         T: std::fmt::Display + Num,

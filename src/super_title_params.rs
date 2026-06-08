@@ -1,6 +1,9 @@
 use std::fmt::Write;
 
-/// Holds parameters for the SuperTitle
+/// Holds formatting parameters for the figure-level supertitle
+///
+/// Created independently and passed to [`Plot::set_super_title`](crate::Plot::set_super_title).
+/// All fields are optional — only set values are emitted to the Python script.
 #[derive(Clone)]
 pub struct SuperTitleParams {
     /// The x location of the text in figure coordinates (default = 0.5)
@@ -73,7 +76,7 @@ impl SuperTitleParams {
         self
     }
 
-    /// Sets the font weight of the text
+    /// Sets the font weight (numeric: 400 = normal, 700 = bold)
     pub fn set_fontweight(&mut self, value: f64) -> &mut Self {
         self.fontweight = value;
         self

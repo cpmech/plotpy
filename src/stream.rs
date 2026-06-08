@@ -4,7 +4,12 @@ use crate::{AsMatrix, AsVector};
 use num_traits::Num;
 use std::fmt::Write;
 
-/// Implements functions to illustrate vector fields using streamlines and quiver plots
+/// Visualizes vector fields using [streamlines](https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.streamplot.html)
+/// and [quiver arrow](https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.quiver.html) plots
+///
+/// Supports two input formats for each plot type:
+/// - **Matrices** (`draw` / `draw_arrows`) — 2D arrays for coordinates and components
+/// - **Vectors** (`draw_alt` / `draw_arrows_alt`) — 1D coordinate arrays + 2D component matrices
 pub struct Stream {
     // common options
     color: String,
@@ -166,7 +171,7 @@ impl Stream {
         self
     }
 
-    /// Sets the density of streamlines
+    /// Sets the density of streamlines (higher = more lines)
     pub fn set_streamplot_density(&mut self, density: f64) -> &mut Self {
         self.streamplot_density = density;
         self
@@ -178,15 +183,24 @@ impl Stream {
         self
     }
 
-    /// Sets extra options for streamlines
+    /// Sets extra matplotlib commands (comma separated) for the streamplot
     ///
-    /// See <https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.streamplot.html>
+    /// **Important:** The extra commands must be comma separated. For example:
+    ///
+    /// ```text
+    /// param1=123,param2='hello'
+    /// ```
+    ///
+    /// [See Matplotlib's documentation](https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.streamplot.html)
     pub fn set_streamplot_extra(&mut self, extra: &str) -> &mut Self {
         self.streamplot_extra = extra.to_string();
         self
     }
 
-    /// Sets the quiver inverse scale
+    /// Sets the quiver scale factor (larger values produce smaller arrows)
+    ///
+    /// This is the inverse of the arrow scaling. Increase to shrink arrows,
+    /// decrease to enlarge them.
     pub fn set_quiver_inv_scale(&mut self, scale: f64) -> &mut Self {
         self.quiver_scale = scale;
         self
@@ -208,9 +222,15 @@ impl Stream {
         self
     }
 
-    /// Sets extra options for quiver
+    /// Sets extra matplotlib commands (comma separated) for the quiver plot
     ///
-    /// See <https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.quiver.html>
+    /// **Important:** The extra commands must be comma separated. For example:
+    ///
+    /// ```text
+    /// param1=123,param2='hello'
+    /// ```
+    ///
+    /// [See Matplotlib's documentation](https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.quiver.html)
     pub fn set_quiver_extra(&mut self, extra: &str) -> &mut Self {
         self.quiver_extra = extra.to_string();
         self

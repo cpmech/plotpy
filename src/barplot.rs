@@ -8,11 +8,10 @@ use std::fmt::Write;
 ///
 /// # Examples
 ///
-/// ## Basic bar plot
+/// ## Basic bar plot (numeric x-axis)
 ///
 /// ```
 /// use plotpy::{Barplot, Plot, StrError};
-/// use std::collections::HashMap;
 ///
 /// fn main() -> Result<(), StrError> {
 ///     // data
@@ -138,7 +137,14 @@ impl Barplot {
         }
     }
 
-    /// Draws the bar plot
+    /// Draws the bar plot with numeric x-axis
+    ///
+    /// # Input
+    ///
+    /// * `x` -- bar positions on the x-axis (or values when horizontal)
+    /// * `y` -- bar heights (or lengths when horizontal)
+    ///
+    /// See also: [`draw_with_str`](Self::draw_with_str) for string-labeled categories
     pub fn draw<'a, T, U>(&mut self, x: &'a T, y: &'a T)
     where
         T: AsVector<'a, U>,
@@ -166,7 +172,14 @@ impl Barplot {
         }
     }
 
-    /// Draws the bar plot with strings
+    /// Draws the bar plot with string labels on the x-axis (categorical data)
+    ///
+    /// # Input
+    ///
+    /// * `x` -- string labels for each bar (e.g., `["Apple", "Banana", "Orange"]`)
+    /// * `y` -- bar heights (or lengths when horizontal)
+    ///
+    /// See also: [`draw`](Self::draw) for numeric x-axis
     pub fn draw_with_str<'a, T, U>(&mut self, x: &[&str], y: &'a T)
     where
         T: AsVector<'a, U>,
@@ -194,25 +207,32 @@ impl Barplot {
         }
     }
 
-    /// Sets the name of this bar in the legend
+    /// Sets the name of this bar series in the legend
+    ///
+    /// When multiple bar groups are drawn (e.g., stacked or grouped bars),
+    /// each label identifies that group in the legend produced by [`Plot::legend`](crate::Plot::legend).
     pub fn set_label(&mut self, label: &str) -> &mut Self {
         self.label = String::from(label);
         self
     }
 
-    /// Sets the colors for each bar
+    /// Sets the colors for each bar (one color per bar, matched by index)
     pub fn set_colors(&mut self, colors: &[&str]) -> &mut Self {
         self.colors = colors.iter().map(|color| color.to_string()).collect();
         self
     }
 
-    /// Sets the width of the bars
+    /// Sets the width of each bar (relative to the default unit spacing)
     pub fn set_width(&mut self, width: f64) -> &mut Self {
         self.width = width;
         self
     }
 
-    /// Sets the vertical offset to stack bars
+    /// Sets the vertical offset of each bar (bottom coordinate)
+    ///
+    /// Use this to create **stacked bar charts**. Pass a slice with the same
+    /// number of elements as bars, where each element is the cumulative
+    /// height of bars drawn below this one.
     pub fn set_bottom(&mut self, bottom: &[f64]) -> &mut Self {
         self.bottom = Vec::from(bottom);
         self
@@ -235,12 +255,19 @@ impl Barplot {
     }
 
     /// Enables drawing horizontal bars
+    ///
+    /// When `true`, the x-axis shows bar lengths and the y-axis shows categories.
+    /// Consider calling [`Plot::set_inv_y`](crate::Plot::set_inv_y) when using
+    /// string labels so the first label appears at the top.
     pub fn set_horizontal(&mut self, flag: bool) -> &mut Self {
         self.horizontal = flag;
         self
     }
 
-    /// Enables error indicators
+    /// Enables error indicators (one error value per bar)
+    ///
+    /// When used with [`set_horizontal(true)`](Self::set_horizontal), errors
+    /// apply to the x-axis instead of the y-axis.
     pub fn set_errors(&mut self, errors: &[f64]) -> &mut Self {
         self.errors = errors.to_vec();
         self

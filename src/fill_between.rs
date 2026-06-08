@@ -4,6 +4,11 @@ use std::fmt::Write;
 
 /// Fills the area between two curves
 ///
+/// When `y2` is `None`, fills the area between `y1` and the x-axis (`y = 0`).
+///
+/// **Important:** The generated Python script uses `y1` and `y2` as variable names.
+/// Any `where_condition` (e.g., for two-color filling) must reference these names.
+///
 /// # Examples
 ///
 /// ```
@@ -52,12 +57,19 @@ impl FillBetween {
         }
     }
 
-    /// Draws the filled area between two curves
+    /// Draws the filled area between two curves (or between a curve and the x-axis)
     ///
-    /// * `x` - x values
-    /// * `y1` - y values of the first curve
-    /// * `y2` - optional y values of the second curve. If None, fills area between y1 and x-axis
+    /// # Input
     ///
+    /// * `x` -- shared x-axis values
+    /// * `y1` -- y values of the first curve (variable name: `y1`)
+    /// * `y2` -- optional y values of the second curve (variable name: `y2`).
+    ///   If `None`, fills the area between `y1` and the x-axis (`y = 0`).
+    ///
+    /// # Note
+    ///
+    /// For two-color filling (above/below a threshold), use [`set_where`](Self::set_where)
+    /// with a condition referencing `y1` and `y2`.
     pub fn draw<'a, T, U>(&mut self, x: &'a T, y1: &'a T, y2: Option<&'a T>)
     where
         T: AsVector<'a, U>,
@@ -77,51 +89,51 @@ impl FillBetween {
         }
     }
 
-    /// Sets the condition to select the area to be filled.
+    /// Sets the condition that selects which region to fill
     ///
-    /// For example: "y2>=y1" or "y2<=y1"
+    /// **The condition must use `y1` and `y2` as variable names.**
     ///
-    /// **WARNING:** `condition` must use `y1` and `y2` as variable names for the two curves.
+    /// Examples:
+    /// - `"y1>=0.5"` -- fill where the curve is above 0.5 on the y-axis
+    /// - `"y2>=y1"` -- fill where the second curve is above the first
     pub fn set_where(&mut self, condition: &str) -> &mut Self {
         self.where_condition = condition.to_string();
         self
     }
 
-    /// Sets the face color of the filled area.
+    /// Sets the fill color of the shaded area
     pub fn set_facecolor(&mut self, color: &str) -> &mut Self {
         self.facecolor = color.to_string();
         self
     }
 
-    /// Calculates the actual intersection point and extend the filled region up to this point.
+    /// When `true`, calculates the actual intersection point of crossing curves
+    /// and extends the filled region up to that point for a clean edge
     ///
-    /// From <https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.fill_between.html>:
+    /// This only matters when using [`set_where`](Self::set_where) with crossing curves.
+    /// Default is `false`.
     ///
-    /// "This option is only relevant if where is used and the two curves are crossing each other. Semantically,
-    /// `where` is often used for y1 > y2 or similar. By default, the nodes of the polygon defining the filled
-    /// region will only be placed at the positions in the x array. Such a polygon cannot describe the above
-    /// semantics close to the intersection. The x-sections containing the intersection are simply clipped."
+    /// From the [Matplotlib docs](https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.fill_between.html):
     ///
-    /// Default is false.
+    /// "Semantically, `where` is often used for `y1 > y2` or similar. By default,
+    /// the nodes of the polygon defining the filled region will only be placed at the
+    /// positions in the x array. Such a polygon cannot describe the above semantics
+    /// close to the intersection. The x-sections containing the intersection are
+    /// simply clipped."
     pub fn set_interpolate(&mut self, interpolate: bool) -> &mut Self {
         self.interpolate = interpolate;
         self
     }
 
-    /// Fills the area between two curves
+    /// Sets extra matplotlib commands (comma separated) for `fill_between`
     ///
-    /// **WARNING:** `where_condition` must use `y1` and `y2` as variable names for the two curves.
-    /// For example:
+    /// **Important:** The extra commands must be comma separated. For example:
     ///
     /// ```text
-    /// curve.fill_between(x, y1, y2, "y2>=y1", "#ffaabb", true, "");
-    /// curve.fill_between(x, y1, y2, "y2>=y1", "#ffaabb", true, "");
-    /// curve.fill_between(x, y1, y2b, "y2<=y1", "#c1e3ff", true, "");
+    /// alpha=0.5,color='#ffaabb'
     /// ```
     ///
-    /// **Note:** This method does not use the options of the Curve object.
-    ///
-    /// See more options in <https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.fill_between.html>
+    /// [See Matplotlib's documentation](https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.fill_between.html)
     pub fn set_extra(&mut self, extra: &str) -> &mut Self {
         self.extra = extra.to_string();
         self

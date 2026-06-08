@@ -11,8 +11,11 @@
 
 - [Introduction](#introduction)
 - [Installation](#installation)
-- [Setting Cargo.toml](#setting-cargotoml)
-- [Use of Jupyter via evcxr](#use-of-jupyter-via-evcxr)
+  - [Arch Linux](#arch-linux)
+  - [Debian/Ubuntu Linux](#debianubuntu-linux)
+  - [Other systems](#other-systems)
+  - [Setting Cargo.toml](#setting-cargotoml)
+  - [Use of Jupyter via evcxr](#use-of-jupyter-via-evcxr)
 - [Examples](#examples)
   - [Barplot](#barplot)
   - [Boxplot](#boxplot)
@@ -43,17 +46,29 @@ See also the [examples directory](https://github.com/cpmech/plotpy/tree/main/exa
 
 ## Installation
 
-*This code is mainly tested on Debian/Ubuntu/Linux.*
+*This code is mainly tested on Arch Linux and Debian/Ubuntu Linux.*
 
-This crate needs Python3 and Matplotlib, of course.
+This crate needs Python3 and Matplotlib.
 
-On Debian/Ubuntu/Linux, run:
+### Arch Linux
+
+Install the dependencies:
+
+```bash
+pacman -Syu --noconfirm python-matplotlib
+```
+
+### Debian/Ubuntu Linux
+
+Install the dependencies:
 
 ```bash
 sudo apt install python3-matplotlib
 ```
 
-**Important:** The Rust code will call `python3` via `std::process::Command`. However, there is an option to call a different python executable; for instance (the code below is untested):
+### Other systems
+
+It is possible to run `plotpy` in other systems where Python and Matplotlib are already installed. The Rust code calls `python3` via `std::process::Command`. However, there is an option to call a different python executable; for instance (the code below is untested):
 
 ```text
 let mut plot = Plot::new();
@@ -62,9 +77,7 @@ plot.set_python_exe("C:\Windows11\WhereIs\python.exe")
     .save(...)?;
 ```
 
-
-
-## Setting Cargo.toml
+### Setting Cargo.toml
 
 [![Crates.io](https://img.shields.io/crates/v/plotpy.svg)](https://crates.io/crates/plotpy)
 
@@ -75,9 +88,7 @@ plot.set_python_exe("C:\Windows11\WhereIs\python.exe")
 plotpy = "*"
 ```
 
-
-
-## Use of Jupyter via evcxr
+### Use of Jupyter via evcxr
 
 Plotpy can be used with Jupyter via [evcxr](https://github.com/evcxr/evcxr). Thus, it can interactively display the plots in a Jupyter Notebook. This feature requires the installation of `evcxr`. See the [Jupyter/evcxr article](https://depth-first.com/articles/2020/09/21/interactive-rust-in-a-repl-and-jupyter-notebook-with-evcxr/).
 

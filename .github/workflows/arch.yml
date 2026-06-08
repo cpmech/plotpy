@@ -1,7 +1,7 @@
 name: Arch
 on: [pull_request]
 jobs:
-  test_on_arch_linux:
+  arch:
     runs-on: ubuntu-latest
     container:
       image: archlinux:latest

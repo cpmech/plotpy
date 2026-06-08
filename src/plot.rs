@@ -18,7 +18,17 @@ pub trait GraphMaker {
     fn clear_buffer(&mut self);
 }
 
-/// Driver structure that calls Python
+/// Central plot driver — collects graph entities, generates a Python script, and executes it
+///
+/// The `Plot` struct is the main entry point. The workflow is:
+///
+/// 1. Create and configure graph entities ([`Curve`](crate::Curve), [`Surface`](crate::Surface), etc.)
+/// 2. Call their `draw()` methods (builds Python code into their buffer)
+/// 3. `plot.add(&entity)` to concatenate entity buffers
+/// 4. Configure axes, ticks, labels, subplots via `set_*` methods
+/// 5. `plot.save(path)` or `plot.show(path)` to write the `.py` file and run Python
+///
+/// All configuration methods return `&mut Self` for method chaining.
 ///
 /// # Examples
 ///
@@ -184,16 +194,18 @@ impl Plot {
         self
     }
 
-    /// Tells matplotlib to try to figure out the tight bounding box of the figure (default = true)
+    /// Enables tight bounding box calculation when saving (default: `true`)
+    ///
+    /// When `true`, Matplotlib automatically crops whitespace around the figure.
+    /// Disable if cropping cuts off labels or other elements.
     pub fn set_save_tight(&mut self, tight: bool) -> &mut Self {
         self.save_tight = tight;
         self
     }
 
-    /// Sets the padding around the figure when the 'tight' layout is enabled during saving
+    /// Sets extra padding (in inches) around the figure when tight layout is enabled
     ///
-    /// This option may circumvent *rare* problems when matplotlib fails to compute the best bounding box
-    /// (e.g., when the labels of 3D plots are ignored)
+    /// Useful when the automatic tight bounding box clips 3D plot labels or other edge elements.
     pub fn set_save_pad_inches(&mut self, pad_inches: f64) -> &mut Self {
         self.save_pad_inches = Some(pad_inches);
         self
@@ -207,6 +219,8 @@ impl Plot {
 
     /// Calls Python and saves the python script and figure
     ///
+    /// The figure format is determined by the file extension (`.svg`, `.png`, `.pdf`, etc.).
+    ///
     /// # Input
     ///
     /// * `figure_path` -- may be a String, &str, or Path
@@ -215,6 +229,7 @@ impl Plot {
     ///
     /// 1. You may want to call [Plot::set_show_errors()] to enable the
     ///    display of Python errors (if any)
+    /// 2. The intermediate Python script is saved alongside the figure with a `.py` extension
     pub fn save<S>(&self, figure_path: &S) -> Result<(), StrError>
     where
         S: AsRef<OsStr> + ?Sized,
@@ -279,7 +294,10 @@ impl Plot {
         self
     }
 
-    /// Adds legend to plot (see Legend for further options)
+    /// Adds legend to the current axes using default Legend settings
+    ///
+    /// For more control (fontsize, columns, outside placement), create a [`Legend`] yourself
+    /// and add it via [`add`](Self::add).
     pub fn legend(&mut self) -> &mut Self {
         let mut legend = Legend::new();
         legend.draw();
@@ -616,7 +634,7 @@ impl Plot {
         self
     }
 
-    /// Sets number of ticks along x
+    /// Sets number of ticks along x (set to `0` to remove all ticks)
     pub fn set_num_ticks_x(&mut self, num: usize) -> &mut Self {
         if num == 0 {
             self.buffer.push_str("plt.gca().get_xaxis().set_ticks([])\n");
@@ -631,7 +649,7 @@ impl Plot {
         self
     }
 
-    /// Sets number of ticks along y
+    /// Sets number of ticks along y (set to `0` to remove all ticks)
     pub fn set_num_ticks_y(&mut self, num: usize) -> &mut Self {
         if num == 0 {
             self.buffer.push_str("plt.gca().get_yaxis().set_ticks([])\n");
@@ -646,7 +664,7 @@ impl Plot {
         self
     }
 
-    /// Sets number of ticks along z
+    /// Sets number of ticks along z (set to `0` to remove all ticks)
     pub fn set_num_ticks_z(&mut self, num: usize) -> &mut Self {
         if num == 0 {
             self.buffer.push_str("plt.gca().get_zaxis().set_ticks([])\n");
@@ -1136,7 +1154,10 @@ impl Plot {
         self
     }
 
-    /// Writes extra python commands
+    /// Appends arbitrary Python commands to the script
+    ///
+    /// Use this to inject custom Matplotlib commands not yet covered by the library.
+    /// Unlike `set_extra` methods on graph entities, this inserts raw Python.
     pub fn extra(&mut self, commands: &str) -> &mut Self {
         self.buffer.write_str(commands).unwrap();
         self

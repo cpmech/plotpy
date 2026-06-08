@@ -71,6 +71,7 @@
     "markerfacecolor",
     "markersize",
     "markevery",
+    "Matplotlib",
     "MOVETO",
     "mplot",
     "nord",

@@ -4,7 +4,11 @@ use std::fmt::Write;
 
 /// Generates an image plot (imshow)
 ///
-/// [See Matplotlib's documentation](https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.imshow.html)
+/// Uses Matplotlib's [imshow](https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.imshow.html))
+///
+/// Displays a 2D matrix as a heatmap with configurable colormap.
+/// Supports both scalar data (via [`draw`](Self::draw)) and RGB/RGBA channel data
+/// (via [`draw_rgb_or_rgba`](Self::draw_rgb_or_rgba)).
 ///
 /// # Examples
 ///
@@ -54,13 +58,13 @@ impl Image {
         }
     }
 
-    /// (imshow) Displays data as an image
+    /// (imshow) Displays scalar data as a colored image / heatmap
     ///
-    /// # Arguments
+    /// # Input
     ///
-    /// * `data` - 2D matrix-like data structure
+    /// * `data` -- 2D matrix of scalar values (rows × columns)
     ///
-    /// See <https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.imshow.html>
+    /// See also: [`draw_rgb_or_rgba`](Self::draw_rgb_or_rgba) for RGB/RGBA images
     pub fn draw<'a, T, U>(&mut self, data: &'a T)
     where
         T: AsMatrix<'a, U>,
@@ -88,37 +92,47 @@ impl Image {
         write!(&mut self.buffer, "plt.imshow(data{})\n", &opt).unwrap();
     }
 
-    /// Sets the colormap index
+    /// Sets a colormap by index from a built-in list
     ///
-    /// Options:
+    /// Indices wrap around:
     ///
-    /// * 0 -- bwr
-    /// * 1 -- RdBu
-    /// * 2 -- hsv
-    /// * 3 -- jet
-    /// * 4 -- terrain
-    /// * 5 -- pink
-    /// * 6 -- Greys
-    /// * `>`6 -- starts over from 0
+    /// | Index | Colormap |
+    /// |-------|----------|
+    /// | 0     | bwr      |
+    /// | 1     | RdBu     |
+    /// | 2     | hsv      |
+    /// | 3     | jet      |
+    /// | 4     | terrain  |
+    /// | 5     | pink     |
+    /// | 6     | Greys    |
+    ///
+    /// See also: [`set_colormap_name`](Self::set_colormap_name)
     pub fn set_colormap_index(&mut self, index: usize) -> &mut Self {
         const CMAP: [&str; 7] = ["bwr", "RdBu", "hsv", "jet", "terrain", "pink", "Greys"];
         self.colormap_name = CMAP[index % 7].to_string();
         self
     }
 
-    /// Sets the colormap name
+    /// Sets the colormap by name (e.g., `"terrain"`, `"jet"`, `"viridis"`)
     ///
-    /// Colormap names:
+    /// See the [Matplotlib colormap reference](https://matplotlib.org/stable/tutorials/colors/colormaps.html)
+    /// for all available options.
     ///
-    /// * see <https://matplotlib.org/stable/tutorials/colors/colormaps.html>
-    ///
-    /// Will use `colormap_index` instead if `colormap_name` is empty.
+    /// See also: [`set_colormap_index`](Self::set_colormap_index)
     pub fn set_colormap_name(&mut self, name: &str) -> &mut Self {
         self.colormap_name = String::from(name);
         self
     }
 
-    // Sets extra python/matplotlib commands (comma separated)
+    /// Sets extra matplotlib commands (comma separated)
+    ///
+    /// **Important:** The extra commands must be comma separated. For example:
+    ///
+    /// ```text
+    /// param1=123,param2='hello'
+    /// ```
+    ///
+    /// [See Matplotlib's documentation](https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.imshow.html)
     pub fn set_extra(&mut self, extra: &str) -> &mut Self {
         self.extra = extra.to_string();
         self

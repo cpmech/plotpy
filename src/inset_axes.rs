@@ -1,7 +1,11 @@
 use super::GraphMaker;
 use std::fmt::Write;
 
-/// Implements the capability to add inset Axes to existing Axes.
+/// Implements inset Axes — a magnified sub-view of a region within the main plot
+///
+/// An inset is a smaller axes placed inside the main axes, connected by indicator
+/// lines to show which region is being magnified. Use [`add`](Self::add) to place
+/// graph entities (curves, contours, etc.) inside the inset, just like with [`Plot`](crate::Plot).
 ///
 /// # Examples
 ///
@@ -235,27 +239,38 @@ impl InsetAxes {
         self
     }
 
-    /// Sets extra Matplotlib commands for the inset Axes (comma separated).
+    /// Sets extra matplotlib commands (comma separated) for the inset Axes
     ///
-    /// [See Matplotlib's documentation for extra parameters](<https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes>)
+    /// **Important:** The extra commands must be comma separated. For example:
+    ///
+    /// ```text
+    /// param1=123,param2='hello'
+    /// ```
+    ///
+    /// [See Matplotlib's documentation](https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.inset_axes.html)
     pub fn set_extra_for_axes(&mut self, extra: &str) -> &mut Self {
         self.extra_for_axes = extra.to_string();
         self
     }
 
-    /// Sets extra Matplotlib commands for the indicator (comma separated).
+    /// Sets extra matplotlib commands (comma separated) for the indicator/connector lines
     ///
-    /// [See Matplotlib's documentation for extra parameters](https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.indicate_inset.html#matplotlib.axes.Axes.indicate_inset)
+    /// **Important:** The extra commands must be comma separated. For example:
+    ///
+    /// ```text
+    /// param1=123,param2='hello'
+    /// ```
+    ///
+    /// [See Matplotlib's documentation](https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.indicate_inset.html#matplotlib.axes.Axes.indicate_inset)
     pub fn set_extra_for_indicator(&mut self, extra: &str) -> &mut Self {
         self.extra_for_indicator = extra.to_string();
         self
     }
 
-    /// Sets the visibility of the axes ticks
+    /// Controls whether axes ticks are shown inside the inset
     ///
-    /// # Arguments
-    ///
-    /// * `visible` - If true, shows the axes ticks. If false, hides them.
+    /// When `false` (default), both x and y ticks are hidden for a cleaner look.
+    /// Set to `true` to show the tick marks and labels.
     pub fn set_visibility(&mut self, visible: bool) -> &mut Self {
         self.axes_visible = visible;
         self

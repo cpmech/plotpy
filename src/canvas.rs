@@ -211,6 +211,12 @@ impl Canvas {
     }
 
     /// Draws arc (2D only)
+    ///
+    /// # Input
+    ///
+    /// * `xc`, `yc` -- center coordinates
+    /// * `r` -- radius
+    /// * `ini_angle`, `fin_angle` -- arc angles in degrees (counter-clockwise)
     pub fn draw_arc<T>(&mut self, xc: T, yc: T, r: T, ini_angle: T, fin_angle: T)
     where
         T: std::fmt::Display + Num,
@@ -226,6 +232,13 @@ impl Canvas {
     }
 
     /// Draws arrow (2D only)
+    ///
+    /// # Input
+    ///
+    /// * `xi`, `yi` -- start point
+    /// * `xf`, `yf` -- end point
+    ///
+    /// Use [`set_arrow_style`](Self::set_arrow_style) and [`set_arrow_scale`](Self::set_arrow_scale) to configure.
     pub fn draw_arrow<T>(&mut self, xi: T, yi: T, xf: T, yf: T)
     where
         T: std::fmt::Display + Num,
@@ -245,6 +258,11 @@ impl Canvas {
     }
 
     /// Draws circle (2D only)
+    ///
+    /// # Input
+    ///
+    /// * `xc`, `yc` -- center coordinates
+    /// * `r` -- radius
     pub fn draw_circle<T>(&mut self, xc: T, yc: T, r: T)
     where
         T: std::fmt::Display + Num,
@@ -484,7 +502,11 @@ impl Canvas {
         self
     }
 
-    /// Draws polyline (2D or 3D)
+    /// Draws polyline (2D or 3D, auto-detected from point dimensions)
+    ///
+    /// If points are `2D` (`ndim == 2`), uses 2D path patches (supporting
+    /// `face_color` and `edge_color` fills). If `3D` (`ndim == 3`), draws as
+    /// a 3D line plot.
     pub fn draw_polyline<'a, T, U>(&mut self, points: &'a T, closed: bool)
     where
         T: AsMatrix<'a, U>,
@@ -538,7 +560,13 @@ impl Canvas {
         }
     }
 
-    /// Draws a rectangle
+    /// Draws a rectangle (2D only)
+    ///
+    /// # Input
+    ///
+    /// * `x`, `y` -- bottom-left corner coordinates
+    /// * `width` -- rectangle width
+    /// * `height` -- rectangle height
     pub fn draw_rectangle<T>(&mut self, x: T, y: T, width: T, height: T) -> &mut Self
     where
         T: std::fmt::Display + Num,
@@ -554,7 +582,11 @@ impl Canvas {
         self
     }
 
-    /// Draws a text in a 2D graph
+    /// Draws text at (x, y) in a 2D graph using the primary text style
+    ///
+    /// Configure via `set_text_*` methods (color, alignment, fontsize, rotation).
+    ///
+    /// See also: [`draw_alt_text`](Self::draw_alt_text) for the alternative text style
     pub fn draw_text<T>(&mut self, x: T, y: T, label: &str) -> &mut Self
     where
         T: std::fmt::Display + Num,
@@ -563,7 +595,13 @@ impl Canvas {
         self
     }
 
-    /// Draws an alternative text in a 2D graph
+    /// Draws text at (x, y) in a 2D graph using the alternative text style
+    ///
+    /// The alternative style has distinct default values (red color, smaller font,
+    /// rotated 45°) designed for point/cell ID labels in grid drawings.
+    /// Configure via `set_alt_text_*` methods.
+    ///
+    /// See also: [`draw_text`](Self::draw_text) for the primary text style
     pub fn draw_alt_text<T>(&mut self, x: T, y: T, label: &str) -> &mut Self
     where
         T: std::fmt::Display + Num,
@@ -771,13 +809,13 @@ impl Canvas {
         Ok(())
     }
 
-    /// Sets the edge color (shared among features)
+    /// Sets the edge color for the border of shapes (shared among all draw methods)
     pub fn set_edge_color(&mut self, color: &str) -> &mut Self {
         self.edge_color = String::from(color);
         self
     }
 
-    /// Sets the face color (shared among features)
+    /// Sets the fill color for the interior of shapes (shared among all draw methods)
     pub fn set_face_color(&mut self, color: &str) -> &mut Self {
         self.face_color = String::from(color);
         self
@@ -789,7 +827,7 @@ impl Canvas {
         self
     }
 
-    /// Sets the line width of edge (shared among features)
+    /// Sets the line style for edges (shared among features)
     ///
     /// Options:
     ///

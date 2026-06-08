@@ -21,12 +21,11 @@ pub enum RayEndpoint {
 
 /// Generates a curve (aka line-plot) given two arrays (x,y)
 ///
+/// Supports 2D and 3D line plots, scatter plots (set `line_style = "None"`),
+/// infinite rays (`draw_ray`), twin-x dual-axis plots (`draw_with_twin_x`),
+/// and point-by-point construction (`points_begin`/`points_add`/`points_end`).
+///
 /// [See Matplotlib's documentation](https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.plot.html)
-///
-/// # Notes
-///
-/// * This struct corresponds to the **plot** function of Matplotlib.
-/// * You may plot a Scatter plot by setting line_style = "None"
 ///
 /// # Examples
 ///
@@ -276,12 +275,14 @@ impl Curve {
         self
     }
 
-    /// Draws curve
+    /// Draws a 2D line plot
     ///
     /// # Input
     ///
-    /// * `x` - abscissa values
-    /// * `y` - ordinate values
+    /// * `x` -- x-axis (abscissa) values
+    /// * `y` -- y-axis (ordinate) values
+    ///
+    /// See also: [`draw_3d`](Self::draw_3d) for 3D curves
     pub fn draw<'a, T, U>(&mut self, x: &'a T, y: &'a T)
     where
         T: AsVector<'a, U>,
@@ -293,9 +294,13 @@ impl Curve {
         write!(&mut self.buffer, "plt.plot(x,y{})\n", &opt).unwrap();
     }
 
-    /// Draws curve on a previously drawn figure with the same x
+    /// Draws curve on a secondary (right-hand) y-axis sharing the same x-axis
     ///
-    /// * `y` - ordinate values on the right-hand side
+    /// Must be called after a regular [`draw`](Self::draw) that sets up the x-axis.
+    /// Configure the twin-x label and color via [`Plot::set_label_y_twinx`](crate::Plot::set_label_y_twinx)
+    /// and [`Plot::set_label_y_twinx_color`](crate::Plot::set_label_y_twinx_color).
+    ///
+    /// * `y` -- ordinate values for the right-hand side axis
     pub fn draw_with_twin_x<'a, T, U>(&mut self, y: &'a T)
     where
         T: AsVector<'a, U>,
@@ -316,11 +321,15 @@ impl Curve {
 
     /// Draws curve in 3D plot
     ///
+    /// Requires [`Plot::set_subplot_3d`](crate::Plot::set_subplot_3d) to be called first.
+    ///
     /// # Input
     ///
-    /// * `x` - x values
-    /// * `y` - y values
-    /// * `z` - z values
+    /// * `x` -- x-axis values
+    /// * `y` -- y-axis values
+    /// * `z` -- z-axis values
+    ///
+    /// See also: [`draw`](Self::draw) for 2D curves
     pub fn draw_3d<'a, T, U>(&mut self, x: &'a T, y: &'a T, z: &'a T)
     where
         T: AsVector<'a, U>,
@@ -339,7 +348,10 @@ impl Curve {
         self
     }
 
-    /// Sets the opacity of lines (0, 1]. A<1e-14 => A=1.0
+    /// Sets the opacity (transparency) of lines
+    ///
+    /// Range `(0, 1]` where `0.0` = fully transparent and `1.0` = fully opaque.
+    /// Values below `1e-14` are treated as `1.0` (opaque).
     pub fn set_line_alpha(&mut self, alpha: f64) -> &mut Self {
         self.line_alpha = alpha;
         self
@@ -351,10 +363,13 @@ impl Curve {
         self
     }
 
-    /// Draws a ray (an infinite line)
+    /// Draws a ray (an infinite line through two points, or by slope)
     ///
-    /// * For horizontal rays, only `ya` is used
-    /// * For vertical rays, only `xa` is used
+    /// Use [`RayEndpoint`] to specify the ray type:
+    /// - `Coords(xb, yb)` -- ray through `(xa, ya)` and `(xb, yb)`
+    /// - `Slope(m)` -- ray through `(xa, ya)` with given slope
+    /// - `Horizontal` -- horizontal line at `ya` (uses only `ya`)
+    /// - `Vertical` -- vertical line at `xa` (uses only `xa`)
     pub fn draw_ray(&mut self, xa: f64, ya: f64, endpoint: RayEndpoint) {
         let opt = self.options();
         match endpoint {
@@ -398,13 +413,19 @@ impl Curve {
         self
     }
 
-    /// Sets the increment of data points to use when drawing markers
+    /// Sets the spacing of marker symbols along the curve
+    ///
+    /// For example, `every = 5` places a marker on every 5th data point.
+    /// Set to `0` to disable markers.
     pub fn set_marker_every(&mut self, every: usize) -> &mut Self {
         self.marker_every = every;
         self
     }
 
-    /// Sets the option to draw a void marker (draw edge only)
+    /// Enables hollow (edge-only) markers with a transparent face
+    ///
+    /// When `true`, the marker interior is not filled — only the edge is drawn,
+    /// using the color set via [`set_marker_line_color`](Self::set_marker_line_color).
     pub fn set_marker_void(&mut self, flag: bool) -> &mut Self {
         self.marker_void = flag;
         self
@@ -439,7 +460,10 @@ impl Curve {
         self
     }
 
-    /// Sets the flag to stop clipping features within margins
+    /// Disables clipping of the curve at the plot margins
+    ///
+    /// By default, curves are clipped at the axes boundary. Set to `true` to allow
+    /// the curve to extend into the margin area (useful for markers near the edges).
     pub fn set_stop_clip(&mut self, flag: bool) -> &mut Self {
         self.stop_clip = flag;
         self

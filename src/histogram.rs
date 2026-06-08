@@ -2,7 +2,11 @@ use super::{generate_list_quoted, generate_nested_list, GraphMaker};
 use num_traits::Num;
 use std::fmt::Write;
 
-/// Generates a Histogram plot
+/// Generates a Histogram plot with support for multiple overlaid or stacked series
+///
+/// Each inner `Vec` in `values` represents a data series. The `labels` slice
+/// provides legend labels, one per series. Colors, style (bar, step, stacked),
+/// and bin count are configurable.
 ///
 /// [See Matplotlib's documentation](https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.hist.html)
 ///
@@ -75,12 +79,12 @@ impl Histogram {
         }
     }
 
-    /// Draws histogram
+    /// Draws histogram with one or more data series
     ///
     /// # Input
     ///
-    /// * `values` -- holds the values
-    /// * `labels` -- holds the labels
+    /// * `values` -- a nested list where each inner `Vec` is a data series
+    /// * `labels` -- legend labels, one per series (must match `values.len()`)
     pub fn draw<T, U>(&mut self, values: &Vec<Vec<T>>, labels: &[U])
     where
         T: std::fmt::Display + Num,
@@ -95,13 +99,13 @@ impl Histogram {
         write!(&mut self.buffer, "plt.hist(values,label=labels{})\n", &opt).unwrap();
     }
 
-    /// Sets the colors for each bar
+    /// Sets the color for each data series (one color per series)
     pub fn set_colors(&mut self, colors: &[&str]) -> &mut Self {
         self.colors = colors.iter().map(|color| color.to_string()).collect();
         self
     }
 
-    /// Sets the width of the lines
+    /// Sets the width of bar edge lines
     pub fn set_line_width(&mut self, width: f64) -> &mut Self {
         self.line_width = width;
         self
@@ -133,7 +137,7 @@ impl Histogram {
         self
     }
 
-    /// Sets the number of bins
+    /// Sets number of bins (set to `0` for automatic bin calculation)
     pub fn set_number_bins(&mut self, bins: usize) -> &mut Self {
         self.number_bins = bins;
         self

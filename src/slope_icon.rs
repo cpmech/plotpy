@@ -1,7 +1,11 @@
 use super::GraphMaker;
 use std::fmt::Write;
 
-/// Creates an icon to indicate the slope of lines
+/// Creates an icon indicating the slope of a line at a given point
+///
+/// Draws a small triangle with annotated horizontal (run = 1) and vertical
+/// (rise = slope) labels. Works correctly with both linear and log-scale axes.
+/// Handles positive and negative slopes, and can be flipped above or below the line.
 ///
 /// # Notes
 ///
@@ -116,7 +120,13 @@ impl SlopeIcon {
         }
     }
 
-    /// Draws an icon of line slope
+    /// Draws the slope indicator icon at a given position
+    ///
+    /// # Input
+    ///
+    /// * `slope` -- the line slope (rise / run)
+    /// * `x_center` -- x-coordinate of the icon center (data coordinates)
+    /// * `y_center` -- y-coordinate of the icon center (data coordinates)
     pub fn draw(&mut self, slope: f64, x_center: f64, y_center: f64) {
         // set flip flag
         let flip = if slope < 0.0 { !self.above } else { self.above };
@@ -241,7 +251,7 @@ impl SlopeIcon {
         }
     }
 
-    /// Sets option to draw icon above line
+    /// Flips the icon to appear above the line instead of below
     pub fn set_above(&mut self, flag: bool) -> &mut Self {
         self.above = flag;
         self
@@ -300,19 +310,24 @@ impl SlopeIcon {
         self
     }
 
-    /// Sets the the precision of slope number in label
+    /// Sets the number of decimal places for the automatic slope label
+    ///
+    /// Set to `0` (default) for full precision display.
     pub fn set_precision(&mut self, value: usize) -> &mut Self {
         self.precision = value;
         self
     }
 
-    /// Sets text of horizontal value (== 1)
+    /// Overrides the horizontal label text (default: `"1"`, representing "run = 1")
     pub fn set_text_h(&mut self, one: &str) -> &mut Self {
         self.text_h = String::from(one);
         self
     }
 
-    /// Sets text of vertical value (slope)
+    /// Overrides the vertical label text (default: auto-calculated from slope)
+    ///
+    /// Set this to display a custom label instead of the numerical slope value
+    /// (e.g., `"λ"`, `"m"`, or a fixed number).
     pub fn set_text_v(&mut self, slope: &str) -> &mut Self {
         self.text_v = String::from(slope);
         self

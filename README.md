@@ -53,7 +53,7 @@ On Debian/Ubuntu/Linux, run:
 sudo apt install python3-matplotlib
 ```
 
-**Important:** The Rust code will call `python3` via `std::process::Command`. However, there is an option to call a different python executable; for instance (the code below is no tested):
+**Important:** The Rust code will call `python3` via `std::process::Command`. However, there is an option to call a different python executable; for instance (the code below is untested):
 
 ```text
 let mut plot = Plot::new();
@@ -81,7 +81,7 @@ plotpy = "*"
 
 Plotpy can be used with Jupyter via [evcxr](https://github.com/evcxr/evcxr). Thus, it can interactively display the plots in a Jupyter Notebook. This feature requires the installation of `evcxr`. See the [Jupyter/evcxr article](https://depth-first.com/articles/2020/09/21/interactive-rust-in-a-repl-and-jupyter-notebook-with-evcxr/).
 
-The following code shows a minimal example (not tested)
+The following code shows a minimal example (the code below is untested)
 
 ```text
 // set the python path
@@ -101,6 +101,8 @@ plot.set_python_exe(python)
 
 
 ## Examples
+
+Note, below `StrError` is defined as `pub type StrError = &'static str`; — a type alias for a static string slice. It's used throughout the library as the error type returned from functions. It's essentially a lightweight, allocation-free error type that avoids pulling in a full error-handling crate.
 
 
 

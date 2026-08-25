@@ -276,7 +276,7 @@ impl Boxplot {
             write!(&mut opt, ",sym=r'{}'", self.symbol).unwrap();
         }
         if self.horizontal {
-            write!(&mut opt, ",vert=False").unwrap();
+            write!(&mut opt, ",orientation='horizontal'").unwrap();
         }
         if self.whisker != None {
             write!(&mut opt, ",whis={}", self.whisker.unwrap()).unwrap();
@@ -378,7 +378,7 @@ mod tests {
             .draw(&x);
         let b: &str = "x=[[1,2,3,],[2,3,4,5,6,],[6,7,],]\n\
                        positions=[1,2,3,]\n\
-                       p=plt.boxplot(x,sym=r'b+',vert=False,whis=1.5,positions=positions,widths=0.5,showfliers=False,patch_artist=True,boxprops={'facecolor': 'C0', 'edgecolor': 'white','linewidth': 0.5})\n";
+                       p=plt.boxplot(x,sym=r'b+',orientation='horizontal',whis=1.5,positions=positions,widths=0.5,showfliers=False,patch_artist=True,boxprops={'facecolor': 'C0', 'edgecolor': 'white','linewidth': 0.5})\n";
         assert_eq!(boxes.buffer, b);
         boxes.clear_buffer();
         assert_eq!(boxes.buffer, "");
@@ -426,7 +426,7 @@ mod tests {
             .draw_mat(&x);
         let b: &str = "x=np.array([[1,2,3,4,5,],[2,3,4,5,6,],[3,4,5,6,7,],[4,5,6,7,8,],[5,6,7,8,9,],[6,7,8,9,10,],])\n\
                        positions=[1,2,3,4,5,]\n\
-                       p=plt.boxplot(x,sym=r'b+',vert=False,whis=1.5,positions=positions,widths=0.5,showfliers=False)\n";
+                       p=plt.boxplot(x,sym=r'b+',orientation='horizontal',whis=1.5,positions=positions,widths=0.5,showfliers=False)\n";
         assert_eq!(boxes.buffer, b);
         boxes.clear_buffer();
         assert_eq!(boxes.buffer, "");

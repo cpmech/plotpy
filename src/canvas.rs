@@ -1113,7 +1113,7 @@ impl Canvas {
     }
 
     /// Returns options for text
-    fn options_text(&self) -> String {
+    fn options_text(&self, ndim: usize) -> String {
         let mut opt = String::new();
         if self.text_color != "" {
             write!(&mut opt, ",color='{}'", self.text_color).unwrap();
@@ -1127,14 +1127,14 @@ impl Canvas {
         if self.text_fontsize > 0.0 {
             write!(&mut opt, ",fontsize={}", self.text_fontsize).unwrap();
         }
-        if self.text_rotation > 0.0 {
+        if ndim == 2 && self.text_rotation > 0.0 {
             write!(&mut opt, ",rotation={}", self.text_rotation).unwrap();
         }
         opt
     }
 
     /// Returns options for alternative text
-    fn options_alt_text(&self) -> String {
+    fn options_alt_text(&self, ndim: usize) -> String {
         let mut opt = String::new();
         if self.alt_text_color != "" {
             write!(&mut opt, ",color='{}'", self.alt_text_color).unwrap();
@@ -1148,7 +1148,7 @@ impl Canvas {
         if self.alt_text_fontsize > 0.0 {
             write!(&mut opt, ",fontsize={}", self.alt_text_fontsize).unwrap();
         }
-        if self.alt_text_rotation > 0.0 {
+        if ndim == 2 && self.alt_text_rotation > 0.0 {
             write!(&mut opt, ",rotation={}", self.alt_text_rotation).unwrap();
         }
         opt
@@ -1198,9 +1198,9 @@ impl Canvas {
         T: std::fmt::Display,
     {
         let opt = if alternative {
-            self.options_alt_text()
+            self.options_alt_text(ndim)
         } else {
-            self.options_text()
+            self.options_text(ndim)
         };
         if ndim == 2 {
             write!(&mut self.buffer, "plt.text({},{},'{}'{})\n", a[0], a[1], txt, &opt).unwrap();
@@ -1327,7 +1327,7 @@ mod tests {
             .set_text_align_vertical("center")
             .set_text_fontsize(8.0)
             .set_text_rotation(45.0);
-        let opt = canvas.options_text();
+        let opt = canvas.options_text(2);
         assert_eq!(
             opt,
             ",color='red'\
@@ -1347,7 +1347,7 @@ mod tests {
             .set_alt_text_align_vertical("bottom")
             .set_alt_text_fontsize(10.0)
             .set_alt_text_rotation(30.0);
-        let opt = canvas.options_alt_text();
+        let opt = canvas.options_alt_text(2);
         assert_eq!(
             opt,
             ",color='blue'\
@@ -1672,18 +1672,18 @@ mod tests {
                        ax3d().plot([1,1],[0,1],[0,0],color='#427ce5')\n\
                        ax3d().plot([0,1],[0,0],[0,0],color='#427ce5')\n\
                        ax3d().plot([0,1],[1,1],[0,0],color='#427ce5')\n\
-                       ax3d().text(0,0,0,'0',color='#a81414',fontsize=8,rotation=45)\n\
-                       ax3d().text(1,0,0,'1',color='#a81414',fontsize=8,rotation=45)\n\
-                       ax3d().text(0,1,0,'2',color='#a81414',fontsize=8,rotation=45)\n\
-                       ax3d().text(1,1,0,'3',color='#a81414',fontsize=8,rotation=45)\n\
+                       ax3d().text(0,0,0,'0',color='#a81414',fontsize=8)\n\
+                       ax3d().text(1,0,0,'1',color='#a81414',fontsize=8)\n\
+                       ax3d().text(0,1,0,'2',color='#a81414',fontsize=8)\n\
+                       ax3d().text(1,1,0,'3',color='#a81414',fontsize=8)\n\
                        ax3d().plot([0,0],[0,1],[1,1],color='#427ce5')\n\
                        ax3d().plot([1,1],[0,1],[1,1],color='#427ce5')\n\
                        ax3d().plot([0,1],[0,0],[1,1],color='#427ce5')\n\
                        ax3d().plot([0,1],[1,1],[1,1],color='#427ce5')\n\
-                       ax3d().text(0,0,1,'4',color='#a81414',fontsize=8,rotation=45)\n\
-                       ax3d().text(1,0,1,'5',color='#a81414',fontsize=8,rotation=45)\n\
-                       ax3d().text(0,1,1,'6',color='#a81414',fontsize=8,rotation=45)\n\
-                       ax3d().text(1,1,1,'7',color='#a81414',fontsize=8,rotation=45)\n\
+                       ax3d().text(0,0,1,'4',color='#a81414',fontsize=8)\n\
+                       ax3d().text(1,0,1,'5',color='#a81414',fontsize=8)\n\
+                       ax3d().text(0,1,1,'6',color='#a81414',fontsize=8)\n\
+                       ax3d().text(1,1,1,'7',color='#a81414',fontsize=8)\n\
                        ax3d().text(0.5,0.5,0.5,'0',color='#343434',ha='center',va='center',fontsize=10)\n\
                        ax3d().plot([0,0],[0,0],[0,1],color='#427ce5')\n\
                        ax3d().plot([1,1],[0,0],[0,1],color='#427ce5')\n\

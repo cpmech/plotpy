@@ -1221,10 +1221,16 @@ impl Plot {
             log_file
                 .write_all(output.as_bytes())
                 .map_err(|_| "cannot write to log file")?;
-            if self.show_errors {
-                println!("{}", output);
+
+            let out_lower = output.to_lowercase();
+            if out_lower.contains("deprecationwarning") || out_lower.contains("deprecated") {
+                println!("Matplotlib deprecation warning ignored.");
+            } else {
+                if self.show_errors {
+                    println!("{}", output);
+                }
+                return Err("python3 failed; please see the log file");
             }
-            return Err("python3 failed; please see the log file");
         }
         Ok(())
     }

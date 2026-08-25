@@ -162,6 +162,7 @@ pub struct Canvas {
     glyph_label_y: String,     // Label for Y axis of 3D glyphs
     glyph_label_z: String,     // Label for Z axis of 3D glyphs
     glyph_label_color: String, // Color for labels of 3D glyphs (overrides individual axis colors)
+    glyph_label_fontsize: f64, // Font size for labels of 3D glyphs
     glyph_bbox_opt: String,    // Python options for the dictionary setting the bounding box of 3D glyphs' text
 
     // buffer
@@ -204,6 +205,7 @@ impl Canvas {
             glyph_label_y: "Y".to_string(),
             glyph_label_z: "Z".to_string(),
             glyph_label_color: String::new(),
+            glyph_label_fontsize: 0.0,
             glyph_bbox_opt: "boxstyle='circle,pad=0.1',facecolor='white',edgecolor='None'".to_string(),
             // buffer
             buffer: String::new(),
@@ -659,14 +661,19 @@ impl Canvas {
         } else {
             &self.glyph_label_color
         };
+        let fs_opt = if self.glyph_label_fontsize > 0.0 {
+            format!(",fontsize={}", self.glyph_label_fontsize)
+        } else {
+            String::new()
+        };
         write!(
             &mut self.buffer,
-            "plt.gca().plot([{x},{x}+{size}],[{y},{y}],[{z},{z}],color='{r}',linewidth={lw})\n\
-             plt.gca().plot([{x},{x}],[{y},{y}+{size}],[{z},{z}],color='{g}',linewidth={lw})\n\
-             plt.gca().plot([{x},{x}],[{y},{y}],[{z},{z}+{size}],color='{b}',linewidth={lw})\n\
-             tx=plt.gca().text({x}+{size},{y},{z},'{lx}',color='{tr}',ha='center',va='center')\n\
-             ty=plt.gca().text({x},{y}+{size},{z},'{ly}',color='{tg}',ha='center',va='center')\n\
-             tz=plt.gca().text({x},{y},{z}+{size},'{lz}',color='{tb}',ha='center',va='center')\n"
+            "ax3d().plot([{x},{x}+{size}],[{y},{y}],[{z},{z}],color='{r}',linewidth={lw})\n\
+             ax3d().plot([{x},{x}],[{y},{y}+{size}],[{z},{z}],color='{g}',linewidth={lw})\n\
+             ax3d().plot([{x},{x}],[{y},{y}],[{z},{z}+{size}],color='{b}',linewidth={lw})\n\
+             tx=ax3d().text({x}+{size},{y},{z},'{lx}',color='{tr}',ha='center',va='center'{fs_opt})\n\
+             ty=ax3d().text({x},{y}+{size},{z},'{ly}',color='{tg}',ha='center',va='center'{fs_opt})\n\
+             tz=ax3d().text({x},{y},{z}+{size},'{lz}',color='{tb}',ha='center',va='center'{fs_opt})\n"
         )
         .unwrap();
         if self.glyph_bbox_opt != "" {
@@ -1026,6 +1033,12 @@ impl Canvas {
     /// The default colors are the same as the axis colors.
     pub fn set_glyph_label_color(&mut self, label_clr: &str) -> &mut Self {
         self.glyph_label_color = String::from(label_clr);
+        self
+    }
+
+    /// Sets the font size of the labels of 3D glyphs
+    pub fn set_glyph_label_fontsize(&mut self, fontsize: f64) -> &mut Self {
+        self.glyph_label_fontsize = fontsize;
         self
     }
 

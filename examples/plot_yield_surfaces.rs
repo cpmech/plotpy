@@ -1,5 +1,162 @@
-use plotpy::{linspace, Canvas, Curve, Plot, StrError, Surface};
+use plotpy::{linspace, Canvas, Curve, Legend, Plot, StrError, Surface};
 use std::f64::consts::PI;
+
+fn main() -> Result<(), StrError> {
+    let elev = 20.0;
+    let azim = 10.0;
+    plot_von_mises(elev, azim)?;
+    plot_mohr_coulomb(elev, azim)?;
+    Ok(())
+}
+
+fn plot_von_mises(elev: f64, azim: f64) -> Result<(), StrError> {
+    let radius = 3.0;
+    let height = 15.0;
+
+    let n_z = 50;
+    let n_theta = 50;
+
+    let z_cyl = linspace(0.0, height, n_z);
+    let theta = linspace(0.0, 2.0 * PI, n_theta);
+
+    let v = [1.0 / 3.0f64.sqrt(), 1.0 / 3.0f64.sqrt(), 1.0 / 3.0f64.sqrt()];
+    let z_axis = [0.0, 0.0, 1.0];
+
+    let mut axis = cross(&z_axis, &v);
+    let n_axis = norm(&axis);
+    for i in 0..3 {
+        axis[i] /= n_axis;
+    }
+    let angle = dot(&z_axis, &v).acos();
+
+    let r = rodrigues_rotation(&axis, angle);
+
+    let mut x_mat = vec![vec![0.0; n_theta]; n_z];
+    let mut y_mat = vec![vec![0.0; n_theta]; n_z];
+    let mut z_mat = vec![vec![0.0; n_theta]; n_z];
+
+    for i in 0..n_z {
+        for j in 0..n_theta {
+            let cx = radius * theta[j].cos();
+            let cy = radius * theta[j].sin();
+            let cz = z_cyl[i];
+
+            x_mat[i][j] = r[0][0] * cx + r[0][1] * cy + r[0][2] * cz;
+            y_mat[i][j] = r[1][0] * cx + r[1][1] * cy + r[1][2] * cz;
+            z_mat[i][j] = r[2][0] * cx + r[2][1] * cy + r[2][2] * cz;
+        }
+    }
+
+    let mut surf = Surface::new();
+    surf.set_surf_color("#7e7ed0bd")
+        .set_with_wireframe(false)
+        .draw(&x_mat, &y_mat, &z_mat);
+
+    let mut axis_line = Curve::new();
+    axis_line
+        .set_line_color("red")
+        .set_line_style("--")
+        .set_line_width(5.0)
+        .set_label("Hydrostatic Axis");
+    axis_line.draw_3d(&[0.0, 15.0], &[0.0, 15.0], &[0.0, 15.0]);
+
+    let mut legend = Legend::new();
+    legend.set_handle_len(7.0).set_location("lower left").draw();
+
+    let mut plot = Plot::new();
+    plot.add(&surf)
+        .add(&axis_line)
+        .add(&legend)
+        .set_camera(elev, azim)
+        .set_equal_axes(true)
+        .set_zoom_3d(2.1)
+        .set_hide_axes(true)
+        .set_title("von Mises Yield Surface (Cylinder)")
+        .set_figure_size_points(800.0, 800.0);
+
+    add_glyph_and_legend(&mut plot);
+
+    plot.save("/tmp/plotpy/von_mises_surface.png")?;
+
+    Ok(())
+}
+
+fn plot_mohr_coulomb(elev: f64, azim: f64) -> Result<(), StrError> {
+    let apex = [-2.0, -2.0, -2.0];
+
+    let r_c = 6.0;
+    let r_e = 3.5;
+
+    let angles = [0.0, 60.0, 120.0, 180.0, 240.0, 300.0];
+    let radii = [r_c, r_e, r_c, r_e, r_c, r_e];
+
+    let base_center = [12.0, 12.0, 12.0];
+
+    let n = [1.0 / 3.0f64.sqrt(), 1.0 / 3.0f64.sqrt(), 1.0 / 3.0f64.sqrt()];
+    let u = [1.0 / 2.0f64.sqrt(), -1.0 / 2.0f64.sqrt(), 0.0];
+    let v_vec = cross(&n, &u);
+
+    // Create vertices array
+    let mut xx = vec![apex[0]];
+    let mut yy = vec![apex[1]];
+    let mut zz = vec![apex[2]];
+
+    for i in 0..6 {
+        let ang = angles[i] * PI / 180.0;
+        let r = radii[i];
+        let px = base_center[0] + r * (ang.cos() * u[0] + ang.sin() * v_vec[0]);
+        let py = base_center[1] + r * (ang.cos() * u[1] + ang.sin() * v_vec[1]);
+        let pz = base_center[2] + r * (ang.cos() * u[2] + ang.sin() * v_vec[2]);
+        xx.push(px);
+        yy.push(py);
+        zz.push(pz);
+    }
+
+    // connectivity: 6 triangles
+    let mut connectivity = vec![vec![0; 3]; 6];
+    for i in 0..6 {
+        connectivity[i][0] = 0;
+        connectivity[i][1] = i + 1;
+        connectivity[i][2] = if i == 5 { 1 } else { i + 2 };
+    }
+
+    let mut canvas = Canvas::new();
+    canvas
+        .set_face_color("#e8b25550")
+        .set_edge_color("black")
+        .set_line_width(2.0)
+        .draw_triangles_3d(&xx, &yy, &zz, &connectivity);
+
+    let mut axis_line = Curve::new();
+    axis_line
+        .set_line_color("red")
+        .set_line_style("--")
+        .set_line_width(5.0)
+        .set_label("Hydrostatic Axis");
+    axis_line.draw_3d(&[-3.0, 17.0], &[-3.0, 17.0], &[-3.0, 17.0]);
+
+    let mut legend = Legend::new();
+    legend.set_handle_len(7.0).set_location("lower left").draw();
+
+    let mut plot = Plot::new();
+    plot.add(&canvas)
+        .add(&axis_line)
+        .add(&legend)
+        .set_equal_axes(true)
+        .set_camera(elev, azim)
+        .set_zoom_3d(2.0)
+        .set_hide_axes(true)
+        .set_title("Mohr-Coulomb Yield Surface (Hexagonal Pyramid)")
+        .set_figure_size_points(800.0, 800.0);
+
+    add_glyph_and_legend(&mut plot);
+
+    plot.save("/tmp/plotpy/mohr_coulomb_surface.png")?;
+
+    Ok(())
+}
+
+// --- auxiliary ---
 
 fn cross(a: &[f64; 3], b: &[f64; 3]) -> [f64; 3] {
     [
@@ -41,155 +198,21 @@ fn rodrigues_rotation(axis: &[f64; 3], angle: f64) -> [[f64; 3]; 3] {
     r
 }
 
-fn plot_von_mises(elev: f64, azim: f64) -> Result<(), StrError> {
-    let radius = 3.0;
-    let height = 15.0;
+fn add_glyph_and_legend(plot: &mut Plot) {
+    let mut glyph = Canvas::new();
+    glyph
+        .set_glyph_label_x(r"$-\\hat{\\sigma}_1$")
+        .set_glyph_label_y(r"$-\\hat{\\sigma}_2$")
+        .set_glyph_label_z(r"$-\\hat{\\sigma}_3$")
+        .set_glyph_label_color("")
+        .set_glyph_color_x("#000000")
+        .set_glyph_color_y("#000000")
+        .set_glyph_color_z("#000000")
+        .set_glyph_line_width(4.0)
+        .set_glyph_label_fontsize(16.0)
+        .set_glyph_bbox("boxstyle='circle,pad=0.2',facecolor='white',edgecolor='black'")
+        .set_glyph_size(10.0)
+        .draw_glyph_3d(0.0, 0.0, 0.0);
 
-    let n_z = 50;
-    let n_theta = 50;
-
-    let z_cyl = linspace(0.0, height, n_z);
-    let theta = linspace(0.0, 2.0 * PI, n_theta);
-
-    let v = [
-        1.0 / 3.0f64.sqrt(),
-        1.0 / 3.0f64.sqrt(),
-        1.0 / 3.0f64.sqrt(),
-    ];
-    let z_axis = [0.0, 0.0, 1.0];
-
-    let mut axis = cross(&z_axis, &v);
-    let n_axis = norm(&axis);
-    for i in 0..3 {
-        axis[i] /= n_axis;
-    }
-    let angle = dot(&z_axis, &v).acos();
-
-    let r = rodrigues_rotation(&axis, angle);
-
-    let mut x_mat = vec![vec![0.0; n_theta]; n_z];
-    let mut y_mat = vec![vec![0.0; n_theta]; n_z];
-    let mut z_mat = vec![vec![0.0; n_theta]; n_z];
-
-    for i in 0..n_z {
-        for j in 0..n_theta {
-            let cx = radius * theta[j].cos();
-            let cy = radius * theta[j].sin();
-            let cz = z_cyl[i];
-
-            x_mat[i][j] = r[0][0] * cx + r[0][1] * cy + r[0][2] * cz;
-            y_mat[i][j] = r[1][0] * cx + r[1][1] * cy + r[1][2] * cz;
-            z_mat[i][j] = r[2][0] * cx + r[2][1] * cy + r[2][2] * cz;
-        }
-    }
-
-    let mut surf = Surface::new();
-    surf.set_surf_color("blue").draw(&x_mat, &y_mat, &z_mat);
-
-    let mut axis_line = Curve::new();
-    axis_line
-        .set_line_color("red")
-        .set_line_style("--")
-        .set_line_width(2.0)
-        .set_label("Hydrostatic Axis");
-    axis_line.draw_3d(&[0.0, 15.0], &[0.0, 15.0], &[0.0, 15.0]);
-
-    let mut plot = Plot::new();
-    plot.set_figure_size_points(800.0, 800.0)
-        .add(&surf)
-        .add(&axis_line)
-        .set_labels_3d(r"$\sigma_1$", r"$\sigma_2$", r"$\sigma_3$")
-        .set_title("von Mises Yield Surface (Cylinder)")
-        .set_range_3d(0.0, 15.0, 0.0, 15.0, 0.0, 15.0)
-        .set_camera(elev, azim)
-        .legend();
-
-    plot.save("/tmp/plotpy/von_mises_surface.png")?;
-    println!("Saved /tmp/plotpy/von_mises_surface.png");
-    Ok(())
-}
-
-fn plot_mohr_coulomb(elev: f64, azim: f64) -> Result<(), StrError> {
-    let apex = [-2.0, -2.0, -2.0];
-
-    let r_c = 6.0;
-    let r_e = 3.5;
-
-    let angles = [0.0, 60.0, 120.0, 180.0, 240.0, 300.0];
-    let radii = [r_c, r_e, r_c, r_e, r_c, r_e];
-
-    let base_center = [12.0, 12.0, 12.0];
-
-    let n = [
-        1.0 / 3.0f64.sqrt(),
-        1.0 / 3.0f64.sqrt(),
-        1.0 / 3.0f64.sqrt(),
-    ];
-    let u = [
-        1.0 / 2.0f64.sqrt(),
-        -1.0 / 2.0f64.sqrt(),
-        0.0,
-    ];
-    let v_vec = cross(&n, &u);
-
-    // Create vertices array
-    let mut xx = vec![apex[0]];
-    let mut yy = vec![apex[1]];
-    let mut zz = vec![apex[2]];
-
-    for i in 0..6 {
-        let ang = angles[i] * PI / 180.0;
-        let r = radii[i];
-        let px = base_center[0] + r * (ang.cos() * u[0] + ang.sin() * v_vec[0]);
-        let py = base_center[1] + r * (ang.cos() * u[1] + ang.sin() * v_vec[1]);
-        let pz = base_center[2] + r * (ang.cos() * u[2] + ang.sin() * v_vec[2]);
-        xx.push(px);
-        yy.push(py);
-        zz.push(pz);
-    }
-
-    // connectivity: 6 triangles
-    let mut connectivity = vec![vec![0; 3]; 6];
-    for i in 0..6 {
-        connectivity[i][0] = 0;
-        connectivity[i][1] = i + 1;
-        connectivity[i][2] = if i == 5 { 1 } else { i + 2 };
-    }
-
-    let mut canvas = Canvas::new();
-    canvas
-        .set_face_color("green")
-        .set_edge_color("black")
-        .set_line_width(1.0)
-        .draw_triangles_3d(&xx, &yy, &zz, &connectivity);
-
-    let mut axis_line = Curve::new();
-    axis_line
-        .set_line_color("red")
-        .set_line_style("--")
-        .set_line_width(2.0)
-        .set_label("Hydrostatic Axis");
-    axis_line.draw_3d(&[-3.0, 15.0], &[-3.0, 15.0], &[-3.0, 15.0]);
-
-    let mut plot = Plot::new();
-    plot.set_figure_size_points(800.0, 800.0)
-        .add(&canvas)
-        .add(&axis_line)
-        .set_labels_3d(r"$\sigma_1$", r"$\sigma_2$", r"$\sigma_3$")
-        .set_title("Mohr-Coulomb Yield Surface (Hexagonal Pyramid)")
-        .set_range_3d(-3.0, 15.0, -3.0, 15.0, -3.0, 15.0)
-        .set_camera(elev, azim)
-        .legend();
-
-    plot.save("/tmp/plotpy/mohr_coulomb_surface.png")?;
-    println!("Saved /tmp/plotpy/mohr_coulomb_surface.png");
-    Ok(())
-}
-
-fn main() -> Result<(), StrError> {
-    let elev = 20.0;
-    let azim = 20.0;
-    plot_von_mises(elev, azim)?;
-    plot_mohr_coulomb(elev, azim)?;
-    Ok(())
+    plot.add(&glyph);
 }

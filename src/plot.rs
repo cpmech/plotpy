@@ -1102,6 +1102,21 @@ impl Plot {
         self
     }
 
+    /// Sets the zoom of the camera in 3d graph.
+    ///
+    /// # Input
+    ///
+    /// * `zoom` -- is the optical zoom factor (e.g., > 1.0 to zoom in, < 1.0 to zoom out)
+    pub fn set_zoom_3d(&mut self, zoom: f64) -> &mut Self {
+        write!(
+            &mut self.buffer,
+            "ax3d().set_box_aspect(ax3d().get_box_aspect(), zoom={})\n",
+            zoom
+        )
+        .unwrap();
+        self
+    }
+
     /// Sets option to hide (or show) frame borders
     pub fn set_frame_border(&mut self, left: bool, right: bool, bottom: bool, top: bool) -> &mut Self {
         if left {

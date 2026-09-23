@@ -6,6 +6,7 @@
 [![Arch](https://github.com/cpmech/plotpy/actions/workflows/arch.yml/badge.svg)](https://github.com/cpmech/plotpy/actions/workflows/arch.yml)
 [![Ubuntu](https://github.com/cpmech/plotpy/actions/workflows/ubuntu.yml/badge.svg)](https://github.com/cpmech/plotpy/actions/workflows/ubuntu.yml)
 
+`*` Requires Ubuntu 24.04 or newer.
 
 ## Contents <!-- omit from toc --> 
 
@@ -28,6 +29,7 @@
   - [Surface](#surface)
   - [Text](#text)
 - [Comparing figures](#comparing-figures)
+  - [Usage](#usage)
 - [Architecture](#architecture)
   - [Chaining pattern (builder style)](#chaining-pattern-builder-style)
   - [Consistent conventions across all files](#consistent-conventions-across-all-files)

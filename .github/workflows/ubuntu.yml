@@ -16,10 +16,13 @@ jobs:
 
       - name: Install dependencies
         run: |
-          python -m venv "$RUNNER_TEMP/plotpy-venv"
+          python3 -m venv "$RUNNER_TEMP/plotpy-venv"
+          "$RUNNER_TEMP/plotpy-venv/bin/python3" -m pip install --upgrade pip
+          "$RUNNER_TEMP/plotpy-venv/bin/python3" -m pip install "matplotlib>=3.10,<3.13"
           echo "$RUNNER_TEMP/plotpy-venv/bin" >> "$GITHUB_PATH"
-          python -m pip install --upgrade pip
-          python -m pip install "matplotlib>=3.10,<3.13"
+
+      - name: Verify matplotlib
+        run: python3 -c "import matplotlib, sys; print(sys.executable, matplotlib.__version__)"
 
       - name: Run tests
         run: cargo test -- --nocapture

@@ -1,13 +1,31 @@
 name: Ubuntu
+
 on: [pull_request]
+
 jobs:
   ubuntu:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
+
     steps:
       - uses: actions/checkout@v4
-      - name: Install Libraries
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
         run: |
-          sudo apt-get update -y && sudo apt-get install -y python3-matplotlib
+          python -m venv "$RUNNER_TEMP/plotpy-venv"
+          echo "$RUNNER_TEMP/plotpy-venv/bin" >> "$GITHUB_PATH"
+          python -m pip install --upgrade pip
+          python -m pip install "matplotlib>=3.10,<3.13"
+
+      - name: Verify Matplotlib
+        run: |
+          python --version
+          python -c "import matplotlib; print(matplotlib.__version__)"
+          python -c "import matplotlib.pyplot as plt; plt.boxplot([[1, 2], [2, 3]], orientation='horizontal')"
+
       - name: Run tests
-        run: |
-          cargo test -- --nocapture
+        run: cargo test -- --nocapture

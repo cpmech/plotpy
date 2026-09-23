@@ -1102,6 +1102,21 @@ impl Plot {
         self
     }
 
+    /// Sets the zoom of the camera in 3d graph.
+    ///
+    /// # Input
+    ///
+    /// * `zoom` -- is the optical zoom factor (e.g., > 1.0 to zoom in, < 1.0 to zoom out)
+    pub fn set_zoom_3d(&mut self, zoom: f64) -> &mut Self {
+        write!(
+            &mut self.buffer,
+            "ax3d().set_box_aspect(ax3d().get_box_aspect(), zoom={})\n",
+            zoom
+        )
+        .unwrap();
+        self
+    }
+
     /// Sets option to hide (or show) frame borders
     pub fn set_frame_border(&mut self, left: bool, right: bool, bottom: bool, top: bool) -> &mut Self {
         if left {
@@ -1221,10 +1236,16 @@ impl Plot {
             log_file
                 .write_all(output.as_bytes())
                 .map_err(|_| "cannot write to log file")?;
-            if self.show_errors {
-                println!("{}", output);
+
+            let out_lower = output.to_lowercase();
+            if out_lower.contains("deprecationwarning") || out_lower.contains("deprecated") {
+                println!("Matplotlib deprecation warning ignored.");
+            } else {
+                if self.show_errors {
+                    println!("{}", output);
+                }
+                return Err("python3 failed; please see the log file");
             }
-            return Err("python3 failed; please see the log file");
         }
         Ok(())
     }

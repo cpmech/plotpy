@@ -1,5 +1,5 @@
 use plotpy::{Barplot, Plot, StrError};
-use std::collections::HashMap;
+use std::collections::BTreeMap;
 use std::fs::File;
 use std::io::{BufRead, BufReader};
 use std::path::Path;
@@ -36,7 +36,7 @@ fn test_barplot_1() -> Result<(), StrError> {
 fn test_barplot_2() -> Result<(), StrError> {
     // data
     let species = ["Adelie", "Chinstrap", "Gentoo"];
-    let sex_counts = HashMap::from([
+    let sex_counts = BTreeMap::from([
         ("Male", ([73.0, 34.0, 61.0], ["red", "green", "blue"])),
         ("Female", ([73.0, 34.0, 58.0], ["#DE3163", "#40E0D0", "#6495ED"])),
     ]);

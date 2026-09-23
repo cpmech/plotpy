@@ -1,13 +1,28 @@
 name: Ubuntu
+
 on: [pull_request]
+
 jobs:
-  test_and_coverage:
-    runs-on: ubuntu-latest
+  ubuntu:
+    runs-on: ubuntu-24.04
+
     steps:
       - uses: actions/checkout@v4
-      - name: Install Libraries
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
         run: |
-          sudo apt-get update -y && sudo apt-get install -y python3-matplotlib
+          python3 -m venv "$RUNNER_TEMP/plotpy-venv"
+          "$RUNNER_TEMP/plotpy-venv/bin/python3" -m pip install --upgrade pip
+          "$RUNNER_TEMP/plotpy-venv/bin/python3" -m pip install "matplotlib>=3.10,<3.13"
+          echo "$RUNNER_TEMP/plotpy-venv/bin" >> "$GITHUB_PATH"
+
+      - name: Verify matplotlib
+        run: python3 -c "import matplotlib, sys; print(sys.executable, matplotlib.__version__)"
+
       - name: Run tests
-        run: |
-          cargo test -- --nocapture
+        run: cargo test -- --nocapture

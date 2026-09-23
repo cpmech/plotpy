@@ -94,7 +94,7 @@ impl Text {
     where
         T: std::fmt::Display + Num,
     {
-        let opt = self.options();
+        let opt = self.options(2);
         write!(&mut self.buffer, "t=plt.text({},{},r'{}'{})\n", x, y, message, &opt).unwrap();
         if self.bbox {
             let opt_bbox = self.options_bbox();
@@ -116,7 +116,7 @@ impl Text {
     where
         T: std::fmt::Display + Num,
     {
-        let opt = self.options();
+        let opt = self.options(3);
         write!(
             &mut self.buffer,
             "t=ax3d().text({},{},{},r'{}'{})\n",
@@ -224,7 +224,7 @@ impl Text {
     }
 
     /// Returns options for text
-    fn options(&self) -> String {
+    fn options(&self, ndim: usize) -> String {
         let mut opt = String::new();
         if self.color != "" {
             write!(&mut opt, ",color='{}'", self.color).unwrap();
@@ -238,8 +238,10 @@ impl Text {
         if self.fontsize > 0.0 {
             write!(&mut opt, ",fontsize={}", self.fontsize).unwrap();
         }
-        if let Some(rotation) = self.rotation {
-            write!(&mut opt, ",rotation={}", rotation).unwrap();
+        if ndim == 2 {
+            if let Some(rotation) = self.rotation {
+                write!(&mut opt, ",rotation={}", rotation).unwrap();
+            }
         }
         if self.extra != "" {
             write!(&mut opt, ",{}", self.extra).unwrap();
@@ -299,7 +301,7 @@ mod tests {
             .set_align_vertical("center")
             .set_fontsize(8.0)
             .set_rotation(45.0);
-        let opt = text.options();
+        let opt = text.options(2);
         assert_eq!(
             opt,
             ",color='red'\

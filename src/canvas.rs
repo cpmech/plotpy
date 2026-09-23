@@ -162,6 +162,7 @@ pub struct Canvas {
     glyph_label_y: String,     // Label for Y axis of 3D glyphs
     glyph_label_z: String,     // Label for Z axis of 3D glyphs
     glyph_label_color: String, // Color for labels of 3D glyphs (overrides individual axis colors)
+    glyph_label_fontsize: f64, // Font size for labels of 3D glyphs
     glyph_bbox_opt: String,    // Python options for the dictionary setting the bounding box of 3D glyphs' text
 
     // buffer
@@ -204,6 +205,7 @@ impl Canvas {
             glyph_label_y: "Y".to_string(),
             glyph_label_z: "Z".to_string(),
             glyph_label_color: String::new(),
+            glyph_label_fontsize: 0.0,
             glyph_bbox_opt: "boxstyle='circle,pad=0.1',facecolor='white',edgecolor='None'".to_string(),
             // buffer
             buffer: String::new(),
@@ -659,14 +661,19 @@ impl Canvas {
         } else {
             &self.glyph_label_color
         };
+        let fs_opt = if self.glyph_label_fontsize > 0.0 {
+            format!(",fontsize={}", self.glyph_label_fontsize)
+        } else {
+            String::new()
+        };
         write!(
             &mut self.buffer,
-            "plt.gca().plot([{x},{x}+{size}],[{y},{y}],[{z},{z}],color='{r}',linewidth={lw})\n\
-             plt.gca().plot([{x},{x}],[{y},{y}+{size}],[{z},{z}],color='{g}',linewidth={lw})\n\
-             plt.gca().plot([{x},{x}],[{y},{y}],[{z},{z}+{size}],color='{b}',linewidth={lw})\n\
-             tx=plt.gca().text({x}+{size},{y},{z},'{lx}',color='{tr}',ha='center',va='center')\n\
-             ty=plt.gca().text({x},{y}+{size},{z},'{ly}',color='{tg}',ha='center',va='center')\n\
-             tz=plt.gca().text({x},{y},{z}+{size},'{lz}',color='{tb}',ha='center',va='center')\n"
+            "ax3d().plot([{x},{x}+{size}],[{y},{y}],[{z},{z}],color='{r}',linewidth={lw})\n\
+             ax3d().plot([{x},{x}],[{y},{y}+{size}],[{z},{z}],color='{g}',linewidth={lw})\n\
+             ax3d().plot([{x},{x}],[{y},{y}],[{z},{z}+{size}],color='{b}',linewidth={lw})\n\
+             tx=ax3d().text({x}+{size},{y},{z},'{lx}',color='{tr}',ha='center',va='center'{fs_opt})\n\
+             ty=ax3d().text({x},{y}+{size},{z},'{ly}',color='{tg}',ha='center',va='center'{fs_opt})\n\
+             tz=ax3d().text({x},{y},{z}+{size},'{lz}',color='{tb}',ha='center',va='center'{fs_opt})\n"
         )
         .unwrap();
         if self.glyph_bbox_opt != "" {
@@ -1029,6 +1036,12 @@ impl Canvas {
         self
     }
 
+    /// Sets the font size of the labels of 3D glyphs
+    pub fn set_glyph_label_fontsize(&mut self, fontsize: f64) -> &mut Self {
+        self.glyph_label_fontsize = fontsize;
+        self
+    }
+
     /// Sets the Python dictionary string defining the bounding box of 3D glyphs
     ///
     /// Note: The setting of the bounding box here is different than the on implement in `Text`.
@@ -1113,7 +1126,7 @@ impl Canvas {
     }
 
     /// Returns options for text
-    fn options_text(&self) -> String {
+    fn options_text(&self, ndim: usize) -> String {
         let mut opt = String::new();
         if self.text_color != "" {
             write!(&mut opt, ",color='{}'", self.text_color).unwrap();
@@ -1127,14 +1140,14 @@ impl Canvas {
         if self.text_fontsize > 0.0 {
             write!(&mut opt, ",fontsize={}", self.text_fontsize).unwrap();
         }
-        if self.text_rotation > 0.0 {
+        if ndim == 2 && self.text_rotation > 0.0 {
             write!(&mut opt, ",rotation={}", self.text_rotation).unwrap();
         }
         opt
     }
 
     /// Returns options for alternative text
-    fn options_alt_text(&self) -> String {
+    fn options_alt_text(&self, ndim: usize) -> String {
         let mut opt = String::new();
         if self.alt_text_color != "" {
             write!(&mut opt, ",color='{}'", self.alt_text_color).unwrap();
@@ -1148,7 +1161,7 @@ impl Canvas {
         if self.alt_text_fontsize > 0.0 {
             write!(&mut opt, ",fontsize={}", self.alt_text_fontsize).unwrap();
         }
-        if self.alt_text_rotation > 0.0 {
+        if ndim == 2 && self.alt_text_rotation > 0.0 {
             write!(&mut opt, ",rotation={}", self.alt_text_rotation).unwrap();
         }
         opt
@@ -1198,9 +1211,9 @@ impl Canvas {
         T: std::fmt::Display,
     {
         let opt = if alternative {
-            self.options_alt_text()
+            self.options_alt_text(ndim)
         } else {
-            self.options_text()
+            self.options_text(ndim)
         };
         if ndim == 2 {
             write!(&mut self.buffer, "plt.text({},{},'{}'{})\n", a[0], a[1], txt, &opt).unwrap();
@@ -1327,7 +1340,7 @@ mod tests {
             .set_text_align_vertical("center")
             .set_text_fontsize(8.0)
             .set_text_rotation(45.0);
-        let opt = canvas.options_text();
+        let opt = canvas.options_text(2);
         assert_eq!(
             opt,
             ",color='red'\
@@ -1347,7 +1360,7 @@ mod tests {
             .set_alt_text_align_vertical("bottom")
             .set_alt_text_fontsize(10.0)
             .set_alt_text_rotation(30.0);
-        let opt = canvas.options_alt_text();
+        let opt = canvas.options_alt_text(2);
         assert_eq!(
             opt,
             ",color='blue'\
@@ -1672,18 +1685,18 @@ mod tests {
                        ax3d().plot([1,1],[0,1],[0,0],color='#427ce5')\n\
                        ax3d().plot([0,1],[0,0],[0,0],color='#427ce5')\n\
                        ax3d().plot([0,1],[1,1],[0,0],color='#427ce5')\n\
-                       ax3d().text(0,0,0,'0',color='#a81414',fontsize=8,rotation=45)\n\
-                       ax3d().text(1,0,0,'1',color='#a81414',fontsize=8,rotation=45)\n\
-                       ax3d().text(0,1,0,'2',color='#a81414',fontsize=8,rotation=45)\n\
-                       ax3d().text(1,1,0,'3',color='#a81414',fontsize=8,rotation=45)\n\
+                       ax3d().text(0,0,0,'0',color='#a81414',fontsize=8)\n\
+                       ax3d().text(1,0,0,'1',color='#a81414',fontsize=8)\n\
+                       ax3d().text(0,1,0,'2',color='#a81414',fontsize=8)\n\
+                       ax3d().text(1,1,0,'3',color='#a81414',fontsize=8)\n\
                        ax3d().plot([0,0],[0,1],[1,1],color='#427ce5')\n\
                        ax3d().plot([1,1],[0,1],[1,1],color='#427ce5')\n\
                        ax3d().plot([0,1],[0,0],[1,1],color='#427ce5')\n\
                        ax3d().plot([0,1],[1,1],[1,1],color='#427ce5')\n\
-                       ax3d().text(0,0,1,'4',color='#a81414',fontsize=8,rotation=45)\n\
-                       ax3d().text(1,0,1,'5',color='#a81414',fontsize=8,rotation=45)\n\
-                       ax3d().text(0,1,1,'6',color='#a81414',fontsize=8,rotation=45)\n\
-                       ax3d().text(1,1,1,'7',color='#a81414',fontsize=8,rotation=45)\n\
+                       ax3d().text(0,0,1,'4',color='#a81414',fontsize=8)\n\
+                       ax3d().text(1,0,1,'5',color='#a81414',fontsize=8)\n\
+                       ax3d().text(0,1,1,'6',color='#a81414',fontsize=8)\n\
+                       ax3d().text(1,1,1,'7',color='#a81414',fontsize=8)\n\
                        ax3d().text(0.5,0.5,0.5,'0',color='#343434',ha='center',va='center',fontsize=10)\n\
                        ax3d().plot([0,0],[0,0],[0,1],color='#427ce5')\n\
                        ax3d().plot([1,1],[0,0],[0,1],color='#427ce5')\n\

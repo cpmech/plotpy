@@ -38,12 +38,12 @@ use std::fmt::Write;
 ///
 /// ```
 /// use plotpy::{Barplot, Plot, StrError};
-/// use std::collections::HashMap;
+/// use std::collections::BTreeMap;
 ///
 /// fn main() -> Result<(), StrError> {
 ///     // data
 ///     let species = ["Adelie", "Chinstrap", "Gentoo"];
-///     let sex_counts = HashMap::from([
+///     let sex_counts = BTreeMap::from([
 ///         ("Male", [73.0, 34.0, 61.0]), //
 ///         ("Female", [73.0, 34.0, 58.0]),
 ///     ]);

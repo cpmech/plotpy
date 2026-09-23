@@ -9,8 +9,8 @@ fn main() -> Result<(), StrError> {
 
     let mut plot = Plot::new();
     plot.add(&surf)
-        .set_equal_axes(true)  // Forces 1:1:1 aspect ratio so it's a perfect sphere
-        .set_zoom_3d(1.5)      // Zooms in optically
+        .set_equal_axes(true) // Forces 1:1:1 aspect ratio so it's a perfect sphere
+        .set_zoom_3d(1.5) // Zooms in optically
         .set_figure_size_points(800.0, 800.0)
         .save("/tmp/plotpy/sphere_zoomed.png")?;
 

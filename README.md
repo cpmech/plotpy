@@ -27,6 +27,7 @@
   - [InsetAxes](#insetaxes)
   - [Surface](#surface)
   - [Text](#text)
+- [Comparing figures](#comparing-figures)
 - [Architecture](#architecture)
   - [Chaining pattern (builder style)](#chaining-pattern-builder-style)
   - [Consistent conventions across all files](#consistent-conventions-across-all-files)
@@ -523,6 +524,60 @@ fn main() -> Result<(), StrError> {
 ```
 
 ![text](https://raw.githubusercontent.com/cpmech/plotpy/main/figures/doc_text.svg)
+
+---
+
+## Comparing figures
+
+The tests and doc-tests generate figures into `/tmp/plotpy` (and its
+`doc_tests/`, `integ_tests/`, and `unit_tests/` sub-directories), while the
+committed reference figures live in `figures/`. The script
+`zscripts/compare-figures.py` compares the generated figures against the
+references and reports which ones are **identical**, **different**, or **missing**.
+
+It offers two comparison modes:
+
+1. **Text mode** (default) — normalises both SVGs before comparing: it removes the
+   `<!DOCTYPE>`, XML comments, and the `<metadata>` block (which holds a timestamp
+   and the Matplotlib version), masks Matplotlib's random clip-path/marker/image
+   identifiers, and rounds floating-point numbers (`--decimals`). This catches
+   real content differences while ignoring Matplotlib noise.
+2. **Raster mode** (`--raster`) — rasterises both SVGs to PNG at the same pixel
+   width (using `rsvg-convert`, `inkscape`, or ImageMagick, whichever is
+   installed) and compares pixels. It reports the mean absolute error, the
+   percentage of differing pixels, and the maximum delta; this is tolerant to
+   Matplotlib-version and anti-aliasing differences.
+
+By default the tool reads `/tmp/plotpy` recursively and the `figures/` directory.
+Use `--pattern`, `--generated`, `--reference`, and `--json` as needed. In raster
+mode, `--diff-image DIR` additionally writes a red diff heat-map and a
+side-by-side PNG for every differing figure. The exit status is `0` only when
+every compared figure is identical (or within tolerance) and none is missing,
+which makes the tool suitable for CI.
+
+### Usage
+
+```bash
+# generate the figures first
+cargo test
+
+# text compare (defaults: /tmp/plotpy -> ./figures, recursive)
+./zscripts/compare-figures.py
+
+# show a unified diff for the figures that differ
+./zscripts/compare-figures.py --diff
+
+# pixel compare (tolerant to Matplotlib version differences), writing diff images
+./zscripts/compare-figures.py --raster --diff-image /tmp/plotpy/diffs
+
+# refresh the committed reference figures from the current output
+./zscripts/compare-figures.py --update
+# or:
+bash zscripts/copy-figures.bash
+```
+
+Run `./zscripts/compare-figures.py --help` for the full list of options.
+Raster mode requires `numpy` and `Pillow` in addition to a SVG rasteriser.
 
 ---
 

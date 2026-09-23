@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
   "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<svg xmlns:xlink="http://www.w3.org/1999/xlink" width="280.512pt" height="280.512pt" viewBox="0 0 280.512 280.512" xmlns="http://www.w3.org/2000/svg" version="1.1">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" width="475.2pt" height="360pt" viewBox="0 0 475.2 360" xmlns="http://www.w3.org/2000/svg" version="1.1">
  <metadata>
   <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
    <cc:Work>
     <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
-    <dc:date>2026-09-24T08:15:42.111364</dc:date>
+    <dc:date>2026-09-24T08:15:30.403101</dc:date>
     <dc:format>image/svg+xml</dc:format>
     <dc:creator>
      <cc:Agent>
@@ -21,28 +21,12 @@
  </defs>
  <g id="figure_1">
   <g id="patch_1">
-   <path d="M 0 280.512 
-L 280.512 280.512 
-L 280.512 0 
+   <path d="M 0 360 
+L 475.2 360 
+L 475.2 0 
 L 0 0 
 z
 " style="fill: #ffffff"/>
   </g>
-  <g id="axes_1">
-   <g id="patch_2">
-    <path d="M 140.256 273.312 
-C 7.2 173.52 -59.328 7.2 106.992 13.8528 
-L 140.256 20.5056 
-L 173.52 13.8528 
-C 339.84 7.2 273.312 173.52 140.256 273.312 
-z
-" clip-path="url(#p2046b938af)" style="fill: #f88989; stroke: #ff0000; stroke-linejoin: miter"/>
-   </g>
-  </g>
  </g>
- <defs>
-  <clipPath id="p2046b938af">
-   <rect x="7.2" y="7.2" width="266.112" height="266.112"/>
-  </clipPath>
- </defs>
 </svg>
